@@ -1295,7 +1295,7 @@ function AdminPanel({onLogout}){
         {/* Header */}
         <div style={{background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"14px 16px",borderBottom:"1px solid #A78BFA33",display:"flex",alignItems:"center",gap:14,position:"sticky",top:0,zIndex:100}}>
           <button onClick={()=>{setSelUser(null);setEditData(null);}} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"8px 14px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>← VOLVER</button>
-          <div style={{width:56,height:56,borderRadius:14,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",boxShadow:`0 0 16px ${ri.color}44`}}>
+          <div style={{width:80,height:80,borderRadius:18,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",boxShadow:`0 0 20px ${ri.color}44`}}>
             <AdminUserPhoto email={selUser} rank={ri.rank}/>
           </div>
           <div>
@@ -1604,21 +1604,39 @@ function AdminPanel({onLogout}){
                     ))}
 
                     {/* Add exercise */}
-                    <div style={{display:"grid",gridTemplateColumns:"1fr auto auto auto",gap:6,marginTop:8}}>
-                      <input placeholder="Ejercicio..." value={rtExInput[si]?.name||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],name:e.target.value}}))}
-                        style={{...inp,marginBottom:0,fontSize:11}}/>
-                      <input placeholder="3x10" value={rtExInput[si]?.sets||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],sets:e.target.value}}))}
-                        style={{...inp,marginBottom:0,fontSize:11,width:60}}/>
-                      <input placeholder="60s" value={rtExInput[si]?.rest||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],rest:e.target.value}}))}
-                        style={{...inp,marginBottom:0,fontSize:11,width:50}}/>
-                      <button onClick={()=>{
-                        const ex=rtExInput[si];
-                        if(!ex?.name?.trim()) return;
-                        const s=[...rtSessions];
-                        s[si].exercises=[...s[si].exercises,{name:ex.name.trim(),sets:ex.sets||"3x10",rest:ex.rest||"60s",xp:40,done:false}];
-                        setRtSessions(s);
-                        setRtExInput(p=>({...p,[si]:{name:"",sets:"",rest:""}}));
-                      }} style={{padding:"0 10px",background:`${rtColor}22`,border:`1px solid ${rtColor}44`,borderRadius:8,color:rtColor,fontWeight:700,cursor:"pointer",fontSize:16}}>+</button>
+                    <div style={{marginTop:8}}>
+                      {/* DB picker */}
+                      <select style={{...inp,marginBottom:6,color:"#AAA",fontSize:11}} onChange={e=>{
+                        if(!e.target.value) return;
+                        const ex=EXERCISE_DB.find(x=>x.name===e.target.value);
+                        if(ex) setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
+                        e.target.value="";
+                      }}>
+                        <option value="">📚 Buscar en base de ejercicios...</option>
+                        {Object.keys(MUSCLE_DEFS).map(m=>(
+                          <optgroup key={m} label={MUSCLE_DEFS[m].label}>
+                            {EXERCISE_DB.filter(e=>e.muscle.includes(m)).map(e=>(
+                              <option key={e.id} value={e.name}>{e.name} ({e.xpBase}XP)</option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr auto auto auto",gap:6}}>
+                        <input placeholder="Ejercicio..." value={rtExInput[si]?.name||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],name:e.target.value}}))}
+                          style={{...inp,marginBottom:0,fontSize:11}}/>
+                        <input placeholder="3x10" value={rtExInput[si]?.sets||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],sets:e.target.value}}))}
+                          style={{...inp,marginBottom:0,fontSize:11,width:60}}/>
+                        <input placeholder="60s" value={rtExInput[si]?.rest||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],rest:e.target.value}}))}
+                          style={{...inp,marginBottom:0,fontSize:11,width:50}}/>
+                        <button onClick={()=>{
+                          const ex=rtExInput[si];
+                          if(!ex?.name?.trim()) return;
+                          const s=[...rtSessions];
+                          s[si].exercises=[...s[si].exercises,{name:ex.name.trim(),sets:ex.sets||"3x10",rest:ex.rest||"60s",xp:ex.xp||40,done:false}];
+                          setRtSessions(s);
+                          setRtExInput(p=>({...p,[si]:{name:"",sets:"",rest:""}}));
+                        }} style={{padding:"0 10px",background:`${rtColor}22`,border:`1px solid ${rtColor}44`,borderRadius:8,color:rtColor,fontWeight:700,cursor:"pointer",fontSize:16}}>+</button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1735,7 +1753,28 @@ function AdminPanel({onLogout}){
                         {dtMeals.length>1&&<button onClick={()=>setDtMeals(dtMeals.filter((_,j)=>j!==i))} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:16,padding:"0 4px"}}>✕</button>}
                       </div>
                       <textarea value={m.desc} onChange={e=>{const ms=[...dtMeals];ms[i]={...ms[i],desc:e.target.value};setDtMeals(ms);}}
-                        style={{...inp,marginBottom:0,fontSize:11,resize:"vertical",minHeight:52,lineHeight:1.5}} placeholder="Descripción: 150g pollo · Arroz integral · Ensalada..."/>
+                        style={{...inp,marginBottom:4,fontSize:11,resize:"vertical",minHeight:52,lineHeight:1.5}} placeholder="Descripción: 150g pollo · Arroz integral · Ensalada..."/>
+                      {/* Food DB picker */}
+                      <select style={{...inp,marginBottom:0,color:"#AAA",fontSize:10}} onChange={e=>{
+                        if(!e.target.value) return;
+                        const food=FOOD_DB.find(f=>f.name===e.target.value);
+                        if(food){
+                          const ms=[...dtMeals];
+                          const current=ms[i].desc||"";
+                          ms[i]={...ms[i],desc:current+(current?"\n":"")+`${food.name} · ${food.kcal}kcal · P:${food.protein}g`};
+                          setDtMeals(ms);
+                        }
+                        e.target.value="";
+                      }}>
+                        <option value="">🥗 Añadir alimento de la base de datos...</option>
+                        {["platos","bebidas","snacks","postres"].map(cat=>(
+                          <optgroup key={cat} label={cat.charAt(0).toUpperCase()+cat.slice(1)}>
+                            {FOOD_DB.filter(f=>f.cat===cat).map(f=>(
+                              <option key={f.name} value={f.name}>{f.name} ({f.kcal}kcal)</option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
                     </div>
                   ))}
                   <button onClick={()=>setDtMeals(p=>[...p,{time:"",name:"",desc:""}])}
