@@ -2476,26 +2476,18 @@ function RankUpApp({user,onLogout}){
               </>
             ):(
               routines.length>0?(
-                <div style={{paddingTop:8}}>
-                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:12}}>👑 RUTINAS ASIGNADAS</div>
-                  {routines.map((rt,ri2)=>(
-                    <div key={ri2} style={{background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:12,padding:14,marginBottom:10}}>
-                      <div style={{fontSize:14,fontWeight:700,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{rt.name}</div>
-                      {(rt.exercises||[]).map((ex,ei)=>(
-                        <div key={ei} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
-                          <div style={{flex:1}}>
-                            <div style={{fontSize:12,color:"#FFF"}}>{ex.name}</div>
-                            <div style={{fontSize:10,color:"#555"}}>{ex.sets} · {ex.rest} · {ex.xp}XP</div>
-                          </div>
-                          <div style={{width:28,height:28,borderRadius:7,border:"1px solid #A78BFA44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,cursor:"pointer",background:checked[`rt_${rt.id}_${ei}`]?"#A78BFA22":"transparent"}}
-                            onClick={()=>toggleEx(`rt_${rt.id}_${ei}`,ex.xp)}>
-                            {checked[`rt_${rt.id}_${ei}`]?"✅":"⬜"}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-                </div>
+                <RoutinesOnlyTab
+                  routines={routines}
+                  checked={checked}
+                  weights={weights}
+                  pr={pr}
+                  wInputs={wInputs}
+                  onToggleEx={toggleEx}
+                  onLogWeight={logWeight}
+                  onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))}
+                  openChart={openChart}
+                  onToggleChart={k=>setOpenChart(openChart===k?null:k)}
+                />
               ):(
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
                 <div style={{fontSize:52,marginBottom:16}}>⚔️</div>
@@ -2543,6 +2535,115 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onWInput,openChart,onToggleChart}){
+  const [openRt,setOpenRt]=useState(null);
+  const [openRtSess,setOpenRtSess]=useState(null);
+  return(
+    <div>
+      <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:14}}>👑 RUTINAS ASIGNADAS · {routines.length} RUTINAS</div>
+      {routines.map(rt=>{
+        const c=rt.color||"#A78BFA";
+        const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
+        const totalXp=sessions.reduce((a,s)=>a+s.exercises.reduce((b,e)=>b+(e.xp||35),0),0);
+        const doneXp=sessions.reduce((a,s,si)=>a+s.exercises.reduce((b,ex,ei)=>b+(checked[`rt_${rt.id}_${si}_${ei}`]?(ex.xp||35):0),0),0);
+        const totalEx=sessions.reduce((a,s)=>a+s.exercises.length,0);
+        const doneEx=sessions.reduce((a,s,si)=>a+s.exercises.filter((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]).length,0);
+        const allDone=doneEx===totalEx&&totalEx>0;
+        const isOpen=openRt===rt.id;
+        return(
+          <div key={rt.id} style={{marginBottom:10}}>
+            <button onClick={()=>setOpenRt(isOpen?null:rt.id)}
+              style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${c}18,#0D0D1A)`:"#0F0F1C",border:`1px solid ${isOpen?c+"66":allDone?c+"44":"#1E1E32"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${c}33`:"none"}}>
+              <div>
+                <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>{allDone?"✅ RUTINA COMPLETADA":"👑 RUTINA ASIGNADA"}</div>
+                <div style={{fontSize:14,fontWeight:700,color:allDone?c:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                <div style={{fontSize:10,color:"#555",marginTop:2}}>{sessions.length} sesiones · {totalEx} ejercicios</div>
+              </div>
+              <div style={{textAlign:"right"}}>
+                <div style={{fontSize:12,color:c,fontWeight:700}}>+{doneXp}/{totalXp} XP</div>
+                <div style={{fontSize:11,color:allDone?c:"#444"}}>{doneEx}/{totalEx} ✓</div>
+                {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
+              </div>
+            </button>
+            {isOpen&&(
+              <div style={{border:`1px solid ${c}33`,borderTop:"none",borderRadius:"0 0 12px 12px",overflow:"hidden"}}>
+                {sessions.map((sess,si)=>{
+                  const sk=`rt_${rt.id}_sess_${si}`;
+                  const isSessOpen=openRtSess===sk;
+                  const sessDone=sess.exercises.filter((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]).length;
+                  const sessTotal=sess.exercises.length;
+                  return(
+                    <div key={si} style={{borderBottom:"1px solid #1A1A2E"}}>
+                      <button onClick={()=>setOpenRtSess(isSessOpen?null:sk)}
+                        style={{width:"100%",textAlign:"left",padding:"12px 16px",background:isSessOpen?`${c}0D`:"transparent",border:"none",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                        <div>
+                          <div style={{fontSize:9,color:c,letterSpacing:2,marginBottom:1}}>SESIÓN {si+1}</div>
+                          <div style={{fontSize:13,fontWeight:700,color:isSessOpen?c:"#AAA",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
+                        </div>
+                        <div style={{textAlign:"right"}}>
+                          <div style={{fontSize:11,color:sessDone===sessTotal&&sessTotal>0?c:"#444"}}>{sessDone}/{sessTotal} ✓</div>
+                          <div style={{fontSize:10,color:"#555"}}>{isSessOpen?"▲":"▼"}</div>
+                        </div>
+                      </button>
+                      {isSessOpen&&(
+                        <div>
+                          {sess.exercises.map((ex,ei)=>{
+                            const key=`rt_${rt.id}_${si}_${ei}`;
+                            const isDone=!!checked[key];
+                            const exW=weights[key]||[];
+                            const lastKg=exW.length>0?exW[exW.length-1].kg:null;
+                            const maxKg=exW.length>0?Math.max(...exW.map(w=>w.kg)):null;
+                            const isPR=maxKg&&pr[key]===maxKg;
+                            const isChartOpen=openChart===key;
+                            return(
+                              <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C"}}>
+                                <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
+                                  <button onClick={()=>onToggleEx(key,ex.xp||35)}
+                                    style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?c:"#2A2A44"}`,background:isDone?c:"transparent",boxShadow:isDone?`0 0 12px ${c}`:"none",transition:"all .2s"}}>
+                                    {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
+                                  </button>
+                                  <div style={{flex:1,minWidth:0}}>
+                                    <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
+                                    {ex.notes&&<div style={{fontSize:11,color:"#444",marginTop:2}}>{ex.notes}</div>}
+                                  </div>
+                                  <div style={{textAlign:"right",flexShrink:0}}>
+                                    <div style={{fontSize:13,color:c,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
+                                    <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
+                                    <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
+                                    {lastKg&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
+                                  </div>
+                                </div>
+                                <div style={{padding:"0 14px 12px 56px"}}>
+                                  <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+                                    <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
+                                      onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e);}}
+                                      style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                    <button onClick={e=>onLogWeight(key,e)}
+                                      style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
+                                    {exW.length>0&&<button onClick={()=>onToggleChart(key)}
+                                      style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
+                                  </div>
+                                  {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
+                                  {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666"}}><span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}</span>)}</div>}
+                                  {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={c}/>}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onWInput,onToggleChart,extraRoutines=[]}){
   const [openRt,setOpenRt]=useState(null);
   const [openRtSess,setOpenRtSess]=useState(null);
