@@ -2247,13 +2247,15 @@ function RankUpApp({user,onLogout}){
   const ph=PHASES[activePhase];
   const level=getLevel(totalXp),xpInLvl=getXpInLevel(totalXp),ri=getRank(level);
 
+  const dataLoaded = useRef(false);
+
   useEffect(()=>{
     const loadData=async()=>{
       // Sync from Firebase first to get latest data
       await syncFromFirebase(user.email).catch(()=>{});
       const fresh=getUserData(user.email)||{};
       const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
-      setRoutines(cleanRoutines);
+      if(cleanRoutines.length>0) setRoutines(cleanRoutines);
       if(fresh.assignedProgram){
         let changed=false;
         fresh.assignedProgram.phases?.forEach(p=>{
@@ -2262,7 +2264,8 @@ function RankUpApp({user,onLogout}){
         if(changed) saveUserData(user.email,fresh);
         setAssignedProgram(fresh.assignedProgram);
       }
-      // Mark data as loaded — safe to auto-save now
+      if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
+      // Always mark as loaded — safe to auto-save now
       dataLoaded.current = true;
       // 🎂 Birthday coins check
       const u=getUsers()[user.email]||{};
@@ -2283,8 +2286,6 @@ function RankUpApp({user,onLogout}){
     loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
-
-  const dataLoaded = useRef(false);
   useEffect(()=>{
     if(!dataLoaded.current) return;
     saveUserData(user.email,{totalXp,coins,checked,weights,personalRecords:pr,earnedAchs,redeemedRewards:redeemed,dungeonCoins:dc,customRoutines:routines,playerClass,assignedDiets,assignedProgram});
