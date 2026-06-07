@@ -1,7 +1,52 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, get } from "firebase/database";
 
+// ─── FIREBASE CONFIG ─────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyD5g7Pqf3AYuf3TOnmyjhoH4gcjlVQTSFg",
+  authDomain: "rankup-c8c59.firebaseapp.com",
+  databaseURL: "https://rankup-c8c59-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "rankup-c8c59",
+  storageBucket: "rankup-c8c59.firebasestorage.app",
+  messagingSenderId: "726734884078",
+  appId: "1:726734884078:web:6698c3650a32f20fc4b7ff"
+};
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getDatabase(firebaseApp);
+
+// ─── DB HELPERS (Firebase + localStorage fallback) ───────────────────────────
+const fbSet = (path, data) => set(ref(db, path), data).catch(()=>{});
+const fbGet = async (path) => { try { const s=await get(ref(db,path)); return s.exists()?s.val():null; } catch{ return null; }};
+
+const getUsers = () => {
+  try { return JSON.parse(localStorage.getItem("rku_users")||"{}"); } catch { return {}; }
+};
+const saveUsers = async (users) => {
+  localStorage.setItem("rku_users", JSON.stringify(users));
+  await fbSet("users", users);
+};
+const getUserData = (email) => {
+  try { return JSON.parse(localStorage.getItem(`rku_data_${email}`)||"null"); } catch { return null; }
+};
+const saveUserData = async (email, data) => {
+  const key = email.replace(/\./g,"_").replace(/@/g,"_at_");
+  localStorage.setItem(`rku_data_${email}`, JSON.stringify(data));
+  await fbSet(`userData/${key}`, data);
+};
+const syncFromFirebase = async (email) => {
+  const key = email.replace(/\./g,"_").replace(/@/g,"_at_");
+  const [users, userData] = await Promise.all([fbGet("users"), fbGet(`userData/${key}`)]);
+  if(users) localStorage.setItem("rku_users", JSON.stringify(users));
+  if(userData) localStorage.setItem(`rku_data_${email}`, JSON.stringify(userData));
+  return { users, userData };
+};
+const syncUsersFromFirebase = async () => {
+  const users = await fbGet("users");
+  if(users) localStorage.setItem("rku_users", JSON.stringify(users));
+  return users || {};
+};
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
-const RANKS = [
   { rank:"E", title:"Novato",  minLevel:1,  maxLevel:9,  color:"#9CA3AF", glow:"#6B7280" },
   { rank:"D", title:"Regular", minLevel:10, maxLevel:19, color:"#60A5FA", glow:"#3B82F6" },
   { rank:"C", title:"Élite",         minLevel:20, maxLevel:29, color:"#34D399", glow:"#10B981" },
@@ -328,12 +373,16 @@ function LoginScreen({onLogin}){
   const calcAge=bd=>{if(!bd)return 0;const b=new Date(bd),t=new Date();let a=t.getFullYear()-b.getFullYear();if(t<new Date(t.getFullYear(),b.getMonth(),b.getDate()))a--;return a;};
   const calcIMC=(w,h)=>h>0?Math.round((w/(h/100)**2)*10)/10:0;
 
-  const doLogin=()=>{
+  const doLogin=async()=>{
     const emailKey=email.toLowerCase().trim();
     if(emailKey===ADMIN_EMAIL){
       if(hashPw(password)!==ADMIN_PASSWORD) return err("Contraseña de administrador incorrecta");
+      // Sync all users from Firebase for admin
+      await syncUsersFromFirebase();
       setSession(ADMIN_EMAIL); onLogin(ADMIN_EMAIL,"Administrador",true); return;
     }
+    // Sync from Firebase first, then check locally
+    await syncFromFirebase(emailKey);
     const users=getUsers(), u=users[emailKey];
     if(!u) return err("Email no registrado");
     if(u.password!==hashPw(password)) return err("Contraseña incorrecta");
