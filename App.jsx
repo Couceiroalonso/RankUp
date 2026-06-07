@@ -1669,7 +1669,7 @@ function AdminPanel({onLogout}){
 
                 {/* Multiply weeks button */}
                 {rtSessions.length>0&&(
-                  <div style={{display:"flex",gap:8,marginBottom:12}}>
+                  <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
                     {[2,3,4].map(weeks=>(
                       <button key={weeks} onClick={()=>{
                         const base=JSON.parse(JSON.stringify(rtSessions));
@@ -1683,10 +1683,42 @@ function AdminPanel({onLogout}){
                           });
                         }
                         setRtSessions([...base,...copies]);
-                      }} style={{flex:1,padding:9,background:`${rtColor}11`,border:`1px solid ${rtColor}33`,borderRadius:9,color:rtColor,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                        🔁 ×{weeks} semanas
+                      }} style={{flex:1,padding:9,background:`${rtColor}11`,border:`1px solid ${rtColor}33`,borderRadius:9,color:rtColor,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",minWidth:80}}>
+                        🔁 ×{weeks} sem
                       </button>
                     ))}
+                    {/* A/B alternating button — only show if sessions have A and B */}
+                    <button onClick={()=>{
+                      const base=JSON.parse(JSON.stringify(rtSessions));
+                      const hasAB=base.some(s=>s.day.includes(" A")||s.day.toUpperCase().includes("SEMANA A"));
+                      if(!hasAB){
+                        // Auto-label: first half = A, second half = B
+                        const half=Math.ceil(base.length/2);
+                        const sessA=base.slice(0,half).map(s=>({...s,day:s.day+" A"}));
+                        const sessB=base.slice(half).length>0
+                          ?base.slice(half).map(s=>({...s,day:s.day+" B"}))
+                          :sessA.map(s=>({...JSON.parse(JSON.stringify(s)),day:s.day.replace(" A"," B")}));
+                        // Alternate A/B for 4 weeks
+                        const result=[];
+                        for(let w=0;w<4;w++){
+                          const week=w%2===0?sessA:sessB;
+                          week.forEach(s=>result.push({...JSON.parse(JSON.stringify(s)),day:`${s.day} S${w+1}`}));
+                        }
+                        setRtSessions(result);
+                      } else {
+                        // Sessions already labeled A/B — alternate for 4 weeks
+                        const sessA=base.filter(s=>s.day.includes(" A"));
+                        const sessB=base.filter(s=>s.day.includes(" B"));
+                        const result=[];
+                        for(let w=0;w<4;w++){
+                          const week=w%2===0?sessA:sessB;
+                          week.forEach(s=>result.push({...JSON.parse(JSON.stringify(s)),day:`${s.day} S${w+1}`}));
+                        }
+                        setRtSessions(result);
+                      }
+                    }} style={{flex:1,padding:9,background:"#34D39911",border:"1px solid #34D39933",borderRadius:9,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",minWidth:80}}>
+                      🔄 A/B ×4
+                    </button>
                   </div>
                 )}
 
