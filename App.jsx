@@ -1295,6 +1295,9 @@ function AdminPanel({onLogout}){
         {/* Header */}
         <div style={{background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"16px 16px 14px",borderBottom:"1px solid #A78BFA33",display:"flex",alignItems:"center",gap:12,position:"sticky",top:0,zIndex:100}}>
           <button onClick={()=>{setSelUser(null);setEditData(null);}} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"8px 14px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+          <div style={{width:42,height:42,borderRadius:12,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif"}}>
+            <AdminUserPhoto email={selUser} rank={ri.rank}/>
+          </div>
           <div>
             <div style={{fontSize:9,color:"#444",letterSpacing:3}}>EDITANDO JUGADOR</div>
             <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{uInfo?.name}</div>
