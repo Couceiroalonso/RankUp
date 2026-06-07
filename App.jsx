@@ -848,7 +848,7 @@ function ProgramasTab({userList, flash}){
   const [editProg,setEditProg]=useState(null);
   const [editPhaseIdx,setEditPhaseIdx]=useState(null);
   const [editDayIdx,setEditDayIdx]=useState(null);
-  const [newExRow,setNewExRow]=useState({name:"",sets:"3x10",rest:"60s",xp:40,notes:""});
+  const [newExRow,setNewExRow]=useState({name:"",sets:"3x10",rest:"60s",xp:40,notes:"",muscle:[]});
   const [view,setView]=useState("list");
 
           const duplicateProgram=(tpl)=>{
@@ -919,18 +919,36 @@ function ProgramasTab({userList, flash}){
                 {/* Add exercise */}
                 <div style={{background:"#0D0D1A",border:"1px solid #E8C54733",borderRadius:10,padding:12,marginTop:8,marginBottom:12}}>
                   <div style={{fontSize:9,color:"#E8C547",letterSpacing:3,marginBottom:8}}>+ AÑADIR EJERCICIO</div>
+                  {/* Exercise search from DB */}
+                  <select style={{...inp2,marginBottom:6,color:"#AAA"}} onChange={e=>{
+                    if(!e.target.value) return;
+                    const ex=EXERCISE_DB.find(x=>x.name===e.target.value);
+                    if(ex) setNewExRow(p=>({...p,name:ex.name,xp:ex.xpBase,muscle:ex.muscle}));
+                  }}>
+                    <option value="">📚 Buscar en base de ejercicios...</option>
+                    {Object.keys(MUSCLE_DEFS).map(m=>(
+                      <optgroup key={m} label={MUSCLE_DEFS[m].label}>
+                        {EXERCISE_DB.filter(e=>e.muscle.includes(m)).map(e=>(
+                          <option key={e.id} value={e.name}>{e.name} ({e.xpBase}XP)</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
                   <input style={inp2} placeholder="Nombre del ejercicio..." value={newExRow.name} onChange={e=>setNewExRow(p=>({...p,name:e.target.value}))}/>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 60px",gap:6,marginBottom:6}}>
                     <input style={{...inp2,marginBottom:0,fontSize:11}} placeholder="Series" value={newExRow.sets} onChange={e=>setNewExRow(p=>({...p,sets:e.target.value}))}/>
                     <input style={{...inp2,marginBottom:0,fontSize:11}} placeholder="Descanso" value={newExRow.rest} onChange={e=>setNewExRow(p=>({...p,rest:e.target.value}))}/>
                     <input type="number" style={{...inp2,marginBottom:0,fontSize:11}} placeholder="XP" value={newExRow.xp} onChange={e=>setNewExRow(p=>({...p,xp:parseInt(e.target.value)||40}))}/>
                   </div>
+                  {newExRow.name&&<div style={{fontSize:10,color:"#555",marginBottom:6}}>
+                    💪 {(newExRow.muscle||[]).map(m=>MUSCLE_DEFS[m]?.label||m).join(", ")||"Sin grupo asignado"}
+                  </div>}
                   <button onClick={()=>{
                     if(!newExRow.name.trim()) return;
                     const p=JSON.parse(JSON.stringify(editProg));
-                    p.phases[editPhaseIdx].training[editDayIdx].exercises.push({name:newExRow.name.trim(),sets:newExRow.sets||"3x10",rest:newExRow.rest||"60s",xp:newExRow.xp||40,boss:false,notes:""});
+                    p.phases[editPhaseIdx].training[editDayIdx].exercises.push({name:newExRow.name.trim(),sets:newExRow.sets||"3x10",rest:newExRow.rest||"60s",xp:newExRow.xp||40,muscle:newExRow.muscle||[],boss:false,notes:""});
                     setEditProg(p);
-                    setNewExRow({name:"",sets:"3x10",rest:"60s",xp:40,notes:""});
+                    setNewExRow({name:"",sets:"3x10",rest:"60s",xp:40,notes:"",muscle:[]});
                   }} style={{width:"100%",padding:9,background:"#E8C54722",border:"1px solid #E8C54744",borderRadius:8,color:"#E8C547",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>✚ AÑADIR</button>
                 </div>
                 <button onClick={()=>{
@@ -1075,6 +1093,21 @@ function ProgramasTab({userList, flash}){
               })}
             </div>
           );
+}
+
+function AdminUserPhoto({email, rank}){
+  const [photo,setPhoto]=useState(()=>localStorage.getItem(`rku_photo_${email}`)||null);
+  useEffect(()=>{
+    if(!photo){
+      const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
+      fbGet(`photos/${key}`).then(p=>{
+        if(p){localStorage.setItem(`rku_photo_${email}`,p);setPhoto(p);}
+      }).catch(()=>{});
+    }
+  },[email]);
+  return photo
+    ?<img src={photo} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+    :<span>{rank}</span>;
 }
 
 function AdminPanel({onLogout}){
@@ -1848,7 +1881,7 @@ function AdminPanel({onLogout}){
                     onMouseLeave={e=>e.currentTarget.style.borderColor=ri.color+"22"}>
                     <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
                       <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",flexShrink:0,overflow:"hidden"}}>
-                        {(()=>{const p=localStorage.getItem(`rku_photo_${u.email}`);return p?<img src={p} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:ri.rank;})()}
+                        <AdminUserPhoto email={u.email} rank={ri.rank}/>
                       </div>
                       <div style={{flex:1}}>
                         <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</div>
@@ -1973,34 +2006,44 @@ function ProfileAvatar({userEmail,riColor,clsIcon}){
   const [error,setError]=useState("");
   const fileRef=useRef();
 
+  // Load photo from Firebase on mount if not in localStorage
+  useEffect(()=>{
+    if(!photo){
+      const key=userEmail.replace(/\./g,"_").replace(/@/g,"_at_");
+      fbGet(`photos/${key}`).then(p=>{
+        if(p){localStorage.setItem(`rku_photo_${userEmail}`,p);setPhoto(p);}
+      }).catch(()=>{});
+    }
+  },[]);
+
+  const savePhoto=(data)=>{
+    const key=userEmail.replace(/\./g,"_").replace(/@/g,"_at_");
+    localStorage.setItem(`rku_photo_${userEmail}`,data);
+    setPhoto(data);
+    fbSet(`photos/${key}`,data).catch(()=>{});
+  };
+
   const handleFile=e=>{
     const file=e.target.files?.[0];
     if(!file) return;
     if(file.size>3*1024*1024){setError("Máximo 3MB");return;}
     const reader=new FileReader();
-    reader.onload=ev=>{
-      localStorage.setItem(`rku_photo_${userEmail}`,ev.target.result);
-      setPhoto(ev.target.result);
-      setShowEdit(false); setError("");
-    };
+    reader.onload=ev=>{savePhoto(ev.target.result);setShowEdit(false);setError("");};
     reader.readAsDataURL(file);
   };
 
   const handleUrl=()=>{
     if(!urlInput.trim()){setError("Escribe una URL");return;}
-    // Test image loads
     const img=new Image();
-    img.onload=()=>{
-      localStorage.setItem(`rku_photo_${userEmail}`,urlInput.trim());
-      setPhoto(urlInput.trim());
-      setShowEdit(false); setUrlInput(""); setError("");
-    };
+    img.onload=()=>{savePhoto(urlInput.trim());setShowEdit(false);setUrlInput("");setError("");};
     img.onerror=()=>setError("URL no válida o inaccesible");
     img.src=urlInput.trim();
   };
 
   const removePhoto=()=>{
+    const key=userEmail.replace(/\./g,"_").replace(/@/g,"_at_");
     localStorage.removeItem(`rku_photo_${userEmail}`);
+    fbSet(`photos/${key}`,null).catch(()=>{});
     setPhoto(null); setShowEdit(false);
   };
 
@@ -2371,11 +2414,34 @@ function RankUpApp({user,onLogout}){
                 })()}
               </>
             ):(
+              routines.length>0?(
+                <div style={{paddingTop:8}}>
+                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:12}}>👑 RUTINAS ASIGNADAS</div>
+                  {routines.map((rt,ri2)=>(
+                    <div key={ri2} style={{background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:12,padding:14,marginBottom:10}}>
+                      <div style={{fontSize:14,fontWeight:700,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{rt.name}</div>
+                      {(rt.exercises||[]).map((ex,ei)=>(
+                        <div key={ei} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
+                          <div style={{flex:1}}>
+                            <div style={{fontSize:12,color:"#FFF"}}>{ex.name}</div>
+                            <div style={{fontSize:10,color:"#555"}}>{ex.sets} · {ex.rest} · {ex.xp}XP</div>
+                          </div>
+                          <div style={{width:28,height:28,borderRadius:7,border:"1px solid #A78BFA44",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,cursor:"pointer",background:checked[`rt_${rt.id}_${ei}`]?"#A78BFA22":"transparent"}}
+                            onClick={()=>toggleEx(`rt_${rt.id}_${ei}`,ex.xp)}>
+                            {checked[`rt_${rt.id}_${ei}`]?"✅":"⬜"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ):(
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
                 <div style={{fontSize:52,marginBottom:16}}>⚔️</div>
                 <div style={{fontSize:18,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin programa asignado</div>
                 <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado un programa.<br/>Pronto tendrás tus misiones esperándote.</div>
               </div>
+              )
             )
           )}
           {tab==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
