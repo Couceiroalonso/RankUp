@@ -1662,10 +1662,21 @@ function AdminPanel({onLogout}){
                   </div>
                 ))}
 
-                <button onClick={()=>setRtSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[]}])}
-                  style={{width:"100%",padding:11,background:"#0D0D1A",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>
-                  + AÑADIR SESIÓN
-                </button>
+                <div style={{display:"flex",gap:8,marginBottom:8}}>
+                  <button onClick={()=>setRtSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[]}])}
+                    style={{flex:1,padding:11,background:"#0D0D1A",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                    + AÑADIR SESIÓN
+                  </button>
+                  <button onClick={()=>{
+                    const copies=rtSessions.map(s=>({
+                      ...JSON.parse(JSON.stringify(s)),
+                      day:s.day.includes(" A")?s.day.replace(" A"," B"):s.day+" B"
+                    }));
+                    setRtSessions(p=>[...p,...copies]);
+                  }} style={{flex:1,padding:11,background:"#34D39911",border:"1px dashed #34D39944",borderRadius:10,color:"#34D399",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                    🔄 DUPLICAR SEMANA B
+                  </button>
+                </div>
 
                 {/* Multiply weeks button */}
                 {rtSessions.length>0&&(
