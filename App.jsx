@@ -1847,7 +1847,9 @@ function AdminPanel({onLogout}){
                     onMouseEnter={e=>e.currentTarget.style.borderColor=ri.color+"66"}
                     onMouseLeave={e=>e.currentTarget.style.borderColor=ri.color+"22"}>
                     <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
-                      <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",flexShrink:0}}>{ri.rank}</div>
+                      <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",flexShrink:0,overflow:"hidden"}}>
+                        {(()=>{const p=localStorage.getItem(`rku_photo_${u.email}`);return p?<img src={p} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:ri.rank;})()}
+                      </div>
                       <div style={{flex:1}}>
                         <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</div>
                         <div style={{fontSize:10,color:"#555"}}>{u.email}</div>
@@ -2157,13 +2159,27 @@ function RankUpApp({user,onLogout}){
     const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
     setRoutines(cleanRoutines);
     if(fresh.assignedProgram){
-      // Patch old mantra
       let changed=false;
       fresh.assignedProgram.phases?.forEach(p=>{
         if(p.mantra?.includes("90 días")){p.mantra=p.mantra.replace(/90 días/g,"el futuro");changed=true;}
       });
       if(changed) saveUserData(user.email,fresh);
       setAssignedProgram(fresh.assignedProgram);
+    }
+    // 🎂 Birthday coins check
+    const u=getUsers()[user.email]||{};
+    if(u.birthdate){
+      const bd=new Date(u.birthdate);
+      const today=new Date();
+      const isBirthday=bd.getMonth()===today.getMonth()&&bd.getDate()===today.getDate();
+      const lastBirthdayGift=localStorage.getItem(`rku_bday_${user.email}`);
+      const thisYear=today.getFullYear().toString();
+      if(isBirthday&&lastBirthdayGift!==thisYear){
+        const BIRTHDAY_COINS=500;
+        setCoins(c=>c+BIRTHDAY_COINS);
+        localStorage.setItem(`rku_bday_${user.email}`,thisYear);
+        setTimeout(()=>setCoinToast(`🎂 ¡Feliz cumpleaños! +${BIRTHDAY_COINS} monedas de regalo`),800);
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
