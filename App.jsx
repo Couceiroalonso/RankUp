@@ -2222,6 +2222,8 @@ function RankUpApp({user,onLogout}){
         if(changed) saveUserData(user.email,fresh);
         setAssignedProgram(fresh.assignedProgram);
       }
+      // Mark data as loaded — safe to auto-save now
+      dataLoaded.current = true;
       // 🎂 Birthday coins check
       const u=getUsers()[user.email]||{};
       if(u.birthdate){
@@ -2242,7 +2244,11 @@ function RankUpApp({user,onLogout}){
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
-  useEffect(()=>{saveUserData(user.email,{totalXp,coins,checked,weights,personalRecords:pr,earnedAchs,redeemedRewards:redeemed,dungeonCoins:dc,customRoutines:routines,playerClass,assignedDiets,assignedProgram});},[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram]);
+  const dataLoaded = useRef(false);
+  useEffect(()=>{
+    if(!dataLoaded.current) return;
+    saveUserData(user.email,{totalXp,coins,checked,weights,personalRecords:pr,earnedAchs,redeemedRewards:redeemed,dungeonCoins:dc,customRoutines:routines,playerClass,assignedDiets,assignedProgram});
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     const td=Object.values(checked).filter(Boolean).length;
