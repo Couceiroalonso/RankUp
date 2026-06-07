@@ -1663,9 +1663,32 @@ function AdminPanel({onLogout}){
                 ))}
 
                 <button onClick={()=>setRtSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[]}])}
-                  style={{width:"100%",padding:11,background:"#0D0D1A",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:12}}>
+                  style={{width:"100%",padding:11,background:"#0D0D1A",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>
                   + AÑADIR SESIÓN
                 </button>
+
+                {/* Multiply weeks button */}
+                {rtSessions.length>0&&(
+                  <div style={{display:"flex",gap:8,marginBottom:12}}>
+                    {[2,3,4].map(weeks=>(
+                      <button key={weeks} onClick={()=>{
+                        const base=JSON.parse(JSON.stringify(rtSessions));
+                        const copies=[];
+                        for(let w=1;w<weeks;w++){
+                          base.forEach((sess,i)=>{
+                            copies.push({
+                              ...JSON.parse(JSON.stringify(sess)),
+                              day:`${sess.day} (S${w+1})`
+                            });
+                          });
+                        }
+                        setRtSessions([...base,...copies]);
+                      }} style={{flex:1,padding:9,background:`${rtColor}11`,border:`1px solid ${rtColor}33`,borderRadius:9,color:rtColor,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                        🔁 ×{weeks} semanas
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 <button onClick={saveRoutine} disabled={!rtName.trim()}
                   style={{width:"100%",padding:14,background:rtName.trim()?`linear-gradient(135deg,${rtColor},${rtColor}99)`:"#1A1A2E",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:rtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
