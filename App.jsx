@@ -26,10 +26,14 @@ const saveUserData = async (email, data) => {
 };
 const syncFromFirebase = async (email) => {
   const key = email.replace(/\./g,"_").replace(/@/g,"_at_");
-  const [users, userData] = await Promise.all([fbGet("users"), fbGet(`userData/${key}`)]);
-  if(users) localStorage.setItem("rku_users", JSON.stringify(users));
+  const [safeUsers, userData] = await Promise.all([fbGet("users"), fbGet(`userData/${key}`)]);
+  if(safeUsers){
+    const users = {};
+    Object.values(safeUsers).forEach(u => { if(u.email) users[u.email] = u; });
+    localStorage.setItem("rku_users", JSON.stringify(users));
+  }
   if(userData) localStorage.setItem(`rku_data_${email}`, JSON.stringify(userData));
-  return { users, userData };
+  return { users: getUsers(), userData };
 };
 const syncUsersFromFirebase = async () => {
   const safeUsers = await fbGet("users");
