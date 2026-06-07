@@ -1872,13 +1872,33 @@ export default function App(){
 // ─── CLASS SELECT MODAL ───────────────────────────────────────────────────────
 function ClassSelectModal({current,onSelect}){
   const [hovered,setHovered]=useState(null);
-  const preview=hovered||current;
+  const [previewing,setPreviewing]=useState(null); // for mobile tap-to-preview
+  const preview=previewing||hovered||current;
   const cls=CLASSES.find(c=>c.id===preview)||CLASSES[0];
+  const isMobile=()=>window.matchMedia("(pointer:coarse)").matches;
+
+  const handleTap=(id)=>{
+    if(isMobile()){
+      if(previewing===id){
+        // second tap = confirm
+        onSelect(id);
+        setPreviewing(null);
+      } else {
+        // first tap = preview
+        setPreviewing(id);
+      }
+    } else {
+      onSelect(id);
+    }
+  };
+
   return(
     <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.92)",backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
       <div style={{fontSize:9,letterSpacing:6,color:"#444",marginBottom:6}}>ELIGE TU CLASE</div>
       <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center"}}>¿Cuál es tu objetivo?</div>
-      <div style={{fontSize:11,color:"#555",marginBottom:20,textAlign:"center"}}>Define tu camino en RankUp</div>
+      <div style={{fontSize:11,color:"#555",marginBottom:16,textAlign:"center"}}>
+        {isMobile()?"Toca para ver · Toca de nuevo para elegir":"Define tu camino en RankUp"}
+      </div>
 
       {/* Preview card */}
       <div style={{background:`${cls.color}12`,border:`1px solid ${cls.color}44`,borderRadius:14,padding:"14px 18px",width:"100%",maxWidth:340,marginBottom:16,minHeight:80,transition:"all .2s"}}>
@@ -1891,19 +1911,28 @@ function ClassSelectModal({current,onSelect}){
         </div>
         <div style={{fontSize:11,color:"#AAA",lineHeight:1.5,marginBottom:6}}>{cls.desc}</div>
         <div style={{fontSize:10,color:cls.color,background:`${cls.color}18`,borderRadius:6,padding:"4px 8px",display:"inline-block"}}>🎯 {cls.bonus}</div>
+        {previewing&&previewing!==current&&(
+          <button onClick={()=>{onSelect(previewing);setPreviewing(null);}}
+            style={{width:"100%",marginTop:10,padding:"10px 0",background:`${cls.color}`,border:"none",borderRadius:9,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            ✓ ELEGIR {cls.name.toUpperCase()}
+          </button>
+        )}
       </div>
 
       {/* Grid selector */}
       <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,width:"100%",maxWidth:340,marginBottom:20}}>
         {CLASSES.map(c=>{
           const isSelected=current===c.id;
+          const isPreviewing=previewing===c.id;
           return(
             <button key={c.id}
-              onMouseEnter={()=>setHovered(c.id)} onMouseLeave={()=>setHovered(null)}
-              onClick={()=>onSelect(c.id)}
-              style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected?`0 0 14px ${c.color}44`:"none"}}>
+              onMouseEnter={()=>!isMobile()&&setHovered(c.id)}
+              onMouseLeave={()=>!isMobile()&&setHovered(null)}
+              onClick={()=>handleTap(c.id)}
+              style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected||isPreviewing?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
               <span style={{fontSize:22}}>{c.icon}</span>
-              <div style={{fontSize:10,fontWeight:700,color:isSelected?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
+              <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
+              {isPreviewing&&<div style={{fontSize:8,color:c.color,letterSpacing:1}}>👆 TOCA</div>}
             </button>
           );
         })}
