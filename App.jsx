@@ -1096,14 +1096,21 @@ function ProgramasTab({userList, flash}){
 }
 
 function AdminUserPhoto({email, rank}){
-  const [photo,setPhoto]=useState(()=>localStorage.getItem(`rku_photo_${email}`)||null);
+  const [photo,setPhoto]=useState(null);
   useEffect(()=>{
-    if(!photo){
-      const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
-      fbGet(`photos/${key}`).then(p=>{
-        if(p){localStorage.setItem(`rku_photo_${email}`,p);setPhoto(p);}
-      }).catch(()=>{});
-    }
+    // Always try Firebase first
+    const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    fbGet(`photos/${key}`).then(p=>{
+      if(p) setPhoto(p);
+      else {
+        // fallback to localStorage
+        const local=localStorage.getItem(`rku_photo_${email}`);
+        if(local) setPhoto(local);
+      }
+    }).catch(()=>{
+      const local=localStorage.getItem(`rku_photo_${email}`);
+      if(local) setPhoto(local);
+    });
   },[email]);
   return photo
     ?<img src={photo} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
@@ -2198,32 +2205,37 @@ function RankUpApp({user,onLogout}){
   const level=getLevel(totalXp),xpInLvl=getXpInLevel(totalXp),ri=getRank(level);
 
   useEffect(()=>{
-    const fresh=getUserData(user.email)||{};
-    const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
-    setRoutines(cleanRoutines);
-    if(fresh.assignedProgram){
-      let changed=false;
-      fresh.assignedProgram.phases?.forEach(p=>{
-        if(p.mantra?.includes("90 días")){p.mantra=p.mantra.replace(/90 días/g,"el futuro");changed=true;}
-      });
-      if(changed) saveUserData(user.email,fresh);
-      setAssignedProgram(fresh.assignedProgram);
-    }
-    // 🎂 Birthday coins check
-    const u=getUsers()[user.email]||{};
-    if(u.birthdate){
-      const bd=new Date(u.birthdate);
-      const today=new Date();
-      const isBirthday=bd.getMonth()===today.getMonth()&&bd.getDate()===today.getDate();
-      const lastBirthdayGift=localStorage.getItem(`rku_bday_${user.email}`);
-      const thisYear=today.getFullYear().toString();
-      if(isBirthday&&lastBirthdayGift!==thisYear){
-        const BIRTHDAY_COINS=500;
-        setCoins(c=>c+BIRTHDAY_COINS);
-        localStorage.setItem(`rku_bday_${user.email}`,thisYear);
-        setTimeout(()=>setCoinToast(`🎂 ¡Feliz cumpleaños! +${BIRTHDAY_COINS} monedas de regalo`),800);
+    const loadData=async()=>{
+      // Sync from Firebase first to get latest data
+      await syncFromFirebase(user.email).catch(()=>{});
+      const fresh=getUserData(user.email)||{};
+      const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
+      setRoutines(cleanRoutines);
+      if(fresh.assignedProgram){
+        let changed=false;
+        fresh.assignedProgram.phases?.forEach(p=>{
+          if(p.mantra?.includes("90 días")){p.mantra=p.mantra.replace(/90 días/g,"el futuro");changed=true;}
+        });
+        if(changed) saveUserData(user.email,fresh);
+        setAssignedProgram(fresh.assignedProgram);
       }
-    }
+      // 🎂 Birthday coins check
+      const u=getUsers()[user.email]||{};
+      if(u.birthdate){
+        const bd=new Date(u.birthdate);
+        const today=new Date();
+        const isBirthday=bd.getMonth()===today.getMonth()&&bd.getDate()===today.getDate();
+        const lastBirthdayGift=localStorage.getItem(`rku_bday_${user.email}`);
+        const thisYear=today.getFullYear().toString();
+        if(isBirthday&&lastBirthdayGift!==thisYear){
+          const BIRTHDAY_COINS=500;
+          setCoins(c=>c+BIRTHDAY_COINS);
+          localStorage.setItem(`rku_bday_${user.email}`,thisYear);
+          setTimeout(()=>setCoinToast(`🎂 ¡Feliz cumpleaños! +${BIRTHDAY_COINS} monedas de regalo`),800);
+        }
+      }
+    };
+    loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
 
