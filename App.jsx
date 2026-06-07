@@ -31,6 +31,7 @@ const syncUsersFromFirebase = async () => {
   return users || {};
 };
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
+const RANKS = [
   { rank:"E", title:"Novato",  minLevel:1,  maxLevel:9,  color:"#9CA3AF", glow:"#6B7280" },
   { rank:"D", title:"Regular", minLevel:10, maxLevel:19, color:"#60A5FA", glow:"#3B82F6" },
   { rank:"C", title:"Élite",         minLevel:20, maxLevel:29, color:"#34D399", glow:"#10B981" },
