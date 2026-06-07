@@ -386,9 +386,14 @@ function LoginScreen({onLogin}){
     if(age<10||age>99) return err("Edad inválida");
     const users=getUsers(), key=email.toLowerCase().trim();
     users[key]={name:name.trim(),password:hashPw(password),createdAt:Date.now(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0};
-    await saveUsers(users);
+    // Save locally first (instant), then Firebase in background
+    localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.removeItem(`rku_data_${key}`);
-    await saveUserData(key,{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+    const initData={totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
+    // Firebase in background - don't await
+    saveUsers(users).catch(()=>{});
+    saveUserData(key, initData).catch(()=>{});
     setSession(key); onLogin(key,name.trim(),false);
   };
 
