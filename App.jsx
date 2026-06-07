@@ -8,7 +8,13 @@ const getUsers = () => {
 };
 const saveUsers = async (users) => {
   localStorage.setItem("rku_users", JSON.stringify(users));
-  await fbSet("users", users);
+  // Convert to array for Firebase (email keys can have invalid chars)
+  const safeUsers = {};
+  Object.entries(users).forEach(([email, data]) => {
+    const key = email.replace(/\./g,"_").replace(/@/g,"_at_").replace(/[#$\[\]]/g,"_");
+    safeUsers[key] = {...data, email};
+  });
+  await fbSet("users", safeUsers).catch(()=>{});
 };
 const getUserData = (email) => {
   try { return JSON.parse(localStorage.getItem(`rku_data_${email}`)||"null"); } catch { return null; }
@@ -26,9 +32,17 @@ const syncFromFirebase = async (email) => {
   return { users, userData };
 };
 const syncUsersFromFirebase = async () => {
-  const users = await fbGet("users");
-  if(users) localStorage.setItem("rku_users", JSON.stringify(users));
-  return users || {};
+  const safeUsers = await fbGet("users");
+  if(safeUsers){
+    // Convert back from safe keys to email-keyed object
+    const users = {};
+    Object.values(safeUsers).forEach(u => {
+      if(u.email) users[u.email] = u;
+    });
+    localStorage.setItem("rku_users", JSON.stringify(users));
+    return users;
+  }
+  return getUsers();
 };
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const RANKS = [
