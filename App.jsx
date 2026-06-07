@@ -841,9 +841,13 @@ function MiniChart({data,color}){
 // ─── ADMIN PANEL ──────────────────────────────────────────────────────────────
 function ProgramasTab({userList, flash}){
   const getCustomPrograms=()=>{try{return JSON.parse(localStorage.getItem("rku_admin_programs")||"[]");}catch{return[];}};
-  const saveCustomPrograms=p=>localStorage.setItem("rku_admin_programs",JSON.stringify(p));
+  const saveCustomPrograms=p=>{localStorage.setItem("rku_admin_programs",JSON.stringify(p));fbSet("adminPrograms",p).catch(()=>{});};
   const [programs,setPrograms]=useState(()=>getCustomPrograms());
   const saveProgs=p=>{setPrograms(p);saveCustomPrograms(p);};
+
+  useEffect(()=>{
+    fbGet("adminPrograms").then(p=>{if(p&&p.length>0){localStorage.setItem("rku_admin_programs",JSON.stringify(p));setPrograms(p);}}).catch(()=>{});
+  },[]);
   const allPrograms=[...PROGRAM_TEMPLATES,...programs];
   const [editProg,setEditProg]=useState(null);
   const [editPhaseIdx,setEditPhaseIdx]=useState(null);
@@ -1184,9 +1188,16 @@ function AdminPanel({onLogout}){
 
   // ── Admin routines state ──
   const getAdminRoutines=()=>{try{return JSON.parse(localStorage.getItem("rku_admin_routines")||"[]");}catch{return[];}};
-  const saveAdminRoutines=r=>localStorage.setItem("rku_admin_routines",JSON.stringify(r));
+  const saveAdminRoutines=r=>{localStorage.setItem("rku_admin_routines",JSON.stringify(r));fbSet("adminRoutines",r).catch(()=>{});};
   const [adminRoutines,setAdminRoutinesState]=useState(getAdminRoutines());
   const saveAR=r=>{setAdminRoutinesState(r);saveAdminRoutines(r);};
+
+  // Sync admin routines and diets from Firebase on mount
+  useEffect(()=>{
+    fbGet("adminRoutines").then(r=>{if(r&&r.length>0){localStorage.setItem("rku_admin_routines",JSON.stringify(r));setAdminRoutinesState(r);}}).catch(()=>{});
+    fbGet("adminDiets").then(d=>{if(d&&d.length>0){localStorage.setItem("rku_admin_diets",JSON.stringify(d));setAdminDietsState(d);}}).catch(()=>{});
+    syncUsersFromFirebase().then(u=>{if(u)setAllUsers(u);}).catch(()=>{});
+  },[]);
 
   const [showRoutineBuilder,setShowRoutineBuilder]=useState(false);
   const [editingRoutine,setEditingRoutine]=useState(null);
@@ -1231,7 +1242,7 @@ function AdminPanel({onLogout}){
 
   // ── Admin diets state ──────────────────────────────────────────────────────
   const getAdminDiets=()=>{try{return JSON.parse(localStorage.getItem("rku_admin_diets")||"[]");}catch{return[];}};
-  const saveAdminDiets=d=>localStorage.setItem("rku_admin_diets",JSON.stringify(d));
+  const saveAdminDiets=d=>{localStorage.setItem("rku_admin_diets",JSON.stringify(d));fbSet("adminDiets",d).catch(()=>{});};
   const [adminDiets,setAdminDietsState]=useState(getAdminDiets());
   const saveAD=d=>{setAdminDietsState(d);saveAdminDiets(d);};
 
