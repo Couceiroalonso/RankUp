@@ -1154,11 +1154,21 @@ function AdminPanel({onLogout}){
   };
 
   const deleteUser=(email)=>{
+    // Remove from localStorage
     const users=getUsers();
     delete users[email];
-    saveUsers(users);
+    localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.removeItem(`rku_data_${email}`);
+    // Remove from Firebase
+    const safeKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    fbSet(`users/${safeKey}`,null).catch(()=>{});
+    fbSet(`userData/${safeKey}`,null).catch(()=>{});
+    fbSet(`photos/${safeKey}`,null).catch(()=>{});
+    // Update local state
+    setAllUsers(prev=>{const n={...prev};delete n[email];return n;});
     setConfirmDel(null);
+    setSelUser(null);
+    setEditData(null);
     flash("🗑️ Usuario eliminado");
   };
 
