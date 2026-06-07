@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { fbSet, fbGet } from "./firebase.js";
+import { fbSet, fbGet } from "./Firebase.js";
 
 // ─── FIREBASE CONFIG ─────────────────────────────────────────────────────────
 
