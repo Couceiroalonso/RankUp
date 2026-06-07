@@ -1293,14 +1293,15 @@ function AdminPanel({onLogout}){
       <div style={{minHeight:"100dvh",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",padding:"0 0 40px"}}>
         <style>{CSS}</style>
         {/* Header */}
-        <div style={{background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"16px 16px 14px",borderBottom:"1px solid #A78BFA33",display:"flex",alignItems:"center",gap:12,position:"sticky",top:0,zIndex:100}}>
-          <button onClick={()=>{setSelUser(null);setEditData(null);}} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"8px 14px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+        <div style={{background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"14px 16px",borderBottom:"1px solid #A78BFA33",display:"flex",alignItems:"center",gap:14,position:"sticky",top:0,zIndex:100}}>
+          <button onClick={()=>{setSelUser(null);setEditData(null);}} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"8px 14px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>← VOLVER</button>
           <div style={{width:56,height:56,borderRadius:14,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",boxShadow:`0 0 16px ${ri.color}44`}}>
             <AdminUserPhoto email={selUser} rank={ri.rank}/>
           </div>
           <div>
-            <div style={{fontSize:9,color:"#444",letterSpacing:3}}>EDITANDO JUGADOR</div>
-            <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{uInfo?.name}</div>
+            <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:2}}>EDITANDO JUGADOR</div>
+            <div style={{fontSize:17,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
+            <div style={{fontSize:10,color:ri.color,letterSpacing:1,marginTop:2}}>[{ri.rank}] {ri.title} · Lv.{level}</div>
           </div>
         </div>
         <div style={{padding:16}}>
