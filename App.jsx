@@ -379,17 +379,16 @@ function LoginScreen({onLogin}){
     setError(""); setStep(2);
   };
 
-  const doRegister=()=>{
+  const doRegister=async()=>{
     if(!sex) return err("Selecciona tu sexo");
     if(!birthdate) return err("Selecciona tu fecha de nacimiento");
     const age=calcAge(birthdate);
     if(age<10||age>99) return err("Edad inválida");
     const users=getUsers(), key=email.toLowerCase().trim();
     users[key]={name:name.trim(),password:hashPw(password),createdAt:Date.now(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0};
-    saveUsers(users);
-    // Guarantee completely clean slate — remove any existing data for this email
+    await saveUsers(users);
     localStorage.removeItem(`rku_data_${key}`);
-    saveUserData(key,{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+    await saveUserData(key,{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
     setSession(key); onLogin(key,name.trim(),false);
   };
 
