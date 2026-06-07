@@ -286,13 +286,9 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const ADMIN_PASSWORD=hashPw("RankUp2024!");
 
 // ─── AUTH HELPERS ─────────────────────────────────────────────────────────────
-const getUsers=()=>{try{return JSON.parse(localStorage.getItem("rku_users")||"{}");}catch{return {};}};
-const saveUsers=u=>localStorage.setItem("rku_users",JSON.stringify(u));
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const getUserData=email=>{try{return JSON.parse(localStorage.getItem(`rku_data_${email}`)||"null");}catch{return null;}};
-const saveUserData=(email,data)=>localStorage.setItem(`rku_data_${email}`,JSON.stringify(data));
 const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
