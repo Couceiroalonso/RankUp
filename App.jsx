@@ -2452,7 +2452,7 @@ function RankUpApp({user,onLogout}){
   const [redeemed,setRedeemed]=useState(saved.redeemedRewards||[]);
   const [dc,setDC]=useState(saved.dungeonCoins||{});
   const [routines,setRoutines]=useState([]);
-  const [assignedDiets]=useState(saved.assignedDiets||[]);
+  const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
   const [showClassModal,setShowClassModal]=useState(!saved.playerClass);
@@ -2480,6 +2480,17 @@ function RankUpApp({user,onLogout}){
       // Sync from Firebase first to get latest data
       await syncFromFirebase(user.email).catch(()=>{});
       const fresh=getUserData(user.email)||{};
+      // Load ALL data from Firebase into state
+      if(fresh.totalXp>0) setTotalXp(fresh.totalXp);
+      if(fresh.coins>0) setCoins(fresh.coins);
+      if(fresh.checked&&Object.keys(fresh.checked).length>0) setChecked(fresh.checked);
+      if(fresh.weights&&Object.keys(fresh.weights).length>0) setWeights(fresh.weights);
+      if(fresh.personalRecords&&Object.keys(fresh.personalRecords).length>0) setPR(fresh.personalRecords);
+      if(fresh.earnedAchs?.length>0) setEarned(fresh.earnedAchs);
+      if(fresh.redeemedRewards?.length>0) setRedeemed(fresh.redeemedRewards);
+      if(fresh.dungeonCoins&&Object.keys(fresh.dungeonCoins).length>0) setDC(fresh.dungeonCoins);
+      if(fresh.playerClass) setPlayerClass(fresh.playerClass);
+      if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
       if(cleanRoutines.length>0) setRoutines(cleanRoutines);
       if(fresh.assignedProgram){
@@ -2490,7 +2501,6 @@ function RankUpApp({user,onLogout}){
         if(changed) saveUserData(user.email,fresh);
         setAssignedProgram(fresh.assignedProgram);
       }
-      if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Always mark as loaded — safe to auto-save now
       dataLoaded.current = true;
       // 🎂 Birthday coins check
