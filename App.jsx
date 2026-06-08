@@ -1292,14 +1292,6 @@ function AdminPanel({onLogout}){
     flash(`⚡ +${amt} XP añadidos`);
   };
 
-  const addCoinsAdmin=(email,amt)=>{
-    const data=getUserData(email)||defaultData();
-    data.coins=(data.coins||0)+amt;
-    saveUserData(email,data);
-    if(selUser===email) setEditData({...editData,coins:data.coins});
-    flash(`🪙 +${amt} monedas añadidas`);
-  };
-
   const TABS_ADMIN=[{id:"usuarios",l:"👥 Usuarios"},{id:"rutinas",l:"🛠️ Rutinas"},{id:"dietas",l:"🥗 Dietas"},{id:"programas",l:"📋 Programas"},{id:"stats",l:"📊 Stats"},{id:"ranking",l:"🏅 Ranking"}];
 
   // ── Admin routines state ──
