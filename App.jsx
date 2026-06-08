@@ -285,6 +285,73 @@ const EXERCISE_DB = [
   {id:"e164",name:"Pec Deck Inverso",            muscle:["hombros","espalda"],equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Apertura inversa en máquina. Deltoides posterior y romboides."},
   {id:"e165",name:"Smith Machine Sentadilla",    muscle:["piernas","gluteos"],equip:"Máquina",   level:"Principiante", xpBase:45, desc:"Sentadilla guiada en Smith. Segura para aprender el patrón."},
   {id:"e166",name:"Smith Machine Press Banca",   muscle:["pecho","triceps"],  equip:"Máquina",   level:"Principiante", xpBase:42, desc:"Press de banca en Smith Machine. Control total del movimiento."},
+
+  // ── DEL LIBRO: PECTORAL ──────────────────────────────────────────────────────
+  {id:"e167",name:"Press Banca Declinado Mancuernas", muscle:["pecho"],       equip:"Mancuernas",level:"Intermedio",   xpBase:40, desc:"Pecho inferior con mancuernas. Más rango y rotación que con barra declinado."},
+  {id:"e168",name:"Pull-Over con Barra",          muscle:["pecho","espalda"], equip:"Barra",     level:"Intermedio",   xpBase:42, desc:"Pull-over con barra en banco. Estiramiento profundo de pecho y dorsal."},
+  {id:"e169",name:"Cruce de Poleas Alto",         muscle:["pecho"],           equip:"Polea",     level:"Principiante", xpBase:35, desc:"Cable crossover desde polea alta. Pecho inferior con tensión constante."},
+  {id:"e170",name:"Cruce de Poleas Bajo",         muscle:["pecho"],           equip:"Polea",     level:"Principiante", xpBase:35, desc:"Cable crossover desde polea baja. Activa la parte superior del pecho."},
+  {id:"e171",name:"Contractor Pectoral",          muscle:["pecho"],           equip:"Máquina",   level:"Principiante", xpBase:33, desc:"Pec-Deck. Aislamiento completo de pecho con movimiento de apertura y cierre."},
+
+  // ── DEL LIBRO: DORSAL ────────────────────────────────────────────────────────
+  {id:"e172",name:"Jalón Tras Nuca",              muscle:["espalda"],         equip:"Polea",     level:"Intermedio",   xpBase:42, desc:"Jalón llevando la barra detrás de la cabeza. Mayor activación del trapecio medio."},
+  {id:"e173",name:"Remo en Punta",                muscle:["espalda","antebrazos"],equip:"Barra", level:"Intermedio",   xpBase:46, desc:"T-Bar Row libre. Barra anclada en esquina, excelente para el grosor dorsal."},
+  {id:"e174",name:"Remo en Polea Alta",           muscle:["espalda","biceps"],equip:"Polea",     level:"Principiante", xpBase:40, desc:"Remo tirando desde polea alta. Trabaja dorsal y romboides con ángulo diferente."},
+  {id:"e175",name:"Jalón Sentado en Suelo",       muscle:["espalda","biceps"],equip:"Polea",     level:"Principiante", xpBase:40, desc:"Jalón en polea baja sentado en el suelo. Recorrido completo para el dorsal."},
+  {id:"e176",name:"Remo en Multipower",           muscle:["espalda"],         equip:"Máquina",   level:"Principiante", xpBase:44, desc:"Remo en Smith Machine. Guiado y seguro, ideal para trabajar la espalda media."},
+
+  // ── DEL LIBRO: HOMBROS ───────────────────────────────────────────────────────
+  {id:"e177",name:"Press Militar Tras Nuca",      muscle:["hombros","espalda"],equip:"Barra",    level:"Avanzado",     xpBase:52, desc:"Press detrás de la cabeza. Mayor activación del deltoides posterior y trapecio."},
+  {id:"e178",name:"Press Arnold Sentado",         muscle:["hombros"],         equip:"Mancuernas",level:"Intermedio",   xpBase:48, desc:"Press Arnold clásico sentado. Giro de supinación a pronación activa más fibras."},
+  {id:"e179",name:"Elevaciones Laterales Tumbado",muscle:["hombros"],         equip:"Mancuernas",level:"Principiante", xpBase:30, desc:"Abducción lateral tumbado en banco. Elimina el impulso y aísla el deltoides."},
+  {id:"e180",name:"Pájaros Sentado",              muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante",xpBase:28, desc:"Elevaciones posteriores sentado con tronco inclinado. Deltoides posterior y romboides."},
+  {id:"e181",name:"Remo al Cuello Mancuernas",   muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Upright row con mancuernas. Agarre más natural y menor estrés en muñecas que con barra."},
+  {id:"e182",name:"Pájaros en Polea",             muscle:["hombros","espalda"],equip:"Polea",    level:"Principiante", xpBase:30, desc:"Elevaciones posteriores en polea baja a una mano. Tensión constante en deltoides posterior."},
+  {id:"e183",name:"Press Militar en Multipower",  muscle:["hombros"],         equip:"Máquina",   level:"Principiante", xpBase:50, desc:"Press militar en Smith Machine. Movimiento guiado, bueno para aprender el patrón."},
+  {id:"e184",name:"Rotaciones Externas Hombro",   muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante",xpBase:20, desc:"Rotación externa tumbado. Ejercicio de salud para el manguito rotador."},
+  {id:"e185",name:"Rotaciones Internas Hombro",   muscle:["hombros"],         equip:"Mancuernas",level:"Principiante", xpBase:20, desc:"Rotación interna tumbado. Fortalece el subescapular y protege el hombro."},
+
+  // ── DEL LIBRO: BÍCEPS ────────────────────────────────────────────────────────
+  {id:"e186",name:"Curl con Barra Z",             muscle:["biceps","antebrazos"],equip:"Barra",  level:"Principiante", xpBase:36, desc:"Curl con barra EZ. Posición de muñeca más natural que con barra recta."},
+  {id:"e187",name:"Curl Tumbado",                 muscle:["biceps"],           equip:"Barra",    level:"Intermedio",   xpBase:35, desc:"Curl con barra o mancuernas tumbado en banco. Elimina completamente el balanceo."},
+  {id:"e188",name:"Curl en Polea Alta",           muscle:["biceps"],           equip:"Polea",    level:"Intermedio",   xpBase:35, desc:"High cable curl a una mano. Tensión en la posición contraída del bíceps."},
+  {id:"e189",name:"Curl Scott con Mancuerna",     muscle:["biceps"],           equip:"Mancuernas",level:"Intermedio",  xpBase:38, desc:"Predicador unilateral con mancuerna. Mayor rango y control que con barra."},
+
+  // ── DEL LIBRO: TRÍCEPS ───────────────────────────────────────────────────────
+  {id:"e190",name:"Press Francés con Barra Z",    muscle:["triceps"],          equip:"Barra",    level:"Intermedio",   xpBase:40, desc:"Skull crusher con barra EZ. Menos estrés en muñecas que con barra recta."},
+  {id:"e191",name:"Extensión Polea Cuerda Alta",  muscle:["triceps"],          equip:"Polea",    level:"Principiante", xpBase:33, desc:"Push-down con cuerda. La separación final activa las tres cabezas del tríceps."},
+  {id:"e192",name:"Extensión Polea Invertida",    muscle:["triceps"],          equip:"Polea",    level:"Principiante", xpBase:30, desc:"Push-down con agarre supino. Mayor activación de la cabeza larga del tríceps."},
+  {id:"e193",name:"Press Francés en Polea",       muscle:["triceps"],          equip:"Polea",    level:"Intermedio",   xpBase:38, desc:"Lying triceps extension en polea baja. Tensión constante durante todo el movimiento."},
+  {id:"e194",name:"Patadas de Tríceps con Giro",  muscle:["triceps"],          equip:"Mancuernas",level:"Principiante",xpBase:29, desc:"Kickback con giro de muñeca. Activa la porción lateral del tríceps con supinación final."},
+
+  // ── DEL LIBRO: ANTEBRAZOS ────────────────────────────────────────────────────
+  {id:"e195",name:"Flexiones de Muñeca Sentado",  muscle:["antebrazos"],       equip:"Barra",    level:"Principiante", xpBase:24, desc:"Wrist curl con barra sentado. Flexores del antebrazo con apoyo en muslos."},
+  {id:"e196",name:"Enrollamiento de Cuerda",      muscle:["antebrazos"],       equip:"Barra",    level:"Principiante", xpBase:28, desc:"Wrist roller. Enrollar y desenrollar peso colgado de una barra. Fuerza de agarre total."},
+  {id:"e197",name:"Curl en Pronación",            muscle:["antebrazos","biceps"],equip:"Barra",  level:"Principiante", xpBase:30, desc:"Reverse curl con barra. Trabaja el braquiorradial y extensores del antebrazo."},
+
+  // ── DEL LIBRO: PIERNAS ───────────────────────────────────────────────────────
+  {id:"e198",name:"Sentadilla Hack con Barra",    muscle:["piernas"],          equip:"Barra",    level:"Avanzado",     xpBase:60, desc:"Hack squat con barra detrás. Clásico de la halterofilia, gran activación de cuádriceps."},
+  {id:"e199",name:"Escalón con Mancuernas",       muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante",xpBase:36, desc:"Step-up con mancuernas. Funcional, trabaja cada pierna por separado."},
+  {id:"e200",name:"Zancadas Laterales",           muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante",xpBase:38, desc:"Lateral lunge. Aductores e isquiotibiales con movimiento en plano frontal."},
+  {id:"e201",name:"Peso Muerto sobre Escalón",    muscle:["piernas","espalda"],equip:"Barra",    level:"Avanzado",     xpBase:65, desc:"Deficit deadlift. Mayor rango de movimiento para isquios y glúteos."},
+  {id:"e202",name:"Elevación de Talones Burro",   muscle:["gemelos"],          equip:"Máquina",  level:"Principiante", xpBase:28, desc:"Donkey calf raise. Posición inclinada con mayor estiramiento del gastrocnemio."},
+  {id:"e203",name:"Patadas de Glúteo Tumbado",    muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante",xpBase:25, desc:"Donkey kick. Extensión de cadera tumbado en cuadrupedia. Glúteo mayor en aislamiento."},
+  {id:"e204",name:"Abducción de Cadera de Pie",   muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante",xpBase:22, desc:"Standing hip abduction. Elevación lateral de pierna de pie. Glúteo medio."},
+  {id:"e205",name:"Aducción de Cadera de Pie",    muscle:["piernas"],          equip:"Sin equipo",level:"Principiante",xpBase:22, desc:"Standing hip adduction. Cruce de pierna de pie. Aductores internos."},
+  {id:"e206",name:"Glúteos en Multipolea",        muscle:["gluteos"],          equip:"Polea",    level:"Principiante", xpBase:32, desc:"Cable kick-back. Extensión de cadera en polea baja de pie. Glúteo mayor."},
+  {id:"e207",name:"Extensiones de Cuádriceps Polea",muscle:["piernas"],        equip:"Polea",    level:"Principiante", xpBase:30, desc:"Leg extension en polea baja. Alternativa a la máquina con tensión dinámica."},
+
+  // ── DEL LIBRO: ABDOMEN Y LUMBAR ──────────────────────────────────────────────
+  {id:"e208",name:"Crunch Declinado",             muscle:["abdomen"],          equip:"Banco",    level:"Intermedio",   xpBase:30, desc:"Crunch en banco declinado. Mayor rango de movimiento para el recto abdominal."},
+  {id:"e209",name:"Elevación de Tronco Romana",   muscle:["abdomen"],          equip:"Máquina",  level:"Principiante", xpBase:28, desc:"Sit-up en silla romana. Trabajo completo del abdomen con anclaje de pies."},
+  {id:"e210",name:"Elevaciones de Piernas Colgado",muscle:["abdomen"],         equip:"Barra",    level:"Intermedio",   xpBase:40, desc:"Hanging leg raise. Abdomen bajo con el cuerpo suspendido en barra. Alta demanda de core."},
+  {id:"e211",name:"Rodillas al Pecho Colgado",    muscle:["abdomen"],          equip:"Barra",    level:"Principiante", xpBase:32, desc:"Hanging knee raise. Versión más accesible del colgado. Abdomen bajo e iliopsoas."},
+  {id:"e212",name:"Patada de Rana",               muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante",xpBase:28, desc:"Frog kick / jack-knife. Combina elevación de tronco y piernas simultáneamente."},
+  {id:"e213",name:"Giros con Barra",              muscle:["abdomen"],          equip:"Barra",    level:"Principiante", xpBase:22, desc:"Twists con barra sobre los hombros. Rotación de tronco para oblicuos."},
+  {id:"e214",name:"Inclinaciones Laterales",      muscle:["abdomen"],          equip:"Mancuernas",level:"Principiante",xpBase:24, desc:"Side bend con mancuerna. Flexión lateral de tronco para oblicuo externo."},
+  {id:"e215",name:"Crunch en Polea Alta",         muscle:["abdomen"],          equip:"Polea",    level:"Principiante", xpBase:30, desc:"Cable crunch de rodillas. Alta activación del recto abdominal con carga ajustable."},
+  {id:"e216",name:"Extensiones de Tronco Lumbar", muscle:["espalda"],          equip:"Máquina",  level:"Principiante", xpBase:30, desc:"Back extension en máquina lumbar. Fortalece erector espinal y multífidos."},
+  {id:"e217",name:"Peso Muerto Buenos Días",      muscle:["espalda","piernas"],equip:"Barra",    level:"Intermedio",   xpBase:48, desc:"Good morning con barra. Bisagra de cadera con barra alta. Lumbar e isquiotibiales."},
 ];
 
 
