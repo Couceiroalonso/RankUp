@@ -2303,6 +2303,139 @@ function ProfileFisico({userEmail}){
   );
 }
 
+function RankingTab({currentEmail, currentName}){
+  const [players,setPlayers]=useState([]);
+  const [cat,setCat]=useState("xp"); // xp | kg | ejercicios | clase
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    const load=async()=>{
+      setLoading(true);
+      try{
+        // Load all users and their data from Firebase
+        const users=await fbGet("users")||{};
+        const list=[];
+        for(const [key,u] of Object.entries(users)){
+          const email=u.email||key.replace(/_at_/g,"@").replace(/_/g,".");
+          const dataKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+          const data=await fbGet(`userData/${dataKey}`)||{};
+          const photo=await fbGet(`photos/${dataKey}`)||localStorage.getItem(`rku_photo_${email}`)||null;
+          // Calculate total kg lifted from all weights
+          const allWeights=data.weights||{};
+          const totalKg=Object.values(allWeights).reduce((sum,arr)=>{
+            if(!Array.isArray(arr)) return sum;
+            return sum+arr.reduce((s,w)=>s+(w.kg||0),0);
+          },0);
+          // Count completed exercises
+          const checked=data.checked||{};
+          const totalEx=Object.values(checked).filter(Boolean).length;
+          list.push({
+            email, name:u.name||"Jugador",
+            photo, playerClass:data.playerClass||null,
+            totalXp:data.totalXp||0,
+            totalKg:Math.round(totalKg),
+            totalEx,
+            level:getLevel(data.totalXp||0),
+          });
+        }
+        setPlayers(list);
+      }catch(e){console.log(e);}
+      setLoading(false);
+    };
+    load();
+  },[]);
+
+  const sorted=[...players].sort((a,b)=>{
+    if(cat==="xp") return b.totalXp-a.totalXp;
+    if(cat==="kg") return b.totalKg-a.totalKg;
+    if(cat==="ejercicios") return b.totalEx-a.totalEx;
+    if(cat==="clase"){
+      const order=["guerrero","explorador","titan","acrobata","espectro","alquimista"];
+      return (order.indexOf(a.playerClass)-order.indexOf(b.playerClass));
+    }
+    return 0;
+  });
+
+  const medals=["🥇","🥈","🥉"];
+  const cats=[
+    {id:"xp",label:"⚡ XP Total",val:p=>`${p.totalXp.toLocaleString()} XP`},
+    {id:"kg",label:"🏋️ Kilos",val:p=>`${p.totalKg.toLocaleString()} kg`},
+    {id:"ejercicios",label:"✅ Ejercicios",val:p=>`${p.totalEx} ejs`},
+    {id:"clase",label:"⚔️ Clase",val:p=>{const c=CLASSES.find(x=>x.id===p.playerClass);return c?`${c.icon} ${c.name}`:"Sin clase";}},
+  ];
+
+  return(
+    <div style={{paddingBottom:20}}>
+      <div style={{fontSize:9,color:"#F59E0B",letterSpacing:4,marginBottom:14}}>🏅 RANKING GLOBAL</div>
+
+      {/* Category selector */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:16}}>
+        {cats.map(c=>(
+          <button key={c.id} onClick={()=>setCat(c.id)}
+            style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
+              background:cat===c.id?"#F59E0B22":"#0D0D1A",
+              border:`1px solid ${cat===c.id?"#F59E0B":"#1E1E32"}`,
+              color:cat===c.id?"#F59E0B":"#555"}}>
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {loading?(
+        <div style={{textAlign:"center",padding:40,color:"#555"}}>
+          <div style={{fontSize:24,marginBottom:8}}>⏳</div>
+          <div style={{fontSize:12}}>Cargando ranking...</div>
+        </div>
+      ):(
+        <div>
+          {sorted.map((p,i)=>{
+            const isMe=p.email===currentEmail;
+            const ri=getRankInfo(p.level);
+            const cls=CLASSES.find(c=>c.id===p.playerClass);
+            const val=cats.find(c=>c.id===cat)?.val(p);
+            return(
+              <div key={p.email} style={{
+                display:"flex",alignItems:"center",gap:12,padding:"12px 14px",
+                marginBottom:8,borderRadius:12,
+                background:isMe?"#F59E0B14":"#0D0D1A",
+                border:`1px solid ${isMe?"#F59E0B66":i<3?"#F59E0B22":"#1E1E32"}`,
+                boxShadow:isMe?"0 0 16px #F59E0B22":i===0?"0 0 12px #F59E0B11":"none"
+              }}>
+                {/* Position */}
+                <div style={{width:28,textAlign:"center",fontSize:i<3?20:14,fontWeight:700,color:i<3?"#F59E0B":"#444",fontFamily:"'Cinzel',serif",flexShrink:0}}>
+                  {i<3?medals[i]:i+1}
+                </div>
+                {/* Avatar */}
+                <div style={{width:40,height:40,borderRadius:11,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif"}}>
+                  {p.photo?<img src={p.photo} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:cls?cls.icon:ri.rank}
+                </div>
+                {/* Info */}
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    <span style={{fontSize:14,fontWeight:700,color:isMe?"#F59E0B":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{p.name}</span>
+                    {isMe&&<span style={{fontSize:9,color:"#F59E0B",background:"#F59E0B22",padding:"1px 6px",borderRadius:10,letterSpacing:1}}>TÚ</span>}
+                  </div>
+                  <div style={{fontSize:10,color:"#555"}}>Lv.{p.level} · [{ri.rank}] {ri.title}{cls?` · ${cls.icon} ${cls.name}`:""}</div>
+                </div>
+                {/* Value */}
+                <div style={{fontSize:14,fontWeight:700,color:i===0?"#F59E0B":i===1?"#9CA3AF":i===2?"#CD7F32":ri.color,fontFamily:"'Rajdhani',sans-serif",textAlign:"right",flexShrink:0}}>
+                  {val}
+                </div>
+              </div>
+            );
+          })}
+          {sorted.length===0&&(
+            <div style={{textAlign:"center",padding:40,color:"#333"}}>
+              <div style={{fontSize:32,marginBottom:8}}>🏅</div>
+              <div style={{fontSize:14,color:"#444"}}>Aún no hay jugadores en el ranking</div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function RankUpApp({user,onLogout}){
   const saved=getUserData(user.email)||defaultData();
   const [totalXp,setTotalXp]=useState(saved.totalXp||0);
@@ -2445,7 +2578,7 @@ function RankUpApp({user,onLogout}){
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
   const xpPct=Math.min((xpInLvl/XP_PER_LEVEL)*100,100);
-  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"logros",l:"🏆"}];
+  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"}];
 
   return(
     <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
@@ -2614,6 +2747,7 @@ function RankUpApp({user,onLogout}){
             </>
           )}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines}/>}
+          {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
         </div>
       </div>
       <div style={{flexShrink:0,background:"#07070F",padding:"8px 16px 12px",borderTop:`1px solid ${ri.color}33`,textAlign:"center"}}>
