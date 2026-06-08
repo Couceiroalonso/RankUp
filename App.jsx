@@ -189,7 +189,104 @@ const EXERCISE_DB = [
   {id:"e088",name:"Agarre con Pinza",            muscle:["antebrazos"],   equip:"Disco",     level:"Principiante", xpBase:22, desc:"Fuerza de agarre con disco entre dedos."},
   {id:"e089",name:"Farmer's Walk",               muscle:["antebrazos","hombros"],equip:"Mancuernas",level:"Principiante",xpBase:35,desc:"Caminar con carga. Fuerza de agarre funcional."},
   {id:"e090",name:"Dead Hang",                   muscle:["antebrazos","espalda"],equip:"Barra",level:"Principiante",xpBase:30,desc:"Colgarse de la barra. Fuerza de agarre y descompresión."},
+
+  // ── PECHO EXTRA ──────────────────────────────────────────────────────────────
+  {id:"e091",name:"Press con Mancuernas Plano",  muscle:["pecho","triceps"],  equip:"Mancuernas",level:"Principiante", xpBase:42, desc:"Mayor rango de movimiento que con barra en banco plano."},
+  {id:"e092",name:"Press con Mancuernas Declinado",muscle:["pecho"],          equip:"Mancuernas",level:"Intermedio",   xpBase:40, desc:"Pecho inferior con más rango y estabilización."},
+  {id:"e093",name:"Aperturas en Máquina (Peck Deck)",muscle:["pecho"],        equip:"Máquina",   level:"Principiante", xpBase:32, desc:"Tensión constante en pecho. Ideal para congestión final."},
+  {id:"e094",name:"Cable Fly Bajo",              muscle:["pecho"],            equip:"Polea",     level:"Principiante", xpBase:34, desc:"Apertura en polea baja. Activa la parte superior del pecho."},
+  {id:"e095",name:"Flexiones Diamante",          muscle:["pecho","triceps"],  equip:"Sin equipo",level:"Intermedio",   xpBase:35, desc:"Manos juntas. Mayor activación de tríceps y pecho interno."},
+  {id:"e096",name:"Flexiones Inclinadas",        muscle:["pecho"],            equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Manos elevadas. Trabaja el pecho inferior sin equipo."},
+  {id:"e097",name:"Flexiones Declinadas",        muscle:["pecho","hombros"],  equip:"Sin equipo",level:"Principiante", xpBase:32, desc:"Pies elevados. Mayor activación de pecho superior y hombros."},
+  {id:"e098",name:"Press Banca con Agarre Neutro",muscle:["pecho","triceps"], equip:"Mancuernas",level:"Intermedio",   xpBase:43, desc:"Palmas enfrentadas. Menos estrés en muñecas y hombros."},
+
+  // ── ESPALDA EXTRA ────────────────────────────────────────────────────────────
+  {id:"e099",name:"Remo en Polea Baja",          muscle:["espalda","biceps"], equip:"Polea",     level:"Principiante", xpBase:42, desc:"Cable Row sentado. Tensión constante en dorsal y romboides."},
+  {id:"e100",name:"Remo en Máquina",             muscle:["espalda"],          equip:"Máquina",   level:"Principiante", xpBase:40, desc:"Remo en máquina. Seguro y efectivo para principiantes."},
+  {id:"e101",name:"Jalones con Agarre Neutro",   muscle:["espalda","biceps"], equip:"Polea",     level:"Principiante", xpBase:42, desc:"Agarre paralelo en jalón. Mayor activación del dorsal bajo."},
+  {id:"e102",name:"Jalones al Pecho Agarre Cerrado",muscle:["espalda"],       equip:"Polea",     level:"Principiante", xpBase:40, desc:"Jalón con agarre estrecho supino. Gran rango de recorrido."},
+  {id:"e103",name:"Encogimientos con Barra",     muscle:["espalda","hombros"],equip:"Barra",     level:"Principiante", xpBase:30, desc:"Shrugs. Trabaja el trapecio superior."},
+  {id:"e104",name:"Encogimientos con Mancuernas",muscle:["espalda","hombros"],equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Shrugs con mancuernas. Más rango que con barra."},
+  {id:"e105",name:"Hiperextensiones",            muscle:["espalda","gluteos"],equip:"Máquina",   level:"Principiante", xpBase:32, desc:"Back Extension. Lumbar y glúteos en banco romano."},
+  {id:"e106",name:"Superman",                    muscle:["espalda","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:20, desc:"Tumbado boca abajo. Fortalece la cadena posterior sin equipo."},
+  {id:"e107",name:"Remo con Barra Underhand",    muscle:["espalda","biceps"], equip:"Barra",     level:"Intermedio",   xpBase:47, desc:"Remo con agarre supino. Mayor activación de bíceps y dorsal bajo."},
+  {id:"e108",name:"Dominadas con Agarre Neutro", muscle:["espalda","biceps"], equip:"Barra",     level:"Intermedio",   xpBase:57, desc:"Chin-up neutro. Menos estrés en muñecas y hombros."},
+  {id:"e109",name:"Chin-Up",                     muscle:["espalda","biceps"], equip:"Barra",     level:"Intermedio",   xpBase:55, desc:"Dominadas con agarre supino. Mayor activación de bíceps."},
+
+  // ── HOMBROS EXTRA ────────────────────────────────────────────────────────────
+  {id:"e110",name:"Press Máquina Hombros",       muscle:["hombros"],          equip:"Máquina",   level:"Principiante", xpBase:40, desc:"Press en máquina. Ideal para aprender el patrón de empuje vertical."},
+  {id:"e111",name:"Elevaciones Laterales en Polea",muscle:["hombros"],        equip:"Polea",     level:"Principiante", xpBase:30, desc:"Tensión constante en deltoides lateral vs mancuernas."},
+  {id:"e112",name:"Press Z (Landmine Press)",    muscle:["hombros","pecho"],  equip:"Barra",     level:"Intermedio",   xpBase:48, desc:"Press en landmine. Plano de movimiento único, amigable con hombros."},
+  {id:"e113",name:"Lateral Raise Inclinado",     muscle:["hombros"],          equip:"Mancuernas",level:"Intermedio",   xpBase:32, desc:"Elevación lateral tumbado en banco inclinado. Máxima tensión en deltoides."},
+  {id:"e114",name:"Pájaros",                     muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Reverse Fly. Deltoides posterior e infraespinoso."},
+
+  // ── PIERNAS EXTRA ────────────────────────────────────────────────────────────
+  {id:"e115",name:"Sentadilla Sumo",             muscle:["piernas","gluteos"], equip:"Barra",    level:"Intermedio",   xpBase:55, desc:"Stance ancho. Mayor activación de aductores e isquiotibiales."},
+  {id:"e116",name:"Sentadilla Sissy",            muscle:["piernas"],           equip:"Sin equipo",level:"Avanzado",    xpBase:45, desc:"Sissy Squat. Aislamiento extremo del cuádriceps."},
+  {id:"e117",name:"Curl Femoral de Pie",         muscle:["piernas"],           equip:"Máquina",  level:"Principiante", xpBase:28, desc:"Isquiotibiales de pie en máquina. Posición más funcional."},
+  {id:"e118",name:"Zancadas con Barra",          muscle:["piernas","gluteos"], equip:"Barra",    level:"Intermedio",   xpBase:50, desc:"Lunges con barra. Mayor carga y demanda de estabilidad."},
+  {id:"e119",name:"Zancadas Estáticas",          muscle:["piernas","gluteos"], equip:"Mancuernas",level:"Principiante",xpBase:40, desc:"Split Squat. Posición fija para trabajar pierna por pierna."},
+  {id:"e120",name:"Leg Press Unilateral",        muscle:["piernas","gluteos"], equip:"Máquina",  level:"Intermedio",   xpBase:45, desc:"Prensa a una pierna. Corrección de desequilibrios musculares."},
+  {id:"e121",name:"Sentadilla en Cajón",         muscle:["piernas","gluteos"], equip:"Barra",    level:"Principiante", xpBase:48, desc:"Box Squat. Refuerza la fase excéntrica y mejora la profundidad."},
+  {id:"e122",name:"Good Morning",               muscle:["espalda","piernas"], equip:"Barra",    level:"Intermedio",   xpBase:50, desc:"Bisagra de cadera con barra. Isquiotibiales y lumbar bajo carga."},
+  {id:"e123",name:"Peso Muerto con Mancuernas", muscle:["piernas","espalda"], equip:"Mancuernas",level:"Principiante",xpBase:45, desc:"Deadlift con mancuernas. Ideal para aprender el patrón de bisagra."},
+  {id:"e124",name:"Abducción de Cadera con Goma",muscle:["gluteos"],          equip:"Goma",     level:"Principiante", xpBase:25, desc:"Glúteo medio con banda elástica. Activación y calentamiento."},
+  {id:"e125",name:"Elevación de Cadera Unilateral",muscle:["gluteos"],        equip:"Sin equipo",level:"Principiante",xpBase:30, desc:"Glute Bridge a una pierna. Activación de glúteo y core."},
+  {id:"e126",name:"Rumble Roller Hip Thrust",    muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:32, desc:"Hip Thrust en suelo sin equipo. Glúteo y femoral juntos."},
+
+  // ── BÍCEPS EXTRA ─────────────────────────────────────────────────────────────
+  {id:"e127",name:"Curl en Polea Baja",          muscle:["biceps"],           equip:"Polea",     level:"Principiante", xpBase:32, desc:"Tensión constante en bíceps desde la parte baja."},
+  {id:"e128",name:"Curl 21",                     muscle:["biceps"],           equip:"Barra",     level:"Intermedio",   xpBase:40, desc:"21 repeticiones parciales. Alta congestión y quema en bíceps."},
+  {id:"e129",name:"Curl Araña",                  muscle:["biceps"],           equip:"Banco",     level:"Intermedio",   xpBase:36, desc:"Spider Curl. Bíceps apoyados en banco inclinado, elimina el swing."},
+  {id:"e130",name:"Curl Zottman",                muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio", xpBase:35, desc:"Sube en supinación, baja en pronación. Trabaja toda la flexión del codo."},
+
+  // ── TRÍCEPS EXTRA ────────────────────────────────────────────────────────────
+  {id:"e131",name:"Press Francés con Mancuernas",muscle:["triceps"],          equip:"Mancuernas",level:"Intermedio",   xpBase:38, desc:"Skull Crusher con mancuernas. Más rango y control unilateral."},
+  {id:"e132",name:"Extensión Polea Cuerda Cabeza",muscle:["triceps"],         equip:"Polea",     level:"Principiante", xpBase:34, desc:"Extensión sobre cabeza en polea. Cabeza larga del tríceps."},
+  {id:"e133",name:"Fondos en Silla",             muscle:["triceps"],          equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Dips en silla. Tríceps y pecho inferior sin equipo."},
+  {id:"e134",name:"Kickback con Mancuerna",      muscle:["triceps"],          equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Extensión de tríceps hacia atrás. Aislamiento de cabeza larga."},
+  {id:"e135",name:"Kickback en Polea",           muscle:["triceps"],          equip:"Polea",     level:"Principiante", xpBase:29, desc:"Kickback con tensión constante de cable. Mejor que con mancuerna."},
+
+  // ── ABDOMEN EXTRA ────────────────────────────────────────────────────────────
+  {id:"e136",name:"Crunch Inverso",              muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Reverse Crunch. Abdomen bajo elevando caderas del suelo."},
+  {id:"e137",name:"Bicycle Crunch",              muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Rotación codo-rodilla. Recto y oblicuos juntos."},
+  {id:"e138",name:"Toe Touch",                   muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:22, desc:"Crunch con piernas en vertical. Abdomen superior."},
+  {id:"e139",name:"Mountain Climbers",           muscle:["abdomen","cardio"], equip:"Sin equipo",level:"Principiante", xpBase:35, desc:"Escalador. Core y cardio simultáneo. Ideal en circuitos."},
+  {id:"e140",name:"Hollow Body Hold",            muscle:["abdomen"],          equip:"Sin equipo",level:"Intermedio",   xpBase:30, desc:"Posición gimanástica. Core total bajo tensión isométrica."},
+  {id:"e141",name:"Dragon Flag",                 muscle:["abdomen"],          equip:"Banco",     level:"Avanzado",     xpBase:55, desc:"El ejercicio de core más difícil. Básico de la gimnasia."},
+  {id:"e142",name:"Pallof Press",                muscle:["abdomen"],          equip:"Polea",     level:"Principiante", xpBase:28, desc:"Anti-rotación en polea. Core estabilizador funcional."},
+  {id:"e143",name:"Crunch en Máquina",           muscle:["abdomen"],          equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Crunch con carga ajustable. Ideal para sobrecargar el abdomen."},
+
+  // ── CARDIO / FUNCIONAL EXTRA ─────────────────────────────────────────────────
+  {id:"e144",name:"Kettlebell Swing",            muscle:["cardio","gluteos","espalda"],equip:"Kettlebell",level:"Intermedio",xpBase:55,desc:"Swing de kettlebell. Explosión de cadera, cardio y cadena posterior."},
+  {id:"e145",name:"Box Jump",                    muscle:["piernas","cardio"], equip:"Sin equipo",level:"Intermedio",   xpBase:50, desc:"Salto al cajón. Potencia y explosividad de piernas."},
+  {id:"e146",name:"Jump Squat",                  muscle:["piernas","cardio"], equip:"Sin equipo",level:"Principiante", xpBase:40, desc:"Sentadilla con salto. Potencia y quema calórica alta."},
+  {id:"e147",name:"Thruster",                    muscle:["piernas","hombros","cardio"],equip:"Barra",level:"Avanzado",  xpBase:70, desc:"Sentadilla + Press Militar. Ejercicio total body de alta intensidad."},
+  {id:"e148",name:"Clean and Press",             muscle:["piernas","espalda","hombros"],equip:"Barra",level:"Avanzado", xpBase:75, desc:"Levantamiento olímpico simplificado. Explosión y fuerza completa."},
+  {id:"e149",name:"Battle Ropes",                muscle:["cardio","hombros"], equip:"Cuerdas",   level:"Intermedio",   xpBase:60, desc:"Ondas con cuerdas de batalla. Cardio y fuerza de hombros."},
+  {id:"e150",name:"Sled Push",                   muscle:["cardio","piernas"], equip:"Trineo",    level:"Intermedio",   xpBase:65, desc:"Empuje de trineo. Potencia de piernas y cardio metabólico."},
+  {id:"e151",name:"Farmer's Carry",              muscle:["antebrazos","hombros","cardio"],equip:"Mancuernas",level:"Principiante",xpBase:38,desc:"Marcha cargado. Fuerza de agarre, core y resistencia funcional."},
+  {id:"e152",name:"Wall Ball",                   muscle:["piernas","hombros","cardio"],equip:"Balón",level:"Principiante",xpBase:45,desc:"Lanzamiento de balón medicinal a pared. Potencia y cardio."},
+  {id:"e153",name:"Salto de Tijera (Jumping Jack)",muscle:["cardio"],         equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Cardio básico de calentamiento. Activa todo el cuerpo."},
+
+  // ── MOVILIDAD / STRETCHING ACTIVO ────────────────────────────────────────────
+  {id:"e154",name:"Hip Flexor Stretch",          muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:15, desc:"Estiramiento activo de flexor de cadera. Esencial post-entreno."},
+  {id:"e155",name:"Cat-Cow",                     muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Movilidad de columna. Ideal como calentamiento o cooldown."},
+  {id:"e156",name:"Pigeon Pose",                 muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:15, desc:"Apertura profunda de cadera. Libera tensión de glúteo y piriforme."},
+  {id:"e157",name:"Thoracic Rotation",           muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Rotación torácica. Movilidad de espalda alta, esencial en press."},
+  {id:"e158",name:"World's Greatest Stretch",    muscle:["piernas","espalda","hombros"],equip:"Sin equipo",level:"Principiante",xpBase:18,desc:"Estiramiento global. Cadera, torácica y hombros en un movimiento."},
+  {id:"e159",name:"Ankle Mobility Drill",        muscle:["gemelos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Movilidad de tobillo. Clave para profundidad en sentadilla."},
+
+  // ── MÁQUINAS ADICIONALES ─────────────────────────────────────────────────────
+  {id:"e160",name:"Aductores en Máquina",        muscle:["piernas"],          equip:"Máquina",   level:"Principiante", xpBase:25, desc:"Inner thigh machine. Trabaja aductores de la cadera."},
+  {id:"e161",name:"Hip Extension en Máquina",    muscle:["gluteos"],          equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Extensión de cadera en máquina. Activación directa del glúteo mayor."},
+  {id:"e162",name:"Chest Supported Row",         muscle:["espalda"],          equip:"Máquina",   level:"Principiante", xpBase:42, desc:"Remo con pecho apoyado. Sin trampa de inercia. Máximo aislamiento dorsal."},
+  {id:"e163",name:"Leg Curl Sentado",            muscle:["piernas"],          equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Curl de isquios sentado. Diferente ángulo que tumbado, más efectivo."},
+  {id:"e164",name:"Pec Deck Inverso",            muscle:["hombros","espalda"],equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Apertura inversa en máquina. Deltoides posterior y romboides."},
+  {id:"e165",name:"Smith Machine Sentadilla",    muscle:["piernas","gluteos"],equip:"Máquina",   level:"Principiante", xpBase:45, desc:"Sentadilla guiada en Smith. Segura para aprender el patrón."},
+  {id:"e166",name:"Smith Machine Press Banca",   muscle:["pecho","triceps"],  equip:"Máquina",   level:"Principiante", xpBase:42, desc:"Press de banca en Smith Machine. Control total del movimiento."},
 ];
+
 
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
 
@@ -1193,6 +1290,14 @@ function AdminPanel({onLogout}){
     saveUserData(email,data);
     if(selUser===email) setEditData({...editData,totalXp:data.totalXp});
     flash(`⚡ +${amt} XP añadidos`);
+  };
+
+  const addCoinsAdmin=(email,amt)=>{
+    const data=getUserData(email)||defaultData();
+    data.coins=(data.coins||0)+amt;
+    saveUserData(email,data);
+    if(selUser===email) setEditData({...editData,coins:data.coins});
+    flash(`🪙 +${amt} monedas añadidas`);
   };
 
   const TABS_ADMIN=[{id:"usuarios",l:"👥 Usuarios"},{id:"rutinas",l:"🛠️ Rutinas"},{id:"dietas",l:"🥗 Dietas"},{id:"programas",l:"📋 Programas"},{id:"stats",l:"📊 Stats"},{id:"ranking",l:"🏅 Ranking"}];
