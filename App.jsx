@@ -72,13 +72,66 @@ const MUSCLE_RANKS = [
 
 const CLASSES = [
   { id:"guerrero",   icon:"⚔️",  name:"Guerrero",    goal:"Masa muscular",        color:"#F87171", desc:"Forja músculo con hierro y voluntad. Fuerza e hipertrofia son tu camino.",     bonus:"XP x1.2 en ejercicios de fuerza" },
-  { id:"explorador", icon:"🏃",  name:"Explorador",  goal:"Pérdida de grasa",     color:"#34D399", desc:"Velocidad, resistencia y quema de calorías. El movimiento es tu arma.",        bonus:"XP x1.2 en cardio y circuitos"   },
+  { id:"explorador", icon:"🏃",  name:"Explorador",  goal:"Pérdida de grasa",     color:"#34D399", desc:"Velocidad, resistencia y quema de calorías. El movimiento es tu arma.",        bonus:"XP x1.3 en cardio y circuitos"   },
   { id:"titan",      icon:"🛡️",  name:"Titán",       goal:"Fuerza máxima",        color:"#FBBF24", desc:"Levantar lo que otros no pueden ni imaginar. Potencia pura y récords.",          bonus:"XP x1.5 al superar un récord"    },
-  { id:"acrobata",   icon:"🤸",  name:"Acróbata",    goal:"Movilidad y agilidad", color:"#60A5FA", desc:"Control total del cuerpo. Flexibilidad, equilibrio y movimiento funcional.",    bonus:"XP x1.2 en ejercicios de movilidad" },
-  { id:"espectro",   icon:"💀",  name:"Espectro",    goal:"Resistencia extrema",  color:"#A78BFA", desc:"Mente sobre materia. Entrenamientos al límite, zonas de dolor superadas.",      bonus:"XP x1.2 en ejercicios de resistencia" },
+  { id:"acrobata",   icon:"🤸",  name:"Acróbata",    goal:"Movilidad y agilidad", color:"#60A5FA", desc:"Control total del cuerpo. Flexibilidad, equilibrio y movimiento funcional.",    bonus:"XP x1.3 en ejercicios de movilidad" },
   { id:"alquimista", icon:"⚗️",  name:"Alquimista",  goal:"Recomposición corporal",color:"#F59E0B", desc:"La ciencia del cuerpo: ganar músculo y perder grasa al mismo tiempo.",          bonus:"XP x1.1 en todos los ejercicios" },
 ];
 
+
+// ─── CLASS XP MULTIPLIER ─────────────────────────────────────────────────────
+const MOBILITY_EXERCISES = new Set([
+  "Hip Flexor Stretch","Cat-Cow","Pigeon Pose","Thoracic Rotation","World's Greatest Stretch",
+  "Ankle Mobility Drill","Sentadilla de Movilidad","Apertura de Cadera en Suelo",
+  "Rotacion de Cadera de Pie","Estiramiento de Isquiotibiales","Estiramiento de Cuadriceps",
+  "Estiramiento de Gemelo","Estiramiento de Pectoral","Estiramiento de Dorsal",
+  "Estiramiento de Triceps","Estiramiento de Hombro Cruzado","Cobra","Child's Pose",
+  "Rotacion de Columna Tumbado","Movilidad de Muneca","Apertura Toracica en Banco",
+  "Inchworm","Leg Swing Frontal","Leg Swing Lateral","Shoulder Pass-Through","Foam Roller Espalda",
+  "Rotaciones Externas Hombro","Rotaciones Internas Hombro","Dead Bug","Hollow Body Hold",
+  "Pallof Press","World's Greatest Stretch","Ankle Mobility Drill"
+]);
+
+const STRENGTH_EXERCISES = new Set([
+  "Press Banca Plano","Press Banca Inclinado","Press Banca Declinado","Press Declinado",
+  "Press Inclinado Mancuernas","Press con Mancuernas Plano","Press con Mancuernas Declinado",
+  "Press Banca con Agarre Neutro","Press Cerrado","Smith Machine Press Banca",
+  "Peso Muerto","Peso Muerto Rumano","Peso Muerto Sumo","Peso Muerto con Mancuernas",
+  "Peso Muerto sobre Escalon","Peso Muerto Buenos Dias",
+  "Sentadilla con Barra","Sentadilla Bulgara","Front Squat","Sentadilla Hack con Barra",
+  "Sentadilla Sumo","Sentadilla en Cajon","Smith Machine Sentadilla",
+  "Press Militar Barra","Press Militar Tras Nuca","Press Militar en Multipower",
+  "Dominadas","Dominadas Lastradas","Dominadas con Agarre Neutro","Chin-Up",
+  "Remo con Barra","Remo en T","Remo en Punta","Remo con Barra Underhand",
+  "Hip Thrust con Barra","Hip Thrust Unilateral",
+  "Fondos en Paralelas","Press Frances","Press Frances con Barra Z","Press Frances con Mancuernas",
+  "Thruster","Clean and Press","Hack Squat","Prensa 45","Zancadas con Barra",
+  "Buenos Dias","Good Morning","Sentadilla Hack","Press Arnold","Press Arnold Sentado"
+]);
+
+const CARDIO_EXERCISES = new Set([
+  "HIIT en Cinta","Bici Estatica HIIT","Remo Ergometro","Burpees","Salto a la Comba",
+  "Cardio Zona 2","Saltos a la Comba","Kettlebell Swing","Box Jump","Jump Squat",
+  "Battle Ropes","Sled Push","Wall Ball","Mountain Climbers","Salto de Tijera (Jumping Jack)",
+  "Farmer's Carry","Farmer's Walk"
+]);
+
+const getClassMultiplier = (playerClass, exName, exXp, isRecord=false) => {
+  if(!playerClass) return 1;
+  const muscles = MUSCLE_MAP[exName] || [];
+  const isCardio = muscles.includes("cardio") || CARDIO_EXERCISES.has(exName);
+  const isMobility = MOBILITY_EXERCISES.has(exName) || exXp <= 18;
+  const isStrength = STRENGTH_EXERCISES.has(exName) || (!isCardio && !isMobility && exXp >= 40);
+
+  switch(playerClass){
+    case "guerrero":   return isStrength ? 1.2 : 1;
+    case "explorador": return isCardio   ? 1.3 : 1;
+    case "titan":      return isRecord   ? 1.5 : 1;
+    case "acrobata":   return isMobility ? 1.3 : 1;
+    case "alquimista": return 1.1;
+    default:           return 1;
+  }
+};
 
 const MUSCLE_DEFS = {
   pecho:      { label:"Pecho",      recov:48, side:"front" },
@@ -352,6 +405,28 @@ const EXERCISE_DB = [
   {id:"e215",name:"Crunch en Polea Alta",         muscle:["abdomen"],          equip:"Polea",    level:"Principiante", xpBase:30, desc:"Cable crunch de rodillas. Alta activación del recto abdominal con carga ajustable."},
   {id:"e216",name:"Extensiones de Tronco Lumbar", muscle:["espalda"],          equip:"Máquina",  level:"Principiante", xpBase:30, desc:"Back extension en máquina lumbar. Fortalece erector espinal y multífidos."},
   {id:"e217",name:"Peso Muerto Buenos Días",      muscle:["espalda","piernas"],equip:"Barra",    level:"Intermedio",   xpBase:48, desc:"Good morning con barra. Bisagra de cadera con barra alta. Lumbar e isquiotibiales."},
+
+  // ── MOVILIDAD Y CALENTAMIENTO ─────────────────────────────────────────────────
+  {id:"e218",name:"Sentadilla de Movilidad",      muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Squat to stand. Baja y mantén la posición para abrir cadera y movilizar tobillo."},
+  {id:"e219",name:"Apertura de Cadera en Suelo",  muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"90/90 hip stretch. Ambas rodillas a 90°. Movilidad interna y externa de cadera."},
+  {id:"e220",name:"Rotacion de Cadera de Pie",    muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Hip circle de pie. Circulos con la cadera para lubricar la articulacion coxofemoral."},
+  {id:"e221",name:"Estiramiento de Isquiotibiales",muscle:["piernas"],        equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Hamstring stretch. Tumbado o de pie, estiramiento activo de la cadena posterior."},
+  {id:"e222",name:"Estiramiento de Cuadriceps",   muscle:["piernas"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Quad stretch de pie. Talon al gluteo. Esencial post-entreno de piernas."},
+  {id:"e223",name:"Estiramiento de Gemelo",       muscle:["gemelos"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Calf stretch en pared. Gastrocnemio y soleo. Previene contracturas y lesiones."},
+  {id:"e224",name:"Estiramiento de Pectoral",     muscle:["pecho","hombros"],  equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Chest stretch en puerta. Abre el pecho tras press y ejercicios de empuje."},
+  {id:"e225",name:"Estiramiento de Dorsal",       muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Lat stretch colgado o con apoyo. Alarga el dorsal ancho despues de jalones y remos."},
+  {id:"e226",name:"Estiramiento de Triceps",      muscle:["triceps"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Triceps stretch sobre la cabeza. Brazo cruzado o una mano a la espalda."},
+  {id:"e227",name:"Estiramiento de Hombro Cruzado",muscle:["hombros"],        equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Cross-body shoulder stretch. Brazo cruzado al pecho. Deltoides posterior y manguito."},
+  {id:"e228",name:"Cobra",                        muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Cobra pose. Extension lumbar en suelo. Movilidad y descompresion de columna."},
+  {id:"e229",name:"Child's Pose",                 muscle:["espalda","hombros"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Postura del nino. Elongacion completa de columna y hombros. Ideal al final de sesion."},
+  {id:"e230",name:"Rotacion de Columna Tumbado",  muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Spinal twist tumbado. Rodillas al pecho y giro lateral. Libera tension lumbar."},
+  {id:"e231",name:"Movilidad de Muneca",          muscle:["antebrazos"],       equip:"Sin equipo",level:"Principiante", xpBase:8,  desc:"Circulos y extensiones de muneca. Clave antes de press y ejercicios de empuje."},
+  {id:"e232",name:"Apertura Toracica en Banco",   muscle:["espalda","pecho"],  equip:"Banco",     level:"Principiante", xpBase:12, desc:"Thoracic extension sobre banco. Zona dorsal apoyada, brazos abiertos. Mejora postura."},
+  {id:"e233",name:"Inchworm",                     muscle:["espalda","piernas","hombros"],equip:"Sin equipo",level:"Principiante",xpBase:18,desc:"Gusano. Caminar con las manos desde los pies. Movilidad global de cadena posterior."},
+  {id:"e234",name:"Leg Swing Frontal",            muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Pendulo frontal de pierna. Movilidad dinamica de cadera. Calentamiento pre-piernas."},
+  {id:"e235",name:"Leg Swing Lateral",            muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Pendulo lateral de pierna. Movilidad de abductores y aductores. Activa gluteo medio."},
+  {id:"e236",name:"Shoulder Pass-Through",        muscle:["hombros","espalda"],equip:"Barra",     level:"Principiante", xpBase:12, desc:"Palo detras de la espalda agarre ancho. Movilidad completa de hombro, previene lesiones."},
+  {id:"e237",name:"Foam Roller Espalda",          muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Rodillo de espuma en columna. Libera tension toracica y mejora la extension de espalda."},
 ];
 
 
@@ -2708,15 +2783,18 @@ function RankUpApp({user,onLogout}){
   },[checked,weights,pr,routines]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
-  const addXp=useCallback((amt,evt)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
+  const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
 
   const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins}
 
-  const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt)=>{
+  const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt,exName)=>{
     const was=!!checked[key];const nc={...checked,[key]:!was};setChecked(nc);
     if(!was){
-      addXp(xp,evt);
+      const mult=getClassMultiplier(playerClass,exName||"",xp);
+      const finalXp=Math.round(xp*mult);
+      const label=mult>1?`+${finalXp} XP ×${mult}`:null;
+      addXp(finalXp,evt,label);
       const phase=PHASES.find(p=>p.id===phaseId);const day=phase?.training[dayIdx];
       if(day){
         const ck=`${phaseId}_${dayIdx}`;
@@ -2749,7 +2827,7 @@ function RankUpApp({user,onLogout}){
     const isRec=kg>0&&kg>prevMax&&arr.length>0;
     setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg}]}));
     setWInputs(p=>({...p,[key]:""}));
-    if(isRec){setPR(p=>({...p,[key]:kg}));addXp(80,evt);}else addXp(15,evt);
+    if(isRec){setPR(p=>({...p,[key]:kg}));const recMult=getClassMultiplier(playerClass,"",80,true);const recXp=Math.round(80*recMult);addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);}else addXp(15,evt);
   },[weights,wInputs,addXp]);
 
   const deleteWeight=useCallback((key,idx)=>{
@@ -3122,7 +3200,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                             return(
                               <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C"}}>
                                 <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                                  <button onClick={()=>onToggleEx(key,ex.xp||35)}
+                                  <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name)}
                                     style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?c:"#2A2A44"}`,background:isDone?c:"transparent",boxShadow:isDone?`0 0 12px ${c}`:"none",transition:"all .2s"}}>
                                     {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                                   </button>
@@ -3212,7 +3290,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                     return(
                       <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                         <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
+                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,ex.name)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
                             {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                           </button>
                           <div style={{flex:1,minWidth:0}}>
