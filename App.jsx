@@ -1344,18 +1344,18 @@ function AdminPanel({onLogout}){
   };
 
   const addCoinsAdmin=(email,amt)=>{
-    const data=getUserData(email)||defaultData();
-    data.coins=(data.coins||0)+amt;
-    saveUserData(email,data);
-    if(selUser===email) setEditData({...editData,coins:data.coins});
+    const base=(selUser===email&&editData)?{...editData}:(getUserData(email)||defaultData());
+    base.coins=(base.coins||0)+amt;
+    saveUserData(email,base);
+    if(selUser===email) setEditData({...base});
     flash(`🪙 +${amt} monedas añadidas`);
   };
 
   const addXpAdmin=(email,amt)=>{
-    const data=getUserData(email)||defaultData();
-    data.totalXp=(data.totalXp||0)+amt;
-    saveUserData(email,data);
-    if(selUser===email) setEditData({...editData,totalXp:data.totalXp});
+    const base=(selUser===email&&editData)?{...editData}:(getUserData(email)||defaultData());
+    base.totalXp=(base.totalXp||0)+amt;
+    saveUserData(email,base);
+    if(selUser===email) setEditData({...base});
     flash(`⚡ +${amt} XP añadidos`);
   };
 
