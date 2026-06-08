@@ -1195,7 +1195,15 @@ function AdminPanel({onLogout}){
     flash(`⚡ +${amt} XP añadidos`);
   };
 
-  const TABS_ADMIN=[{id:"usuarios",l:"👥 Usuarios"},{id:"rutinas",l:"🛠️ Rutinas"},{id:"dietas",l:"🥗 Dietas"},{id:"programas",l:"📋 Programas"},{id:"stats",l:"📊 Stats"}];
+  const addCoinsAdmin=(email,amt)=>{
+    const data=getUserData(email)||defaultData();
+    data.coins=(data.coins||0)+amt;
+    saveUserData(email,data);
+    if(selUser===email) setEditData({...editData,coins:data.coins});
+    flash(`🪙 +${amt} monedas añadidas`);
+  };
+
+  const TABS_ADMIN=[{id:"usuarios",l:"👥 Usuarios"},{id:"rutinas",l:"🛠️ Rutinas"},{id:"dietas",l:"🥗 Dietas"},{id:"programas",l:"📋 Programas"},{id:"stats",l:"📊 Stats"},{id:"ranking",l:"🏅 Ranking"}];
 
   // ── Admin routines state ──
   const getAdminRoutines=()=>{try{return JSON.parse(localStorage.getItem("rku_admin_routines")||"[]");}catch{return[];}};
@@ -1997,6 +2005,10 @@ function AdminPanel({onLogout}){
           </div>
         )}
 
+        {tab==="ranking"&&(
+          <RankingTab currentEmail="admin@rankup.fit" currentName="Admin"/>
+        )}
+
         {tab==="usuarios"&&(
           <div>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
@@ -2576,13 +2588,26 @@ function RankUpApp({user,onLogout}){
   },[checked,dc,addXp,addCoins,weights]);
 
   const logWeight=useCallback((key,evt)=>{
-    const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<=0)return;
+    const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<0)return;
     const arr=weights[key]||[];const prevMax=arr.length>0?Math.max(...arr.map(w=>w.kg)):0;
-    const isRec=kg>prevMax&&arr.length>0;
+    const isRec=kg>0&&kg>prevMax&&arr.length>0;
     setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg}]}));
     setWInputs(p=>({...p,[key]:""}));
     if(isRec){setPR(p=>({...p,[key]:kg}));addXp(80,evt);}else addXp(15,evt);
   },[weights,wInputs,addXp]);
+
+  const deleteWeight=useCallback((key,idx)=>{
+    setWeights(p=>{
+      const arr=[...(p[key]||[])];
+      arr.splice(idx,1);
+      // Renumber sessions
+      const renumbered=arr.map((w,i)=>({...w,session:`S${i+1}`}));
+      // Recalculate PR
+      const newMax=renumbered.length>0?Math.max(...renumbered.map(w=>w.kg)):0;
+      setPR(pp=>({...pp,[key]:newMax||undefined}));
+      return {...p,[key]:renumbered};
+    });
+  },[]);
 
   const redeemReward=useCallback((reward)=>{
     if(coins<reward.cost)return;
@@ -2810,7 +2835,7 @@ function RankUpApp({user,onLogout}){
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines}/>
                     </>
                   );
                 })()}
@@ -2825,6 +2850,7 @@ function RankUpApp({user,onLogout}){
                   wInputs={wInputs}
                   onToggleEx={toggleEx}
                   onLogWeight={logWeight}
+                  onDeleteWeight={deleteWeight}
                   onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))}
                   openChart={openChart}
                   onToggleChart={k=>setOpenChart(openChart===k?null:k)}
@@ -2877,7 +2903,7 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onWInput,openChart,onToggleChart}){
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart}){
   const [openRt,setOpenRt]=useState(null);
   const [openRtSess,setOpenRtSess]=useState(null);
   return(
@@ -2966,7 +2992,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                       style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
                                   </div>
                                   {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
-                                  {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666"}}><span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}</span>)}</div>}
+                                  {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                                   {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={c}/>}
                                 </div>
                               </div>
@@ -2986,7 +3012,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onWInput,onToggleChart,extraRoutines=[]}){
+function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[]}){
   const [openRt,setOpenRt]=useState(null);
   const [openRtSess,setOpenRtSess]=useState(null);
   let lastWeek=null;
@@ -3054,7 +3080,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             {exW.length>0&&<button onClick={()=>onToggleChart(key)} style={{padding:"6px 12px",background:"transparent",border:`1px solid ${ph.color}44`,borderRadius:8,color:ph.color,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
                           </div>
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
-                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666"}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}</span>)}</div>}
+                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                           {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={ph.color}/>}
                         </div>
                       </div>
