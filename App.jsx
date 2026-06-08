@@ -2528,6 +2528,8 @@ function RankUpApp({user,onLogout}){
   const addXp=useCallback((amt,evt)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
 
+  const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins}
+
   const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt)=>{
     const was=!!checked[key];const nc={...checked,[key]:!was};setChecked(nc);
     if(!was){
@@ -2538,7 +2540,17 @@ function RankUpApp({user,onLogout}){
         const allDone=day.exercises.every((_,ei)=>nc[exKey(phaseId,dayIdx,ei)]);
         if(allDone&&!dc[ck]){
           const bossDone=day.exercises.filter((ex,ei)=>ex.boss&&nc[exKey(phaseId,dayIdx,ei)]).length;
-          setDC(p=>({...p,[ck]:true}));addCoins(COIN_DUNGEON+bossDone*COIN_BOSS_EX,"¡Dungeon completado!");
+          const coins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
+          setDC(p=>({...p,[ck]:true}));addCoins(coins,"¡Dungeon completado!");
+          // Calculate total kg lifted in this session
+          const sessKg=day.exercises.reduce((sum,ex,ei)=>{
+            const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
+            return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+          },0);
+          setTimeout(()=>setDungeonComplete({
+            dayName:day.day, totalKg:Math.round(sessKg),
+            exercises:day.exercises.length, coins, bossDone
+          }),400);
           const wk=`week_${phaseId}_${day.week}`;
           if(!dc[wk]){const wd=phase.training.filter(d=>d.week===day.week);const awDone=wd.every(d=>{const gi=phase.training.indexOf(d);return d.exercises.every((_,ei)=>nc[exKey(phaseId,gi,ei)]);});if(awDone){setDC(p=>({...p,[wk]:true}));addCoins(COIN_WEEK,`🗓️ Semana ${day.week} completada`);}}
           const pk=`phase_${phaseId}`;
@@ -2546,7 +2558,7 @@ function RankUpApp({user,onLogout}){
         }
       }
     } else setTotalXp(p=>Math.max(0,p-xp));
-  },[checked,dc,addXp,addCoins]);
+  },[checked,dc,addXp,addCoins,weights]);
 
   const logWeight=useCallback((key,evt)=>{
     const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<=0)return;
@@ -2585,6 +2597,98 @@ function RankUpApp({user,onLogout}){
       <style>{CSS}</style>
       {particles.map(p=><Particle key={p.id} x={p.x} y={p.y} text={p.text} color={p.color} onDone={()=>setParticles(prev=>prev.filter(x=>x.id!==p.id))}/>)}
       {lvlModal&&<LevelUpModal level={lvlModal} onClose={()=>setLvlModal(null)}/>}
+      {/* DUNGEON COMPLETE MODAL */}
+      {dungeonComplete&&(()=>{
+        const kg=dungeonComplete.totalKg;
+        const comparisons=[
+          {min:0,   max:10,   emoji:"🐀", name:"una rata de mazmorra",    title:"NOVATO DE MAZMORRA"},
+          {min:10,  max:30,   emoji:"🐺", name:"un lobo del bosque",       title:"CAZADOR DEL BOSQUE"},
+          {min:30,  max:60,   emoji:"🐗", name:"un jabalí salvaje",        title:"BESTIA SALVAJE"},
+          {min:60,  max:100,  emoji:"🦁", name:"un león de combate",       title:"GUERRERO FELINO"},
+          {min:100, max:200,  emoji:"🐉", name:"un dragón joven",          title:"DOMADOR DE DRAGONES"},
+          {min:200, max:350,  emoji:"🦣", name:"un mamut de guerra",       title:"COLOSO DE HIELO"},
+          {min:350, max:600,  emoji:"🗿", name:"un gólem de piedra",       title:"TITÁN DE PIEDRA"},
+          {min:600, max:1000, emoji:"🐋", name:"una ballena legendaria",   title:"LEVIATÁN"},
+          {min:1000,max:2000, emoji:"🌋", name:"un volcán en erupción",    title:"FUERZA PRIMORDIAL"},
+          {min:2000,max:99999,emoji:"⭐", name:"una estrella enana",       title:"SEMIDIÓS"},
+        ];
+        const comp=kg>0?(comparisons.find(c=>kg>=c.min&&kg<c.max)||comparisons[comparisons.length-1]):null;
+
+        return(
+          <div style={{position:"fixed",inset:0,zIndex:9999,background:"#03020A",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24,overflow:"hidden"}}>
+            {/* Animated background */}
+            <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,#A78BFA22 0%,transparent 70%)",pointerEvents:"none"}}/>
+            <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 100%,#F59E0B11 0%,transparent 70%)",pointerEvents:"none"}}/>
+
+            {/* Stars */}
+            {Array.from({length:30}).map((_,i)=>(
+              <div key={i} style={{position:"absolute",left:`${Math.random()*100}%`,top:`${Math.random()*100}%`,width:2,height:2,borderRadius:"50%",background:"#FFF",opacity:Math.random()*0.6+0.1}}/>
+            ))}
+
+            {/* Header */}
+            <div style={{fontSize:9,color:"#A78BFA",letterSpacing:8,marginBottom:6,textShadow:"0 0 20px #A78BFA"}}>✦ MISIÓN COMPLETADA ✦</div>
+            <div style={{fontSize:26,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center",textShadow:"0 0 30px #A78BFA88"}}>{dungeonComplete.dayName}</div>
+            <div style={{fontSize:11,color:"#A78BFA",letterSpacing:3,marginBottom:24}}>⚔️ DUNGEON CONQUISTADO ⚔️</div>
+
+            {/* Main reward card */}
+            <div style={{width:"100%",maxWidth:320,background:"linear-gradient(135deg,#0D0A1F,#0A0A14)",border:"1px solid #A78BFA44",borderRadius:20,padding:20,marginBottom:16,position:"relative",overflow:"hidden",boxShadow:"0 0 40px #A78BFA22"}}>
+              <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,transparent,#A78BFA,#F59E0B,#A78BFA,transparent)"}}/>
+
+              {/* Kg comparison */}
+              {comp?(
+                <div style={{textAlign:"center",marginBottom:16}}>
+                  <div style={{fontSize:64,marginBottom:4,filter:"drop-shadow(0 0 20px #F59E0B)"}}>{comp.emoji}</div>
+                  <div style={{fontSize:10,color:"#F59E0B",letterSpacing:4,marginBottom:4}}>{comp.title}</div>
+                  <div style={{fontSize:36,fontWeight:900,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{kg.toLocaleString()}<span style={{fontSize:16,color:"#A78BFA"}}> kg</span></div>
+                  <div style={{fontSize:12,color:"#888",marginTop:4}}>Equivale a levantar <span style={{color:"#F59E0B",fontWeight:700}}>{comp.name}</span></div>
+                </div>
+              ):(
+                <div style={{textAlign:"center",marginBottom:16}}>
+                  <div style={{fontSize:48,marginBottom:8}}>⚔️</div>
+                  <div style={{fontSize:14,color:"#AAA"}}>¡Registra tus pesos para ver</div>
+                  <div style={{fontSize:14,color:"#A78BFA",fontWeight:700}}>cuánto levantas!</div>
+                </div>
+              )}
+
+              {/* Divider */}
+              <div style={{height:1,background:"linear-gradient(90deg,transparent,#A78BFA44,transparent)",marginBottom:14}}/>
+
+              {/* Stats row */}
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+                <div style={{textAlign:"center",background:"#F59E0B0D",borderRadius:10,padding:"10px 6px",border:"1px solid #F59E0B22"}}>
+                  <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>EJERCICIOS</div>
+                  <div style={{fontSize:24,fontWeight:900,color:"#F59E0B",fontFamily:"'Cinzel',serif"}}>{dungeonComplete.exercises}</div>
+                  <div style={{fontSize:9,color:"#555"}}>completados</div>
+                </div>
+                <div style={{textAlign:"center",background:"#34D3990D",borderRadius:10,padding:"10px 6px",border:"1px solid #34D39922"}}>
+                  <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div>
+                  <div style={{fontSize:24,fontWeight:900,color:"#34D399",fontFamily:"'Cinzel',serif"}}>+{dungeonComplete.coins}</div>
+                  <div style={{fontSize:9,color:"#555"}}>🪙 monedas</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Boss badge */}
+            {dungeonComplete.bossDone>0&&(
+              <div style={{display:"flex",alignItems:"center",gap:8,padding:"10px 20px",background:"linear-gradient(135deg,#F59E0B22,#EF444422)",border:"1px solid #F59E0B66",borderRadius:12,marginBottom:16,boxShadow:"0 0 20px #F59E0B22"}}>
+                <span style={{fontSize:20}}>💀</span>
+                <div>
+                  <div style={{fontSize:11,color:"#F59E0B",fontWeight:700,letterSpacing:2}}>JEFE DERROTADO</div>
+                  <div style={{fontSize:10,color:"#888"}}>{dungeonComplete.bossDone} boss{dungeonComplete.bossDone>1?"es":""} eliminado{dungeonComplete.bossDone>1?"s":""}</div>
+                </div>
+                <span style={{fontSize:20}}>💀</span>
+              </div>
+            )}
+
+            {/* Continue button */}
+            <button onClick={()=>setDungeonComplete(null)}
+              style={{padding:"16px 48px",background:"linear-gradient(135deg,#7C3AED,#A78BFA,#7C3AED)",border:"none",borderRadius:14,color:"#FFF",fontSize:16,fontWeight:900,cursor:"pointer",fontFamily:"'Cinzel',serif",letterSpacing:3,boxShadow:"0 0 30px #A78BFA66",backgroundSize:"200%"}}>
+              ⚔ CONTINUAR ⚔
+            </button>
+            <div style={{fontSize:10,color:"#333",marginTop:10,letterSpacing:2}}>TU LEYENDA CRECE</div>
+          </div>
+        );
+      })()}
       {redeemModal&&<RedeemModal reward={redeemModal.reward} coins={redeemModal.newCoins} onClose={()=>setRedeemModal(null)}/>}
       {showClassModal&&<ClassSelectModal current={playerClass} onSelect={id=>{setPlayerClass(id);setShowClassModal(false);}}/>}
       {achToast&&<AchToast ach={achToast} onDone={()=>setAchToast(null)}/>}
