@@ -38,10 +38,11 @@ const syncFromFirebase = async (email) => {
 const syncUsersFromFirebase = async () => {
   const safeUsers = await fbGet("users");
   if(safeUsers){
-    // Convert back from safe keys to email-keyed object
     const users = {};
-    Object.values(safeUsers).forEach(u => {
-      if(u.email) users[u.email] = u;
+    Object.entries(safeUsers).forEach(([key, u]) => {
+      // Get email from object or reconstruct from key
+      const email = u.email || key.replace(/_at_/g,"@").replace(/_/g,".");
+      users[email] = {...u, email};
     });
     localStorage.setItem("rku_users", JSON.stringify(users));
     return users;
