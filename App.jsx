@@ -1130,7 +1130,7 @@ function AdminPanel({onLogout}){
   const [newPw,setNewPw]=useState("");
   const [showNewPw,setShowNewPw]=useState(false);
 
-  const allUsers=getUsers();
+  const [allUsers,setAllUsers]=useState(getUsers());
   const userList=Object.entries(allUsers).map(([email,u])=>({email,...u}));
 
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
