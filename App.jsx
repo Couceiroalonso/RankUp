@@ -2305,41 +2305,43 @@ function ProfileFisico({userEmail}){
 
 function RankingTab({currentEmail, currentName}){
   const [players,setPlayers]=useState([]);
-  const [cat,setCat]=useState("xp"); // xp | kg | ejercicios | clase
+  const [cat,setCat]=useState("xp");
   const [loading,setLoading]=useState(true);
 
   useEffect(()=>{
     const load=async()=>{
       setLoading(true);
       try{
-        // Load all users and their data from Firebase
-        const users=await fbGet("users")||{};
-        const list=[];
-        for(const [key,u] of Object.entries(users)){
+        const users=await fbGet("users").catch(()=>({}));
+        if(!users){setLoading(false);return;}
+        // Load all user data in parallel
+        const entries=Object.entries(users);
+        const list=await Promise.all(entries.map(async([key,u])=>{
           const email=u.email||key.replace(/_at_/g,"@").replace(/_/g,".");
           const dataKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
-          const data=await fbGet(`userData/${dataKey}`)||{};
-          const photo=await fbGet(`photos/${dataKey}`)||localStorage.getItem(`rku_photo_${email}`)||null;
-          // Calculate total kg lifted from all weights
-          const allWeights=data.weights||{};
+          const [data,photo]=await Promise.all([
+            fbGet(`userData/${dataKey}`).catch(()=>({})),
+            fbGet(`photos/${dataKey}`).catch(()=>null),
+          ]);
+          const d=data||{};
+          const allWeights=d.weights||{};
           const totalKg=Object.values(allWeights).reduce((sum,arr)=>{
             if(!Array.isArray(arr)) return sum;
             return sum+arr.reduce((s,w)=>s+(w.kg||0),0);
           },0);
-          // Count completed exercises
-          const checked=data.checked||{};
-          const totalEx=Object.values(checked).filter(Boolean).length;
-          list.push({
+          const totalEx=Object.values(d.checked||{}).filter(Boolean).length;
+          return{
             email, name:u.name||"Jugador",
-            photo, playerClass:data.playerClass||null,
-            totalXp:data.totalXp||0,
+            photo:photo||localStorage.getItem(`rku_photo_${email}`)||null,
+            playerClass:d.playerClass||null,
+            totalXp:d.totalXp||0,
             totalKg:Math.round(totalKg),
             totalEx,
-            level:getLevel(data.totalXp||0),
-          });
-        }
-        setPlayers(list);
-      }catch(e){console.log(e);}
+            level:getLevel(d.totalXp||0),
+          };
+        }));
+        setPlayers(list.filter(p=>p.name));
+      }catch(e){console.log("Ranking error:",e);}
       setLoading(false);
     };
     load();
