@@ -2330,13 +2330,19 @@ function RankingTab({currentEmail, currentName}){
             return sum+arr.reduce((s,w)=>s+(w.kg||0),0);
           },0);
           const totalEx=Object.values(d.checked||{}).filter(Boolean).length;
+          // Max personal record (highest single kg logged)
+          const maxPR=Object.values(allWeights).reduce((max,arr)=>{
+            if(!Array.isArray(arr)) return max;
+            const top=Math.max(...arr.map(w=>w.kg||0));
+            return top>max?top:max;
+          },0);
           return{
             email, name:u.name||"Jugador",
             photo:photo||localStorage.getItem(`rku_photo_${email}`)||null,
             playerClass:d.playerClass||null,
             totalXp:d.totalXp||0,
             totalKg:Math.round(totalKg),
-            totalEx,
+            totalEx, maxPR,
             level:getLevel(d.totalXp||0),
           };
         }));
@@ -2351,19 +2357,16 @@ function RankingTab({currentEmail, currentName}){
     if(cat==="xp") return b.totalXp-a.totalXp;
     if(cat==="kg") return b.totalKg-a.totalKg;
     if(cat==="ejercicios") return b.totalEx-a.totalEx;
-    if(cat==="clase"){
-      const order=["guerrero","explorador","titan","acrobata","espectro","alquimista"];
-      return (order.indexOf(a.playerClass)-order.indexOf(b.playerClass));
-    }
+    if(cat==="pr") return b.maxPR-a.maxPR;
     return 0;
   });
 
   const medals=["🥇","🥈","🥉"];
   const cats=[
-    {id:"xp",label:"⚡ XP Total",val:p=>`${p.totalXp.toLocaleString()} XP`},
-    {id:"kg",label:"🏋️ Kilos",val:p=>`${p.totalKg.toLocaleString()} kg`},
-    {id:"ejercicios",label:"✅ Ejercicios",val:p=>`${p.totalEx} ejs`},
-    {id:"clase",label:"⚔️ Clase",val:p=>{const c=CLASSES.find(x=>x.id===p.playerClass);return c?`${c.icon} ${c.name}`:"Sin clase";}},
+    {id:"xp",       label:"⚡ XP Total",    val:p=>`${p.totalXp.toLocaleString()} XP`},
+    {id:"kg",       label:"🏋️ Kilos",       val:p=>`${p.totalKg.toLocaleString()} kg`},
+    {id:"ejercicios",label:"✅ Ejercicios", val:p=>`${p.totalEx} ejs`},
+    {id:"pr",       label:"🏆 Récord",       val:p=>p.maxPR>0?`${p.maxPR} kg`:"— kg"},
   ];
 
   return(
