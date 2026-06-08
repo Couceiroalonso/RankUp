@@ -2392,7 +2392,7 @@ function RankingTab({currentEmail, currentName}){
         <div>
           {sorted.map((p,i)=>{
             const isMe=p.email===currentEmail;
-            const ri=getRankInfo(p.level);
+            const ri=getRank(p.level)||{color:"#9CA3AF",rank:"E",title:"Novato"};
             const cls=CLASSES.find(c=>c.id===p.playerClass);
             const val=cats.find(c=>c.id===cat)?.val(p);
             return(
