@@ -2222,7 +2222,10 @@ function AdminPanel({onLogout}){
                     <div style={{fontSize:14,fontWeight:700,color:"#333",width:20,textAlign:"center",fontFamily:"'Rajdhani',sans-serif"}}>#{i+1}</div>
                     <div style={{width:32,height:32,borderRadius:8,border:`1.5px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",flexShrink:0}}>{ri.rank}</div>
                     <div style={{flex:1}}>
-                      <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</div>
+                      <div style={{display:"flex",alignItems:"center",gap:6}}>
+                        <span style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
+                        {(()=>{const cls=CLASSES.find(c=>c.id===(getUserData(u.email)||defaultData()).playerClass);return cls?<span style={{fontSize:12,padding:"1px 6px",background:`${cls.color}22`,border:`1px solid ${cls.color}44`,borderRadius:6,color:cls.color,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{cls.icon} {cls.name}</span>:null;})()}
+                      </div>
                       <div style={{fontSize:10,color:"#444"}}>{u.email}</div>
                     </div>
                     <div style={{textAlign:"right"}}>
@@ -2278,6 +2281,15 @@ function AdminPanel({onLogout}){
                         </div>
                       ))}
                     </div>
+                    {(()=>{const cls=CLASSES.find(c=>c.id===d.playerClass);return cls?(
+                      <div style={{marginTop:8,display:"flex",alignItems:"center",gap:6,padding:"5px 10px",background:`${cls.color}15`,border:`1px solid ${cls.color}44`,borderRadius:8}}>
+                        <span style={{fontSize:14}}>{cls.icon}</span>
+                        <div>
+                          <span style={{fontSize:11,fontWeight:700,color:cls.color,fontFamily:"'Rajdhani',sans-serif"}}>{cls.name}</span>
+                          <span style={{fontSize:10,color:"#555",marginLeft:6}}>{cls.bonus}</span>
+                        </div>
+                      </div>
+                    ):(<div style={{marginTop:8,padding:"5px 10px",background:"#1A1A2E",borderRadius:8,fontSize:10,color:"#333"}}>Sin clase elegida</div>);})()}
                   </div>
                 );
               })
