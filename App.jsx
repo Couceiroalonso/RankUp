@@ -2838,6 +2838,8 @@ function RankUpApp({user,onLogout}){
         if(changed) saveUserData(user.email,fresh);
         setAssignedProgram(fresh.assignedProgram);
       }
+      // Store the raw snapshot so save effect can safely merge during first renders
+      loadedRef.current = fresh;
       // Always mark as loaded — safe to auto-save now
       dataLoaded.current = true;
       // 🎂 Birthday coins check
@@ -2859,9 +2861,26 @@ function RankUpApp({user,onLogout}){
     loadData();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[]);
+  // Track how many setState calls have fired since load, to avoid saving before all are applied
+  const loadedRef=useRef(null); // stores the raw Firebase snapshot until all states are settled
   useEffect(()=>{
     if(!dataLoaded.current) return;
-    saveUserData(user.email,{totalXp,coins,checked,weights,personalRecords:pr,earnedAchs,redeemedRewards:redeemed,dungeonCoins:dc,customRoutines:routines,playerClass,assignedDiets,assignedProgram});
+    // Merge: prefer current state but fall back to loadedRef for values not yet in state
+    const base=loadedRef.current||{};
+    saveUserData(user.email,{
+      totalXp: totalXp||base.totalXp||0,
+      coins: coins||base.coins||0,
+      checked: Object.keys(checked).length>0?checked:(base.checked||{}),
+      weights: Object.keys(weights).length>0?weights:(base.weights||{}),
+      personalRecords:pr,
+      earnedAchs,
+      redeemedRewards:redeemed,
+      dungeonCoins:Object.keys(dc).length>0?dc:(base.dungeonCoins||{}),
+      customRoutines:routines,
+      playerClass,
+      assignedDiets,
+      assignedProgram
+    });
   },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
