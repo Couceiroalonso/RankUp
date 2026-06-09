@@ -1448,6 +1448,8 @@ function AdminPanel({onLogout}){
     setSelUser(email);
     setEditData(JSON.parse(JSON.stringify(data)));
     setNewPw("");
+    loadUserMessages(email);
+    markAdminRead(email);
   };
 
   const saveEdit=()=>{
@@ -1515,6 +1517,35 @@ function AdminPanel({onLogout}){
   const [allUserData,setAllUserData]=useState({});
   const [dataLoading,setDataLoading]=useState(true);
   const getUD=(email)=>allUserData[email]||getUserData(email)||defaultData();
+  const [userMessages,setUserMessages]=useState({});  // {email: [msgs]}
+  const [adminMsgInput,setAdminMsgInput]=useState("");
+
+  const loadUserMessages=async(email)=>{
+    const msgKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const msgs=await fbGet(`messages/${msgKey}`).catch(()=>null);
+    const arr=msgs?(Array.isArray(msgs)?msgs:Object.values(msgs)):[];
+    setUserMessages(p=>({...p,[email]:arr}));
+    return arr;
+  };
+
+  const sendAdminMessage=async(email,text)=>{
+    if(!text.trim()) return;
+    const msgKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const existing=userMessages[email]||[];
+    const msg={id:Date.now(),from:"admin",text:text.trim(),date:new Date().toISOString(),read:false};
+    const updated=[...existing,msg];
+    setUserMessages(p=>({...p,[email]:updated}));
+    await fbSet(`messages/${msgKey}`,updated).catch(()=>{});
+    setAdminMsgInput("");
+    flash("✅ Mensaje enviado");
+  };
+
+  const markAdminRead=async(email)=>{
+    const msgKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const msgs=(userMessages[email]||[]).map(m=>m.from==="user"?{...m,read:true}:m);
+    setUserMessages(p=>({...p,[email]:msgs}));
+    await fbSet(`messages/${msgKey}`,msgs).catch(()=>{});
+  };
 
   // Sync admin routines, diets and ALL user data from Firebase on mount
   useEffect(()=>{
@@ -1652,7 +1683,11 @@ function AdminPanel({onLogout}){
           </div>
           <div>
             <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:2}}>EDITANDO JUGADOR</div>
-            <div style={{fontSize:17,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{fontSize:17,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
+              {(userMessages[selUser]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
+                <span style={{background:"#E84A5F",color:"#FFF",fontSize:9,fontWeight:900,padding:"2px 7px",borderRadius:20,fontFamily:"'Rajdhani',sans-serif"}}>NUEVO MENSAJE</span>}
+            </div>
             <div style={{fontSize:10,color:ri.color,letterSpacing:1,marginTop:2}}>[{ri.rank}] {ri.title} · Lv.{level}</div>
           </div>
         </div>
@@ -1800,6 +1835,45 @@ function AdminPanel({onLogout}){
             });
             })()}
           </div>
+
+          {/* Mensajes */}
+          {(()=>{
+            const msgs=userMessages[selUser]||[];
+            const unread=msgs.filter(m=>m.from==="user"&&!m.read).length;
+            const formatDate=iso=>{if(!iso)return"";const d=new Date(iso);return`${d.getDate()}/${d.getMonth()+1} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;}
+            return(
+              <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:`1px solid ${unread>0?"#E84A5F33":"#A78BFA22"}`,marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>✉️ MENSAJES ({msgs.length}){unread>0&&<span style={{marginLeft:8,background:"#E84A5F",color:"#FFF",fontSize:8,padding:"1px 6px",borderRadius:10,fontWeight:900}}>{unread} NUEVO{unread>1?"S":""}</span>}</div>
+                </div>
+                <div style={{maxHeight:220,overflowY:"auto",display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
+                  {msgs.length===0&&<div style={{fontSize:11,color:"#333",textAlign:"center",padding:"12px 0"}}>Sin mensajes aún</div>}
+                  {msgs.map((m,i)=>{
+                    const isAdmin=m.from==="admin";
+                    return(
+                      <div key={m.id||i} style={{display:"flex",justifyContent:isAdmin?"flex-end":"flex-start"}}>
+                        <div style={{maxWidth:"85%",padding:"8px 12px",borderRadius:isAdmin?"12px 12px 4px 12px":"12px 12px 12px 4px",
+                          background:isAdmin?"#A78BFA22":"#1A1A2E",
+                          border:`1px solid ${isAdmin?"#A78BFA44":"#2A2A3E"}`}}>
+                          {!isAdmin&&<div style={{fontSize:8,color:"#A78BFA",letterSpacing:1,marginBottom:3}}>{m.name||"Usuario"}</div>}
+                          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.4}}>{m.text}</div>
+                          <div style={{fontSize:9,color:"#444",marginTop:3,textAlign:"right"}}>{formatDate(m.date)}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{display:"flex",gap:8}}>
+                  <input value={adminMsgInput} onChange={e=>setAdminMsgInput(e.target.value)}
+                    onKeyDown={e=>{if(e.key==="Enter")sendAdminMessage(selUser,adminMsgInput);}}
+                    placeholder="Responder al usuario..."
+                    style={{flex:1,padding:"9px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                  <button onClick={()=>sendAdminMessage(selUser,adminMsgInput)}
+                    style={{padding:"9px 14px",background:"#A78BFA",border:"none",borderRadius:9,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer"}}>➤</button>
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Historial de compras */}
           {(()=>{
@@ -2388,7 +2462,11 @@ function AdminPanel({onLogout}){
                         <AdminUserPhoto email={u.email} rank={ri.rank}/>
                       </div>
                       <div style={{flex:1}}>
-                        <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</div>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
+                          {(userMessages[u.email]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
+                            <span style={{background:"#E84A5F",color:"#FFF",fontSize:8,fontWeight:900,padding:"2px 6px",borderRadius:10,fontFamily:"'Rajdhani',sans-serif"}}>MSG</span>}
+                        </div>
                         <div style={{fontSize:10,color:"#555"}}>{u.email}</div>
                       </div>
                       <div style={{fontSize:10,color:"#333"}}>{date}</div>
@@ -2489,23 +2567,42 @@ function ClassSelectModal({current,onSelect}){
         )}
       </div>
 
-      {/* Grid selector */}
-      <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,width:"100%",maxWidth:340,marginBottom:20}}>
-        {CLASSES.map(c=>{
-          const isSelected=current===c.id;
-          const isPreviewing=previewing===c.id;
-          return(
-            <button key={c.id}
-              onMouseEnter={()=>!isMobile()&&setHovered(c.id)}
-              onMouseLeave={()=>!isMobile()&&setHovered(null)}
-              onClick={()=>handleTap(c.id)}
-              style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected||isPreviewing?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
-              <span style={{fontSize:22}}>{c.icon}</span>
-              <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
-              {isPreviewing&&<div style={{fontSize:8,color:c.color,letterSpacing:1}}>👆 TOCA</div>}
-            </button>
-          );
-        })}
+      {/* Grid selector — 3 top + 2 bottom centradas para 5 clases */}
+      <div style={{width:"100%",maxWidth:340,marginBottom:20}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8,marginBottom:8}}>
+          {CLASSES.slice(0,3).map(c=>{
+            const isSelected=current===c.id;
+            const isPreviewing=previewing===c.id;
+            return(
+              <button key={c.id}
+                onMouseEnter={()=>!isMobile()&&setHovered(c.id)}
+                onMouseLeave={()=>!isMobile()&&setHovered(null)}
+                onClick={()=>handleTap(c.id)}
+                style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected||isPreviewing?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
+                <span style={{fontSize:22}}>{c.icon}</span>
+                <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
+                {isPreviewing&&<div style={{fontSize:8,color:c.color,letterSpacing:1}}>👆 TOCA</div>}
+              </button>
+            );
+          })}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:8,width:"calc(66.6% + 4px)",margin:"0 auto"}}>
+          {CLASSES.slice(3).map(c=>{
+            const isSelected=current===c.id;
+            const isPreviewing=previewing===c.id;
+            return(
+              <button key={c.id}
+                onMouseEnter={()=>!isMobile()&&setHovered(c.id)}
+                onMouseLeave={()=>!isMobile()&&setHovered(null)}
+                onClick={()=>handleTap(c.id)}
+                style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected||isPreviewing?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
+                <span style={{fontSize:22}}>{c.icon}</span>
+                <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
+                {isPreviewing&&<div style={{fontSize:8,color:c.color,letterSpacing:1}}>👆 TOCA</div>}
+              </button>
+            );
+          })}
+        </div>
       </div>
       <div style={{fontSize:10,color:"#333",textAlign:"center"}}>Puedes cambiarla más tarde desde tu perfil</div>
     </div>
@@ -2830,6 +2927,8 @@ function RankUpApp({user,onLogout}){
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
+  const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
+  const [messages,setMessages]=useState([]);               // [{id,from,text,date,read}]
   const [showClassModal,setShowClassModal]=useState(!saved.playerClass);
   const cls=CLASSES.find(c=>c.id===playerClass)||null;
   const [activePhase,setActivePhase]=useState(0);
@@ -2884,6 +2983,12 @@ function RankUpApp({user,onLogout}){
         if(recovered>0) setCoins(recovered);
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
+      if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
+      // Load messages from Firebase
+      const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
+      fbGet(`messages/${msgKey}`).then(msgs=>{
+        if(msgs) setMessages(Array.isArray(msgs)?msgs:Object.values(msgs));
+      }).catch(()=>{});
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Migrate old ex.done system → checked keys
       const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
@@ -2963,9 +3068,10 @@ function RankUpApp({user,onLogout}){
       customRoutines:routines,
       playerClass,
       assignedDiets,
-      assignedProgram
+      assignedProgram,
+      exNotes
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -3003,6 +3109,24 @@ function RankUpApp({user,onLogout}){
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
+
+  const sendMessage=useCallback(async(text)=>{
+    if(!text.trim()) return;
+    const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const msg={id:Date.now(),from:"user",name:user.name,text:text.trim(),date:new Date().toISOString(),read:false};
+    const updated=[...messages,msg];
+    setMessages(updated);
+    await fbSet(`messages/${msgKey}`,updated).catch(()=>{});
+  },[messages,user]);
+
+  const markMessagesRead=useCallback(async()=>{
+    const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const updated=messages.map(m=>m.from==="admin"?{...m,read:true}:m);
+    setMessages(updated);
+    await fbSet(`messages/${msgKey}`,updated).catch(()=>{});
+  },[messages,user]);
+
+  const unreadFromAdmin=messages.filter(m=>m.from==="admin"&&!m.read).length;
 
   const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins}
 
@@ -3100,7 +3224,7 @@ function RankUpApp({user,onLogout}){
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
   const xpPct=Math.min((xpInLvl/XP_PER_LEVEL)*100,100);
-  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"}];
+  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
 
   return(
     <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
@@ -3273,7 +3397,7 @@ function RankUpApp({user,onLogout}){
         {/* Tabs */}
         <div style={{display:"flex",gap:5,paddingTop:12}}>
           {TABS.map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>{t.l}</button>
+            <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="buzon")markMessagesRead();}} style={{flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>{t.l}</button>
           ))}
         </div>
         {/* Content */}
@@ -3305,7 +3429,7 @@ function RankUpApp({user,onLogout}){
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))}/>
                     </>
                   );
                 })()}
@@ -3325,6 +3449,8 @@ function RankUpApp({user,onLogout}){
                   openChart={openChart}
                   onToggleChart={k=>setOpenChart(openChart===k?null:k)}
                   onUpdateRoutines={newRoutines=>{setRoutines(newRoutines);}}
+                  exNotes={exNotes}
+                  onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))}
                 />
               ):(
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
@@ -3364,6 +3490,7 @@ function RankUpApp({user,onLogout}){
           )}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
+          {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
         </div>
       </div>
       <div style={{flexShrink:0,background:"#07070F",padding:"8px 16px 12px",borderTop:`1px solid ${ri.color}33`,textAlign:"center"}}>
@@ -3374,21 +3501,36 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines}){
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote}){
   const [openSess,setOpenSess]=useState(null);
   const [addModal,setAddModal]=useState(null);   // {rtId, si} — session to add to
   const [swapModal,setSwapModal]=useState(null); // {rtId, si, ei, exName, muscles}
   const [searchQ,setSearchQ]=useState("");
+  const [pendingAdd,setPendingAdd]=useState(null); // {rtId, si, ex} — exercise picked, awaiting config
+  const [pendingSets,setPendingSets]=useState("3x10");
+  const [pendingRest,setPendingRest]=useState("60s");
 
   const handleAddEx=(rtId,si,ex)=>{
+    // Show config step before adding
+    setPendingAdd({rtId,si,ex});
+    setPendingSets("3x10");
+    setPendingRest("60s");
+    setAddModal(null);
+    setSearchQ("");
+  };
+
+  const confirmAddEx=()=>{
+    if(!pendingAdd) return;
+    const {rtId,si,ex}=pendingAdd;
     const updated=routines.map(rt=>{
       if(rt.id!==rtId) return rt;
       const sessions=[...(rt.sessions||[])];
-      sessions[si]={...sessions[si],exercises:[...sessions[si].exercises,{name:ex.name,sets:"3x10",rest:"60s",xp:ex.xpBase||35,boss:false}]};
+      sessions[si]={...sessions[si],exercises:[...sessions[si].exercises,
+        {name:ex.name,sets:pendingSets,rest:pendingRest,xp:ex.xpBase||35,boss:false}]};
       return {...rt,sessions};
     });
     onUpdateRoutines(updated);
-    setAddModal(null);setSearchQ("");
+    setPendingAdd(null);
   };
 
   const handleSwapEx=(rtId,si,ei,ex)=>{
@@ -3521,6 +3663,13 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                 </span>
                               ))}</div>}
                               {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={c}/>}
+                              {/* User notes */}
+                              <textarea
+                                placeholder="📝 Anotaciones personales..."
+                                value={exNotes[key]||""}
+                                onChange={e=>onNote&&onNote(key,e.target.value)}
+                                style={{width:"100%",marginTop:8,padding:"8px 10px",background:"#0A0A14",border:"1px solid #2A2A3E",borderRadius:8,color:"#AAA",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
+                                rows={2}/>
                             </div>
                           </div>
                         );
@@ -3539,6 +3688,36 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
           </div>
         );
       })}
+
+      {/* ── PENDING ADD CONFIG MODAL ── */}
+      {pendingAdd&&(
+        <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>setPendingAdd(null)}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",padding:20}}>
+            <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>⚔️ CONFIGURAR EJERCICIO</div>
+            <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>{pendingAdd.ex.name}</div>
+            <div style={{display:"flex",gap:10,marginBottom:12}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>SERIES</div>
+                <input value={pendingSets} onChange={e=>setPendingSets(e.target.value)}
+                  placeholder="ej: 4x10"
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>DESCANSO</div>
+                <input value={pendingRest} onChange={e=>setPendingRest(e.target.value)}
+                  placeholder="ej: 90s"
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+              </div>
+            </div>
+            <div style={{display:"flex",gap:10}}>
+              <button onClick={()=>setPendingAdd(null)}
+                style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
+              <button onClick={confirmAddEx}
+                style={{flex:2,padding:12,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:13,fontWeight:700,letterSpacing:2}}>✓ AÑADIR</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ── ADD / SWAP MODAL ── */}
       {modalCtx&&(
@@ -3582,7 +3761,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[]}){
+function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote}){
   const [openRt,setOpenRt]=useState(null);
   const [openRtSess,setOpenRtSess]=useState(null);
   let lastWeek=null;
@@ -3652,6 +3831,13 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                           {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                           {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={ph.color}/>}
+                          {/* User notes */}
+                          <textarea
+                            placeholder="📝 Anotaciones personales..."
+                            value={exNotes[key]||""}
+                            onChange={e=>onNote&&onNote(key,e.target.value)}
+                            style={{width:"100%",marginTop:8,padding:"8px 10px",background:"#0A0A14",border:"1px solid #2A2A3E",borderRadius:8,color:"#AAA",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
+                            rows={2}/>
                         </div>
                       </div>
                     );
@@ -4108,6 +4294,70 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
     </div>
   );
 }
+
+// ─── BUZÓN TAB ────────────────────────────────────────────────────────────────
+function BuzonTab({messages,onSend,userName}){
+  const [input,setInput]=useState("");
+  const bottomRef=useRef(null);
+
+  useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages]);
+
+  const handleSend=()=>{if(!input.trim())return;onSend(input);setInput("");};
+
+  const formatDate=iso=>{
+    if(!iso)return"";
+    const d=new Date(iso);
+    const today=new Date();
+    const isToday=d.toDateString()===today.toDateString();
+    if(isToday) return `${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+    return `${d.getDate()}/${d.getMonth()+1} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+  };
+
+  return(
+    <div style={{display:"flex",flexDirection:"column",height:"calc(100dvh - 220px)"}}>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>✉️ BUZÓN · CHAT CON ENTRENADOR</div>
+      {/* Messages */}
+      <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:8,paddingBottom:8}}>
+        {messages.length===0&&(
+          <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
+            <div style={{fontSize:40,marginBottom:10}}>💬</div>
+            <div style={{fontSize:13,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:6}}>Sin mensajes aún</div>
+            <div style={{fontSize:11,color:"#333"}}>Escríbele a tu entrenador. Te responderá pronto.</div>
+          </div>
+        )}
+        {messages.map((m,i)=>{
+          const isUser=m.from==="user";
+          return(
+            <div key={m.id||i} style={{display:"flex",justifyContent:isUser?"flex-end":"flex-start"}}>
+              <div style={{maxWidth:"80%",padding:"10px 14px",borderRadius:isUser?"16px 16px 4px 16px":"16px 16px 16px 4px",
+                background:isUser?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#0F0F1C",
+                border:isUser?"none":"1px solid #1E1E32",
+                boxShadow:isUser?"0 0 12px #A78BFA44":"none"}}>
+                {!isUser&&<div style={{fontSize:9,color:"#A78BFA",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>🏋️ ENTRENADOR</div>}
+                <div style={{fontSize:13,color:"#FFF",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}>{m.text}</div>
+                <div style={{fontSize:9,color:isUser?"#C4B5FD":"#444",marginTop:4,textAlign:"right"}}>{formatDate(m.date)}{isUser&&m.read?" ✓✓":isUser?" ✓":""}</div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={bottomRef}/>
+      </div>
+      {/* Input */}
+      <div style={{display:"flex",gap:8,paddingTop:10,borderTop:"1px solid #1A1A2E",flexShrink:0}}>
+        <textarea value={input} onChange={e=>setInput(e.target.value)}
+          onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
+          placeholder="Escribe tu mensaje..."
+          style={{flex:1,padding:"10px 14px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:12,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",lineHeight:1.4}}
+          rows={2}/>
+        <button onClick={handleSend} disabled={!input.trim()}
+          style={{padding:"0 16px",background:input.trim()?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#1A1A2E",border:"none",borderRadius:12,color:input.trim()?"#FFF":"#444",fontSize:18,cursor:input.trim()?"pointer":"not-allowed",flexShrink:0}}>
+          ➤
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 // ─── CUERPO TAB ───────────────────────────────────────────────────────────────
 function CuerpoTab({mxp,sex="M"}){
