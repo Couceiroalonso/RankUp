@@ -19,21 +19,57 @@ const saveUsers = async (users) => {
 const getUserData = (email) => {
   try { return JSON.parse(localStorage.getItem(`rku_data_${email}`)||"null"); } catch { return null; }
 };
+
+// Merge two user data objects, always keeping the most progress
+const mergeUserData = (local, remote) => {
+  if(!local && !remote) return null;
+  if(!local) return remote;
+  if(!remote) return local;
+  return {
+    ...remote,                                        // base: remote (source of truth)
+    totalXp:    Math.max(local.totalXp||0,  remote.totalXp||0),
+    coins:      Math.max(local.coins||0,    remote.coins||0),
+    checked:    {...(remote.checked||{}),   ...(local.checked||{})},   // union: keep all checked
+    weights:    {...(remote.weights||{}),   ...(local.weights||{})},
+    personalRecords: {...(remote.personalRecords||{}), ...(local.personalRecords||{})},
+    earnedAchs: [...new Set([...(remote.earnedAchs||[]), ...(local.earnedAchs||[])])],
+    redeemedRewards: (remote.redeemedRewards||[]).length >= (local.redeemedRewards||[]).length
+                      ? (remote.redeemedRewards||[])
+                      : (local.redeemedRewards||[]),
+    dungeonCoins: {...(remote.dungeonCoins||{}), ...(local.dungeonCoins||{})},
+    customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
+                      ? (remote.customRoutines||[])
+                      : (local.customRoutines||[]),
+    playerClass:    remote.playerClass || local.playerClass || null,
+    assignedDiets:  (remote.assignedDiets||[]).length >= (local.assignedDiets||[]).length
+                      ? (remote.assignedDiets||[])
+                      : (local.assignedDiets||[]),
+    assignedProgram: remote.assignedProgram || local.assignedProgram || null,
+  };
+};
+
 const saveUserData = async (email, data) => {
   const key = email.replace(/\./g,"_").replace(/@/g,"_at_");
   localStorage.setItem(`rku_data_${email}`, JSON.stringify(data));
-  await fbSet(`userData/${key}`, data);
+  await fbSet(`userData/${key}`, data).catch(()=>{});
 };
 const syncFromFirebase = async (email) => {
   const key = email.replace(/\./g,"_").replace(/@/g,"_at_");
-  const [safeUsers, userData] = await Promise.all([fbGet("users"), fbGet(`userData/${key}`)]);
+  const [safeUsers, remoteData] = await Promise.all([fbGet("users"), fbGet(`userData/${key}`)]);
   if(safeUsers){
     const users = {};
     Object.values(safeUsers).forEach(u => { if(u.email) users[u.email] = u; });
     localStorage.setItem("rku_users", JSON.stringify(users));
   }
-  if(userData) localStorage.setItem(`rku_data_${email}`, JSON.stringify(userData));
-  return { users: getUsers(), userData };
+  const localData = getUserData(email);
+  // Merge remote + local, keeping highest progress
+  const merged = mergeUserData(localData, remoteData);
+  if(merged){
+    localStorage.setItem(`rku_data_${email}`, JSON.stringify(merged));
+    // Write merged back to Firebase so both are in sync
+    if(remoteData) await fbSet(`userData/${key}`, merged).catch(()=>{});
+  }
+  return { users: getUsers(), userData: merged };
 };
 const syncUsersFromFirebase = async () => {
   const safeUsers = await fbGet("users");
@@ -2865,17 +2901,22 @@ function RankUpApp({user,onLogout}){
   const loadedRef=useRef(null); // stores the raw Firebase snapshot until all states are settled
   useEffect(()=>{
     if(!dataLoaded.current) return;
-    // Merge: prefer current state but fall back to loadedRef for values not yet in state
+    // Always take the MAX between current state and the Firebase snapshot
+    // This prevents any race condition from overwriting real progress with empty state
     const base=loadedRef.current||{};
+    const safeChecked={...(base.checked||{}),...checked};
+    const safeWeights={...(base.weights||{}),...weights};
+    const safeDC={...(base.dungeonCoins||{}),...dc};
+    const safeEarned=[...new Set([...(base.earnedAchs||[]),...earnedAchs])];
     saveUserData(user.email,{
-      totalXp: totalXp||base.totalXp||0,
-      coins: coins||base.coins||0,
-      checked: Object.keys(checked).length>0?checked:(base.checked||{}),
-      weights: Object.keys(weights).length>0?weights:(base.weights||{}),
+      totalXp: Math.max(totalXp, base.totalXp||0),
+      coins:   Math.max(coins,   base.coins||0),
+      checked: safeChecked,
+      weights: safeWeights,
       personalRecords:pr,
-      earnedAchs,
+      earnedAchs: safeEarned,
       redeemedRewards:redeemed,
-      dungeonCoins:Object.keys(dc).length>0?dc:(base.dungeonCoins||{}),
+      dungeonCoins: safeDC,
       customRoutines:routines,
       playerClass,
       assignedDiets,
