@@ -1433,7 +1433,6 @@ function AdminPanel({onLogout}){
   const [selUser,setSelUser]=useState(null);
   const [editData,setEditData]=useState(null);
   // Helper: get user data preferring Firebase cache over localStorage
-  const getUD=(email)=>allUserData[email]||getUD(email)||defaultData();
   const [msg,setMsg]=useState("");
   const [confirmDel,setConfirmDel]=useState(null);
   const [newPw,setNewPw]=useState("");
@@ -1515,6 +1514,7 @@ function AdminPanel({onLogout}){
   // Cache of all user data loaded from Firebase — keyed by email
   const [allUserData,setAllUserData]=useState({});
   const [dataLoading,setDataLoading]=useState(true);
+  const getUD=(email)=>allUserData[email]||getUserData(email)||defaultData();
 
   // Sync admin routines, diets and ALL user data from Firebase on mount
   useEffect(()=>{
@@ -2864,22 +2864,25 @@ function RankUpApp({user,onLogout}){
       if(fresh.redeemedRewards?.length>0) setRedeemed(fresh.redeemedRewards);
       const freshDC=fresh.dungeonCoins||{};
       if(Object.keys(freshDC).length>0) setDC(freshDC);
-      // Recalculate coins from dungeonCoins — source of truth, never corrupt
-      // Each dungeon key = COIN_DUNGEON, each week key = COIN_WEEK, each phase key = COIN_PHASE
-      const recalcCoins=(()=>{
+      // Load coins: if Firebase has a value >0 respect it always.
+      // Only recalculate if coins===0 AND dungeonCoins exists (sign of corruption).
+      const storedCoins=fresh.coins||0;
+      if(storedCoins>0){
+        setCoins(storedCoins);
+      } else if(Object.keys(freshDC).length>0){
+        // Coins corrupted to 0 — recover by counting dungeonCoins keys
+        // Use fixed base values to avoid retroactive inflation from price changes
+        const BASE_DUNGEON=75, BASE_WEEK=150, BASE_PHASE=500;
         let c=0;
         Object.keys(freshDC).forEach(k=>{
-          if(k.startsWith("phase_")) c+=COIN_PHASE;
-          else if(k.startsWith("week_")) c+=COIN_WEEK;
-          else c+=COIN_DUNGEON; // individual dungeon
+          if(k.startsWith("phase_")) c+=BASE_PHASE;
+          else if(k.startsWith("week_")) c+=BASE_WEEK;
+          else c+=BASE_DUNGEON;
         });
-        // Subtract spent on rewards
         const spent=(fresh.redeemedRewards||[]).reduce((a,e)=>a+(typeof e==="object"?e.cost||0:REWARDS.find(r=>r.id===e)?.cost||0),0);
-        return Math.max(0, c-spent);
-      })();
-      // Use whichever is higher: stored coins or recalculated
-      const finalCoins=Math.max(fresh.coins||0, recalcCoins);
-      if(finalCoins>0) setCoins(finalCoins);
+        const recovered=Math.max(0,c-spent);
+        if(recovered>0) setCoins(recovered);
+      }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Migrate old ex.done system → checked keys
