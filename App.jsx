@@ -58,7 +58,7 @@ const RANKS = [
   { rank:"A", title:"Maestro",    minLevel:40, maxLevel:49, color:"#F87171", glow:"#EF4444" },
   { rank:"S", title:"Mítico",    minLevel:50, maxLevel:99, color:"#A78BFA", glow:"#8B5CF6" },
 ];
-const XP_PER_LEVEL=500, COIN_DUNGEON=25, COIN_BOSS_EX=10, COIN_WEEK=50, COIN_PHASE=150;
+const XP_PER_LEVEL=500, COIN_DUNGEON=75, COIN_BOSS_EX=30, COIN_WEEK=150, COIN_PHASE=500;
 
 const MUSCLE_RANKS = [
   { rank:"—", label:"Sin activar",  color:"#2A2A44", glow:"#2A2A4466", min:0    },
@@ -433,37 +433,68 @@ const EXERCISE_DB = [
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
 
 const ACHIEVEMENTS = [
-  {id:"first_exercise",icon:"⚔️",name:"Primera Sangre",   desc:"Completa tu primer ejercicio",  xp:50,  check:s=>s.totalDone>=1},
-  {id:"first_day",     icon:"🗡️",name:"Superviviente",    desc:"Completa tu primer día entero", xp:150, check:s=>s.daysComplete>=1},
-  {id:"ten_exercises", icon:"🛡️",name:"Veterano",         desc:"Completa 10 ejercicios",        xp:100, check:s=>s.totalDone>=10},
-  {id:"first_record",  icon:"📈",name:"Rompe Límites",    desc:"Supera un peso personal",       xp:200, check:s=>s.prCount>=1},
-  {id:"thirty_done",   icon:"🔥",name:"En Llamas",        desc:"Completa 30 ejercicios",        xp:300, check:s=>s.totalDone>=30},
-  {id:"phase1_done",   icon:"🏰",name:"Dungeon I",        desc:"Completa la Fase 1",            xp:500, check:s=>s.phase1Complete},
-  {id:"phase2_done",   icon:"⚡",name:"Dungeon II",       desc:"Completa la Fase 2",            xp:700, check:s=>s.phase2Complete},
-  {id:"phase3_done",   icon:"👑",name:"Mítico RankUp",  desc:"Completa el programa completo",      xp:1000,check:s=>s.phase3Complete},
-  {id:"fifty_weights", icon:"💪",name:"Iron Will",        desc:"Registra 50 pesos",             xp:200, check:s=>s.totalWeightLogs>=50},
-  {id:"custom_routine",icon:"🗡️",name:"Guerrero Dedicado", desc:"Completa todos los ejercicios de una rutina asignada", xp:100, check:s=>s.customRoutines>=1},
+  // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
+  {id:"first_exercise", icon:"⚔️", name:"Primera Sangre",     desc:"Completa tu primer ejercicio",          xp:50,   check:s=>s.totalDone>=1},
+  {id:"first_day",      icon:"🗡️", name:"Superviviente",      desc:"Completa tu primer día entero",         xp:150,  check:s=>s.daysComplete>=1},
+  {id:"first_record",   icon:"📈", name:"Rompe Límites",      desc:"Supera tu primer récord de peso",       xp:200,  check:s=>s.prCount>=1},
+  {id:"first_log",      icon:"📝", name:"Escribiendo Historia",desc:"Registra tu primer peso",               xp:75,   check:s=>s.totalWeightLogs>=1},
+
+  // ── VOLUMEN DE EJERCICIOS ────────────────────────────────────────────────────
+  {id:"ten_exercises",  icon:"🛡️", name:"Veterano",           desc:"Completa 10 ejercicios",                xp:100,  check:s=>s.totalDone>=10},
+  {id:"thirty_done",    icon:"🔥", name:"En Llamas",          desc:"Completa 30 ejercicios",                xp:300,  check:s=>s.totalDone>=30},
+  {id:"hundred_done",   icon:"💯", name:"Centurión",          desc:"Completa 100 ejercicios",               xp:500,  check:s=>s.totalDone>=100},
+  {id:"twofifty_done",  icon:"🌋", name:"Imparable",          desc:"Completa 250 ejercicios",               xp:800,  check:s=>s.totalDone>=250},
+  {id:"fivehund_done",  icon:"🌠", name:"Leyenda del Hierro", desc:"Completa 500 ejercicios",               xp:1500, check:s=>s.totalDone>=500},
+
+  // ── DÍAS COMPLETOS ───────────────────────────────────────────────────────────
+  {id:"five_days",      icon:"📅", name:"Consistente",        desc:"Completa 5 días de entreno",            xp:250,  check:s=>s.daysComplete>=5},
+  {id:"ten_days",       icon:"🗓️", name:"Hábito Forjado",     desc:"Completa 10 días de entreno",           xp:400,  check:s=>s.daysComplete>=10},
+  {id:"twentyfive_days",icon:"🔒", name:"Disciplina de Acero",desc:"Completa 25 días de entreno",           xp:700,  check:s=>s.daysComplete>=25},
+
+  // ── RÉCORDS PERSONALES ───────────────────────────────────────────────────────
+  {id:"five_records",   icon:"🏅", name:"Coleccionista de PRs",desc:"Supera 5 récords personales",          xp:350,  check:s=>s.prCount>=5},
+  {id:"ten_records",    icon:"🥇", name:"Máquina de Progreso", desc:"Supera 10 récords personales",         xp:600,  check:s=>s.prCount>=10},
+  {id:"twentyfive_rec", icon:"💎", name:"Élite",               desc:"Supera 25 récords personales",         xp:1000, check:s=>s.prCount>=25},
+
+  // ── REGISTROS DE PESO ────────────────────────────────────────────────────────
+  {id:"ten_weights",    icon:"📊", name:"Analista",            desc:"Registra 10 pesos",                    xp:100,  check:s=>s.totalWeightLogs>=10},
+  {id:"fifty_weights",  icon:"💪", name:"Iron Will",           desc:"Registra 50 pesos",                    xp:300,  check:s=>s.totalWeightLogs>=50},
+  {id:"hundred_weights",icon:"📉", name:"Tracker Élite",       desc:"Registra 100 pesos",                   xp:500,  check:s=>s.totalWeightLogs>=100},
+
+  // ── FASES DEL PROGRAMA ───────────────────────────────────────────────────────
+  {id:"phase1_done",    icon:"🏰", name:"Dungeon I Conquistado", desc:"Completa la Fase 1 al completo",     xp:500,  check:s=>s.phase1Complete},
+  {id:"phase2_done",    icon:"⚡", name:"Dungeon II Conquistado",desc:"Completa la Fase 2 al completo",     xp:700,  check:s=>s.phase2Complete},
+  {id:"phase3_done",    icon:"👑", name:"Mítico RankUp",         desc:"Completa el programa de 12 semanas", xp:1500, check:s=>s.phase3Complete},
+
+  // ── RUTINAS ──────────────────────────────────────────────────────────────────
+  {id:"custom_routine", icon:"🗺️", name:"Explorador",           desc:"Completa tu primera rutina asignada", xp:200,  check:s=>s.customRoutines>=1},
+  {id:"three_routines", icon:"⚙️", name:"Polivalente",           desc:"Completa 3 rutinas asignadas",        xp:400,  check:s=>s.customRoutines>=3},
+
+  // ── MONEDAS GANADAS ──────────────────────────────────────────────────────────
+  {id:"coins_500",      icon:"🪙", name:"Primer Tesoro",         desc:"Acumula 500 monedas en total",        xp:150,  check:s=>s.totalCoinsEarned>=500},
+  {id:"coins_2000",     icon:"💰", name:"Adinerado",             desc:"Acumula 2.000 monedas en total",      xp:300,  check:s=>s.totalCoinsEarned>=2000},
+  {id:"coins_5000",     icon:"🏦", name:"Magnate del Gym",       desc:"Acumula 5.000 monedas en total",      xp:600,  check:s=>s.totalCoinsEarned>=5000},
 ];
 
 const REWARDS = [
-  {id:"snack_1",cat:"🍬 Caprichos",icon:"🍫",name:"Chocolatina",         desc:"Una chocolatina de tu elección.",           cost:80},
-  {id:"snack_2",cat:"🍬 Caprichos",icon:"🍕",name:"Porción de pizza",    desc:"1 porción sin culpa. La ganaste.",          cost:150},
-  {id:"snack_3",cat:"🍬 Caprichos",icon:"🍦",name:"Helado mediano",      desc:"El sabor que quieras. Sin restricciones.",  cost:120},
-  {id:"snack_4",cat:"🍬 Caprichos",icon:"🍔",name:"Hamburguesa completa",desc:"Burger con todo. Día libre de macros.",     cost:300},
-  {id:"snack_5",cat:"🍬 Caprichos",icon:"🥤",name:"Refresco grande",     desc:"El refresco que tenías ganas.",             cost:60},
-  {id:"snack_6",cat:"🍬 Caprichos",icon:"🧁",name:"Muffin o cupcake",    desc:"Uno grande. Sin mirar las calorías.",       cost:90},
-  {id:"snack_7",cat:"🍬 Caprichos",icon:"🍟",name:"Patatas fritas L",    desc:"Talla grande. Las mejores post-entreno.",   cost:100},
-  {id:"snack_8",cat:"🍬 Caprichos",icon:"🎂",name:"Tarde libre de dieta",desc:"Una tarde entera sin contar nada.",         cost:400},
-  {id:"rest_1", cat:"😴 Descanso", icon:"🛌",name:"Siesta sin culpa",    desc:"30–45 min. El cuerpo lo pide.",            cost:60},
-  {id:"rest_2", cat:"😴 Descanso", icon:"📺",name:"Serie sin límite",    desc:"Una tarde entera de sofá y serie.",         cost:150},
-  {id:"rest_3", cat:"😴 Descanso", icon:"🛁",name:"Baño de recuperación",desc:"Baño caliente largo con sales.",            cost:100},
-  {id:"rest_4", cat:"😴 Descanso", icon:"🎮",name:"Sesión de gaming",    desc:"2 horas sin interrupciones.",               cost:120},
-  {id:"rest_5", cat:"😴 Descanso", icon:"📚",name:"Tarde de lectura",    desc:"Sin obligaciones. Solo tú y tu libro.",     cost:80},
-  {id:"epic_1", cat:"🏆 Épicas",   icon:"💆",name:"Masaje deportivo",    desc:"1 hora de masaje. Tu cuerpo lo pidió.",    cost:500},
-  {id:"epic_2", cat:"🏆 Épicas",   icon:"👟",name:"Ropa deportiva nueva",desc:"Una prenda nueva para el gym.",             cost:600},
-  {id:"epic_3", cat:"🏆 Épicas",   icon:"🍽️",name:"Cena especial",       desc:"Tu restaurante favorito. Sin límite.",      cost:700},
-  {id:"epic_4", cat:"🏆 Épicas",   icon:"🎯",name:"Día de aventura",     desc:"Escala, senderismo, surf…",                cost:800},
-  {id:"epic_5", cat:"🏆 Épicas",   icon:"👑",name:"Fin de semana libre", desc:"72h sin plan. Recarga total.",              cost:1200},
+  {id:"snack_1",cat:"🍬 Caprichos",icon:"🍫",name:"Chocolatina",         desc:"Una chocolatina de tu elección.",           cost:200},
+  {id:"snack_2",cat:"🍬 Caprichos",icon:"🍕",name:"Porción de pizza",    desc:"1 porción sin culpa. La ganaste.",          cost:400},
+  {id:"snack_3",cat:"🍬 Caprichos",icon:"🍦",name:"Helado mediano",      desc:"El sabor que quieras. Sin restricciones.",  cost:300},
+  {id:"snack_4",cat:"🍬 Caprichos",icon:"🍔",name:"Hamburguesa completa",desc:"Burger con todo. Día libre de macros.",     cost:750},
+  {id:"snack_5",cat:"🍬 Caprichos",icon:"🥤",name:"Refresco grande",     desc:"El refresco que tenías ganas.",             cost:150},
+  {id:"snack_6",cat:"🍬 Caprichos",icon:"🧁",name:"Muffin o cupcake",    desc:"Uno grande. Sin mirar las calorías.",       cost:225},
+  {id:"snack_7",cat:"🍬 Caprichos",icon:"🍟",name:"Patatas fritas L",    desc:"Talla grande. Las mejores post-entreno.",   cost:250},
+  {id:"snack_8",cat:"🍬 Caprichos",icon:"🎂",name:"Tarde libre de dieta",desc:"Una tarde entera sin contar nada.",         cost:1000},
+  {id:"rest_1", cat:"😴 Descanso", icon:"🛌",name:"Siesta sin culpa",    desc:"30–45 min. El cuerpo lo pide.",            cost:150},
+  {id:"rest_2", cat:"😴 Descanso", icon:"📺",name:"Serie sin límite",    desc:"Una tarde entera de sofá y serie.",         cost:400},
+  {id:"rest_3", cat:"😴 Descanso", icon:"🛁",name:"Baño de recuperación",desc:"Baño caliente largo con sales.",            cost:275},
+  {id:"rest_4", cat:"😴 Descanso", icon:"🎮",name:"Sesión de gaming",    desc:"2 horas sin interrupciones.",               cost:300},
+  {id:"rest_5", cat:"😴 Descanso", icon:"📚",name:"Tarde de lectura",    desc:"Sin obligaciones. Solo tú y tu libro.",     cost:200},
+  {id:"epic_1", cat:"🏆 Épicas",   icon:"💆",name:"Masaje deportivo",    desc:"1 hora de masaje. Tu cuerpo lo pidió.",    cost:1500},
+  {id:"epic_2", cat:"🏆 Épicas",   icon:"👟",name:"Ropa deportiva nueva",desc:"Una prenda nueva para el gym.",             cost:2000},
+  {id:"epic_3", cat:"🏆 Épicas",   icon:"🍽️",name:"Cena especial",       desc:"Tu restaurante favorito. Sin límite.",      cost:2500},
+  {id:"epic_4", cat:"🏆 Épicas",   icon:"🎯",name:"Día de aventura",     desc:"Escala, senderismo, surf…",                cost:3000},
+  {id:"epic_5", cat:"🏆 Épicas",   icon:"👑",name:"Fin de semana libre", desc:"72h sin plan. Recarga total.",              cost:5000},
 ];
 
 // ─── PHASES DATA ─────────────────────────────────────────────────────────────
@@ -2842,7 +2873,10 @@ function RankUpApp({user,onLogout}){
     const p1=PHASES[0].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(1,di,ei)]));
     const p2=PHASES[1].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(2,di,ei)]));
     const p3=PHASES[2].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(3,di,ei)]));
-    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:routines.length};
+    // Calculate total coins ever earned (current + spent)
+    const spent=redeemed.reduce((a,e)=>a+(typeof e==="object"?e.cost||0:REWARDS.find(r=>r.id===e)?.cost||0),0);
+    const totalCoinsEarned=coins+spent;
+    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:routines.length,totalCoinsEarned};
     // Use functional setEarned to always read latest list — avoids stale closure bug
     setEarned(currentEarned=>{
       let newEarned=[...currentEarned];
@@ -2861,7 +2895,7 @@ function RankUpApp({user,onLogout}){
       }
       return newEarned;
     });
-  },[checked,weights,pr,routines]);
+  },[checked,weights,pr,routines,coins,redeemed]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
@@ -3936,15 +3970,24 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
           <button key={i} onClick={()=>setActiveSess(i)} style={{padding:"6px 12px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:activeSess===i?color:"#1A1A2E",color:activeSess===i?"#07070F":"#555"}}>{s.day}</button>
         ))}
         <button onClick={()=>{setSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[]}]);setActiveSess(sessions.length);}} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${color}44`,background:"transparent",cursor:"pointer",fontSize:11,color:color,fontFamily:"'Rajdhani',sans-serif"}}>+ DÍA</button>
+        <button onClick={()=>{
+          const blank=sessions.map(s=>({day:s.day,exercises:[]}));
+          setSessions(p=>[...p,...blank]);
+          setActiveSess(sessions.length);
+        }} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${color}44`,background:"transparent",cursor:"pointer",fontSize:11,color:color,fontFamily:"'Rajdhani',sans-serif"}}>+ SEMANA EN BLANCO</button>
       </div>
       <input value={sess.day} onChange={e=>setSessions(p=>p.map((s,i)=>i===activeSess?{...s,day:e.target.value}:s))} style={{width:"100%",padding:"8px 12px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       {sess.exercises.length===0
         ? <div style={{textAlign:"center",padding:24,color:"#333",fontSize:12,border:"1px dashed #2A2A44",borderRadius:10,marginBottom:10}}>Sin ejercicios. Añade uno ↓</div>
         : sess.exercises.map((ex,ei)=>(
-          <div key={ei} style={{background:ex.done?`${color}10`:"#0D0D19",border:`1px solid ${color}22`,borderRadius:10,padding:"10px 12px",marginBottom:8}}>
+          <div key={ei} style={{background:ex.boss?"#1A0808":ex.done?`${color}10`:"#0D0D19",border:`1px solid ${ex.boss?"#E84A5F55":color+"22"}`,borderRadius:10,padding:"10px 12px",marginBottom:8}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-              <div style={{fontSize:13,fontWeight:700,color:ex.done?"#555":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
-              <div style={{display:"flex",gap:6}}>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontSize:13,fontWeight:700,color:ex.done?"#555":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                {ex.boss&&<span style={{fontSize:8,padding:"1px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1,marginTop:3,display:"inline-block"}}>💀 BOSS</span>}
+              </div>
+              <div style={{display:"flex",gap:6,flexShrink:0}}>
+                <button onClick={()=>updateEx(activeSess,ei,"boss",!ex.boss)} title="Marcar como Boss" style={{width:26,height:26,borderRadius:6,border:`1.5px solid ${ex.boss?"#E84A5F":"#2A2A44"}`,background:ex.boss?"#E84A5F22":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💀</button>
                 <button onClick={e=>toggleDone(activeSess,ei,ex.xp,e)} style={{width:26,height:26,borderRadius:6,border:`1.5px solid ${ex.done?color:"#2A2A44"}`,background:ex.done?color:"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:ex.done?"#07070F":"#444"}}>{ex.done?"✓":"○"}</button>
                 <button onClick={()=>removeEx(activeSess,ei)} style={{width:26,height:26,borderRadius:6,border:"1px solid #E84A5F33",background:"transparent",cursor:"pointer",fontSize:12,color:"#E84A5F"}}>×</button>
               </div>
@@ -3952,7 +3995,7 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
             <div style={{display:"flex",gap:6}}>
               <input value={ex.sets} onChange={e=>updateEx(activeSess,ei,"sets",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid #2A2A44",borderRadius:6,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Series"/>
               <input value={ex.rest} onChange={e=>updateEx(activeSess,ei,"rest",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid #2A2A44",borderRadius:6,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Descanso"/>
-              <span style={{fontSize:10,color:color,fontWeight:700,padding:"5px 6px",whiteSpace:"nowrap"}}>+{ex.xp}XP</span>
+              <span style={{fontSize:10,color:ex.boss?"#E84A5F":color,fontWeight:700,padding:"5px 6px",whiteSpace:"nowrap"}}>+{ex.xp}XP</span>
             </div>
           </div>
         ))
