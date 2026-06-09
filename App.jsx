@@ -1710,6 +1710,35 @@ function AdminPanel({onLogout}){
             })()}
           </div>
 
+          {/* Historial de compras */}
+          {(()=>{
+            const rawRedeemed=editData.redeemedRewards||[];
+            const redObjs=rawRedeemed.map(e=>typeof e==="object"?e:{id:e,name:REWARDS.find(r=>r.id===e)?.name||e,icon:REWARDS.find(r=>r.id===e)?.icon||"🪙",cost:REWARDS.find(r=>r.id===e)?.cost||0,date:null});
+            const totalSpent=redObjs.reduce((a,e)=>a+(e.cost||0),0);
+            const formatDate=iso=>{if(!iso)return"—";const d=new Date(iso);return`${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;};
+            return(
+              <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #F59E0B33",marginBottom:14}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3}}>📜 HISTORIAL DE COMPRAS ({redObjs.length})</div>
+                  <div style={{fontSize:12,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{totalSpent.toLocaleString()} 🪙 gastadas</div>
+                </div>
+                {redObjs.length===0
+                  ?<div style={{fontSize:11,color:"#333",textAlign:"center",padding:"12px 0"}}>Sin compras realizadas</div>
+                  :[...redObjs].reverse().map((entry,i)=>(
+                    <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
+                      <span style={{fontSize:22,flexShrink:0}}>{entry.icon}</span>
+                      <div style={{flex:1,minWidth:0}}>
+                        <div style={{fontSize:12,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{entry.name}</div>
+                        <div style={{fontSize:10,color:"#444"}}>{formatDate(entry.date)}</div>
+                      </div>
+                      <div style={{fontSize:13,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>-{(entry.cost||0).toLocaleString()} 🪙</div>
+                    </div>
+                  ))
+                }
+              </div>
+            );
+          })()}
+
           {/* Danger zone */}
           <div style={{background:"#120808",borderRadius:12,padding:14,border:"1px solid #E84A5F33",marginBottom:16}}>
             <div style={{fontSize:9,color:"#E84A5F88",letterSpacing:3,marginBottom:12}}>⚠️ ZONA PELIGROSA</div>
@@ -2746,8 +2775,30 @@ function RankUpApp({user,onLogout}){
       if(fresh.dungeonCoins&&Object.keys(fresh.dungeonCoins).length>0) setDC(fresh.dungeonCoins);
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
+      // Migrate old ex.done system → checked keys
       const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
-      if(cleanRoutines.length>0) setRoutines(cleanRoutines);
+      if(cleanRoutines.length>0){
+        const migratedChecked={...(fresh.checked||{})};
+        let needsMigration=false;
+        cleanRoutines.forEach(rt=>{
+          rt.sessions?.forEach((s,si)=>{
+            s.exercises?.forEach((ex,ei)=>{
+              if(ex.done===true){
+                const key=`rt_${rt.id}_${si}_${ei}`;
+                if(!migratedChecked[key]){ migratedChecked[key]=true; needsMigration=true; }
+              }
+              // Strip ex.done from the object so it's clean going forward
+              delete ex.done;
+            });
+          });
+        });
+        if(needsMigration){
+          setChecked(migratedChecked);
+          // Persist migration immediately
+          saveUserData(user.email,{...fresh,checked:migratedChecked,customRoutines:cleanRoutines});
+        }
+        setRoutines(cleanRoutines);
+      }
       if(fresh.assignedProgram){
         let changed=false;
         fresh.assignedProgram.phases?.forEach(p=>{
@@ -2783,6 +2834,7 @@ function RankUpApp({user,onLogout}){
   },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
+    if(!dataLoaded.current) return; // wait until Firebase data is loaded
     const td=Object.values(checked).filter(Boolean).length;
     const twl=Object.values(weights).reduce((a,arr)=>a+(arr||[]).length,0);
     const dc2=PHASES.reduce((t,p)=>t+p.training.filter((d,di)=>d.exercises.every((_,ei)=>checked[exKey(p.id,di,ei)])).length,0);
@@ -2791,7 +2843,24 @@ function RankUpApp({user,onLogout}){
     const p2=PHASES[1].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(2,di,ei)]));
     const p3=PHASES[2].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(3,di,ei)]));
     const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:routines.length};
-    ACHIEVEMENTS.forEach(a=>{if(!earnedAchs.includes(a.id)&&a.check(stats)){setEarned(p=>[...p,a.id]);setTotalXp(p=>p+a.xp);setAchToast(a);}});
+    // Use functional setEarned to always read latest list — avoids stale closure bug
+    setEarned(currentEarned=>{
+      let newEarned=[...currentEarned];
+      let xpToAdd=0;
+      let lastAch=null;
+      ACHIEVEMENTS.forEach(a=>{
+        if(!newEarned.includes(a.id)&&a.check(stats)){
+          newEarned=[...newEarned,a.id];
+          xpToAdd+=a.xp;
+          lastAch=a;
+        }
+      });
+      if(xpToAdd>0){
+        setTotalXp(p=>p+xpToAdd);
+        if(lastAch) setAchToast(lastAch);
+      }
+      return newEarned;
+    });
   },[checked,weights,pr,routines]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
@@ -2811,23 +2880,37 @@ function RankUpApp({user,onLogout}){
       if(day){
         const ck=`${phaseId}_${dayIdx}`;
         const allDone=day.exercises.every((_,ei)=>nc[exKey(phaseId,dayIdx,ei)]);
-        if(allDone&&!dc[ck]){
-          const bossDone=day.exercises.filter((ex,ei)=>ex.boss&&nc[exKey(phaseId,dayIdx,ei)]).length;
-          const coins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
-          setDC(p=>({...p,[ck]:true}));addCoins(coins,"¡Dungeon completado!");
-          // Calculate total kg lifted in this session
-          const sessKg=day.exercises.reduce((sum,ex,ei)=>{
-            const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
-            return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
-          },0);
-          setTimeout(()=>setDungeonComplete({
-            dayName:day.day, totalKg:Math.round(sessKg),
-            exercises:day.exercises.length, coins, bossDone
-          }),400);
-          const wk=`week_${phaseId}_${day.week}`;
-          if(!dc[wk]){const wd=phase.training.filter(d=>d.week===day.week);const awDone=wd.every(d=>{const gi=phase.training.indexOf(d);return d.exercises.every((_,ei)=>nc[exKey(phaseId,gi,ei)]);});if(awDone){setDC(p=>({...p,[wk]:true}));addCoins(COIN_WEEK,`🗓️ Semana ${day.week} completada`);}}
-          const pk=`phase_${phaseId}`;
-          if(!dc[pk]){const apDone=phase.training.every((d,di2)=>d.exercises.every((_,ei)=>nc[exKey(phaseId,di2,ei)]));if(apDone){setDC(p=>({...p,[pk]:true}));addCoins(COIN_PHASE,`⚡ ¡FASE ${phaseId} COMPLETADA!`);}}
+        if(allDone){
+          // Use functional setDC to always read latest state — avoids stale closure
+          setDC(prevDC=>{
+            if(prevDC[ck]) return prevDC; // already rewarded
+            const bossDone=day.exercises.filter((ex,ei)=>ex.boss&&nc[exKey(phaseId,dayIdx,ei)]).length;
+            const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
+            addCoins(dungeonCoins,"¡Dungeon completado!");
+            const sessKg=day.exercises.reduce((sum,ex,ei)=>{
+              const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
+              return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+            },0);
+            setTimeout(()=>setDungeonComplete({
+              dayName:day.day, totalKg:Math.round(sessKg),
+              exercises:day.exercises.length, coins:dungeonCoins, bossDone
+            }),400);
+            const newDC={...prevDC,[ck]:true};
+            // Week bonus
+            const wk=`week_${phaseId}_${day.week}`;
+            if(!newDC[wk]){
+              const wd=phase.training.filter(d=>d.week===day.week);
+              const awDone=wd.every(d=>{const gi=phase.training.indexOf(d);return d.exercises.every((_,ei)=>nc[exKey(phaseId,gi,ei)]);});
+              if(awDone){newDC[wk]=true;addCoins(COIN_WEEK,`🗓️ Semana ${day.week} completada`);}
+            }
+            // Phase bonus
+            const pk=`phase_${phaseId}`;
+            if(!newDC[pk]){
+              const apDone=phase.training.every((d,di2)=>d.exercises.every((_,ei)=>nc[exKey(phaseId,di2,ei)]));
+              if(apDone){newDC[pk]=true;addCoins(COIN_PHASE,`⚡ ¡FASE ${phaseId} COMPLETADA!`);}
+            }
+            return newDC;
+          });
         }
       }
     } else setTotalXp(p=>Math.max(0,p-xp));
@@ -2857,7 +2940,10 @@ function RankUpApp({user,onLogout}){
 
   const redeemReward=useCallback((reward)=>{
     if(coins<reward.cost)return;
-    setCoins(p=>p-reward.cost);setRedeemed(p=>[...p,reward.id]);setRedeemModal({reward,newCoins:coins-reward.cost});
+    const entry={id:reward.id,name:reward.name,icon:reward.icon,cost:reward.cost,date:new Date().toISOString()};
+    setCoins(p=>p-reward.cost);
+    setRedeemed(p=>[...p,entry]);
+    setRedeemModal({reward,newCoins:coins-reward.cost});
   },[coins]);
 
   // Get user sex from users store
@@ -2867,8 +2953,9 @@ function RankUpApp({user,onLogout}){
   PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
     if(checked[exKey(p.id,di,ei)]){const ms=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=ex.xp;});}
   })));
-  routines.forEach(rt=>rt.sessions?.forEach(s=>s.exercises?.forEach(ex=>{
-    if(ex.done){const ms=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=(ex.xp||30);});}
+  routines.forEach(rt=>rt.sessions?.forEach((s,si)=>s.exercises?.forEach((ex,ei)=>{
+    const key=`rt_${rt.id}_${si}_${ei}`;
+    if(checked[key]){const ms=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=(ex.xp||30);});}
   })));
 
   const phTotal=ph.training.reduce((a,d)=>a+d.exercises.length,0);
@@ -3100,6 +3187,7 @@ function RankUpApp({user,onLogout}){
                   onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))}
                   openChart={openChart}
                   onToggleChart={k=>setOpenChart(openChart===k?null:k)}
+                  onUpdateRoutines={newRoutines=>{setRoutines(newRoutines);}}
                 />
               ):(
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
@@ -3149,111 +3237,210 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart}){
-  const [openRt,setOpenRt]=useState(null);
-  const [openRtSess,setOpenRtSess]=useState(null);
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines}){
+  const [openSess,setOpenSess]=useState(null);
+  const [addModal,setAddModal]=useState(null);   // {rtId, si} — session to add to
+  const [swapModal,setSwapModal]=useState(null); // {rtId, si, ei, exName, muscles}
+  const [searchQ,setSearchQ]=useState("");
+
+  const handleAddEx=(rtId,si,ex)=>{
+    const updated=routines.map(rt=>{
+      if(rt.id!==rtId) return rt;
+      const sessions=[...(rt.sessions||[])];
+      sessions[si]={...sessions[si],exercises:[...sessions[si].exercises,{name:ex.name,sets:"3x10",rest:"60s",xp:ex.xpBase||35,boss:false}]};
+      return {...rt,sessions};
+    });
+    onUpdateRoutines(updated);
+    setAddModal(null);setSearchQ("");
+  };
+
+  const handleSwapEx=(rtId,si,ei,ex)=>{
+    const updated=routines.map(rt=>{
+      if(rt.id!==rtId) return rt;
+      const sessions=[...(rt.sessions||[])];
+      const exs=[...sessions[si].exercises];
+      exs[ei]={...exs[ei],name:ex.name,xp:ex.xpBase||35};
+      sessions[si]={...sessions[si],exercises:exs};
+      return {...rt,sessions};
+    });
+    onUpdateRoutines(updated);
+    setSwapModal(null);setSearchQ("");
+  };
+
+  // Modal shared for add/swap
+  const modalCtx=addModal||swapModal;
+  const isSwap=!!swapModal;
+  const filteredExs=modalCtx?(()=>{
+    const q=searchQ.toLowerCase();
+    let pool=EXERCISE_DB;
+    // For swap: filter to same muscle group
+    if(isSwap&&swapModal.muscles?.length){
+      pool=EXERCISE_DB.filter(e=>e.muscle.some(m=>swapModal.muscles.includes(m)));
+    }
+    if(q) pool=pool.filter(e=>e.name.toLowerCase().includes(q)||e.muscle.some(m=>m.toLowerCase().includes(q)));
+    return pool.slice(0,40);
+  })():[];
+
   return(
     <div>
-      <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:14}}>👑 RUTINAS ASIGNADAS · {routines.length} RUTINAS</div>
+      <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:14}}>👑 MAZMORRAS ASIGNADAS · {routines.length} RUTINAS</div>
       {routines.map(rt=>{
         const c=rt.color||"#A78BFA";
         const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
-        const totalXp=sessions.reduce((a,s)=>a+s.exercises.reduce((b,e)=>b+(e.xp||35),0),0);
-        const doneXp=sessions.reduce((a,s,si)=>a+s.exercises.reduce((b,ex,ei)=>b+(checked[`rt_${rt.id}_${si}_${ei}`]?(ex.xp||35):0),0),0);
-        const totalEx=sessions.reduce((a,s)=>a+s.exercises.length,0);
-        const doneEx=sessions.reduce((a,s,si)=>a+s.exercises.filter((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]).length,0);
-        const allDone=doneEx===totalEx&&totalEx>0;
-        const isOpen=openRt===rt.id;
         return(
-          <div key={rt.id} style={{marginBottom:10}}>
-            <button onClick={()=>setOpenRt(isOpen?null:rt.id)}
-              style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${c}18,#0D0D1A)`:"#0F0F1C",border:`1px solid ${isOpen?c+"66":allDone?c+"44":"#1E1E32"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${c}33`:"none"}}>
-              <div>
-                <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>{allDone?"✅ RUTINA COMPLETADA":"👑 RUTINA ASIGNADA"}</div>
-                <div style={{fontSize:14,fontWeight:700,color:allDone?c:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
-                <div style={{fontSize:10,color:"#555",marginTop:2}}>{sessions.length} sesiones · {totalEx} ejercicios</div>
-              </div>
-              <div style={{textAlign:"right"}}>
-                <div style={{fontSize:12,color:c,fontWeight:700}}>+{doneXp}/{totalXp} XP</div>
-                <div style={{fontSize:11,color:allDone?c:"#444"}}>{doneEx}/{totalEx} ✓</div>
-                {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
-              </div>
-            </button>
-            {isOpen&&(
-              <div style={{border:`1px solid ${c}33`,borderTop:"none",borderRadius:"0 0 12px 12px",overflow:"hidden"}}>
-                {sessions.map((sess,si)=>{
-                  const sk=`rt_${rt.id}_sess_${si}`;
-                  const isSessOpen=openRtSess===sk;
-                  const sessDone=sess.exercises.filter((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]).length;
-                  const sessTotal=sess.exercises.length;
-                  return(
-                    <div key={si} style={{borderBottom:"1px solid #1A1A2E"}}>
-                      <button onClick={()=>setOpenRtSess(isSessOpen?null:sk)}
-                        style={{width:"100%",textAlign:"left",padding:"12px 16px",background:isSessOpen?`${c}0D`:"transparent",border:"none",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                        <div>
-                          <div style={{fontSize:9,color:c,letterSpacing:2,marginBottom:1}}>SESIÓN {si+1}</div>
-                          <div style={{fontSize:13,fontWeight:700,color:isSessOpen?c:"#AAA",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
-                        </div>
-                        <div style={{textAlign:"right"}}>
-                          <div style={{fontSize:11,color:sessDone===sessTotal&&sessTotal>0?c:"#444"}}>{sessDone}/{sessTotal} ✓</div>
-                          <div style={{fontSize:10,color:"#555"}}>{isSessOpen?"▲":"▼"}</div>
-                        </div>
-                      </button>
-                      {isSessOpen&&(
-                        <div>
-                          {sess.exercises.map((ex,ei)=>{
-                            const key=`rt_${rt.id}_${si}_${ei}`;
-                            const isDone=!!checked[key];
-                            const exW=weights[key]||[];
-                            const lastKg=exW.length>0?exW[exW.length-1].kg:null;
-                            const maxKg=exW.length>0?Math.max(...exW.map(w=>w.kg)):null;
-                            const isPR=maxKg&&pr[key]===maxKg;
-                            const isChartOpen=openChart===key;
-                            return(
-                              <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C"}}>
-                                <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                                  <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name)}
-                                    style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?c:"#2A2A44"}`,background:isDone?c:"transparent",boxShadow:isDone?`0 0 12px ${c}`:"none",transition:"all .2s"}}>
-                                    {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
-                                  </button>
-                                  <div style={{flex:1,minWidth:0}}>
-                                    <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
-                                    {ex.notes&&<div style={{fontSize:11,color:"#444",marginTop:2}}>{ex.notes}</div>}
-                                  </div>
-                                  <div style={{textAlign:"right",flexShrink:0}}>
-                                    <div style={{fontSize:13,color:c,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
-                                    <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
-                                    <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
-                                    {lastKg&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
-                                  </div>
+          <div key={rt.id} style={{marginBottom:20}}>
+            <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
+              <div style={{padding:"3px 12px",borderRadius:20,fontSize:9,fontWeight:700,letterSpacing:3,fontFamily:"'Rajdhani',sans-serif",background:`${c}22`,border:`1px solid ${c}55`,color:c}}>👑 {rt.name.toUpperCase()}</div>
+              <div style={{flex:1,height:1,background:`linear-gradient(90deg,${c}33,transparent)`}}/>
+            </div>
+            {sessions.map((sess,si)=>{
+              const sk=`${rt.id}_${si}`;
+              const isOpen=openSess===sk;
+              const sessDone=sess.exercises.filter((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]).length;
+              const sessTotal=sess.exercises.length;
+              const allDone=sessDone===sessTotal&&sessTotal>0;
+              const sessXpDone=sess.exercises.reduce((a,ex,ei)=>a+(checked[`rt_${rt.id}_${si}_${ei}`]?(ex.xp||35):0),0);
+              const sessXpTotal=sess.exercises.reduce((a,ex)=>a+(ex.xp||35),0);
+              const bossDone=sess.exercises.filter((ex,ei)=>ex.boss&&checked[`rt_${rt.id}_${si}_${ei}`]).length;
+              const bossTotal=sess.exercises.filter(ex=>ex.boss).length;
+              return(
+                <div key={si} style={{marginBottom:10}}>
+                  <button onClick={()=>setOpenSess(isOpen?null:sk)}
+                    style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",
+                      background:isOpen?`linear-gradient(135deg,${c}18,#0D0D1A)`:"#0F0F1C",
+                      border:`1px solid ${isOpen?c+"66":allDone?c+"44":"#1E1E32"}`,
+                      borderRadius:isOpen?"12px 12px 0 0":12,
+                      boxShadow:allDone?`0 0 16px ${c}33`:"none"}}>
+                    <div>
+                      <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>{allDone?"✅ DUNGEON COMPLETADO":`DUNGEON ${si+1}`}</div>
+                      <div style={{fontSize:14,fontWeight:700,color:allDone?c:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
+                      {bossTotal>0&&<div style={{fontSize:9,color:"#E84A5F",letterSpacing:1,marginTop:2}}>💀 {bossDone}/{bossTotal} BOSS</div>}
+                    </div>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontSize:12,color:c,fontWeight:700}}>+{sessXpDone}/{sessXpTotal} XP</div>
+                      <div style={{fontSize:11,color:allDone?c:"#444"}}>{sessDone}/{sessTotal} ✓</div>
+                      {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
+                    </div>
+                  </button>
+                  {isOpen&&(
+                    <div style={{border:`1px solid ${c}33`,borderTop:"none",borderRadius:"0 0 12px 12px",overflow:"hidden"}}>
+                      {sess.exercises.map((ex,ei)=>{
+                        const key=`rt_${rt.id}_${si}_${ei}`;
+                        const isDone=!!checked[key];
+                        const exW=weights[key]||[];
+                        const lastKg=exW.length>0?exW[exW.length-1].kg:null;
+                        const maxKg=exW.length>0?Math.max(...exW.map(w=>w.kg)):null;
+                        const isPR=maxKg&&pr[key]===maxKg;
+                        const isChartOpen=openChart===key;
+                        const exMuscles=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];
+                        return(
+                          <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
+                            <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
+                              <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name)}
+                                style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
+                                  border:`2px solid ${isDone?c:ex.boss?"#E84A5F":"#2A2A44"}`,
+                                  background:isDone?c:"transparent",
+                                  boxShadow:isDone?`0 0 12px ${c}`:"none",transition:"all .2s"}}>
+                                {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
+                              </button>
+                              <div style={{flex:1,minWidth:0}}>
+                                <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
+                                  <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
+                                  {ex.boss&&!isDone&&<span style={{fontSize:9,padding:"2px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1}}>BOSS</span>}
                                 </div>
-                                <div style={{padding:"0 14px 12px 56px"}}>
-                                  <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                                    <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
-                                      onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e);}}
-                                      style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                                    <button onClick={e=>onLogWeight(key,e)}
-                                      style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                                    {exW.length>0&&<button onClick={()=>onToggleChart(key)}
-                                      style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
-                                  </div>
-                                  {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
-                                  {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
-                                  {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={c}/>}
+                                {ex.notes&&<div style={{fontSize:11,color:"#444",marginTop:2}}>{ex.notes}</div>}
+                                {/* Muscle tags */}
+                                <div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>
+                                  {exMuscles.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"#1A1A2E",border:"1px solid #2A2A3E",borderRadius:10,color:"#555",letterSpacing:1}}>{m.toUpperCase()}</span>)}
                                 </div>
                               </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                              <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                                <div style={{textAlign:"right"}}>
+                                  <div style={{fontSize:13,color:c,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
+                                  <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
+                                  <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
+                                  {lastKg&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
+                                </div>
+                                {/* Swap button */}
+                                {!isDone&&<button onClick={()=>{setSwapModal({rtId:rt.id,si,ei,exName:ex.name,muscles:exMuscles});setSearchQ("");}}
+                                  style={{fontSize:9,padding:"3px 8px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:6,color:"#666",cursor:"pointer",letterSpacing:1,fontFamily:"'Rajdhani',sans-serif"}}>🔄 CAMBIAR</button>}
+                              </div>
+                            </div>
+                            <div style={{padding:"0 14px 12px 56px"}}>
+                              <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
+                                <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
+                                  onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e);}}
+                                  style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                <button onClick={e=>onLogWeight(key,e)}
+                                  style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
+                                {exW.length>0&&<button onClick={()=>onToggleChart(key)}
+                                  style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
+                              </div>
+                              {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
+                              {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=>(
+                                <span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}>
+                                  <span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}
+                                  <button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button>
+                                </span>
+                              ))}</div>}
+                              {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={c}/>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {/* Add exercise button */}
+                      <button onClick={()=>{setAddModal({rtId:rt.id,si});setSearchQ("");}}
+                        style={{width:"100%",padding:"12px",background:"transparent",border:"none",borderTop:"1px solid #1A1A2C",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:"#3A3A5E"}}>
+                        <span style={{fontSize:16,color:c}}>＋</span>
+                        <span style={{fontSize:11,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif",color:c}}>AÑADIR EJERCICIO</span>
+                      </button>
                     </div>
-                  );
-                })}
-              </div>
-            )}
+                  )}
+                </div>
+              );
+            })}
           </div>
         );
       })}
+
+      {/* ── ADD / SWAP MODAL ── */}
+      {modalCtx&&(
+        <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>{setAddModal(null);setSwapModal(null);setSearchQ("");}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",display:"flex",flexDirection:"column"}}>
+            {/* Modal header */}
+            <div style={{padding:"16px 20px 12px",borderBottom:"1px solid #1A1A2E"}}>
+              <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>{isSwap?"🔄 INTERCAMBIAR EJERCICIO":"⚔️ AÑADIR EJERCICIO"}</div>
+              {isSwap&&<div style={{fontSize:11,color:"#444",marginBottom:8}}>Actual: <span style={{color:"#FFF",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>}
+              <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar por nombre o músculo..."
+                style={{width:"100%",padding:"10px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+            </div>
+            {/* Exercise list */}
+            <div style={{overflowY:"auto",flex:1}}>
+              {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"#333",fontSize:12}}>Sin resultados</div>}
+              {filteredExs.map(ex=>{
+                const isCurrent=isSwap&&ex.name===swapModal?.exName;
+                return(
+                  <button key={ex.id} disabled={isCurrent} onClick={()=>isSwap?handleSwapEx(swapModal.rtId,swapModal.si,swapModal.ei,ex):handleAddEx(addModal.rtId,addModal.si,ex)}
+                    style={{width:"100%",textAlign:"left",padding:"12px 20px",background:isCurrent?"#1A1A2E":"transparent",border:"none",borderBottom:"1px solid #1A1A2C",cursor:isCurrent?"default":"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    <div>
+                      <div style={{fontSize:13,fontWeight:700,color:isCurrent?"#444":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}{isCurrent&&" (actual)"}</div>
+                      <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
+                        {ex.muscle.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"#1A1A2E",border:"1px solid #2A2A3E",borderRadius:10,color:"#666",letterSpacing:1}}>{m.toUpperCase()}</span>)}
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
+                      <div style={{fontSize:10,color:"#555"}}>{ex.level}</div>
+                      <div style={{fontSize:11,color:"#A78BFA",fontWeight:700}}>+{ex.xpBase} XP</div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+            <button onClick={()=>{setAddModal(null);setSwapModal(null);setSearchQ("");}}
+              style={{margin:"12px 20px",padding:"12px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -3844,56 +4031,134 @@ function CuerpoTab({mxp,sex="M"}){
 
 // ─── TIENDA TAB ───────────────────────────────────────────────────────────────
 function TiendaTab({coins,redeemed,dc,onRedeem}){
+  const [view,setView]=useState("tienda"); // "tienda" | "historial"
   const cats=[...new Set(REWARDS.map(r=>r.cat))];
   const dungeons=Object.keys(dc).filter(k=>!k.startsWith("week_")&&!k.startsWith("phase_")).length;
   const weeks=Object.keys(dc).filter(k=>k.startsWith("week_")).length;
   const phases=Object.keys(dc).filter(k=>k.startsWith("phase_")).length;
+  // Normalize redeemed — support both old (string IDs) and new (objects)
+  const redeemedObjs=redeemed.map(e=>typeof e==="object"?e:{id:e,name:REWARDS.find(r=>r.id===e)?.name||e,icon:REWARDS.find(r=>r.id===e)?.icon||"🪙",cost:REWARDS.find(r=>r.id===e)?.cost||0,date:null});
+  const totalSpent=redeemedObjs.reduce((a,e)=>a+(e.cost||0),0);
+  // Sort history newest first
+  const history=[...redeemedObjs].reverse();
+
+  const formatDate=iso=>{
+    if(!iso) return "—";
+    const d=new Date(iso);
+    return `${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+  };
+
   return(
     <div>
-      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>TIENDA RANKUP</div>
+      {/* Tab switcher */}
+      <div style={{display:"flex",gap:6,marginBottom:14}}>
+        {[{id:"tienda",l:"🪙 TIENDA"},{id:"historial",l:"📜 HISTORIAL"}].map(t=>(
+          <button key={t.id} onClick={()=>setView(t.id)}
+            style={{flex:1,padding:"9px 4px",borderRadius:10,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,
+              background:view===t.id?"linear-gradient(135deg,#1A1200,#0D0D1A)":"#0A0A12",
+              border:`1px solid ${view===t.id?"#F59E0B66":"#1A1A2E"}`,
+              color:view===t.id?"#F59E0B":"#444",
+              boxShadow:view===t.id?"0 0 12px #F59E0B22":"none"}}>
+            {t.l}
+          </button>
+        ))}
+      </div>
+
+      {/* Wallet card — always visible */}
       <div style={{background:"linear-gradient(135deg,#1A1200,#0D0D1A)",border:"1px solid #F59E0B66",borderRadius:16,padding:20,marginBottom:14,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-20,right:-20,fontSize:80,opacity:.05}}>🪙</div>
         <div style={{fontSize:9,letterSpacing:4,color:"#F59E0B88",marginBottom:6}}>MONEDERO RANKUP</div>
         <div style={{fontSize:44,fontWeight:900,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,textShadow:"0 0 20px #F59E0B88"}}>{coins.toLocaleString()}</div>
         <div style={{fontSize:12,color:"#A07820",marginTop:4}}>monedas disponibles</div>
         <div style={{display:"flex",gap:14,marginTop:14,paddingTop:14,borderTop:"1px solid #F59E0B22"}}>
-          {[{l:"DUNGEONS",v:dungeons},{l:"SEMANAS",v:weeks},{l:"FASES",v:phases},{l:"CANJEADAS",v:redeemed.length}].map(s=>(
+          {[{l:"DUNGEONS",v:dungeons},{l:"SEMANAS",v:weeks},{l:"FASES",v:phases},{l:"CANJEADAS",v:redeemed.length},{l:"GASTADAS",v:totalSpent.toLocaleString()+"🪙"}].map(s=>(
             <div key={s.l} style={{textAlign:"center",flex:1}}>
-              <div style={{fontSize:16,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
+              <div style={{fontSize:s.l==="GASTADAS"?12:16,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
               <div style={{fontSize:9,color:"#555",letterSpacing:1}}>{s.l}</div>
             </div>
           ))}
         </div>
       </div>
-      <div style={{background:"#0D0D1A",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:16}}>
-        <div style={{fontSize:9,color:"#F59E0B88",letterSpacing:3,marginBottom:10}}>CÓMO GANAR MONEDAS</div>
-        {[{icon:"⚔️",l:"Dungeon completado",c:COIN_DUNGEON},{icon:"💀",l:"Bonus BOSS",c:COIN_BOSS_EX},{icon:"🗓️",l:"Semana completa",c:COIN_WEEK},{icon:"🏰",l:"Fase completa",c:COIN_PHASE}].map(e=>(
-          <div key={e.l} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
-            <span style={{fontSize:15}}>{e.icon}</span>
-            <span style={{flex:1,fontSize:12,color:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{e.l}</span>
-            <span style={{fontSize:13,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>+{e.c} 🪙</span>
+
+      {view==="tienda"&&(
+        <>
+          <div style={{background:"#0D0D1A",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:16}}>
+            <div style={{fontSize:9,color:"#F59E0B88",letterSpacing:3,marginBottom:10}}>CÓMO GANAR MONEDAS</div>
+            {[{icon:"⚔️",l:"Dungeon completado",c:COIN_DUNGEON},{icon:"💀",l:"Bonus BOSS",c:COIN_BOSS_EX},{icon:"🗓️",l:"Semana completa",c:COIN_WEEK},{icon:"🏰",l:"Fase completa",c:COIN_PHASE}].map(e=>(
+              <div key={e.l} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
+                <span style={{fontSize:15}}>{e.icon}</span>
+                <span style={{flex:1,fontSize:12,color:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{e.l}</span>
+                <span style={{fontSize:13,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>+{e.c} 🪙</span>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      {cats.map(cat=>(
-        <div key={cat}>
-          <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,margin:"16px 0 10px"}}>{cat.toUpperCase()}</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-            {REWARDS.filter(r=>r.cat===cat).map(reward=>{
-              const can=coins>=reward.cost;const times=redeemed.filter(id=>id===reward.id).length;
-              return(
-                <div key={reward.id} style={{background:can?"#0F0F1C":"#0A0A12",border:`1px solid ${can?"#F59E0B33":"#1A1A2E"}`,borderRadius:12,padding:14,position:"relative",opacity:can?1:.55,boxShadow:can?"0 0 12px #F59E0B11":"none"}}>
-                  {times>0&&<div style={{position:"absolute",top:8,right:8,background:"#F59E0B",color:"#07070F",fontSize:9,fontWeight:900,borderRadius:20,padding:"2px 7px",fontFamily:"'Rajdhani',sans-serif"}}>×{times}</div>}
-                  <div style={{fontSize:30,marginBottom:6}}>{reward.icon}</div>
-                  <div style={{fontSize:12,fontWeight:700,color:can?"#FFF":"#555",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:4}}>{reward.name}</div>
-                  <div style={{fontSize:10,color:"#555",lineHeight:1.4,marginBottom:10}}>{reward.desc}</div>
-                  <button onClick={()=>can&&onRedeem(reward)} disabled={!can} style={{width:"100%",padding:8,borderRadius:8,border:"none",fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,cursor:can?"pointer":"not-allowed",background:can?"linear-gradient(135deg,#F59E0B,#D97706)":"#1A1A2E",color:can?"#07070F":"#444",boxShadow:can?"0 0 12px #F59E0B44":"none"}}>🪙 {reward.cost.toLocaleString()}</button>
+          {cats.map(cat=>(
+            <div key={cat}>
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,margin:"16px 0 10px"}}>{cat.toUpperCase()}</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {REWARDS.filter(r=>r.cat===cat).map(reward=>{
+                  const can=coins>=reward.cost;
+                  const times=redeemedObjs.filter(e=>e.id===reward.id).length;
+                  return(
+                    <div key={reward.id} style={{background:can?"#0F0F1C":"#0A0A12",border:`1px solid ${can?"#F59E0B33":"#1A1A2E"}`,borderRadius:12,padding:14,position:"relative",opacity:can?1:.55,boxShadow:can?"0 0 12px #F59E0B11":"none"}}>
+                      {times>0&&<div style={{position:"absolute",top:8,right:8,background:"#F59E0B",color:"#07070F",fontSize:9,fontWeight:900,borderRadius:20,padding:"2px 7px",fontFamily:"'Rajdhani',sans-serif"}}>×{times}</div>}
+                      <div style={{fontSize:30,marginBottom:6}}>{reward.icon}</div>
+                      <div style={{fontSize:12,fontWeight:700,color:can?"#FFF":"#555",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:4}}>{reward.name}</div>
+                      <div style={{fontSize:10,color:"#555",lineHeight:1.4,marginBottom:10}}>{reward.desc}</div>
+                      <button onClick={()=>can&&onRedeem(reward)} disabled={!can}
+                        style={{width:"100%",padding:8,borderRadius:8,border:"none",fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,cursor:can?"pointer":"not-allowed",
+                          background:can?"linear-gradient(135deg,#F59E0B,#D97706)":"#1A1A2E",
+                          color:can?"#07070F":"#444",boxShadow:can?"0 0 12px #F59E0B44":"none"}}>
+                        🪙 {reward.cost.toLocaleString()}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </>
+      )}
+
+      {view==="historial"&&(
+        <div>
+          {history.length===0?(
+            <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
+              <div style={{fontSize:48,marginBottom:12}}>🛒</div>
+              <div style={{fontSize:14,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:6}}>Sin compras aún</div>
+              <div style={{fontSize:12,color:"#333"}}>Completa dungeons y gana monedas para canjear recompensas.</div>
+            </div>
+          ):(
+            <>
+              {/* Summary */}
+              <div style={{background:"#0D0D1A",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <div>
+                  <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:4}}>RESUMEN DE COMPRAS</div>
+                  <div style={{fontSize:13,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{redeemed.length} compras realizadas</div>
                 </div>
-              );
-            })}
-          </div>
+                <div style={{textAlign:"right"}}>
+                  <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>TOTAL GASTADO</div>
+                  <div style={{fontSize:20,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{totalSpent.toLocaleString()} 🪙</div>
+                </div>
+              </div>
+              {/* History list */}
+              {history.map((entry,i)=>(
+                <div key={i} style={{background:"#0A0A12",border:"1px solid #1A1A2E",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:12}}>
+                  <div style={{fontSize:28,flexShrink:0}}>{entry.icon}</div>
+                  <div style={{flex:1,minWidth:0}}>
+                    <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:2}}>{entry.name}</div>
+                    <div style={{fontSize:10,color:"#444"}}>{formatDate(entry.date)}</div>
+                  </div>
+                  <div style={{textAlign:"right",flexShrink:0}}>
+                    <div style={{fontSize:14,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>-{(entry.cost||0).toLocaleString()}</div>
+                    <div style={{fontSize:9,color:"#555"}}>🪙 monedas</div>
+                  </div>
+                </div>
+              ))}
+            </>
+          )}
         </div>
-      ))}
+      )}
       <div style={{height:20}}/>
     </div>
   );
