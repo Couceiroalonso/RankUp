@@ -1432,6 +1432,8 @@ function AdminPanel({onLogout}){
   const [tab,setTab]=useState("usuarios");
   const [selUser,setSelUser]=useState(null);
   const [editData,setEditData]=useState(null);
+  // Helper: get user data preferring Firebase cache over localStorage
+  const getUD=(email)=>allUserData[email]||getUD(email)||defaultData();
   const [msg,setMsg]=useState("");
   const [confirmDel,setConfirmDel]=useState(null);
   const [newPw,setNewPw]=useState("");
@@ -1443,7 +1445,7 @@ function AdminPanel({onLogout}){
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
 
   const openUser=(email)=>{
-    const data=getUserData(email)||defaultData();
+    const data=getUD(email)||defaultData();
     setSelUser(email);
     setEditData(JSON.parse(JSON.stringify(data)));
     setNewPw("");
@@ -1451,6 +1453,7 @@ function AdminPanel({onLogout}){
 
   const saveEdit=()=>{
     saveUserData(selUser,editData);
+    setAllUserData(p=>({...p,[selUser]:editData}));
     if(newPw.trim().length>=6){
       const users=getUsers();
       users[selUser].password=hashPw(newPw.trim());
@@ -1486,7 +1489,7 @@ function AdminPanel({onLogout}){
   };
 
   const addCoinsAdmin=(email,amt)=>{
-    const base=(selUser===email&&editData)?{...editData}:(getUserData(email)||defaultData());
+    const base=(selUser===email&&editData)?{...editData}:(getUD(email)||defaultData());
     base.coins=(base.coins||0)+amt;
     saveUserData(email,base);
     if(selUser===email) setEditData({...base});
@@ -1494,7 +1497,7 @@ function AdminPanel({onLogout}){
   };
 
   const addXpAdmin=(email,amt)=>{
-    const base=(selUser===email&&editData)?{...editData}:(getUserData(email)||defaultData());
+    const base=(selUser===email&&editData)?{...editData}:(getUD(email)||defaultData());
     base.totalXp=(base.totalXp||0)+amt;
     saveUserData(email,base);
     if(selUser===email) setEditData({...base});
@@ -1509,11 +1512,32 @@ function AdminPanel({onLogout}){
   const [adminRoutines,setAdminRoutinesState]=useState(getAdminRoutines());
   const saveAR=r=>{setAdminRoutinesState(r);saveAdminRoutines(r);};
 
-  // Sync admin routines and diets from Firebase on mount
+  // Cache of all user data loaded from Firebase — keyed by email
+  const [allUserData,setAllUserData]=useState({});
+  const [dataLoading,setDataLoading]=useState(true);
+
+  // Sync admin routines, diets and ALL user data from Firebase on mount
   useEffect(()=>{
     fbGet("adminRoutines").then(r=>{if(r&&r.length>0){localStorage.setItem("rku_admin_routines",JSON.stringify(r));setAdminRoutinesState(r);}}).catch(()=>{});
     fbGet("adminDiets").then(d=>{if(d&&d.length>0){localStorage.setItem("rku_admin_diets",JSON.stringify(d));setAdminDietsState(d);}}).catch(()=>{});
-    syncUsersFromFirebase().then(u=>{if(u)setAllUsers(u);}).catch(()=>{});
+    syncUsersFromFirebase().then(u=>{
+      if(u) setAllUsers(u);
+      // Load each user's data from Firebase
+      const emails=Object.keys(u||{});
+      Promise.all(emails.map(email=>{
+        const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
+        return fbGet(`userData/${key}`).then(d=>({email,data:d||defaultData()})).catch(()=>({email,data:getUD(email)||defaultData()}));
+      })).then(results=>{
+        const map={};
+        results.forEach(({email,data})=>{
+          map[email]=data;
+          // Also cache in localStorage so getUserData() works as fallback
+          localStorage.setItem(`rku_data_${email}`,JSON.stringify(data));
+        });
+        setAllUserData(map);
+        setDataLoading(false);
+      });
+    }).catch(()=>setDataLoading(false));
   },[]);
 
   const [showRoutineBuilder,setShowRoutineBuilder]=useState(false);
@@ -1537,7 +1561,7 @@ function AdminPanel({onLogout}){
   const deleteAdminRoutine=id=>{saveAR(adminRoutines.filter(r=>r.id!==id));flash("🗑️ Rutina eliminada");};
 
   const assignRoutineToUser=(email,routine)=>{
-    const data=getUserData(email)||defaultData();
+    const data=getUD(email)||defaultData();
     const exists=(data.customRoutines||[]).find(r=>r.id===routine.id);
     if(exists){flash("⚠️ El jugador ya tiene esta rutina",false);return;}
     data.customRoutines=[...(data.customRoutines||[]),{...routine,assignedByAdmin:true}];
@@ -1548,7 +1572,7 @@ function AdminPanel({onLogout}){
   };
 
   const removeRoutineFromUser=(email,routineId)=>{
-    const data=getUserData(email)||defaultData();
+    const data=getUD(email)||defaultData();
     data.customRoutines=(data.customRoutines||[]).filter(r=>r.id!==routineId);
     saveUserData(email,data);
     setEditData({...editData,customRoutines:data.customRoutines});
@@ -1587,7 +1611,7 @@ function AdminPanel({onLogout}){
   const deleteAdminDiet=id=>{saveAD(adminDiets.filter(d=>d.id!==id));flash("🗑️ Dieta eliminada");};
 
   const assignDietToUser=(email,diet)=>{
-    const data=getUserData(email)||defaultData();
+    const data=getUD(email)||defaultData();
     const exists=(data.assignedDiets||[]).find(d=>d.id===diet.id);
     if(exists){flash("⚠️ El jugador ya tiene esta dieta",false);return;}
     data.assignedDiets=[...(data.assignedDiets||[]),{...diet,assignedByAdmin:true}];
@@ -1598,7 +1622,7 @@ function AdminPanel({onLogout}){
   };
 
   const removeDietFromUser=(email,dietId)=>{
-    const data=getUserData(email)||defaultData();
+    const data=getUD(email)||defaultData();
     data.assignedDiets=(data.assignedDiets||[]).filter(d=>d.id!==dietId);
     saveUserData(email,data);
     setEditData({...editData,assignedDiets:data.assignedDiets});
@@ -1606,8 +1630,8 @@ function AdminPanel({onLogout}){
   };
 
   const totalUsers=userList.length;
-  const totalXpAll=userList.reduce((a,u)=>{const d=getUserData(u.email)||defaultData();return a+(d.totalXp||0);},0);
-  const totalCoinsAll=userList.reduce((a,u)=>{const d=getUserData(u.email)||defaultData();return a+(d.coins||0);},0);
+  const totalXpAll=userList.reduce((a,u)=>{const d=getUD(u.email)||defaultData();return a+(d.totalXp||0);},0);
+  const totalCoinsAll=userList.reduce((a,u)=>{const d=getUD(u.email)||defaultData();return a+(d.coins||0);},0);
 
   const inp={width:"100%",padding:"10px 12px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
 
@@ -1740,7 +1764,7 @@ function AdminPanel({onLogout}){
                   <div style={{fontSize:10,color:"#555"}}>{editData.assignedProgram.phases?.length||0} fases · 👑 Admin</div>
                 </div>
                 <button onClick={()=>{
-                  const data=getUserData(selUser)||defaultData();
+                  const data=getUD(selUser)||defaultData();
                   data.assignedProgram=null;
                   saveUserData(selUser,data);
                   setEditData({...editData,assignedProgram:null});
@@ -1759,7 +1783,7 @@ function AdminPanel({onLogout}){
               return(
                 <button key={tpl.id} onClick={()=>{
                   if(isAssigned) return;
-                  const data=getUserData(selUser)||defaultData();
+                  const data=getUD(selUser)||defaultData();
                   data.assignedProgram=tpl;
                   saveUserData(selUser,data);
                   setEditData({...editData,assignedProgram:tpl});
@@ -2090,7 +2114,7 @@ function AdminPanel({onLogout}){
                   : adminRoutines.map(rt=>{
                       const c=rt.color||"#A78BFA";
                       const totalEx=rt.sessions?.reduce((a,s)=>a+s.exercises.length,0)||0;
-                      const assignedTo=userList.filter(u=>{const d=getUserData(u.email)||defaultData();return (d.customRoutines||[]).find(r=>r.id===rt.id);});
+                      const assignedTo=userList.filter(u=>{const d=getUD(u.email)||defaultData();return (d.customRoutines||[]).find(r=>r.id===rt.id);});
                       return(
                         <div key={rt.id} style={{background:"#0F0F1C",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
@@ -2242,7 +2266,7 @@ function AdminPanel({onLogout}){
                     </div>
                   : adminDiets.map(dt=>{
                       const c=dt.color||"#34D399";
-                      const assignedTo=userList.filter(u=>{const d=getUserData(u.email)||defaultData();return (d.assignedDiets||[]).find(x=>x.id===dt.id);});
+                      const assignedTo=userList.filter(u=>{const d=getUD(u.email)||defaultData();return (d.assignedDiets||[]).find(x=>x.id===dt.id);});
                       return(
                         <div key={dt.id} style={{background:"#0F0F1C",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
@@ -2291,7 +2315,7 @@ function AdminPanel({onLogout}){
               });
               // Also wipe customRoutines for all existing users
               Object.keys(users).forEach(email=>{
-                const d=getUserData(email)||defaultData();
+                const d=getUD(email)||defaultData();
                 d.customRoutines=(d.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
                 saveUserData(email,d);
               });
@@ -2310,8 +2334,8 @@ function AdminPanel({onLogout}){
             </div>
             <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32"}}>
               <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>RANKING RANKUP</div>
-              {[...userList].sort((a,b)=>{const da=getUserData(a.email)||defaultData();const db=getUserData(b.email)||defaultData();return (db.totalXp||0)-(da.totalXp||0);}).map((u,i)=>{
-                const d=getUserData(u.email)||defaultData();
+              {[...userList].sort((a,b)=>{const da=getUD(a.email)||defaultData();const db=getUD(b.email)||defaultData();return (db.totalXp||0)-(da.totalXp||0);}).map((u,i)=>{
+                const d=getUD(u.email)||defaultData();
                 const lv=getLevel(d.totalXp||0);const ri=getRank(lv);
                 return(
                   <div key={u.email} onClick={()=>openUser(u.email)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:"1px solid #1A1A2E",cursor:"pointer"}}>
@@ -2320,7 +2344,7 @@ function AdminPanel({onLogout}){
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
                         <span style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
-                        {(()=>{const cls=CLASSES.find(c=>c.id===(getUserData(u.email)||defaultData()).playerClass);return cls?<span style={{fontSize:12,padding:"1px 6px",background:`${cls.color}22`,border:`1px solid ${cls.color}44`,borderRadius:6,color:cls.color,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{cls.icon} {cls.name}</span>:null;})()}
+                        {(()=>{const cls=CLASSES.find(c=>c.id===(getUD(u.email)||defaultData()).playerClass);return cls?<span style={{fontSize:12,padding:"1px 6px",background:`${cls.color}22`,border:`1px solid ${cls.color}44`,borderRadius:6,color:cls.color,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{cls.icon} {cls.name}</span>:null;})()}
                       </div>
                       <div style={{fontSize:10,color:"#444"}}>{u.email}</div>
                     </div>
@@ -2351,7 +2375,7 @@ function AdminPanel({onLogout}){
               </div>
             ):(
               userList.sort((a,b)=>b.createdAt-a.createdAt).map(u=>{
-                const d=getUserData(u.email)||defaultData();
+                const d=getUD(u.email)||defaultData();
                 const lv=getLevel(d.totalXp||0);const ri=getRank(lv);
                 const totalDone=Object.values(d.checked||{}).filter(Boolean).length;
                 const date=u.createdAt?new Date(u.createdAt).toLocaleDateString("es-ES",{day:"2-digit",month:"short"}):"—";
@@ -2833,13 +2857,29 @@ function RankUpApp({user,onLogout}){
       const fresh=getUserData(user.email)||{};
       // Load ALL data from Firebase into state
       if(fresh.totalXp>0) setTotalXp(fresh.totalXp);
-      if(fresh.coins>0) setCoins(fresh.coins);
       if(fresh.checked&&Object.keys(fresh.checked).length>0) setChecked(fresh.checked);
       if(fresh.weights&&Object.keys(fresh.weights).length>0) setWeights(fresh.weights);
       if(fresh.personalRecords&&Object.keys(fresh.personalRecords).length>0) setPR(fresh.personalRecords);
       if(fresh.earnedAchs?.length>0) setEarned(fresh.earnedAchs);
       if(fresh.redeemedRewards?.length>0) setRedeemed(fresh.redeemedRewards);
-      if(fresh.dungeonCoins&&Object.keys(fresh.dungeonCoins).length>0) setDC(fresh.dungeonCoins);
+      const freshDC=fresh.dungeonCoins||{};
+      if(Object.keys(freshDC).length>0) setDC(freshDC);
+      // Recalculate coins from dungeonCoins — source of truth, never corrupt
+      // Each dungeon key = COIN_DUNGEON, each week key = COIN_WEEK, each phase key = COIN_PHASE
+      const recalcCoins=(()=>{
+        let c=0;
+        Object.keys(freshDC).forEach(k=>{
+          if(k.startsWith("phase_")) c+=COIN_PHASE;
+          else if(k.startsWith("week_")) c+=COIN_WEEK;
+          else c+=COIN_DUNGEON; // individual dungeon
+        });
+        // Subtract spent on rewards
+        const spent=(fresh.redeemedRewards||[]).reduce((a,e)=>a+(typeof e==="object"?e.cost||0:REWARDS.find(r=>r.id===e)?.cost||0),0);
+        return Math.max(0, c-spent);
+      })();
+      // Use whichever is higher: stored coins or recalculated
+      const finalCoins=Math.max(fresh.coins||0, recalcCoins);
+      if(finalCoins>0) setCoins(finalCoins);
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Migrate old ex.done system → checked keys
