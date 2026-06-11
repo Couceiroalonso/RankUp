@@ -3139,12 +3139,12 @@ function RankUpApp({user,onLogout}){
       addXp(finalXp,evt,label);
       const phase=PHASES.find(p=>p.id===phaseId);const day=phase?.training[dayIdx];
       if(day){
+        // ── PROGRAM dungeon reward ──
         const ck=`${phaseId}_${dayIdx}`;
         const allDone=day.exercises.every((_,ei)=>nc[exKey(phaseId,dayIdx,ei)]);
         if(allDone){
-          // Use functional setDC to always read latest state — avoids stale closure
           setDC(prevDC=>{
-            if(prevDC[ck]) return prevDC; // already rewarded
+            if(prevDC[ck]) return prevDC;
             const bossDone=day.exercises.filter((ex,ei)=>ex.boss&&nc[exKey(phaseId,dayIdx,ei)]).length;
             const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
             addCoins(dungeonCoins,"¡Dungeon completado!");
@@ -3157,14 +3157,12 @@ function RankUpApp({user,onLogout}){
               exercises:day.exercises.length, coins:dungeonCoins, bossDone
             }),400);
             const newDC={...prevDC,[ck]:true};
-            // Week bonus
             const wk=`week_${phaseId}_${day.week}`;
             if(!newDC[wk]){
               const wd=phase.training.filter(d=>d.week===day.week);
               const awDone=wd.every(d=>{const gi=phase.training.indexOf(d);return d.exercises.every((_,ei)=>nc[exKey(phaseId,gi,ei)]);});
               if(awDone){newDC[wk]=true;addCoins(COIN_WEEK,`🗓️ Semana ${day.week} completada`);}
             }
-            // Phase bonus
             const pk=`phase_${phaseId}`;
             if(!newDC[pk]){
               const apDone=phase.training.every((d,di2)=>d.exercises.every((_,ei)=>nc[exKey(phaseId,di2,ei)]));
@@ -3173,12 +3171,42 @@ function RankUpApp({user,onLogout}){
             return newDC;
           });
         }
+      } else if(!phaseId){
+        // ── ROUTINE dungeon reward ──
+        // key format: rt_{rtId}_{si}_{ei} — extract rtId and si
+        const parts=key.split("_"); // ["rt","rtId","si","ei"]
+        if(parts[0]==="rt"){
+          const rtId=parts[1];const si=parseInt(parts[2]);
+          const rt=routines.find(r=>r.id===rtId);
+          const sess=rt?.sessions?.[si];
+          if(sess){
+            const ck=`rt_${rtId}_done_${si}`;
+            const allDone=sess.exercises.every((_,ei)=>nc[`rt_${rtId}_${si}_${ei}`]);
+            if(allDone){
+              setDC(prevDC=>{
+                if(prevDC[ck]) return prevDC;
+                const bossDone=sess.exercises.filter((ex,ei)=>ex.boss&&nc[`rt_${rtId}_${si}_${ei}`]).length;
+                const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
+                addCoins(dungeonCoins,"¡Dungeon completado!");
+                const sessKg=sess.exercises.reduce((sum,ex,ei)=>{
+                  const wArr=weights[`rt_${rtId}_${si}_${ei}`]||[];
+                  return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+                },0);
+                setTimeout(()=>setDungeonComplete({
+                  dayName:sess.day, totalKg:Math.round(sessKg),
+                  exercises:sess.exercises.length, coins:dungeonCoins, bossDone
+                }),400);
+                return {...prevDC,[ck]:true};
+              });
+            }
+          }
+        }
       }
     } else setTotalXp(p=>Math.max(0,p-xp));
-  },[checked,dc,addXp,addCoins,weights]);
+  },[checked,dc,addXp,addCoins,weights,routines]);
 
   const logWeight=useCallback((key,evt)=>{
-    const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<0)return;
+    const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<=0)return;
     const arr=weights[key]||[];const prevMax=arr.length>0?Math.max(...arr.map(w=>w.kg)):0;
     const isRec=kg>0&&kg>prevMax&&arr.length>0;
     setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg}]}));
@@ -3638,7 +3666,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                   <div style={{fontSize:13,color:c,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
                                   <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                                   <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
-                                  {lastKg&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
+                                  {lastKg>0&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
                                 </div>
                                 {/* Swap button */}
                                 {!isDone&&<button onClick={()=>{setSwapModal({rtId:rt.id,si,ei,exName:ex.name,muscles:exMuscles});setSearchQ("");}}
@@ -3819,7 +3847,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             <div style={{fontSize:13,color:ph.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
                             <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                             <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp} XP</div>
-                            {lastKg&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
+                            {lastKg>0&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
                           </div>
                         </div>
                         <div style={{padding:"0 14px 12px 56px"}}>
