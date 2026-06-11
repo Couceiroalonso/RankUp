@@ -5294,4 +5294,8 @@ function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines}){
             <div style={{fontSize:10,color:"#444",lineHeight:1.4,marginBottom:6}}>{ach.desc}</div>
             <div style={{fontSize:11,color:done?"#A78BFA":"#333",fontWeight:700}}>+{ach.xp} XP</div>
           </div>
-    
+        );})}
+      </div>
+    </div>
+  );
+}
