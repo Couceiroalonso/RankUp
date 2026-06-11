@@ -569,7 +569,7 @@ const RAID_DB = [
 ];
 
 const RAID_RARITY_COLOR = {normal:"#60A5FA", épica:"#A78BFA", legendaria:"#F59E0B"};
-const RAID_TRIGGER_CHANCE = 0.20; // 20% on dungeon complete or app open
+const RAID_TRIGGER_CHANCE = 0.12; // 20% on dungeon complete or app open
 
 const ACHIEVEMENTS = [
   // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
@@ -3308,17 +3308,20 @@ function RankUpApp({user,onLogout}){
       setRaidModal(true); // show existing raid
       return;
     }
-    if(currentRaid?.done){
-      // Previous raid was completed/abandoned — clear it and roll for a new one
-      setActiveRaid(null);
-    }
-    // Roll for new raid
-    if(Math.random()<RAID_TRIGGER_CHANCE){
-      const raid=RAID_DB[Math.floor(Math.random()*RAID_DB.length)];
-      const newRaid={raid,startTime:Date.now(),done:false};
-      setActiveRaid(newRaid);
-      setTimeout(()=>setRaidModal(true),800);
-    }
+    if(currentRaid?.done) setActiveRaid(null);
+    // Cooldown: check Firebase for last raid time
+    const raidCoolKey=(user?.email||"").replace(/\./g,"_").replace(/@/g,"_at_");
+    fbGet(`raidCooldown/${raidCoolKey}`).then(cd=>{
+      const lastRaidAt=cd?.lastRaidAt||0;
+      const hoursSince=(Date.now()-lastRaidAt)/3600000;
+      if(hoursSince<20) return; // 20h cooldown between raids
+      if(Math.random()<RAID_TRIGGER_CHANCE){
+        const raid=RAID_DB[Math.floor(Math.random()*RAID_DB.length)];
+        const newRaid={raid,startTime:Date.now(),done:false};
+        setActiveRaid(newRaid);
+        setTimeout(()=>setRaidModal(true),800);
+      }
+    }).catch(()=>{});
   },[]);
 
   const completeRaid=useCallback(()=>{
@@ -3327,6 +3330,8 @@ function RankUpApp({user,onLogout}){
     addXp(raid.xp,null,`+${raid.xp} XP ⚔️ RAID`);
     addCoins(raid.coins,`🏴‍☠️ Raid completada: ${raid.boss}`);
     setActiveRaid(p=>({...p,done:true,completedAt:Date.now()}));
+    const raidKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
+    fbSet(`raidCooldown/${raidKey}`,{lastRaidAt:Date.now()}).catch(()=>{});
     // Track raid count in localStorage AND Firebase
     const raidCount=JSON.parse(localStorage.getItem(`rku_raids_${user.email}`)||"0")+1;
     localStorage.setItem(`rku_raids_${user.email}`,JSON.stringify(raidCount));
@@ -3350,7 +3355,9 @@ function RankUpApp({user,onLogout}){
     setRaidDefeated(activeRaid.raid);
     setActiveRaid(null);
     setRaidModal(false);
-  },[activeRaid]);
+    const raidKeyS=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
+    fbSet(`raidCooldown/${raidKeyS}`,{lastRaidAt:Date.now()}).catch(()=>{});
+  },[activeRaid,user]);
 
   const sendMessage=useCallback(async(text)=>{
     if(!text.trim()) return;
