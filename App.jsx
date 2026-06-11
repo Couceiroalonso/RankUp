@@ -569,7 +569,7 @@ const RAID_DB = [
 ];
 
 const RAID_RARITY_COLOR = {normal:"#60A5FA", épica:"#A78BFA", legendaria:"#F59E0B"};
-const RAID_TRIGGER_CHANCE = 0.20; // 20% on dungeon complete or app open
+const RAID_TRIGGER_CHANCE = 1.00; // TESTING — change back to 0.20 // 20% on dungeon complete or app open
 
 const ACHIEVEMENTS = [
   // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
