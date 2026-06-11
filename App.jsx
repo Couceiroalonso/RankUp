@@ -3040,6 +3040,7 @@ function RankUpApp({user,onLogout}){
   const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
   const [raidComplete,setRaidComplete]=useState(null);
+  const [raidDefeated,setRaidDefeated]=useState(null); // raid that expired undefeated
   const [messages,setMessages]=useState([]);               // [{id,from,text,date,read}]
   const [showClassModal,setShowClassModal]=useState(!saved.playerClass);
   const cls=CLASSES.find(c=>c.id===playerClass)||null;
@@ -3234,7 +3235,8 @@ function RankUpApp({user,onLogout}){
     if(currentRaid&&!currentRaid.done){
       const elapsed=(Date.now()-currentRaid.startTime)/1000;
       if(elapsed>currentRaid.raid.time){
-        setActiveRaid(null); // expired
+        setActiveRaid(null);
+        setRaidDefeated(currentRaid.raid); // show defeat screen
         return;
       }
       setRaidModal(true); // show existing raid
@@ -3270,6 +3272,12 @@ function RankUpApp({user,onLogout}){
   },[activeRaid,addXp,addCoins]);
 
   const dismissRaid=useCallback(()=>setRaidModal(false),[]);
+  const skipRaid=useCallback(()=>{
+    if(!activeRaid) return;
+    setRaidDefeated(activeRaid.raid);
+    setActiveRaid(null);
+    setRaidModal(false);
+  },[activeRaid]);
 
   const sendMessage=useCallback(async(text)=>{
     if(!text.trim()) return;
@@ -3425,7 +3433,7 @@ function RankUpApp({user,onLogout}){
       {lvlModal&&<LevelUpModal level={lvlModal} onClose={()=>setLvlModal(null)}/>}
       {/* DUNGEON COMPLETE MODAL */}
       {/* ── RAID MODAL ── */}
-      {raidModal&&activeRaid&&!activeRaid.done&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid}/>}
+      {raidModal&&activeRaid&&!activeRaid.done&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid} onSkip={skipRaid}/>}
 
       {/* ── RAID COMPLETE MODAL ── */}
       {raidComplete&&(
@@ -3445,6 +3453,39 @@ function RankUpApp({user,onLogout}){
             <button onClick={()=>setRaidComplete(null)}
               style={{padding:"12px 32px",background:`linear-gradient(135deg,${RAID_RARITY_COLOR[raidComplete.rarity]},${RAID_RARITY_COLOR[raidComplete.rarity]}AA)`,border:"none",borderRadius:12,color:"#07070F",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
               ¡VICTORIA!
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── RAID DEFEATED MODAL ── */}
+      {raidDefeated&&(
+        <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+          background:"radial-gradient(ellipse at center,#1a0000 0%,#000000 80%)"}}
+          onClick={()=>setRaidDefeated(null)}>
+          <div style={{width:"100%",maxWidth:340,textAlign:"center"}}>
+            {/* Boss icon — desaturated red */}
+            <div style={{fontSize:80,marginBottom:16,filter:"grayscale(60%) drop-shadow(0 0 30px #E84A5F)"}}>
+              {raidDefeated.icon}
+            </div>
+            {/* YOU DIED style */}
+            <div style={{fontSize:42,fontWeight:900,color:"#E84A5F",fontFamily:"'Cinzel',serif",
+              letterSpacing:6,textShadow:"0 0 40px #E84A5F88",marginBottom:8,
+              animation:"bossGlow 2s ease-in-out infinite"}}>
+              DERROTADO
+            </div>
+            <div style={{width:200,height:1,background:"linear-gradient(90deg,transparent,#E84A5F,transparent)",margin:"0 auto 16px"}}/>
+            <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:12}}>
+              {raidDefeated.boss}
+            </div>
+            <div style={{fontSize:13,color:"#666",fontStyle:"italic",marginBottom:32,fontFamily:"'Rajdhani',sans-serif"}}>
+              "Ha consumido tu alma."
+            </div>
+            <button onClick={()=>setRaidDefeated(null)}
+              style={{padding:"12px 40px",background:"transparent",border:"1px solid #E84A5F55",
+                borderRadius:12,color:"#E84A5F",fontSize:11,cursor:"pointer",
+                fontFamily:"'Rajdhani',sans-serif",letterSpacing:4}}>
+              CONTINUAR
             </button>
           </div>
         </div>
@@ -4520,7 +4561,7 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
 }
 
 // ─── RAID MODAL COMPONENT ────────────────────────────────────────────────────
-function RaidModal({raid,startTime,onComplete,onDismiss}){
+function RaidModal({raid,startTime,onComplete,onDismiss,onSkip}){
   const c=RAID_RARITY_COLOR[raid.rarity]||"#A78BFA";
   const [tick,setTick]=useState(0);
   useEffect(()=>{
@@ -4657,13 +4698,22 @@ function RaidModal({raid,startTime,onComplete,onDismiss}){
                 textTransform:"uppercase"}}>
               ⚔️ ¡RAID COMPLETADA!
             </button>
-            <button onClick={onDismiss}
-              style={{width:"100%",padding:"12px",marginBottom:20,
-                background:"transparent",border:`1px solid #2A2A3E`,
-                borderRadius:14,color:"#444",fontSize:11,cursor:"pointer",
-                fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
-              CERRAR · LA RAID SIGUE ACTIVA
-            </button>
+            <div style={{display:"flex",gap:8,marginBottom:20}}>
+              <button onClick={onDismiss}
+                style={{flex:2,padding:"12px",
+                  background:"transparent",border:"1px solid #2A2A3E",
+                  borderRadius:14,color:"#444",fontSize:11,cursor:"pointer",
+                  fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                CERRAR · SIGUE ACTIVA
+              </button>
+              <button onClick={onSkip}
+                style={{flex:1,padding:"12px",
+                  background:"#E84A5F11",border:"1px solid #E84A5F44",
+                  borderRadius:14,color:"#E84A5F",fontSize:11,cursor:"pointer",
+                  fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
+                ABANDONAR
+              </button>
+            </div>
           </div>
         </div>
       </div>
