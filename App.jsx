@@ -468,6 +468,109 @@ const EXERCISE_DB = [
 
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
 
+
+// ─── RAID DATABASE ────────────────────────────────────────────────────────────
+const RAID_DB = [
+  // ── FUEGO ──────────────────────────────────────────────────────────────────
+  {id:"r01", boss:"Ignis, el Devorador de Almas",    icon:"🔥", rarity:"épica",
+   desc:"El Señor del Fuego exige que te consumas en llamas.",
+   challenge:"100 Burpees", reps:100, exercise:"Burpees",
+   xp:400, coins:150, time:86400},
+  {id:"r02", boss:"Pyros, la Llama Eterna",   icon:"🔥", rarity:"legendaria",
+   desc:"Su calor no perdona la debilidad. Demuestra que puedes con todo.",
+   challenge:"150 Mountain Climbers", reps:150, exercise:"Mountain Climbers",
+   xp:600, coins:250, time:86400},
+  {id:"r03", boss:"Emberstrike, la Chispa Maldita",           icon:"🔥", rarity:"normal",
+   desc:"Un destello de fuego. Rápido, intenso, sin descanso.",
+   challenge:"50 Burpees", reps:50, exercise:"Burpees",
+   xp:200, coins:75, time:86400},
+
+  // ── HIELO ──────────────────────────────────────────────────────────────────
+  {id:"r04", boss:"Glacius, el Implacable", icon:"❄️", rarity:"épica",
+   desc:"El frío paraliza a los débiles. Caliéntate con sudor.",
+   challenge:"200 Sentadillas", reps:200, exercise:"Sentadillas",
+   xp:450, coins:175, time:86400},
+  {id:"r05", boss:"Frostbane, el Azote Helado",             icon:"❄️", rarity:"normal",
+   desc:"Un viento helado que congela los músculos. Rómpelo.",
+   challenge:"75 Flexiones", reps:75, exercise:"Flexiones",
+   xp:220, coins:80, time:86400},
+  {id:"r06", boss:"Tundra, la Eterna Tempestad",      icon:"❄️", rarity:"legendaria",
+   desc:"La tormenta de hielo más brutal del reino. ¿Te atreves?",
+   challenge:"300 Mountain Climbers", reps:300, exercise:"Mountain Climbers",
+   xp:700, coins:300, time:86400},
+
+  // ── TRUENO ─────────────────────────────────────────────────────────────────
+  {id:"r07", boss:"Zephyr, Señor del Trueno",      icon:"⚡", rarity:"épica",
+   desc:"La velocidad del rayo. No hay tiempo para descansar.",
+   challenge:"100 Jumping Jacks + 50 Burpees", reps:150, exercise:"Jumping Jacks",
+   xp:500, coins:200, time:86400},
+  {id:"r08", boss:"Stormcaller, Invocador de Tormentas",           icon:"⚡", rarity:"normal",
+   desc:"Una tormenta eléctrica de abdominales. Sin piedad.",
+   challenge:"100 Crunches", reps:100, exercise:"Crunches",
+   xp:180, coins:65, time:86400},
+  {id:"r09", boss:"Voltex, Rey del Rayo Absoluto",  icon:"⚡", rarity:"legendaria",
+   desc:"El poder absoluto del trueno en tus músculos.",
+   challenge:"100 Burpees + 100 Flexiones", reps:200, exercise:"Burpees + Flexiones",
+   xp:800, coins:350, time:86400},
+
+  // ── OSCURIDAD ──────────────────────────────────────────────────────────────
+  {id:"r10", boss:"Shadowmere, el Susurro Oscuro",            icon:"🌑", rarity:"normal",
+   desc:"Desde las sombras, el dolor llega sin avisar.",
+   challenge:"60 Flexiones", reps:60, exercise:"Flexiones",
+   xp:200, coins:75, time:86400},
+  {id:"r11", boss:"Void, el Devorador del Vacío",     icon:"🌑", rarity:"épica",
+   desc:"El vacío absorbe tu energía. Dale más de lo que puede tomar.",
+   challenge:"150 Abdominales", reps:150, exercise:"Abdominales",
+   xp:420, coins:160, time:86400},
+  {id:"r12", boss:"Nyx, Reina de la Eterna Noche",   icon:"🌑", rarity:"legendaria",
+   desc:"La oscuridad más profunda. Solo los más fuertes ven la luz.",
+   challenge:"50 Burpees + 100 Sentadillas + 50 Flexiones", reps:200, exercise:"Full Body",
+   xp:900, coins:400, time:86400},
+
+  // ── TIERRA ─────────────────────────────────────────────────────────────────
+  {id:"r13", boss:"Krag, la Roca Viviente", icon:"🪨", rarity:"normal",
+   desc:"Nacido del corazón de la montaña. Su piel es piedra, su voluntad es acero.",
+   challenge:"80 Sentadillas + 40 Flexiones", reps:120, exercise:"Sentadillas + Flexiones",
+   xp:230, coins:85, time:86400},
+  {id:"r14", boss:"Terradon, el Sacudidor de Mundos",              icon:"🪨", rarity:"épica",
+   desc:"La tierra tiembla bajo su peso. Hazla temblar tú también.",
+   challenge:"200 Abdominales", reps:200, exercise:"Abdominales",
+   xp:460, coins:180, time:86400},
+  {id:"r15", boss:"Moloch, el Coloso de Barro", icon:"🪨", rarity:"legendaria",
+   desc:"Antiguo como la tierra. Cada golpe suyo hunde montañas. Hoy tú eres la montaña.",
+   challenge:"150 Burpees + 150 Sentadillas + 100 Flexiones", reps:400, exercise:"The Colossus",
+   xp:950, coins:425, time:86400},
+
+  // ── VENENO ─────────────────────────────────────────────────────────────────
+  {id:"r16", boss:"Venom, el Corrompido Eterno",   icon:"☠️", rarity:"normal",
+   desc:"El veneno debilita. Supera el dolor y gana.",
+   challenge:"80 Mountain Climbers", reps:80, exercise:"Mountain Climbers",
+   xp:185, coins:68, time:86400},
+  {id:"r17", boss:"Toxicus, Heraldo de la Plaga",               icon:"☠️", rarity:"épica",
+   desc:"El veneno más letal. Solo los inmunes sobreviven.",
+   challenge:"120 Burpees", reps:120, exercise:"Burpees",
+   xp:500, coins:200, time:86400},
+
+  // ── DRAGÓN ─────────────────────────────────────────────────────────────────
+  {id:"r18", boss:"Drakon, el Dragón Ancestral",   icon:"🐉", rarity:"legendaria",
+   desc:"El dragón más antiguo del reino. Su aliento quema almas.",
+   challenge:"200 Flexiones", reps:200, exercise:"Flexiones",
+   xp:1000, coins:500, time:86400},
+  {id:"r19", boss:"Wyvern Carmesí, el Terror Alado",        icon:"🐉", rarity:"épica",
+   desc:"Alas de fuego, colmillos de acero. Respira y aguanta.",
+   challenge:"100 Flexiones + 100 Sentadillas", reps:200, exercise:"Flexiones + Sentadillas",
+   xp:550, coins:225, time:86400},
+
+  // ── DIOS ───────────────────────────────────────────────────────────────────
+  {id:"r20", boss:"Ares, el Dios de la Guerra Eterna",icon:"⚔️", rarity:"legendaria",
+   desc:"El dios de la guerra en persona. La batalla más épica de tu vida.",
+   challenge:"50 Burpees + 100 Flexiones + 150 Sentadillas + 200 Abdominales", reps:500, exercise:"The Gauntlet",
+   xp:1500, coins:750, time:86400},
+];
+
+const RAID_RARITY_COLOR = {normal:"#60A5FA", épica:"#A78BFA", legendaria:"#F59E0B"};
+const RAID_TRIGGER_CHANCE = 0.20; // 20% on dungeon complete or app open
+
 const ACHIEVEMENTS = [
   // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
   {id:"first_exercise", icon:"⚔️", name:"Primera Sangre",     desc:"Completa tu primer ejercicio",          xp:50,   check:s=>s.totalDone>=1},
@@ -510,6 +613,12 @@ const ACHIEVEMENTS = [
   {id:"coins_500",      icon:"🪙", name:"Primer Tesoro",         desc:"Acumula 500 monedas en total",        xp:150,  check:s=>s.totalCoinsEarned>=500},
   {id:"coins_2000",     icon:"💰", name:"Adinerado",             desc:"Acumula 2.000 monedas en total",      xp:300,  check:s=>s.totalCoinsEarned>=2000},
   {id:"coins_5000",     icon:"🏦", name:"Magnate del Gym",       desc:"Acumula 5.000 monedas en total",      xp:600,  check:s=>s.totalCoinsEarned>=5000},
+  // ── RAIDS ─────────────────────────────────────────────────────────────────
+  {id:"first_raid",     icon:"⚔️", name:"Primer Encuentro",      desc:"Completa tu primera Raid",            xp:300,  check:s=>s.raidsComplete>=1},
+  {id:"raids_5",        icon:"🗡️", name:"Cazador de Sombras",    desc:"Completa 5 Raids",                    xp:500,  check:s=>s.raidsComplete>=5},
+  {id:"raids_10",       icon:"💀", name:"Exterminador",          desc:"Completa 10 Raids",                   xp:800,  check:s=>s.raidsComplete>=10},
+  {id:"raids_25",       icon:"👑", name:"Leyenda de las Raids",  desc:"Completa 25 Raids",                   xp:1500, check:s=>s.raidsComplete>=25},
+  {id:"raid_legendary", icon:"🐉", name:"Mata Dragones",         desc:"Completa una Raid legendaria",        xp:1000, check:s=>s.legendaryRaids>=1},
 ];
 
 const REWARDS = [
@@ -2928,6 +3037,9 @@ function RankUpApp({user,onLogout}){
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
   const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
+  const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null); // {raid, startTime, done}
+  const [raidModal,setRaidModal]=useState(false);
+  const [raidComplete,setRaidComplete]=useState(null);
   const [messages,setMessages]=useState([]);               // [{id,from,text,date,read}]
   const [showClassModal,setShowClassModal]=useState(!saved.playerClass);
   const cls=CLASSES.find(c=>c.id===playerClass)||null;
@@ -2984,6 +3096,9 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
+      if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
+      // Check raid on app open
+      setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
       // Load messages from Firebase
       const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
       fbGet(`messages/${msgKey}`).then(msgs=>{
@@ -3069,9 +3184,10 @@ function RankUpApp({user,onLogout}){
       playerClass,
       assignedDiets,
       assignedProgram,
-      exNotes
+      exNotes,
+      activeRaid
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -3085,7 +3201,10 @@ function RankUpApp({user,onLogout}){
     // Calculate total coins ever earned (current + spent)
     const spent=redeemed.reduce((a,e)=>a+(typeof e==="object"?e.cost||0:REWARDS.find(r=>r.id===e)?.cost||0),0);
     const totalCoinsEarned=coins+spent;
-    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:routines.length,totalCoinsEarned};
+    const raidsComplete=(earnedAchs.filter(a=>a==="first_raid").length>0?1:0)+ // simplified count via saved data
+      (JSON.parse(localStorage.getItem(`rku_raids_${user?.email}`)||"0"));
+    const legendaryRaids=JSON.parse(localStorage.getItem(`rku_legendary_raids_${user?.email}`)||"0");
+    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:routines.length,totalCoinsEarned,raidsComplete,legendaryRaids};
     // Use functional setEarned to always read latest list — avoids stale closure bug
     setEarned(currentEarned=>{
       let newEarned=[...currentEarned];
@@ -3109,6 +3228,48 @@ function RankUpApp({user,onLogout}){
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
+
+  const triggerRaidCheck=useCallback((currentRaid)=>{
+    // If there's an active raid, check if expired
+    if(currentRaid&&!currentRaid.done){
+      const elapsed=(Date.now()-currentRaid.startTime)/1000;
+      if(elapsed>currentRaid.raid.time){
+        setActiveRaid(null); // expired
+        return;
+      }
+      setRaidModal(true); // show existing raid
+      return;
+    }
+    if(currentRaid?.done) return; // already completed
+    // Roll for new raid
+    if(Math.random()<RAID_TRIGGER_CHANCE){
+      const raid=RAID_DB[Math.floor(Math.random()*RAID_DB.length)];
+      const newRaid={raid,startTime:Date.now(),done:false};
+      setActiveRaid(newRaid);
+      setTimeout(()=>setRaidModal(true),800);
+    }
+  },[]);
+
+  const completeRaid=useCallback(()=>{
+    if(!activeRaid||activeRaid.done) return;
+    const {raid}=activeRaid;
+    addXp(raid.xp,null,`+${raid.xp} XP ⚔️ RAID`);
+    addCoins(raid.coins,`🏴‍☠️ Raid completada: ${raid.boss}`);
+    setActiveRaid(p=>({...p,done:true,completedAt:Date.now()}));
+    // Track raid count in localStorage for achievements
+    const raidCount=JSON.parse(localStorage.getItem(`rku_raids_${user.email}`)||"0")+1;
+    localStorage.setItem(`rku_raids_${user.email}`,JSON.stringify(raidCount));
+    if(raid.rarity==="legendaria"){
+      const legCount=JSON.parse(localStorage.getItem(`rku_legendary_raids_${user.email}`)||"0")+1;
+      localStorage.setItem(`rku_legendary_raids_${user.email}`,JSON.stringify(legCount));
+    }
+    setRaidModal(false);
+    setTimeout(()=>setRaidComplete(raid),300);
+    // Achievement check via earned
+    setEarned(p=>p.includes("first_raid")?p:[...p,"first_raid"]);
+  },[activeRaid,addXp,addCoins]);
+
+  const dismissRaid=useCallback(()=>setRaidModal(false),[]);
 
   const sendMessage=useCallback(async(text)=>{
     if(!text.trim()) return;
@@ -3156,6 +3317,8 @@ function RankUpApp({user,onLogout}){
               dayName:day.day, totalKg:Math.round(sessKg),
               exercises:day.exercises.length, coins:dungeonCoins, bossDone
             }),400);
+            // Roll for raid after dungeon complete
+            setTimeout(()=>triggerRaidCheck(null),2500);
             const newDC={...prevDC,[ck]:true};
             const wk=`week_${phaseId}_${day.week}`;
             if(!newDC[wk]){
@@ -3196,6 +3359,7 @@ function RankUpApp({user,onLogout}){
                   dayName:sess.day, totalKg:Math.round(sessKg),
                   exercises:sess.exercises.length, coins:dungeonCoins, bossDone
                 }),400);
+                setTimeout(()=>triggerRaidCheck(null),2500);
                 return {...prevDC,[ck]:true};
               });
             }
@@ -3260,6 +3424,32 @@ function RankUpApp({user,onLogout}){
       {particles.map(p=><Particle key={p.id} x={p.x} y={p.y} text={p.text} color={p.color} onDone={()=>setParticles(prev=>prev.filter(x=>x.id!==p.id))}/>)}
       {lvlModal&&<LevelUpModal level={lvlModal} onClose={()=>setLvlModal(null)}/>}
       {/* DUNGEON COMPLETE MODAL */}
+      {/* ── RAID MODAL ── */}
+      {raidModal&&activeRaid&&!activeRaid.done&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid}/>}
+
+      {/* ── RAID COMPLETE MODAL ── */}
+      {raidComplete&&(
+        <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={()=>setRaidComplete(null)}>
+          <div style={{width:"100%",maxWidth:340,background:"#07070F",borderRadius:20,border:`2px solid ${RAID_RARITY_COLOR[raidComplete.rarity]}`,padding:"32px 24px",textAlign:"center",boxShadow:`0 0 60px ${RAID_RARITY_COLOR[raidComplete.rarity]}88`}}>
+            <div style={{fontSize:64,marginBottom:8}}>{raidComplete.icon}</div>
+            <div style={{fontSize:9,letterSpacing:4,color:RAID_RARITY_COLOR[raidComplete.rarity],marginBottom:6}}>RAID DERROTADA</div>
+            <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:16}}>{raidComplete.boss}</div>
+            <div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:20}}>
+              <div style={{padding:"10px 20px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10}}>
+                <div style={{fontSize:18,fontWeight:900,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif"}}>+{raidComplete.xp} XP</div>
+              </div>
+              <div style={{padding:"10px 20px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:10}}>
+                <div style={{fontSize:18,fontWeight:900,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>+{raidComplete.coins} 🪙</div>
+              </div>
+            </div>
+            <button onClick={()=>setRaidComplete(null)}
+              style={{padding:"12px 32px",background:`linear-gradient(135deg,${RAID_RARITY_COLOR[raidComplete.rarity]},${RAID_RARITY_COLOR[raidComplete.rarity]}AA)`,border:"none",borderRadius:12,color:"#07070F",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+              ¡VICTORIA!
+            </button>
+          </div>
+        </div>
+      )}
+
       {dungeonComplete&&(()=>{
         const kg=dungeonComplete.totalKg;
         const comparisons=[
@@ -3410,6 +3600,12 @@ function RankUpApp({user,onLogout}){
             <div style={{fontSize:20,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{totalXp.toLocaleString()} XP</div>
             <div style={{fontSize:10,color:"#555"}}>{xpInLvl}/{XP_PER_LEVEL} → lv.{level+1}</div>
             <div style={{display:"flex",gap:6}}>
+              {activeRaid&&!activeRaid.done&&(
+                <button onClick={()=>setRaidModal(true)}
+                  style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"1px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 2s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
+                  <span>{activeRaid.raid.icon}</span><span>RAID</span>
+                </button>
+              )}
               <button onClick={()=>setTab("tienda")} style={{fontSize:14,fontWeight:700,color:"#F59E0B",background:"#F59E0B18",border:"1px solid #F59E0B44",borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
               <button onClick={onLogout} title="Cerrar sesión" style={{fontSize:13,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#E84A5F",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>✕</button>
             </div>
@@ -4322,6 +4518,159 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
     </div>
   );
 }
+
+// ─── RAID MODAL COMPONENT ────────────────────────────────────────────────────
+function RaidModal({raid,startTime,onComplete,onDismiss}){
+  const c=RAID_RARITY_COLOR[raid.rarity]||"#A78BFA";
+  const [tick,setTick]=useState(0);
+  useEffect(()=>{
+    const iv=setInterval(()=>setTick(t=>t+1),1000);
+    return()=>clearInterval(iv);
+  },[]);
+  const elapsed=Math.floor((Date.now()-startTime)/1000);
+  const remaining=Math.max(0,raid.time-elapsed);
+  const hours=Math.floor(remaining/3600);
+  const mins=Math.floor((remaining%3600)/60);
+  const secs=remaining%60;
+  const pct=remaining/raid.time; // 1→0
+  const isUrgent=remaining<3600; // last hour
+  const circumference=2*Math.PI*54;
+  const dashOffset=circumference*(1-pct);
+
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",
+      background:"radial-gradient(ellipse at center, #1a000a 0%, #000000 70%)"}}>
+      {/* Animated background particles */}
+      <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none"}}>
+        {[...Array(12)].map((_,i)=>(
+          <div key={i} style={{
+            position:"absolute",
+            left:`${(i*31)%100}%`,top:`${(i*17+10)%100}%`,
+            width:i%3===0?3:2,height:i%3===0?3:2,
+            borderRadius:"50%",background:c,opacity:0.3+(i%4)*0.1,
+            animation:`float${i%3} ${3+i%4}s ease-in-out infinite`,
+            animationDelay:`${i*0.4}s`
+          }}/>
+        ))}
+      </div>
+
+      <div style={{width:"100%",maxWidth:380,position:"relative"}}>
+        {/* Glow border card */}
+        <div style={{background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
+          borderRadius:24,border:`1px solid ${c}88`,
+          boxShadow:`0 0 60px ${c}44, inset 0 0 40px ${c}08`,
+          overflow:"hidden"}}>
+
+          {/* TOP BANNER */}
+          <div style={{background:`linear-gradient(135deg,${c}44 0%,${c}11 60%,transparent 100%)`,
+            padding:"28px 24px 20px",textAlign:"center",position:"relative"}}>
+            {/* Rarity line */}
+            <div style={{fontSize:8,letterSpacing:5,color:c,marginBottom:10,fontFamily:"'Rajdhani',sans-serif",opacity:0.8}}>
+              ━━ {raid.rarity.toUpperCase()} RAID ━━
+            </div>
+            {/* Boss icon — pulsing */}
+            <div style={{fontSize:72,lineHeight:1,marginBottom:12,
+              filter:`drop-shadow(0 0 20px ${c}) drop-shadow(0 0 40px ${c}88)`,
+              animation:"bossGlow 1.5s ease-in-out infinite"}}>
+              {raid.icon}
+            </div>
+            {/* Boss name */}
+            <div style={{fontSize:24,fontWeight:900,color:"#FFF",
+              fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6,
+              textShadow:`0 0 20px ${c}88`}}>
+              {raid.boss}
+            </div>
+            <div style={{fontSize:11,color:"#AAA",fontStyle:"italic",lineHeight:1.5,
+              fontFamily:"'Rajdhani',sans-serif"}}>
+              "{raid.desc}"
+            </div>
+          </div>
+
+          {/* COUNTDOWN */}
+          <div style={{padding:"20px 24px 0",textAlign:"center"}}>
+            <div style={{fontSize:9,color:"#555",letterSpacing:4,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>
+              TIEMPO RESTANTE
+            </div>
+            {/* SVG circular countdown */}
+            <div style={{position:"relative",width:130,height:130,margin:"0 auto 16px"}}>
+              <svg width="130" height="130" style={{transform:"rotate(-90deg)"}}>
+                {/* Track */}
+                <circle cx="65" cy="65" r="54" fill="none" stroke="#1A1A2E" strokeWidth="6"/>
+                {/* Progress */}
+                <circle cx="65" cy="65" r="54" fill="none" stroke={isUrgent?"#E84A5F":c}
+                  strokeWidth="6" strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  strokeDashoffset={dashOffset}
+                  style={{transition:"stroke-dashoffset 1s linear",filter:`drop-shadow(0 0 6px ${isUrgent?"#E84A5F":c})`}}/>
+              </svg>
+              <div style={{position:"absolute",inset:0,display:"flex",flexDirection:"column",
+                alignItems:"center",justifyContent:"center"}}>
+                <div style={{fontFamily:"'Rajdhani',sans-serif",fontWeight:900,lineHeight:1,
+                  color:isUrgent?"#E84A5F":"#FFF",
+                  fontSize:remaining<60?28:22}}>
+                  {remaining<60
+                    ?`${secs}s`
+                    :`${hours.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`}
+                </div>
+                {remaining>=60&&<div style={{fontSize:8,color:"#555",letterSpacing:2,marginTop:2}}>HH:MM:SS</div>}
+                {isUrgent&&<div style={{fontSize:8,color:"#E84A5F",letterSpacing:2,marginTop:2,animation:"bossGlow 1s infinite"}}>¡URGENTE!</div>}
+              </div>
+            </div>
+
+            {/* Challenge box */}
+            <div style={{background:`${c}0D`,border:`1px solid ${c}44`,borderRadius:14,
+              padding:"14px 16px",marginBottom:16,
+              boxShadow:`inset 0 0 20px ${c}08`}}>
+              <div style={{fontSize:8,color:c,letterSpacing:4,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TU MISIÓN</div>
+              <div style={{fontSize:20,fontWeight:900,color:"#FFF",
+                fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,lineHeight:1.3}}>
+                {raid.challenge}
+              </div>
+            </div>
+
+            {/* Rewards row */}
+            <div style={{display:"flex",gap:8,marginBottom:20}}>
+              {[
+                {l:"XP",v:`+${raid.xp}`,col:"#A78BFA",icon:"⚡"},
+                {l:"MONEDAS",v:`+${raid.coins}`,col:"#F59E0B",icon:"🪙"},
+              ].map(r=>(
+                <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,
+                  padding:"12px 8px",textAlign:"center",
+                  border:`1px solid ${r.col}33`,
+                  boxShadow:`0 0 12px ${r.col}11`}}>
+                  <div style={{fontSize:11,marginBottom:4}}>{r.icon}</div>
+                  <div style={{fontSize:18,fontWeight:900,color:r.col,
+                    fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{r.v}</div>
+                  <div style={{fontSize:8,color:"#444",letterSpacing:1,marginTop:3}}>{r.l}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Buttons */}
+            <button onClick={onComplete}
+              style={{width:"100%",padding:"16px",marginBottom:10,
+                background:`linear-gradient(135deg,${c} 0%,${c}BB 100%)`,
+                border:"none",borderRadius:14,
+                color:"#07070F",fontSize:15,fontWeight:900,cursor:"pointer",
+                fontFamily:"'Rajdhani',sans-serif",letterSpacing:3,
+                boxShadow:`0 4px 24px ${c}66`,
+                textTransform:"uppercase"}}>
+              ⚔️ ¡RAID COMPLETADA!
+            </button>
+            <button onClick={onDismiss}
+              style={{width:"100%",padding:"12px",marginBottom:20,
+                background:"transparent",border:`1px solid #2A2A3E`,
+                borderRadius:14,color:"#444",fontSize:11,cursor:"pointer",
+                fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+              CERRAR · LA RAID SIGUE ACTIVA
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 
 // ─── BUZÓN TAB ────────────────────────────────────────────────────────────────
 function BuzonTab({messages,onSend,userName}){
