@@ -2917,13 +2917,15 @@ function RankingTab({currentEmail, currentName}){
             const top=Math.max(...arr.map(w=>w.kg||0));
             return top>max?top:max;
           },0);
+          const raidData=await fbGet(`raidCounts/${dataKey}`).catch(()=>null);
+          const raids=raidData?.raids||JSON.parse(localStorage.getItem(`rku_raids_${email}`)||"0");
           return{
             email, name:u.name||"Jugador",
             photo:photo||localStorage.getItem(`rku_photo_${email}`)||null,
             playerClass:d.playerClass||null,
             totalXp:d.totalXp||0,
             totalKg:Math.round(totalKg),
-            totalEx, maxPR,
+            totalEx, maxPR, raids,
             level:getLevel(d.totalXp||0),
           };
         }));
@@ -2939,6 +2941,7 @@ function RankingTab({currentEmail, currentName}){
     if(cat==="kg") return b.totalKg-a.totalKg;
     if(cat==="ejercicios") return b.totalEx-a.totalEx;
     if(cat==="pr") return b.maxPR-a.maxPR;
+    if(cat==="raids") return (b.raids||0)-(a.raids||0);
     return 0;
   });
 
@@ -2948,6 +2951,7 @@ function RankingTab({currentEmail, currentName}){
     {id:"kg",       label:"🏋️ Kilos",       val:p=>`${p.totalKg.toLocaleString()} kg`},
     {id:"ejercicios",label:"✅ Ejercicios", val:p=>`${p.totalEx} ejs`},
     {id:"pr",       label:"🏆 Récord",       val:p=>p.maxPR>0?`${p.maxPR} kg`:"— kg"},
+    {id:"raids",    label:"⚔️ Raids",        val:p=>`${p.raids||0} raids`},
   ];
 
   return(
@@ -2955,7 +2959,7 @@ function RankingTab({currentEmail, currentName}){
       <div style={{fontSize:9,color:"#F59E0B",letterSpacing:4,marginBottom:14}}>🏅 RANKING GLOBAL</div>
 
       {/* Category selector */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:16}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:16}}>
         {cats.map(c=>(
           <button key={c.id} onClick={()=>setCat(c.id)}
             style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
@@ -3258,13 +3262,17 @@ function RankUpApp({user,onLogout}){
     addXp(raid.xp,null,`+${raid.xp} XP ⚔️ RAID`);
     addCoins(raid.coins,`🏴‍☠️ Raid completada: ${raid.boss}`);
     setActiveRaid(p=>({...p,done:true,completedAt:Date.now()}));
-    // Track raid count in localStorage for achievements
+    // Track raid count in localStorage AND Firebase
     const raidCount=JSON.parse(localStorage.getItem(`rku_raids_${user.email}`)||"0")+1;
     localStorage.setItem(`rku_raids_${user.email}`,JSON.stringify(raidCount));
     if(raid.rarity==="legendaria"){
       const legCount=JSON.parse(localStorage.getItem(`rku_legendary_raids_${user.email}`)||"0")+1;
       localStorage.setItem(`rku_legendary_raids_${user.email}`,JSON.stringify(legCount));
     }
+    // Persist raid count to Firebase via saveUserData on next auto-save
+    // We store it in a raidCount field so ranking can read it
+    const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
+    fbSet(`raidCounts/${msgKey}`,{email:user.email,raids:raidCount}).catch(()=>{});
     setRaidModal(false);
     setTimeout(()=>setRaidComplete(raid),300);
     // Achievement check via earned
