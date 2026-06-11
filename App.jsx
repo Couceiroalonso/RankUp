@@ -2959,16 +2959,29 @@ function RankingTab({currentEmail, currentName}){
       <div style={{fontSize:9,color:"#F59E0B",letterSpacing:4,marginBottom:14}}>🏅 RANKING GLOBAL</div>
 
       {/* Category selector */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:16}}>
-        {cats.map(c=>(
-          <button key={c.id} onClick={()=>setCat(c.id)}
-            style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
-              background:cat===c.id?"#F59E0B22":"#0D0D1A",
-              border:`1px solid ${cat===c.id?"#F59E0B":"#1E1E32"}`,
-              color:cat===c.id?"#F59E0B":"#555"}}>
-            {c.label}
-          </button>
-        ))}
+      <div style={{marginBottom:16}}>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:6}}>
+          {cats.slice(0,3).map(c=>(
+            <button key={c.id} onClick={()=>setCat(c.id)}
+              style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
+                background:cat===c.id?"#F59E0B22":"#0D0D1A",
+                border:`1px solid ${cat===c.id?"#F59E0B":"#1E1E32"}`,
+                color:cat===c.id?"#F59E0B":"#555"}}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,width:"calc(66.6% + 4px)",margin:"0 auto"}}>
+          {cats.slice(3).map(c=>(
+            <button key={c.id} onClick={()=>setCat(c.id)}
+              style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
+                background:cat===c.id?"#F59E0B22":"#0D0D1A",
+                border:`1px solid ${cat===c.id?"#F59E0B":"#1E1E32"}`,
+                color:cat===c.id?"#F59E0B":"#555"}}>
+              {c.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading?(
