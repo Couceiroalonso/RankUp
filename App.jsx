@@ -569,7 +569,7 @@ const RAID_DB = [
 ];
 
 const RAID_RARITY_COLOR = {normal:"#60A5FA", épica:"#A78BFA", legendaria:"#F59E0B"};
-const RAID_TRIGGER_CHANCE = 0.20; // 20% on dungeon complete or app open // 20% on dungeon complete or app open
+const RAID_TRIGGER_CHANCE = 1.00; // TESTING — change back to 0.20
 
 const ACHIEVEMENTS = [
   // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
@@ -3308,7 +3308,10 @@ function RankUpApp({user,onLogout}){
       setRaidModal(true); // show existing raid
       return;
     }
-    if(currentRaid?.done) return; // already completed
+    if(currentRaid?.done){
+      // Previous raid was completed/abandoned — clear it and roll for a new one
+      setActiveRaid(null);
+    }
     // Roll for new raid
     if(Math.random()<RAID_TRIGGER_CHANCE){
       const raid=RAID_DB[Math.floor(Math.random()*RAID_DB.length)];
@@ -5291,8 +5294,4 @@ function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines}){
             <div style={{fontSize:10,color:"#444",lineHeight:1.4,marginBottom:6}}>{ach.desc}</div>
             <div style={{fontSize:11,color:done?"#A78BFA":"#333",fontWeight:700}}>+{ach.xp} XP</div>
           </div>
-        );})}
-      </div>
-    </div>
-  );
-}
+    
