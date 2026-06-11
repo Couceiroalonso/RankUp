@@ -1558,6 +1558,20 @@ function AdminPanel({onLogout}){
 
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
 
+  const createNewUser=()=>{
+    if(!nuName.trim()||!nuEmail.trim()||nuPass.length<6){flash("Rellena todos los campos (contrasena min. 6 caracteres)",false);return;}
+    const email=nuEmail.trim().toLowerCase();
+    const users=getUsers();
+    if(users[email]){flash("Ya existe un usuario con ese email",false);return;}
+    users[email]={name:nuName.trim(),email,password:hashPw(nuPass),createdAt:Date.now(),isTest:nuIsTest};
+    saveUsers(users);
+    saveUserData(email,defaultData());
+    setAllUsers({...users});
+    setNuName("");setNuEmail("");setNuPass("");setNuIsTest(false);
+    setShowNewUserForm(false);
+    flash("Usuario "+nuName.trim()+" creado");
+  };
+
   const openUser=(email)=>{
     const data=getUD(email)||defaultData();
     setSelUser(email);
