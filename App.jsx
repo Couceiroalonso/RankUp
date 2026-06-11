@@ -1545,10 +1545,16 @@ function AdminPanel({onLogout}){
   const [msg,setMsg]=useState("");
   const [confirmDel,setConfirmDel]=useState(null);
   const [newPw,setNewPw]=useState("");
+  const [showNewUserForm,setShowNewUserForm]=useState(false);
+  const [nuName,setNuName]=useState("");
+  const [nuEmail,setNuEmail]=useState("");
+  const [nuPass,setNuPass]=useState("");
+  const [nuIsTest,setNuIsTest]=useState(false);
   const [showNewPw,setShowNewPw]=useState(false);
 
   const [allUsers,setAllUsers]=useState(getUsers());
   const userList=Object.entries(allUsers).map(([email,u])=>({email,...u}));
+  const realUserList=userList.filter(u=>!u.isTest); // exclude test users from stats
 
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
 
@@ -2550,7 +2556,31 @@ function AdminPanel({onLogout}){
           <div>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
               <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>USUARIOS REGISTRADOS ({totalUsers})</div>
+              <button onClick={()=>setShowNewUserForm(v=>!v)}
+                style={{padding:"7px 14px",background:"#A78BFA22",border:"1px solid #A78BFA55",borderRadius:9,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                {showNewUserForm?"✕ CANCELAR":"+ NUEVO USUARIO"}
+              </button>
             </div>
+            {showNewUserForm&&(
+              <div style={{background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:12,padding:16,marginBottom:14}}>
+                <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:12}}>CREAR NUEVO USUARIO</div>
+                <input value={nuName} onChange={e=>setNuName(e.target.value)} placeholder="Nombre"
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
+                <input value={nuEmail} onChange={e=>setNuEmail(e.target.value)} placeholder="Email" type="email"
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
+                <input value={nuPass} onChange={e=>setNuPass(e.target.value)} placeholder="Contraseña (mín. 6 caracteres)" type="password"
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:12,boxSizing:"border-box"}}/>
+                <label style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,cursor:"pointer"}}>
+                  <input type="checkbox" checked={nuIsTest} onChange={e=>setNuIsTest(e.target.checked)}
+                    style={{width:16,height:16,accentColor:"#A78BFA",cursor:"pointer"}}/>
+                  <span style={{fontSize:11,color:"#666",fontFamily:"'Rajdhani',sans-serif"}}>Usuario de pruebas (no aparece en rankings ni stats)</span>
+                </label>
+                <button onClick={createNewUser}
+                  style={{width:"100%",padding:"12px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:9,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                  ✓ CREAR USUARIO
+                </button>
+              </div>
+            )}
             {userList.length===0?(
               <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
                 <div style={{fontSize:40,marginBottom:12}}>👥</div>
@@ -2576,7 +2606,10 @@ function AdminPanel({onLogout}){
                           {(userMessages[u.email]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
                             <span style={{background:"#E84A5F",color:"#FFF",fontSize:8,fontWeight:900,padding:"2px 6px",borderRadius:10,fontFamily:"'Rajdhani',sans-serif"}}>MSG</span>}
                         </div>
-                        <div style={{fontSize:10,color:"#555"}}>{u.email}</div>
+                        <div style={{display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{fontSize:10,color:"#555"}}>{u.email}</span>
+                          {u.isTest&&<span style={{fontSize:8,padding:"1px 6px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>TEST</span>}
+                        </div>
                       </div>
                       <div style={{fontSize:10,color:"#333"}}>{date}</div>
                     </div>
@@ -2929,7 +2962,9 @@ function RankingTab({currentEmail, currentName}){
             level:getLevel(d.totalXp||0),
           };
         }));
-        setPlayers(list.filter(p=>p.name));
+        const users2=await fbGet("users").catch(()=>({}));
+        const testEmails=new Set(Object.values(users2||{}).filter(u=>u.isTest).map(u=>u.email));
+        setPlayers(list.filter(p=>p.name&&!testEmails.has(p.email)));
       }catch(e){console.log("Ranking error:",e);}
       setLoading(false);
     };
