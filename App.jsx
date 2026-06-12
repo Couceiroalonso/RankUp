@@ -3164,7 +3164,31 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
-      if(fresh.exHistory&&Object.keys(fresh.exHistory).length>0) setExHistory(fresh.exHistory);
+      if(fresh.exHistory&&Object.keys(fresh.exHistory).length>0){
+        setExHistory(fresh.exHistory);
+      } else if(fresh.weights&&Object.keys(fresh.weights).length>0){
+        // ── MIGRATE existing weights to exHistory ──
+        // Build a map of key→exName by scanning PHASES + customRoutines
+        const keyToName={};
+        PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
+          keyToName[`${p.id}_${di}_${ei}`]=ex.name;
+        })));
+        (fresh.customRoutines||[]).forEach(rt=>rt.sessions?.forEach((s,si)=>s.exercises?.forEach((ex,ei)=>{
+          keyToName[`rt_${rt.id}_${si}_${ei}`]=ex.name;
+        })));
+        const migrated={};
+        Object.entries(fresh.weights).forEach(([key,logs])=>{
+          const name=keyToName[key];
+          if(!name||!Array.isArray(logs)) return;
+          if(!migrated[name]) migrated[name]=[];
+          logs.forEach(w=>{
+            if(w.kg>0) migrated[name].push({kg:w.kg,date:null,session:w.session});
+          });
+        });
+        if(Object.keys(migrated).length>0){
+          setExHistory(migrated);
+        }
+      }
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
       // Check raid on app open
       setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
