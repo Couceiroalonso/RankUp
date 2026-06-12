@@ -3103,6 +3103,7 @@ function RankUpApp({user,onLogout}){
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
   const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
+  const [exHistory,setExHistory]=useState(saved.exHistory||{});  // {exName: [{kg,date,session}]}
   const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
   const [raidComplete,setRaidComplete]=useState(null);
@@ -3163,6 +3164,7 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
+      if(fresh.exHistory&&Object.keys(fresh.exHistory).length>0) setExHistory(fresh.exHistory);
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
       // Check raid on app open
       setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
@@ -3252,9 +3254,10 @@ function RankUpApp({user,onLogout}){
       assignedDiets,
       assignedProgram,
       exNotes,
-      activeRaid
+      activeRaid,
+      exHistory
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -3457,14 +3460,22 @@ function RankUpApp({user,onLogout}){
     } else setTotalXp(p=>Math.max(0,p-xp));
   },[checked,dc,addXp,addCoins,weights,routines]);
 
-  const logWeight=useCallback((key,evt)=>{
+  const logWeight=useCallback((key,evt,exName)=>{
     const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<=0)return;
     const arr=weights[key]||[];const prevMax=arr.length>0?Math.max(...arr.map(w=>w.kg)):0;
     const isRec=kg>0&&kg>prevMax&&arr.length>0;
+    const dateStr=new Date().toISOString();
     setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg}]}));
-    setWInputs(p=>({...p,[key]:""}));
+    // Also write to global exercise history
+    if(exName){
+      setExHistory(p=>{
+        const hist=p[exName]||[];
+        return {...p,[exName]:[...hist,{kg,date:dateStr,session:`S${hist.length+1}`}]};
+      });
+    }
+    setWInputs(p=>({...p,[key]:""};))
     if(isRec){setPR(p=>({...p,[key]:kg}));const recMult=getClassMultiplier(playerClass,"",80,true);const recXp=Math.round(80*recMult);addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);}else addXp(15,evt);
-  },[weights,wInputs,addXp]);
+  },[weights,wInputs,addXp,exHistory]);
 
   const deleteWeight=useCallback((key,idx)=>{
     setWeights(p=>{
@@ -3774,7 +3785,7 @@ function RankUpApp({user,onLogout}){
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory}/>
                     </>
                   );
                 })()}
@@ -3796,6 +3807,7 @@ function RankUpApp({user,onLogout}){
                   onUpdateRoutines={newRoutines=>{setRoutines(newRoutines);}}
                   exNotes={exNotes}
                   onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))}
+                  exHistory={exHistory}
                 />
               ):(
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
@@ -3846,7 +3858,8 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote}){
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={}}){
+  const [rtHistoryModal,setRtHistoryModal]=useState(null);
   const [openSess,setOpenSess]=useState(null);
   const [addModal,setAddModal]=useState(null);   // {rtId, si} — session to add to
   const [swapModal,setSwapModal]=useState(null); // {rtId, si, ei, exName, muscles}
@@ -3993,12 +4006,12 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                             <div style={{padding:"0 14px 12px 56px"}}>
                               <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                 <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
-                                  onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e);}}
+                                  onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e,ex.name);}}
                                   style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                                <button onClick={e=>onLogWeight(key,e)}
+                                <button onClick={e=>onLogWeight(key,e,ex.name)}
                                   style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                                {exW.length>0&&<button onClick={()=>onToggleChart(key)}
-                                  style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
+                                {exHistory[ex.name]?.length>0&&<button onClick={()=>setRtHistoryModal({exName:ex.name,history:exHistory[ex.name],color:c})}
+                                  style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📊 HISTORIAL</button>}
                               </div>
                               {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                               {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=>(
@@ -4064,6 +4077,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
         </div>
       )}
 
+      {rtHistoryModal&&<ExHistoryModal exName={rtHistoryModal.exName} history={rtHistoryModal.history} color={rtHistoryModal.color} onClose={()=>setRtHistoryModal(null)}/>}
       {/* ── ADD / SWAP MODAL ── */}
       {modalCtx&&(
         <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>{setAddModal(null);setSwapModal(null);setSearchQ("");}}>
@@ -4106,7 +4120,8 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote}){
+function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={}}){
+  const [historyModal,setHistoryModal]=useState(null);
   const [openRt,setOpenRt]=useState(null);
   const [openRtSess,setOpenRtSess]=useState(null);
   let lastWeek=null;
@@ -4169,13 +4184,12 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                         </div>
                         <div style={{padding:"0 14px 12px 56px"}}>
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                            <button onClick={e=>onLogWeight(key,e)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                            {exW.length>0&&<button onClick={()=>onToggleChart(key)} style={{padding:"6px 12px",background:"transparent",border:`1px solid ${ph.color}44`,borderRadius:8,color:ph.color,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isChartOpen?"OCULTAR":"📈 STATS"}</button>}
+                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,ex.name)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                            <button onClick={e=>onLogWeight(key,e,ex.name)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
+                            
                           </div>
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                           {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
-                          {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={ph.color}/>}
                           {/* User notes */}
                           <textarea
                             placeholder="📝 Anotaciones personales..."
@@ -4796,6 +4810,83 @@ function RaidModal({raid,startTime,onComplete,onDismiss,onSkip}){
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── EX HISTORY MODAL ────────────────────────────────────────────────────────
+function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
+  const sorted=[...history].sort((a,b)=>new Date(a.date)-new Date(b.date));
+  const maxKg=sorted.length>0?Math.max(...sorted.map(r=>r.kg)):0;
+  const minKg=sorted.length>0?Math.min(...sorted.map(r=>r.kg)):0;
+  const range=maxKg-minKg||1;
+  const pr=maxKg;
+
+  const formatDate=iso=>{
+    if(!iso) return "";
+    const d=new Date(iso);
+    return `${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()}`;
+  };
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"85vh",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",display:"flex",flexDirection:"column"}}>
+        {/* Header */}
+        <div style={{padding:"20px 20px 12px",borderBottom:"1px solid #1A1A2E",flexShrink:0}}>
+          <div style={{fontSize:9,color:color,letterSpacing:3,marginBottom:4}}>📈 HISTÓRICO GLOBAL</div>
+          <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{exName}</div>
+          <div style={{display:"flex",gap:10}}>
+            {[{l:"SESIONES",v:sorted.length},{l:"RÉCORD",v:`${pr}kg`},{l:"ÚLTIMA",v:sorted.length>0?`${sorted[sorted.length-1].kg}kg`:"—"}].map(s=>(
+              <div key={s.l} style={{flex:1,background:"#07070F",borderRadius:8,padding:"8px 6px",textAlign:"center",border:`1px solid ${color}22`}}>
+                <div style={{fontSize:14,fontWeight:700,color:color,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:1}}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Chart */}
+        {sorted.length>=2&&(
+          <div style={{padding:"16px 20px 8px",flexShrink:0}}>
+            <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:8}}>PROGRESIÓN DE PESO</div>
+            <div style={{position:"relative",height:80,display:"flex",alignItems:"flex-end",gap:3}}>
+              {sorted.map((r,i)=>{
+                const h=Math.max(8,((r.kg-minKg)/range)*70+10);
+                const isPR=r.kg===maxKg;
+                return(
+                  <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
+                    {isPR&&<div style={{fontSize:7,color:"#F59E0B"}}>PR</div>}
+                    <div style={{width:"100%",borderRadius:"3px 3px 0 0",background:isPR?`#F59E0B`:color,opacity:0.7+(i/sorted.length)*0.3,height:h,transition:"height .3s"}}/>
+                    <div style={{fontSize:8,color:"#555",writingMode:"vertical-lr",transform:"rotate(180deg)",lineHeight:1}}>{r.kg}kg</div>
+                  </div>
+                );
+              })}
+              {/* PR line */}
+              <div style={{position:"absolute",top:2,left:0,right:0,height:1,background:"#F59E0B44",borderTop:"1px dashed #F59E0B44"}}/>
+            </div>
+          </div>
+        )}
+
+        {/* List */}
+        <div style={{overflowY:"auto",flex:1,padding:"8px 20px 20px"}}>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:8}}>TODOS LOS REGISTROS</div>
+          {sorted.length===0&&<div style={{textAlign:"center",padding:"30px",color:"#333",fontSize:12}}>Sin registros aún</div>}
+          {[...sorted].reverse().map((r,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #1A1A2E"}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:700,color:r.kg===maxKg?"#F59E0B":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{r.kg} kg {r.kg===maxKg&&"🏆"}</div>
+                <div style={{fontSize:10,color:"#444"}}>{formatDate(r.date)}</div>
+              </div>
+              <div style={{fontSize:10,color:"#555",fontFamily:"'Rajdhani',sans-serif"}}>
+                {i===0?"ÚLTIMA":`hace ${sorted.length-1-([...sorted].reverse().indexOf(r))+1} sesiones`}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={onClose} style={{margin:"0 20px 20px",padding:"12px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2,flexShrink:0}}>CERRAR</button>
       </div>
     </div>
   );
