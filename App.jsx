@@ -3166,18 +3166,22 @@ function RankUpApp({user,onLogout}){
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
       // ── Load / Migrate exHistory ──
       {
+        // Load existing history and merge with migration from weights
         const existingHistory=fresh.exHistory||{};
-        const hasHistory=Object.keys(existingHistory).length>0;
-        if(hasHistory){
-          setExHistory(existingHistory);
-        }
-        // Always try migration to fill in any missing exercises
+        if(Object.keys(existingHistory).length>0) setExHistory(existingHistory);
+        // Always migrate weights to fill any missing exercise history
         if(fresh.weights&&Object.keys(fresh.weights).length>0){
-          // Build keyToName map from PHASES + routines
+          // Build keyToName map from ALL sources
           const keyToName={};
+          // From program phases — key format: p{id}_d{di}_e{ei}
           PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
-            keyToName[`${p.id}_${di}_${ei}`]=ex.name;
+            keyToName[`p${p.id}_d${di}_e${ei}`]=ex.name;
           })));
+          // From assigned program if any
+          (fresh.assignedProgram?.phases||[]).forEach(p=>p.training?.forEach((day,di)=>day.exercises?.forEach((ex,ei)=>{
+            keyToName[`p${p.id}_d${di}_e${ei}`]=ex.name;
+          })));
+          // From custom routines
           (fresh.customRoutines||[]).forEach(rt=>rt.sessions?.forEach((s,si)=>s.exercises?.forEach((ex,ei)=>{
             keyToName[`rt_${rt.id}_${si}_${ei}`]=ex.name;
           })));
