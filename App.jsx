@@ -4034,8 +4034,12 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                   style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                                 <button onClick={e=>onLogWeight(key,e,ex.name)}
                                   style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                                {exHistory[ex.name]?.length>0&&<button onClick={()=>setRtHistoryModal({exName:ex.name,history:exHistory[ex.name],color:c})}
-                                  style={{padding:"6px 12px",background:"transparent",border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📊 HISTORIAL</button>}
+                                {exHistory[ex.name]?.length>0&&(
+                                  <button onClick={()=>setRtHistoryModal({exName:ex.name,history:exHistory[ex.name],color:c})}
+                                    style={{marginTop:6,width:"100%",padding:"8px",background:`${c}11`,border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+                                    📊 VER HISTORIAL
+                                  </button>
+                                )}
                               </div>
                               {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                               {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=>(
@@ -4210,8 +4214,13 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                             <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,ex.name)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                             <button onClick={e=>onLogWeight(key,e,ex.name)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                            {exHistory[ex.name]?.length>0&&<button onClick={()=>setHistoryModal({exName:ex.name,history:exHistory[ex.name],color:ph.color})} style={{padding:"6px 12px",background:"transparent",border:`1px solid ${ph.color}44`,borderRadius:8,color:ph.color,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📊 HISTORIAL</button>}
                           </div>
+                          {exHistory[ex.name]?.length>0&&(
+                            <button onClick={()=>setHistoryModal({exName:ex.name,history:exHistory[ex.name],color:ph.color})}
+                              style={{marginTop:6,width:"100%",padding:"8px",background:`${ph.color}11`,border:`1px solid ${ph.color}44`,borderRadius:8,color:ph.color,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+                              📊 VER HISTORIAL
+                            </button>
+                          )}
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                           {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                           {/* User notes */}
