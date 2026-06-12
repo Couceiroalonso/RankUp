@@ -3170,7 +3170,9 @@ function RankUpApp({user,onLogout}){
         const hasHistory=Object.keys(existingHistory).length>0;
         if(hasHistory){
           setExHistory(existingHistory);
-        } else if(fresh.weights&&Object.keys(fresh.weights).length>0){
+        }
+        // Always try migration to fill in any missing exercises
+        if(fresh.weights&&Object.keys(fresh.weights).length>0){
           // Build keyToName map from PHASES + routines
           const keyToName={};
           PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
@@ -3186,7 +3188,7 @@ function RankUpApp({user,onLogout}){
             if(!migrated[name]) migrated[name]=[];
             logs.forEach(w=>{ if(w.kg>0) migrated[name].push({kg:w.kg,date:null,session:w.session}); });
           });
-          if(Object.keys(migrated).length>0) setExHistory(migrated);
+          if(Object.keys(migrated).length>0) setExHistory(p=>({...migrated,...p}));
         }
       }
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
@@ -3451,23 +3453,27 @@ function RankUpApp({user,onLogout}){
         }
       } else if(!phaseId){
         // ── ROUTINE dungeon reward ──
-        // key format: rt_{rtId}_{si}_{ei} — extract rtId and si
-        const parts=key.split("_"); // ["rt","rtId","si","ei"]
-        if(parts[0]==="rt"){
-          const rtId=parts[1];const si=parseInt(parts[2]);
-          const rt=routines.find(r=>r.id===rtId);
-          const sess=rt?.sessions?.[si];
+        // key format: rt_{rtId}_{si}_{ei} — rtId may contain underscores
+        // Find which routine this key belongs to by matching against all routines
+        if(key.startsWith("rt_")){
+          const rt=routines.find(r=>key.startsWith(`rt_${r.id}_`));
+          if(rt){
+            // Extract si and ei from the end: rt_{rtId}_{si}_{ei}
+            const suffix=key.slice(`rt_${rt.id}_`.length); // "si_ei"
+            const lastUs=suffix.lastIndexOf("_");
+            const si=parseInt(suffix.slice(0,lastUs));
+          const sess=rt.sessions?.[si];
           if(sess){
-            const ck=`rt_${rtId}_done_${si}`;
-            const allDone=sess.exercises.every((_,ei)=>nc[`rt_${rtId}_${si}_${ei}`]);
+            const ck=`rt_${rt.id}_done_${si}`;
+            const allDone=sess.exercises.every((_,ei)=>nc[`rt_${rt.id}_${si}_${ei}`]);
             if(allDone){
               setDC(prevDC=>{
                 if(prevDC[ck]) return prevDC;
-                const bossDone=sess.exercises.filter((ex,ei)=>ex.boss&&nc[`rt_${rtId}_${si}_${ei}`]).length;
+                const bossDone=sess.exercises.filter((ex,ei)=>ex.boss&&nc[`rt_${rt.id}_${si}_${ei}`]).length;
                 const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
                 addCoins(dungeonCoins,"¡Dungeon completado!");
                 const sessKg=sess.exercises.reduce((sum,ex,ei)=>{
-                  const wArr=weights[`rt_${rtId}_${si}_${ei}`]||[];
+                  const wArr=weights[`rt_${rt.id}_${si}_${ei}`]||[];
                   return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
                 },0);
                 setTimeout(()=>setDungeonComplete({
@@ -3479,6 +3485,7 @@ function RankUpApp({user,onLogout}){
               });
             }
           }
+          } // end if(rt)
         }
       }
     } else setTotalXp(p=>Math.max(0,p-xp));
@@ -4240,6 +4247,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
           </div>
         );
       })}
+      {historyModal&&<ExHistoryModal exName={historyModal.exName} history={historyModal.history} color={historyModal.color} onClose={()=>setHistoryModal(null)}/>}
       {extraRoutines.filter(rt=>rt.assignedByAdmin===true).length>0&&(
         <div style={{marginTop:20}}>
           <div style={{display:"flex",alignItems:"center",gap:10,margin:"0 0 8px"}}>
