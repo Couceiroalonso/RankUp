@@ -3473,7 +3473,7 @@ function RankUpApp({user,onLogout}){
         return {...p,[exName]:[...hist,{kg,date:dateStr,session:`S${hist.length+1}`}]};
       });
     }
-    setWInputs(p=>({...p,[key]:""};))
+    setWInputs(p=>({...p,[key]:""}));
     if(isRec){setPR(p=>({...p,[key]:kg}));const recMult=getClassMultiplier(playerClass,"",80,true);const recXp=Math.round(80*recMult);addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);}else addXp(15,evt);
   },[weights,wInputs,addXp,exHistory]);
 
