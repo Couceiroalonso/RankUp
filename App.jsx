@@ -3164,29 +3164,29 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
-      if(fresh.exHistory&&Object.keys(fresh.exHistory).length>0){
-        setExHistory(fresh.exHistory);
-      } else if(fresh.weights&&Object.keys(fresh.weights).length>0){
-        // ── MIGRATE existing weights to exHistory ──
-        // Build a map of key→exName by scanning PHASES + customRoutines
-        const keyToName={};
-        PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
-          keyToName[`${p.id}_${di}_${ei}`]=ex.name;
-        })));
-        (fresh.customRoutines||[]).forEach(rt=>rt.sessions?.forEach((s,si)=>s.exercises?.forEach((ex,ei)=>{
-          keyToName[`rt_${rt.id}_${si}_${ei}`]=ex.name;
-        })));
-        const migrated={};
-        Object.entries(fresh.weights).forEach(([key,logs])=>{
-          const name=keyToName[key];
-          if(!name||!Array.isArray(logs)) return;
-          if(!migrated[name]) migrated[name]=[];
-          logs.forEach(w=>{
-            if(w.kg>0) migrated[name].push({kg:w.kg,date:null,session:w.session});
+      // ── Load / Migrate exHistory ──
+      {
+        const existingHistory=fresh.exHistory||{};
+        const hasHistory=Object.keys(existingHistory).length>0;
+        if(hasHistory){
+          setExHistory(existingHistory);
+        } else if(fresh.weights&&Object.keys(fresh.weights).length>0){
+          // Build keyToName map from PHASES + routines
+          const keyToName={};
+          PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
+            keyToName[`${p.id}_${di}_${ei}`]=ex.name;
+          })));
+          (fresh.customRoutines||[]).forEach(rt=>rt.sessions?.forEach((s,si)=>s.exercises?.forEach((ex,ei)=>{
+            keyToName[`rt_${rt.id}_${si}_${ei}`]=ex.name;
+          })));
+          const migrated={};
+          Object.entries(fresh.weights).forEach(([key,logs])=>{
+            const name=keyToName[key];
+            if(!name||!Array.isArray(logs)) return;
+            if(!migrated[name]) migrated[name]=[];
+            logs.forEach(w=>{ if(w.kg>0) migrated[name].push({kg:w.kg,date:null,session:w.session}); });
           });
-        });
-        if(Object.keys(migrated).length>0){
-          setExHistory(migrated);
+          if(Object.keys(migrated).length>0) setExHistory(migrated);
         }
       }
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
@@ -4210,7 +4210,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                             <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,ex.name)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                             <button onClick={e=>onLogWeight(key,e,ex.name)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                            
+                            {exHistory[ex.name]?.length>0&&<button onClick={()=>setHistoryModal({exName:ex.name,history:exHistory[ex.name],color:ph.color})} style={{padding:"6px 12px",background:"transparent",border:`1px solid ${ph.color}44`,borderRadius:8,color:ph.color,fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📊 HISTORIAL</button>}
                           </div>
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                           {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
