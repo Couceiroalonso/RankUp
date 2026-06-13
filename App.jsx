@@ -769,9 +769,76 @@ function CoinToast({msg,coins,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,3500);return()=>clearTimeout(t);},[]);
   return <div style={{position:"fixed",bottom:90,left:14,zIndex:9997,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
 }
+
+// ─── SHARE CARD HELPER ───────────────────────────────────────────────────────
+const shareCard=async(ref,title,text,filename)=>{
+  if(!window.html2canvas){
+    await new Promise((res,rej)=>{
+      const s=document.createElement("script");
+      s.src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+      s.onload=res; s.onerror=rej; document.head.appendChild(s);
+    });
+  }
+  const canvas=await window.html2canvas(ref,{backgroundColor:"#07070F",scale:2,useCORS:true,logging:false});
+  return new Promise(resolve=>{
+    canvas.toBlob(async blob=>{
+      const file=new File([blob],`${filename}.png`,{type:"image/png"});
+      try{
+        if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+          await navigator.share({title,text,files:[file]});
+        } else {
+          const url=URL.createObjectURL(blob);
+          const a=document.createElement("a");
+          a.href=url; a.download=`${filename}.png`; a.click();
+          URL.revokeObjectURL(url);
+        }
+      }catch(e){console.error(e);}
+      resolve();
+    },"image/png");
+  });
+};
+
 function LevelUpModal({level,onClose}){
   const ri=getRank(level);
-  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.9)",backdropFilter:"blur(10px)"}}><div style={{background:"#0A0A12",border:`2px solid ${ri.color}`,borderRadius:20,padding:"44px 48px",textAlign:"center",maxWidth:320,width:"90%",boxShadow:`0 0 80px ${ri.color}88`,animation:"lvlPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{marginBottom:10,display:"flex",justifyContent:"center"}}><HelmIcon size={64} glow={ri.color}/></div><div style={{fontSize:10,letterSpacing:6,color:ri.color,marginBottom:6}}>SISTEMA RANKUP</div><div style={{fontSize:46,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>NIVEL {level}</div><div style={{fontSize:16,color:ri.color,marginTop:10,fontWeight:700,letterSpacing:2}}>[{ri.rank}] {ri.title}</div><div style={{fontSize:12,color:"#555",marginTop:28}}>Toca para continuar</div></div></div>;
+  const cardRef=useRef(null);
+  const [sharing,setSharing]=useState(false);
+  const handleShare=async()=>{
+    setSharing(true);
+    await shareCard(cardRef.current,"¡He subido de nivel en RankUp!",`¡Acabo de alcanzar el Nivel ${level} en RankUp Fitness! ${ri.icon}`,"rankup-nivel-"+level);
+    setSharing(false);
+  };
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}>
+      <div style={{width:"100%",maxWidth:320,padding:"0 20px"}}>
+        {/* Card */}
+        <div ref={cardRef} style={{background:`linear-gradient(160deg,${ri.color}22 0%,#0A0A12 50%,#07070F 100%)`,border:`2px solid ${ri.color}`,borderRadius:20,padding:"36px 32px",textAlign:"center",boxShadow:`0 0 80px ${ri.color}88`,animation:"lvlPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:`${ri.color}88`,marginBottom:14,fontFamily:"'Rajdhani',sans-serif"}}>━━ SISTEMA RANKUP ━━</div>
+          <div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><HelmIcon size={72} glow={ri.color}/></div>
+          <div style={{fontSize:10,letterSpacing:5,color:ri.color,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>HAS SUBIDO DE NIVEL</div>
+          <div style={{fontSize:52,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1,textShadow:`0 0 30px ${ri.color}88`}}>NIVEL {level}</div>
+          <div style={{width:"60%",height:1,background:`linear-gradient(90deg,transparent,${ri.color}66,transparent)`,margin:"14px auto"}}/>
+          <div style={{fontSize:16,color:ri.color,fontWeight:700,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>[{ri.rank}] {ri.title}</div>
+          <div style={{marginTop:16,fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
+        </div>
+        {/* Buttons */}
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button onClick={handleShare} disabled={sharing}
+            style={{flex:2,padding:"13px",background:sharing?"#0A0A12":`linear-gradient(135deg,${ri.color},${ri.color}BB)`,
+              border:"none",borderRadius:12,color:sharing?ri.color:"#07070F",fontSize:13,fontWeight:900,
+              cursor:sharing?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
+              boxShadow:sharing?"none":`0 0 20px ${ri.color}55`}}>
+            {sharing?"GENERANDO...":"📸 COMPARTIR"}
+          </button>
+          <button onClick={onClose}
+            style={{flex:1,padding:"13px",background:"transparent",border:`1px solid ${ri.color}44`,
+              borderRadius:12,color:ri.color,fontSize:12,cursor:"pointer",
+              fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            CERRAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 function RedeemModal({reward,coins,onClose}){
   return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}><div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"#888",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
@@ -3107,7 +3174,8 @@ function RankUpApp({user,onLogout}){
   const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
   const [raidComplete,setRaidComplete]=useState(null);
-  const [raidDefeated,setRaidDefeated]=useState(null); // raid that expired undefeated
+  const [raidDefeated,setRaidDefeated]=useState(null);
+  const [prCard,setPrCard]=useState(null); // {exName, kg, prevMax, xp} // raid that expired undefeated
   const [messages,setMessages]=useState([]);               // [{id,from,text,date,read}]
   const [showClassModal,setShowClassModal]=useState(!saved.playerClass);
   const cls=CLASSES.find(c=>c.id===playerClass)||null;
@@ -3509,7 +3577,13 @@ function RankUpApp({user,onLogout}){
       });
     }
     setWInputs(p=>({...p,[key]:""}));
-    if(isRec){setPR(p=>({...p,[key]:kg}));const recMult=getClassMultiplier(playerClass,"",80,true);const recXp=Math.round(80*recMult);addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);}else addXp(15,evt);
+    if(isRec){
+      setPR(p=>({...p,[key]:kg}));
+      const recMult=getClassMultiplier(playerClass,"",80,true);
+      const recXp=Math.round(80*recMult);
+      addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);
+      setTimeout(()=>setPrCard({exName:exName||"Ejercicio",kg,prevMax,xp:recXp}),600);
+    } else addXp(15,evt);
   },[weights,wInputs,addXp,exHistory]);
 
   const deleteWeight=useCallback((key,idx)=>{
@@ -3562,27 +3636,10 @@ function RankUpApp({user,onLogout}){
       {raidModal&&activeRaid&&!activeRaid.done&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid} onSkip={skipRaid}/>}
 
       {/* ── RAID COMPLETE MODAL ── */}
-      {raidComplete&&(
-        <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}} onClick={()=>setRaidComplete(null)}>
-          <div style={{width:"100%",maxWidth:340,background:"#07070F",borderRadius:20,border:`2px solid ${RAID_RARITY_COLOR[raidComplete.rarity]}`,padding:"32px 24px",textAlign:"center",boxShadow:`0 0 60px ${RAID_RARITY_COLOR[raidComplete.rarity]}88`}}>
-            <div style={{fontSize:64,marginBottom:8}}>{raidComplete.icon}</div>
-            <div style={{fontSize:9,letterSpacing:4,color:RAID_RARITY_COLOR[raidComplete.rarity],marginBottom:6}}>RAID DERROTADA</div>
-            <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:16}}>{raidComplete.boss}</div>
-            <div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:20}}>
-              <div style={{padding:"10px 20px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10}}>
-                <div style={{fontSize:18,fontWeight:900,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif"}}>+{raidComplete.xp} XP</div>
-              </div>
-              <div style={{padding:"10px 20px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:10}}>
-                <div style={{fontSize:18,fontWeight:900,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>+{raidComplete.coins} 🪙</div>
-              </div>
-            </div>
-            <button onClick={()=>setRaidComplete(null)}
-              style={{padding:"12px 32px",background:`linear-gradient(135deg,${RAID_RARITY_COLOR[raidComplete.rarity]},${RAID_RARITY_COLOR[raidComplete.rarity]}AA)`,border:"none",borderRadius:12,color:"#07070F",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
-              ¡VICTORIA!
-            </button>
-          </div>
-        </div>
-      )}
+      {raidComplete&&<RaidCompleteCard raid={raidComplete} onClose={()=>setRaidComplete(null)}/>}
+
+      {/* ── PR CARD ── */}
+      {prCard&&<PRCard exName={prCard.exName} kg={prCard.kg} prevMax={prCard.prevMax} xp={prCard.xp} rank={ri} onClose={()=>setPrCard(null)}/>}
 
       {/* ── RAID DEFEATED MODAL ── */}
       {raidDefeated&&(
@@ -4854,6 +4911,148 @@ function RaidModal({raid,startTime,onComplete,onDismiss,onSkip}){
               </button>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── RAID COMPLETE CARD ──────────────────────────────────────────────────────
+function RaidCompleteCard({raid,onClose}){
+  const c=RAID_RARITY_COLOR[raid.rarity]||"#A78BFA";
+  const cardRef=useRef(null);
+  const [sharing,setSharing]=useState(false);
+  const handleShare=async()=>{
+    setSharing(true);
+    await shareCard(cardRef.current,`¡He derrotado a ${raid.boss} en RankUp!`,`Acabo de completar una Raid ${raid.rarity} en RankUp Fitness. ¡${raid.boss} ha caído! ⚔️`,"rankup-raid-"+raid.id);
+    setSharing(false);
+  };
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{width:"100%",maxWidth:340}}>
+        {/* Card */}
+        <div ref={cardRef} style={{background:`linear-gradient(160deg,${c}22 0%,#0A0007 50%,#07070F 100%)`,
+          borderRadius:20,border:`2px solid ${c}`,padding:"28px 24px",textAlign:"center",
+          boxShadow:`0 0 60px ${c}88, inset 0 0 30px ${c}08`}}>
+          <div style={{fontSize:8,letterSpacing:5,color:`${c}88`,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>━━ RAID DERROTADA ━━</div>
+          <div style={{fontSize:68,marginBottom:8,filter:`drop-shadow(0 0 20px ${c})`,animation:"bossGlow 1.5s ease-in-out infinite"}}>{raid.icon}</div>
+          <div style={{display:"inline-block",padding:"3px 12px",background:`${c}22`,border:`1px solid ${c}44`,borderRadius:20,fontSize:9,color:c,letterSpacing:3,marginBottom:10,fontFamily:"'Rajdhani',sans-serif"}}>{raid.rarity.toUpperCase()}</div>
+          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6}}>{raid.boss}</div>
+          <div style={{fontSize:11,color:"#555",fontStyle:"italic",marginBottom:16,fontFamily:"'Rajdhani',sans-serif"}}>"{raid.challenge}"</div>
+          <div style={{width:"70%",height:1,background:`linear-gradient(90deg,transparent,${c}66,transparent)`,margin:"0 auto 16px"}}/>
+          <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
+            {[{l:"XP",v:`+${raid.xp}`,col:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,col:"#F59E0B"}].map(r=>(
+              <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.col}33`}}>
+                <div style={{fontSize:18,fontWeight:900,color:r.col,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:2,marginTop:3}}>{r.l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
+        </div>
+        {/* Buttons */}
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button onClick={handleShare} disabled={sharing}
+            style={{flex:2,padding:"13px",background:sharing?"#0A0007":`linear-gradient(135deg,${c},${c}BB)`,
+              border:"none",borderRadius:12,color:sharing?c:"#07070F",fontSize:13,fontWeight:900,
+              cursor:sharing?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
+              boxShadow:sharing?"none":`0 0 20px ${c}55`}}>
+            {sharing?"GENERANDO...":"📸 COMPARTIR"}
+          </button>
+          <button onClick={onClose}
+            style={{flex:1,padding:"13px",background:"transparent",border:`1px solid ${c}44`,
+              borderRadius:12,color:c,fontSize:12,cursor:"pointer",
+              fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            CERRAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── PR CARD MODAL ───────────────────────────────────────────────────────────
+function PRCard({exName,kg,prevMax,xp,rank,onClose}){
+  const c="#F59E0B";
+  const improvement=prevMax>0?Math.round(((kg-prevMax)/prevMax)*100):100;
+  const cardRef=useRef(null);
+  const [sharing,setSharing]=useState(false);
+
+  const handleShare=async()=>{
+    setSharing(true);
+    await shareCard(cardRef.current,"¡Nuevo Récord Personal en RankUp!",`Acabo de superar mi récord en ${exName}: ${kg}kg 🏆`,"rankup-pr-"+exName.replace(/\s+/g,"-").toLowerCase());
+    setSharing(false);
+  };
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}
+      onClick={onClose}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:340,position:"relative"}}>
+        {/* Card — captured by html2canvas */}
+        <div ref={cardRef} style={{background:"linear-gradient(160deg,#1A1000 0%,#0D0D07 60%,#07070F 100%)",
+          borderRadius:20,border:`2px solid ${c}`,
+          boxShadow:`0 0 60px ${c}66, inset 0 0 40px ${c}08`,
+          overflow:"hidden",padding:"28px 24px 24px",textAlign:"center"}}>
+          <div style={{fontSize:8,letterSpacing:5,color:`${c}88`,marginBottom:16,fontFamily:"'Rajdhani',sans-serif"}}>
+            ━━ NUEVO RÉCORD PERSONAL ━━
+          </div>
+          <div style={{fontSize:64,marginBottom:8,
+            filter:`drop-shadow(0 0 20px ${c}) drop-shadow(0 0 40px ${c}66)`,
+            animation:"bossGlow 1.5s ease-in-out infinite"}}>
+            🏆
+          </div>
+          <div style={{fontSize:13,color:`${c}99`,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,marginBottom:6}}>
+            {exName.toUpperCase()}
+          </div>
+          <div style={{fontSize:72,fontWeight:900,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,
+            textShadow:`0 0 30px ${c}88`}}>
+            {kg}
+          </div>
+          <div style={{fontSize:16,color:`${c}88`,fontFamily:"'Rajdhani',sans-serif",marginBottom:20}}>KG</div>
+          <div style={{width:"80%",height:1,background:`linear-gradient(90deg,transparent,${c}66,transparent)`,margin:"0 auto 20px"}}/>
+          <div style={{display:"flex",gap:12,justifyContent:"center",marginBottom:20}}>
+            {prevMax>0&&(
+              <div style={{textAlign:"center"}}>
+                <div style={{fontSize:11,color:"#555",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>ANTERIOR</div>
+                <div style={{fontSize:18,fontWeight:700,color:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{prevMax}kg</div>
+              </div>
+            )}
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:11,color:"#555",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>MEJORA</div>
+              <div style={{fontSize:18,fontWeight:700,color:c,fontFamily:"'Rajdhani',sans-serif"}}>+{improvement}%</div>
+            </div>
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:11,color:"#555",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>XP</div>
+              <div style={{fontSize:18,fontWeight:700,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif"}}>+{xp}</div>
+            </div>
+          </div>
+          {rank&&(
+            <div style={{display:"inline-flex",alignItems:"center",gap:8,padding:"6px 16px",
+              background:`${rank.color}22`,border:`1px solid ${rank.color}55`,borderRadius:20,marginBottom:8}}>
+              <span style={{fontSize:14}}>{rank.icon}</span>
+              <span style={{fontSize:11,color:rank.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>{rank.name}</span>
+            </div>
+          )}
+          <div style={{marginTop:16,fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
+        </div>
+        {/* Action buttons */}
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button onClick={handleShare} disabled={sharing}
+            style={{flex:2,padding:"13px",background:sharing?"#1A1000":`linear-gradient(135deg,${c},#D97706)`,
+              border:"none",borderRadius:12,color:sharing?"#F59E0B":"#07070F",
+              fontSize:13,fontWeight:900,cursor:sharing?"not-allowed":"pointer",
+              fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
+              boxShadow:sharing?"none":`0 0 20px ${c}55`}}>
+            {sharing?"GENERANDO...":"📸 COMPARTIR"}
+          </button>
+          <button onClick={onClose}
+            style={{flex:1,padding:"13px",background:"transparent",
+              border:`1px solid ${c}44`,borderRadius:12,color:c,
+              fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            CERRAR
+          </button>
         </div>
       </div>
     </div>
