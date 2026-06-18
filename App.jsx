@@ -469,6 +469,97 @@ const EXERCISE_DB = [
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
 
 
+
+// ─── GUILD RAID DATABASE — TEMPORADA I ──────────────────────────────────────
+const GUILD_RAID_DURATION = 48 * 3600000; // 48h in ms
+const GUILD_RAID_CHANCE = 0.15; // 15% trigger chance
+const SEASON1_START_DATE = new Date("2026-07-01T00:00:00").getTime(); // Temporada I launch gate
+
+const DARK_LORDS = [
+  {
+    id:"dl_malachar",
+    name:"Señor Oscuro Malachar, el Vacío Negro",
+    icon:"👁️", rarity:"oscuro",
+    lore:"Una sombra ancestral que devora la luz. Su presencia congela el alma.",
+    defeated:false,
+    phases:[
+      {exercise:"Burpees",      total:400,  color:"#E84A5F"},
+      {exercise:"Mountain Climbers", total:750, color:"#A78BFA"},
+      {exercise:"Flexiones",    total:500,  color:"#1A1A2E"},
+    ],
+    xp:1000, coins:500,
+    achievement:{id:"dl_malachar_slain",icon:"👁️",name:"El Vacío Sellado",desc:"Malachar, el Vacío Negro ha caído",xp:500},
+  },
+  {
+    id:"dl_zyrathon",
+    name:"Señor Oscuro Zyrathon, el Abismo Eterno",
+    icon:"🌑", rarity:"oscuro",
+    lore:"Nacido en el abismo más profundo. Su mirada borra la esperanza.",
+    defeated:false,
+    phases:[
+      {exercise:"Sentadillas",  total:600,  color:"#E84A5F"},
+      {exercise:"Burpees",      total:450,  color:"#F59E0B"},
+      {exercise:"Jumping Jacks",total:1000, color:"#34D399"},
+    ],
+    xp:1000, coins:500,
+    achievement:{id:"dl_zyrathon_slain",icon:"🌑",name:"El Abismo Cerrado",desc:"Zyrathon, el Abismo Eterno ha caído",xp:500},
+  },
+  {
+    id:"dl_mortheus",
+    name:"Señor Oscuro Mortheus, la Guadaña Infinita",
+    icon:"💀", rarity:"oscuro",
+    lore:"La muerte hecha forma. Cada alma que toma lo hace más poderoso.",
+    defeated:false,
+    phases:[
+      {exercise:"Mountain Climbers",total:900, color:"#34D399"},
+      {exercise:"Abdominales",  total:600,  color:"#E84A5F"},
+      {exercise:"Burpees",      total:400,  color:"#A78BFA"},
+    ],
+    xp:1000, coins:500,
+    achievement:{id:"dl_mortheus_slain",icon:"💀",name:"La Guadaña Rota",desc:"Mortheus, la Guadaña Infinita ha caído",xp:500},
+  },
+  {
+    id:"dl_khaos",
+    name:"Señor Oscuro Khaos, el Colapso Total",
+    icon:"⚡", rarity:"oscuro",
+    lore:"El caos personificado. Donde él pisa, el orden se desvanece.",
+    defeated:false,
+    phases:[
+      {exercise:"Jumping Jacks", total:1000, color:"#F59E0B"},
+      {exercise:"Burpees",       total:500,  color:"#E84A5F"},
+      {exercise:"Mountain Climbers",total:750,color:"#60A5FA"},
+    ],
+    xp:1000, coins:500,
+    achievement:{id:"dl_khaos_slain",icon:"⚡",name:"El Caos Contenido",desc:"Khaos, el Colapso Total ha caído",xp:500},
+  },
+  {
+    id:"dl_infernus",
+    name:"Señor Oscuro Infernus, la Llama Eterna",
+    icon:"🔥", rarity:"oscuro",
+    lore:"El fuego primigenio. Ha ardido desde antes que el mundo existiera.",
+    defeated:false,
+    phases:[
+      {exercise:"Sentadillas",  total:750,  color:"#E84A5F"},
+      {exercise:"Burpees",      total:500,  color:"#F59E0B"},
+      {exercise:"Flexiones",    total:450,  color:"#FBBF24"},
+    ],
+    xp:1000, coins:500,
+    achievement:{id:"dl_infernus_slain",icon:"🔥",name:"La Llama Extinguida",desc:"Infernus, la Llama Eterna ha caído",xp:500},
+  },
+];
+
+// Guild raid achievements
+const GUILD_ACHIEVEMENTS = [
+  {id:"guild_first",  icon:"⚔️", name:"Primera Sangre de Guild",  desc:"Completa tu primera Guild Raid",          xp:400},
+  {id:"guild_three",  icon:"🏰", name:"Guardianes del Reino",      desc:"Completa 3 Guild Raids",                  xp:700},
+  {id:"guild_all",    icon:"👑", name:"Los Cinco Han Caído",       desc:"Derrota a los 5 Señores Oscuros",         xp:2000},
+  {id:"dl_malachar_slain",icon:"👁️",name:"El Vacío Sellado",      desc:"Malachar, el Vacío Negro ha caído",       xp:500},
+  {id:"dl_zyrathon_slain",icon:"🌑",name:"El Abismo Cerrado",      desc:"Zyrathon, el Abismo Eterno ha caído",     xp:500},
+  {id:"dl_mortheus_slain",icon:"💀",name:"La Guadaña Rota",        desc:"Mortheus, la Guadaña Infinita ha caído",  xp:500},
+  {id:"dl_khaos_slain",   icon:"⚡",name:"El Caos Contenido",      desc:"Khaos, el Colapso Total ha caído",        xp:500},
+  {id:"dl_infernus_slain",icon:"🔥",name:"La Llama Extinguida",    desc:"Infernus, la Llama Eterna ha caído",      xp:500},
+];
+
 // ─── RAID DATABASE ────────────────────────────────────────────────────────────
 const RAID_DB = [
   // ── FUEGO ──────────────────────────────────────────────────────────────────
@@ -769,6 +860,274 @@ function CoinToast({msg,coins,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,3500);return()=>clearTimeout(t);},[]);
   return <div style={{position:"fixed",bottom:90,left:14,zIndex:9997,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
 }
+
+// ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
+function Season1Popup({onClose}){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at center,#1a0010 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #E84A5F",boxShadow:"0 0 80px #E84A5F44",overflow:"hidden"}}>
+        {/* Header */}
+        <div style={{background:"linear-gradient(135deg,#E84A5F33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#E84A5F88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
+          <div style={{fontSize:11,letterSpacing:4,color:"#E84A5F",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TEMPORADA I</div>
+          <div style={{fontSize:26,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #E84A5F88"}}>
+            EL AUGE DE LOS<br/>SEÑORES OSCUROS
+          </div>
+          <div style={{fontSize:12,color:"#888",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
+            "Cinco sombras ancestrales despiertan de su letargo eterno. El reino tiembla ante su poder. Solo la fuerza de los jugadores puede salvar el mundo de su amenaza..."
+          </div>
+        </div>
+        {/* Dark Lords icons */}
+        <div style={{display:"flex",justifyContent:"center",gap:16,padding:"16px 24px",borderTop:"1px solid #E84A5F22",borderBottom:"1px solid #E84A5F22",background:"#0A0007"}}>
+          {DARK_LORDS.map(dl=>(
+            <div key={dl.id} style={{textAlign:"center"}}>
+              <div style={{fontSize:28,filter:"drop-shadow(0 0 8px #E84A5F66)"}}>{dl.icon}</div>
+            </div>
+          ))}
+        </div>
+        {/* Description */}
+        <div style={{padding:"16px 24px 8px",textAlign:"center"}}>
+          <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ GUILD RAIDS — NUEVO</div>
+          <div style={{fontSize:12,color:"#666",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>
+            Une tus fuerzas con otros jugadores. Cada repetición es un golpe al enemigo. El destino del reino está en vuestras manos.
+          </div>
+          <button onClick={onClose}
+            style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#E84A5F,#C03050)",border:"none",borderRadius:12,
+              color:"#FFF",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:3,
+              boxShadow:"0 0 20px #E84A5F55",marginBottom:20}}>
+            ⚔️ UNIRSE A LA BATALLA
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── GUILD RAID MODAL ────────────────────────────────────────────────────────
+function GuildRaidModal({raid,userEmail,onContribute,onClose}){
+  const [inputs,setInputs]=useState({0:"",1:"",2:""});
+  const elapsed=Date.now()-raid.startTime;
+  const remaining=Math.max(0,GUILD_RAID_DURATION-elapsed);
+  const hours=Math.floor(remaining/3600000);
+  const mins=Math.floor((remaining%3600000)/60000);
+  const secs=Math.floor((remaining%60000)/1000);
+  const [tick,setTick]=useState(0);
+  useEffect(()=>{const iv=setInterval(()=>setTick(t=>t+1),1000);return()=>clearInterval(iv);},[]);
+
+  const userContrib=raid.contributions?.[userEmail]||{};
+  const totalUserReps=Object.values(userContrib).reduce((a,v)=>a+v,0);
+  const totalNeeded=raid.phases.reduce((a,ph)=>a+ph.total,0);
+  const minReps=Math.round(totalNeeded*0.10);
+
+  // Calculate active phase (first incomplete)
+  const activePhase=raid.phases.findIndex((ph,i)=>(raid.progress[i]||0)<ph.total);
+
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",
+      background:"radial-gradient(ellipse at center,#1a0010 0%,#000000 85%)"}}>
+      <div style={{width:"100%",maxWidth:400,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
+        borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F44",maxHeight:"90vh",overflowY:"auto"}}>
+
+        {/* Header */}
+        <div style={{background:"linear-gradient(135deg,#E84A5F33,transparent)",padding:"20px 20px 14px",textAlign:"center"}}>
+          <div style={{fontSize:8,letterSpacing:4,color:"#E84A5F88",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>☠️ GUILD RAID — SEÑOR OSCURO</div>
+          <div style={{fontSize:52,marginBottom:6,filter:"drop-shadow(0 0 16px #E84A5F)",animation:"bossGlow 1.5s ease-in-out infinite"}}>{raid.icon}</div>
+          <div style={{fontSize:16,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:8}}>{raid.name}</div>
+          <div style={{fontSize:11,color:"#555",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif"}}>{raid.lore}</div>
+        </div>
+
+        {/* Countdown */}
+        <div style={{padding:"12px 20px",textAlign:"center",borderBottom:"1px solid #1A1A2E"}}>
+          <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>TIEMPO RESTANTE</div>
+          <div style={{fontSize:24,fontWeight:900,color:remaining<3600000?"#E84A5F":"#FFF",fontFamily:"'Rajdhani',sans-serif",
+            textShadow:remaining<3600000?"0 0 20px #E84A5F":undefined}}>
+            {hours.toString().padStart(2,"0")}:{mins.toString().padStart(2,"0")}:{secs.toString().padStart(2,"0")}
+          </div>
+        </div>
+
+        {/* Phase bars */}
+        <div style={{padding:"16px 20px"}}>
+          <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>BARRAS DE VIDA</div>
+          {raid.phases.map((ph,i)=>{
+            const prog=raid.progress[i]||0;
+            const pct=Math.min(100,Math.round((prog/ph.total)*100));
+            const isActive=i===activePhase;
+            const isDone=prog>=ph.total;
+            const isLocked=i>activePhase&&activePhase!==-1;
+            return(
+              <div key={i} style={{marginBottom:14,opacity:isLocked?0.4:1}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:5}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6}}>
+                    {isDone&&<span style={{fontSize:12}}>✅</span>}
+                    {isActive&&<span style={{fontSize:10,animation:"bossGlow 1s infinite"}}>⚔️</span>}
+                    {isLocked&&<span style={{fontSize:10}}>🔒</span>}
+                    <span style={{fontSize:12,fontWeight:700,color:isDone?"#444":ph.color,fontFamily:"'Rajdhani',sans-serif",
+                      textDecoration:isDone?"line-through":"none"}}>{ph.exercise}</span>
+                  </div>
+                  <span style={{fontSize:11,color:ph.color,fontFamily:"'Rajdhani',sans-serif"}}>{prog.toLocaleString()}/{ph.total.toLocaleString()}</span>
+                </div>
+                <div style={{height:12,background:"#1A1A2E",borderRadius:6,overflow:"hidden",border:`1px solid ${ph.color}33`}}>
+                  <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,
+                    borderRadius:6,transition:"width .5s ease",boxShadow:`0 0 8px ${ph.color}66`}}/>
+                </div>
+                {/* Contribute input — only for active phase */}
+                {isActive&&!isDone&&(
+                  <div style={{display:"flex",gap:6,marginTop:6}}>
+                    <input type="number" min="1" placeholder={`Reps de ${ph.exercise}`}
+                      value={inputs[i]||""}
+                      onChange={e=>setInputs(p=>({...p,[i]:e.target.value}))}
+                      style={{flex:1,padding:"8px 10px",background:"#0D0D1A",border:`1px solid ${ph.color}44`,
+                        borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    <button onClick={()=>{
+                      const r=parseInt(inputs[i]);
+                      if(r>0){onContribute(i,r);setInputs(p=>({...p,[i]:""}));}
+                    }} style={{padding:"8px 14px",background:ph.color,border:"none",borderRadius:8,
+                      color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                      +CONTRIBUIR
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* User contribution */}
+        <div style={{padding:"0 20px 16px"}}>
+          <div style={{background:"#0D0D1A",borderRadius:10,padding:"10px 14px",border:"1px solid #E84A5F22",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div>
+              <div style={{fontSize:9,color:"#555",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>TU CONTRIBUCIÓN</div>
+              <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{totalUserReps} reps</div>
+            </div>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:9,color:"#555",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>MÍNIMO PARA RECOMPENSA</div>
+              <div style={{fontSize:14,fontWeight:700,color:totalUserReps>=minReps?"#34D399":"#E84A5F",fontFamily:"'Rajdhani',sans-serif"}}>
+                {totalUserReps>=minReps?"✅ CLASIFICADO":`${minReps} reps`}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Rewards */}
+        <div style={{padding:"0 20px 16px",display:"flex",gap:8}}>
+          {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
+            <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:10,padding:"10px",textAlign:"center",border:`1px solid ${r.c}33`}}>
+              <div style={{fontSize:16,fontWeight:900,color:r.c,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
+              <div style={{fontSize:8,color:"#444",letterSpacing:2}}>{r.l}</div>
+            </div>
+          ))}
+        </div>
+
+        <button onClick={onClose}
+          style={{margin:"0 20px 20px",width:"calc(100% - 40px)",padding:"12px",background:"transparent",
+            border:"1px solid #E84A5F33",borderRadius:12,color:"#555",cursor:"pointer",
+            fontFamily:"'Rajdhani',sans-serif",fontSize:11,letterSpacing:2}}>
+          CERRAR · LA RAID SIGUE ACTIVA
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── GUILD RAID COMPLETE CARD ────────────────────────────────────────────────
+function GuildRaidCompleteCard({raid,onClose}){
+  const cardRef=useRef(null);
+  const [sharing,setSharing]=useState(false);
+  const handleShare=async()=>{
+    setSharing(true);
+    await shareCard(cardRef.current,`¡Hemos derrotado a ${raid.name}!`,`El reino está a salvo... por ahora. ⚔️ RankUp Fitness`,"rankup-guild-"+raid.id);
+    setSharing(false);
+  };
+  return(
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div style={{width:"100%",maxWidth:360}}>
+        <div ref={cardRef} style={{background:"linear-gradient(160deg,#1a0010 0%,#07070F 100%)",
+          borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F88",padding:"28px 24px",textAlign:"center"}}>
+          <div style={{fontSize:8,letterSpacing:5,color:"#E84A5F88",marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>━━ SEÑOR OSCURO DERROTADO ━━</div>
+          <div style={{fontSize:64,marginBottom:8,filter:"drop-shadow(0 0 20px #E84A5F)",animation:"bossGlow 1.5s infinite"}}>{raid.icon}</div>
+          <div style={{fontSize:18,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16}}>{raid.name}</div>
+          <div style={{width:"70%",height:1,background:"linear-gradient(90deg,transparent,#E84A5F66,transparent)",margin:"0 auto 16px"}}/>
+          <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
+            {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
+              <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.c}33`}}>
+                <div style={{fontSize:18,fontWeight:900,color:r.c,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:2,marginTop:3}}>{r.l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{fontSize:11,color:"#555",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>
+            "El reino respira... por ahora."
+          </div>
+          <div style={{fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS · TEMPORADA I</div>
+        </div>
+        <div style={{display:"flex",gap:8,marginTop:12}}>
+          <button onClick={handleShare} disabled={sharing}
+            style={{flex:2,padding:"13px",background:sharing?"#0A0007":"linear-gradient(135deg,#E84A5F,#C03050)",
+              border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:900,cursor:sharing?"not-allowed":"pointer",
+              fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,boxShadow:sharing?"none":"0 0 20px #E84A5F55"}}>
+            {sharing?"GENERANDO...":"📸 COMPARTIR"}
+          </button>
+          <button onClick={onClose}
+            style={{flex:1,padding:"13px",background:"transparent",border:"1px solid #E84A5F44",
+              borderRadius:12,color:"#E84A5F",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            CERRAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── SEASON 1 END ────────────────────────────────────────────────────────────
+function Season1End({activeGuildRaid,onClose}){
+  const [grStatus,setGrStatus]=useState(null);
+  useEffect(()=>{
+    fbGet("guildRaidStatus").then(s=>setGrStatus(s)).catch(()=>{});
+  },[]);
+  const appeared=grStatus?.appeared||[];
+  const defeated=appeared.filter(id=>id===activeGuildRaid?.id&&activeGuildRaid?.defeated).length;
+  const escaped=appeared.length-defeated;
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at center,#0a0010 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",padding:"32px 24px",textAlign:"center"}}>
+        <div style={{fontSize:9,letterSpacing:5,color:"#A78BFA88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
+        <div style={{fontSize:11,letterSpacing:4,color:"#A78BFA",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TEMPORADA I — CONCLUIDA</div>
+        <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16,textShadow:"0 0 20px #A78BFA88"}}>
+          EL AUGE DE LOS<br/>SEÑORES OSCUROS
+        </div>
+        <div style={{fontSize:12,color:"#666",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",marginBottom:20,padding:"0 8px"}}>
+          "Los cinco han sido confrontados. El reino respira... por ahora. Las sombras se retiran hacia lo desconocido. Pero la oscuridad nunca duerme para siempre."
+        </div>
+        <div style={{background:"#0A0A14",borderRadius:12,padding:"16px",marginBottom:20,border:"1px solid #A78BFA22"}}>
+          <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>RESUMEN DE TEMPORADA</div>
+          {[
+            {l:"SEÑORES DERROTADOS",v:`${defeated}/5`,c:"#34D399"},
+            {l:"SEÑORES ESCAPADOS", v:`${escaped}/5`,c:"#E84A5F"},
+          ].map(s=>(
+            <div key={s.l} style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+              <span style={{fontSize:11,color:"#555",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{s.l}</span>
+              <span style={{fontSize:14,fontWeight:700,color:s.c,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:11,color:"#A78BFA",fontWeight:700,letterSpacing:2,marginBottom:20,fontFamily:"'Rajdhani',sans-serif"}}>
+          ⚔️ EL REINO OS AGRADECE VUESTRA VALENTÍA
+        </div>
+        <button onClick={onClose}
+          style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",
+            borderRadius:12,color:"#FFF",fontSize:13,fontWeight:900,cursor:"pointer",
+            fontFamily:"'Rajdhani',sans-serif",letterSpacing:3,boxShadow:"0 0 20px #A78BFA55"}}>
+          CONTINUAR
+        </button>
+      </div>
+    </div>
+  );
+}
+
 
 // ─── SHARE CARD HELPER ───────────────────────────────────────────────────────
 const shareCard=async(ref,title,text,filename)=>{
@@ -1727,7 +2086,9 @@ function AdminPanel({onLogout}){
   const sendAdminMessage=async(email,text)=>{
     if(!text.trim()) return;
     const msgKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
-    const existing=userMessages[email]||[];
+    // Always fetch latest from Firebase before appending
+    const fresh=await fbGet(`messages/${msgKey}`).catch(()=>null);
+    const existing=fresh?(Array.isArray(fresh)?fresh:Object.values(fresh)):(userMessages[email]||[]);
     const msg={id:Date.now(),from:"admin",text:text.trim(),date:new Date().toISOString(),read:false};
     const updated=[...existing,msg];
     setUserMessages(p=>({...p,[email]:updated}));
@@ -1738,7 +2099,9 @@ function AdminPanel({onLogout}){
 
   const markAdminRead=async(email)=>{
     const msgKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
-    const msgs=(userMessages[email]||[]).map(m=>m.from==="user"?{...m,read:true}:m);
+    const fresh=await fbGet(`messages/${msgKey}`).catch(()=>null);
+    const existing=fresh?(Array.isArray(fresh)?fresh:Object.values(fresh)):(userMessages[email]||[]);
+    const msgs=existing.map(m=>m.from==="user"?{...m,read:true}:m);
     setUserMessages(p=>({...p,[email]:msgs}));
     await fbSet(`messages/${msgKey}`,msgs).catch(()=>{});
   };
@@ -3171,7 +3534,12 @@ function RankUpApp({user,onLogout}){
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
   const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
   const [exHistory,setExHistory]=useState(saved.exHistory||{});  // {exName: [{kg,date,session}]}
-  const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null); // {raid, startTime, done}
+  const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null);
+  const [activeGuildRaid,setActiveGuildRaid]=useState(null); // loaded from Firebase
+  const [guildRaidModal,setGuildRaidModal]=useState(false);
+  const [guildRaidComplete,setGuildRaidComplete]=useState(null);
+  const [season1Popup,setSeason1Popup]=useState(false);
+  const [season1End,setSeason1End]=useState(false); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
   const [raidComplete,setRaidComplete]=useState(null);
   const [raidDefeated,setRaidDefeated]=useState(null);
@@ -3264,6 +3632,14 @@ function RankUpApp({user,onLogout}){
         }
       }
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
+      // Load global guild raid from Firebase
+      fbGet("guildRaid").then(gr=>{
+        if(gr) setActiveGuildRaid(gr);
+        // Show season 1 popup if never seen
+        if(!fresh.season1Seen&&Date.now()>=SEASON1_START_DATE) setSeason1Popup(true);
+        // Check guild raid trigger
+        setTimeout(()=>checkGuildRaidTrigger(gr),3000);
+      }).catch(()=>{});
       // Check raid on app open
       setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
       // Load messages from Firebase
@@ -3353,7 +3729,8 @@ function RankUpApp({user,onLogout}){
       assignedProgram,
       exNotes,
       activeRaid,
-      exHistory
+      exHistory,
+      season1Seen:true
     });
   },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
@@ -3460,21 +3837,122 @@ function RankUpApp({user,onLogout}){
     fbSet(`raidCooldown/${raidKeyS}`,{lastRaidAt:Date.now()}).catch(()=>{});
   },[activeRaid,user]);
 
+  // ── GUILD RAID FUNCTIONS ──────────────────────────────────────────────────
+  const checkGuildRaidTrigger=useCallback(async(currentGR)=>{
+    if(Date.now()<SEASON1_START_DATE) return; // Temporada I no ha comenzado aún
+    // If active guild raid exists, check expiry
+    if(currentGR&&!currentGR.defeated&&!currentGR.escaped){
+      const elapsed=Date.now()-currentGR.startTime;
+      if(elapsed>GUILD_RAID_DURATION){
+        // Raid escaped
+        const updated={...currentGR,escaped:true,escapedAt:Date.now()};
+        await fbSet("guildRaid",updated).catch(()=>{});
+        setActiveGuildRaid(updated);
+        // Check if all 5 have appeared → season end
+        checkSeasonEnd(updated);
+        return;
+      }
+      setGuildRaidModal(true);
+      return;
+    }
+    if(currentGR?.defeated||currentGR?.escaped) return; // already resolved
+    // Roll for new guild raid
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}));
+    const appeared=(grStatus?.appeared||[]);
+    const available=DARK_LORDS.filter(dl=>!appeared.includes(dl.id));
+    if(available.length===0) return; // all appeared
+    if(Math.random()<GUILD_RAID_CHANCE){
+      const dl=available[Math.floor(Math.random()*available.length)];
+      const newGR={
+        ...dl,
+        startTime:Date.now(),
+        defeated:false,escaped:false,
+        contributions:{}, // {email: {phase0:reps, phase1:reps, phase2:reps}}
+        progress:[0,0,0], // current reps per phase
+      };
+      await fbSet("guildRaid",newGR).catch(()=>{});
+      await fbSet("guildRaidStatus",{appeared:[...appeared,dl.id]}).catch(()=>{});
+      setActiveGuildRaid(newGR);
+      setTimeout(()=>setGuildRaidModal(true),800);
+    }
+  },[]);
+
+  const contributeGuildRaid=useCallback(async(phaseIdx,reps)=>{
+    if(!activeGuildRaid||activeGuildRaid.defeated||activeGuildRaid.escaped) return;
+    if(reps<=0) return;
+    // Fetch fresh from Firebase
+    const fresh=await fbGet("guildRaid").catch(()=>null);
+    if(!fresh||fresh.defeated||fresh.escaped) return;
+    const contributions={...(fresh.contributions||{})};
+    const userContrib=contributions[user.email]||{};
+    const newPhaseReps=(userContrib[`p${phaseIdx}`]||0)+reps;
+    userContrib[`p${phaseIdx}`]=newPhaseReps;
+    contributions[user.email]=userContrib;
+    const progress=[...(fresh.progress||[0,0,0])];
+    progress[phaseIdx]=(progress[phaseIdx]||0)+reps;
+    // Cap at total
+    progress[phaseIdx]=Math.min(progress[phaseIdx],fresh.phases[phaseIdx].total);
+    const updated={...fresh,contributions,progress};
+    // Check if all phases complete
+    const allDone=updated.phases.every((ph,i)=>progress[i]>=ph.total);
+    if(allDone){
+      updated.defeated=true;
+      updated.defeatedAt=Date.now();
+      // Give rewards to qualifying contributors
+      const minContrib=0.10; // 10%
+      const totalRepsNeeded=updated.phases.reduce((a,ph)=>a+ph.total,0);
+      const userTotal=Object.values(userContrib).reduce((a,v)=>a+v,0);
+      if(userTotal>=totalRepsNeeded*minContrib){
+        addXp(updated.xp,null,`+${updated.xp} XP ⚔️ GUILD RAID`);
+        addCoins(updated.coins,`🏴 Guild Raid: ${updated.name}`);
+        // Grant achievement
+        setEarned(p=>{
+          const ne=[...p];
+          if(!ne.includes(updated.achievement.id)) ne.push(updated.achievement.id);
+          if(!ne.includes("guild_first")) ne.push("guild_first");
+          const guildCount=(ne.filter(id=>GUILD_ACHIEVEMENTS.slice(0,3).map(a=>a.id).includes(id)).length);
+          if(guildCount>=3&&!ne.includes("guild_three")) ne.push("guild_three");
+          const allSlain=DARK_LORDS.every(dl=>ne.includes(dl.achievement.id));
+          if(allSlain&&!ne.includes("guild_all")) ne.push("guild_all");
+          return ne;
+        });
+        setGuildRaidComplete(updated);
+      }
+      checkSeasonEnd(updated);
+    }
+    await fbSet("guildRaid",updated).catch(()=>{});
+    setActiveGuildRaid(updated);
+  },[activeGuildRaid,user,addXp,addCoins]);
+
+  const checkSeasonEnd=useCallback(async(currentGR)=>{
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}));
+    const appeared=(grStatus?.appeared||[]);
+    if(appeared.length>=5){
+      const defeated=DARK_LORDS.filter(dl=>appeared.includes(dl.id)&&currentGR?.id===dl.id?currentGR.defeated:false).length;
+      setSeason1End(true);
+    }
+  },[]);
+
   const sendMessage=useCallback(async(text)=>{
     if(!text.trim()) return;
     const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
     const msg={id:Date.now(),from:"user",name:user.name,text:text.trim(),date:new Date().toISOString(),read:false};
-    const updated=[...messages,msg];
+    // Always fetch latest from Firebase before appending to avoid overwriting
+    const fresh=await fbGet(`messages/${msgKey}`).catch(()=>null);
+    const existing=fresh?(Array.isArray(fresh)?fresh:Object.values(fresh)):[];
+    const updated=[...existing,msg];
     setMessages(updated);
     await fbSet(`messages/${msgKey}`,updated).catch(()=>{});
-  },[messages,user]);
+  },[user]);
 
   const markMessagesRead=useCallback(async()=>{
     const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
-    const updated=messages.map(m=>m.from==="admin"?{...m,read:true}:m);
+    const fresh=await fbGet(`messages/${msgKey}`).catch(()=>null);
+    const existing=fresh?(Array.isArray(fresh)?fresh:Object.values(fresh)):[];
+    const updated=existing.map(m=>m.from==="admin"?{...m,read:true}:m);
     setMessages(updated);
     await fbSet(`messages/${msgKey}`,updated).catch(()=>{});
-  },[messages,user]);
+  },[user]);
 
   const unreadFromAdmin=messages.filter(m=>m.from==="admin"&&!m.read).length;
 
@@ -3564,7 +4042,7 @@ function RankUpApp({user,onLogout}){
   },[checked,dc,addXp,addCoins,weights,routines]);
 
   const logWeight=useCallback((key,evt,exName)=>{
-    const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<=0)return;
+    const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<0||wInputs[key]==="")return;
     const arr=weights[key]||[];const prevMax=arr.length>0?Math.max(...arr.map(w=>w.kg)):0;
     const isRec=kg>0&&kg>prevMax&&arr.length>0;
     const dateStr=new Date().toISOString();
@@ -3637,6 +4115,19 @@ function RankUpApp({user,onLogout}){
 
       {/* ── RAID COMPLETE MODAL ── */}
       {raidComplete&&<RaidCompleteCard raid={raidComplete} onClose={()=>setRaidComplete(null)}/>}
+
+      {/* ── SEASON 1 POPUP ── */}
+      {season1Popup&&<Season1Popup onClose={()=>setSeason1Popup(false)}/>}
+
+      {/* ── SEASON 1 END ── */}
+      {season1End&&<Season1End activeGuildRaid={activeGuildRaid} onClose={()=>setSeason1End(false)}/>}
+
+      {/* ── GUILD RAID MODAL ── */}
+      {guildRaidModal&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&
+        <GuildRaidModal raid={activeGuildRaid} userEmail={user.email} onContribute={contributeGuildRaid} onClose={()=>setGuildRaidModal(false)}/>}
+
+      {/* ── GUILD RAID COMPLETE ── */}
+      {guildRaidComplete&&<GuildRaidCompleteCard raid={guildRaidComplete} onClose={()=>setGuildRaidComplete(null)}/>}
 
       {/* ── PR CARD ── */}
       {prCard&&<PRCard exName={prCard.exName} kg={prCard.kg} prevMax={prCard.prevMax} xp={prCard.xp} rank={ri} onClose={()=>setPrCard(null)}/>}
@@ -3824,6 +4315,12 @@ function RankUpApp({user,onLogout}){
             <div style={{fontSize:20,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{totalXp.toLocaleString()} XP</div>
             <div style={{fontSize:10,color:"#555"}}>{xpInLvl}/{XP_PER_LEVEL} → lv.{level+1}</div>
             <div style={{display:"flex",gap:6}}>
+              {activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
+                <button onClick={()=>setGuildRaidModal(true)}
+                  style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"2px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 1s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
+                  <span>☠️</span><span>GUILD RAID</span>
+                </button>
+              )}
               {activeRaid&&!activeRaid.done&&(
                 <button onClick={()=>setRaidModal(true)}
                   style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"1px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 2s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
@@ -4088,7 +4585,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                   <div style={{fontSize:13,color:c,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
                                   <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                                   <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
-                                  {lastKg>0&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
+                                  {lastKg!=null&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
                                 </div>
                                 {/* Swap button */}
                                 {!isDone&&<button onClick={()=>{setSwapModal({rtId:rt.id,si,ei,exName:ex.name,muscles:exMuscles});setSearchQ("");}}
@@ -4275,7 +4772,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             <div style={{fontSize:13,color:ph.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
                             <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                             <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp} XP</div>
-                            {lastKg>0&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
+                            {lastKg!=null&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
                           </div>
                         </div>
                         <div style={{padding:"0 14px 12px 56px"}}>
