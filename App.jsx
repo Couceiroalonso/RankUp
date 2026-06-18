@@ -3749,7 +3749,9 @@ function RankUpApp({user,onLogout}){
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
     const td=Object.values(checked).filter(Boolean).length;
     const twl=Object.values(weights).reduce((a,arr)=>a+(arr||[]).length,0);
-    const dc2=PHASES.reduce((t,p)=>t+p.training.filter((d,di)=>d.exercises.every((_,ei)=>checked[exKey(p.id,di,ei)])).length,0);
+    const dc2Program=PHASES.reduce((t,p)=>t+p.training.filter((d,di)=>d.exercises.every((_,ei)=>checked[exKey(p.id,di,ei)])).length,0);
+    const dc2Routines=routines.reduce((t,rt)=>t+(rt.sessions||[]).filter((s,si)=>s.exercises.every((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`])).length,0);
+    const dc2=dc2Program+dc2Routines;
     const prc=Object.keys(pr).length;
     const p1=PHASES[0].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(1,di,ei)]));
     const p2=PHASES[1].training.every((d,di)=>d.exercises.every((_,ei)=>checked[exKey(2,di,ei)]));
@@ -3760,7 +3762,11 @@ function RankUpApp({user,onLogout}){
     const raidsComplete=(earnedAchs.filter(a=>a==="first_raid").length>0?1:0)+ // simplified count via saved data
       (JSON.parse(localStorage.getItem(`rku_raids_${user?.email}`)||"0"));
     const legendaryRaids=JSON.parse(localStorage.getItem(`rku_legendary_raids_${user?.email}`)||"0");
-    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:routines.length,totalCoinsEarned,raidsComplete,legendaryRaids};
+    // Count routines where ALL sessions are completed (not just assigned)
+    const completedRoutines=routines.filter(rt=>
+      (rt.sessions||[]).length>0 && (rt.sessions||[]).every((_,si)=>dc[`rt_${rt.id}_done_${si}`])
+    ).length;
+    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids};
     // Use functional setEarned to always read latest list — avoids stale closure bug
     setEarned(currentEarned=>{
       let newEarned=[...currentEarned];
@@ -3779,7 +3785,7 @@ function RankUpApp({user,onLogout}){
       }
       return newEarned;
     });
-  },[checked,weights,pr,routines,coins,redeemed]);
+  },[checked,weights,pr,routines,coins,redeemed,dc]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
