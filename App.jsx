@@ -2127,6 +2127,17 @@ function AdminPanel({onLogout}){
         setAllUserData(map);
         setDataLoading(false);
       });
+      // Load all user messages so the MSG badge works in the list without opening each profile
+      Promise.all(emails.map(email=>{
+        const msgKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+        return fbGet(`messages/${msgKey}`).then(msgs=>({email,msgs})).catch(()=>({email,msgs:null}));
+      })).then(results=>{
+        const msgMap={};
+        results.forEach(({email,msgs})=>{
+          msgMap[email]=msgs?(Array.isArray(msgs)?msgs:Object.values(msgs)):[];
+        });
+        setUserMessages(p=>({...msgMap,...p}));
+      });
     }).catch(()=>setDataLoading(false));
   },[]);
 
@@ -4342,7 +4353,10 @@ function RankUpApp({user,onLogout}){
         {/* Tabs */}
         <div style={{display:"flex",gap:5,paddingTop:12}}>
           {TABS.map(t=>(
-            <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="buzon")markMessagesRead();}} style={{flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>{t.l}</button>
+            <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="buzon")markMessagesRead();}} style={{position:"relative",flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>
+              {t.l}
+              {t.id==="buzon"&&unreadFromAdmin>0&&<span style={{position:"absolute",top:4,right:4,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
+            </button>
           ))}
         </div>
         {/* Content */}
