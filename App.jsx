@@ -4001,8 +4001,8 @@ function RankUpApp({user,onLogout}){
               dayName:day.day, totalKg:Math.round(sessKg),
               exercises:day.exercises.length, coins:dungeonCoins, bossDone
             }),400);
-            // Roll for raid after dungeon complete
-            setTimeout(()=>triggerRaidCheck(null),2500);
+            // Roll for raid after dungeon complete (pass current state to avoid overwriting an active raid)
+            setTimeout(()=>triggerRaidCheck(activeRaid),2500);
             const newDC={...prevDC,[ck]:true};
             const wk=`week_${phaseId}_${day.week}`;
             if(!newDC[wk]){
@@ -4047,7 +4047,7 @@ function RankUpApp({user,onLogout}){
                   dayName:sess.day, totalKg:Math.round(sessKg),
                   exercises:sess.exercises.length, coins:dungeonCoins, bossDone
                 }),400);
-                setTimeout(()=>triggerRaidCheck(null),2500);
+                setTimeout(()=>triggerRaidCheck(activeRaid),2500);
                 return {...prevDC,[ck]:true};
               });
             }
