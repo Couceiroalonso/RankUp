@@ -3545,6 +3545,7 @@ function RankUpApp({user,onLogout}){
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
   const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
   const [exHistory,setExHistory]=useState(saved.exHistory||{});  // {exName: [{kg,date,session}]}
+  const [exOverrides,setExOverrides]=useState(saved.exOverrides||{});  // {exKey: newExName} — program exercise swaps
   const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null);
   const [activeGuildRaid,setActiveGuildRaid]=useState(null); // loaded from Firebase
   const [guildRaidModal,setGuildRaidModal]=useState(false);
@@ -3611,6 +3612,7 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
+      if(fresh.exOverrides&&Object.keys(fresh.exOverrides).length>0) setExOverrides(fresh.exOverrides);
       // ── Load / Migrate exHistory ──
       {
         // Load existing history and merge with migration from weights
@@ -3741,9 +3743,10 @@ function RankUpApp({user,onLogout}){
       exNotes,
       activeRaid,
       exHistory,
+      exOverrides,
       season1Seen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -4394,7 +4397,7 @@ function RankUpApp({user,onLogout}){
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))}/>
                     </>
                   );
                 })()}
@@ -4733,8 +4736,10 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={}}){
+function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx}){
   const [historyModal,setHistoryModal]=useState(null);
+  const [swapModal,setSwapModal]=useState(null); // {key, exName, muscles}
+  const [searchQ,setSearchQ]=useState("");
   const [openRt,setOpenRt]=useState(null);
   const [openRtSess,setOpenRtSess]=useState(null);
   let lastWeek=null;
@@ -4772,36 +4777,42 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                 <div style={{border:`1px solid ${ph.color}33`,borderTop:"none",borderRadius:"0 0 12px 12px",overflow:"hidden"}}>
                   {day.exercises.map((ex,ei)=>{
                     const key=exKey(ph.id,di,ei);const isDone=!!checked[key];
+                    const exDisplayName=exOverrides[key]||ex.name;
+                    const exMuscles=MUSCLE_MAP[exDisplayName]||EXERCISE_DB.find(e=>e.name===exDisplayName)?.muscle||[];
                     const exW=weights[key]||[];const lastKg=exW.length>0?exW[exW.length-1].kg:null;
                     const maxKg=exW.length>0?Math.max(...exW.map(w=>w.kg)):null;
                     const isPR=maxKg&&pr[key]===maxKg;const isChartOpen=openChart===key;
                     return(
                       <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                         <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,ex.name)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
+                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
                             {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                           </button>
                           <div style={{flex:1,minWidth:0}}>
                             <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                              <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
+                              <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{exDisplayName}</span>
                               {ex.boss&&!isDone&&<span style={{fontSize:9,padding:"2px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1}}>BOSS</span>}
                             </div>
                             {ex.notes&&<div style={{fontSize:11,color:"#444",marginTop:2}}>{ex.notes}</div>}
                           </div>
-                          <div style={{textAlign:"right",flexShrink:0}}>
-                            <div style={{fontSize:13,color:ph.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
-                            <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
-                            <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp} XP</div>
-                            {lastKg!=null&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
+                          <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                            <div style={{textAlign:"right"}}>
+                              <div style={{fontSize:13,color:ph.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
+                              <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
+                              <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp} XP</div>
+                              {lastKg!=null&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
+                            </div>
+                            {!isDone&&<button onClick={()=>{setSwapModal({key,exName:exDisplayName,muscles:exMuscles});setSearchQ("");}}
+                              style={{fontSize:9,padding:"3px 8px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:6,color:"#666",cursor:"pointer",letterSpacing:1,fontFamily:"'Rajdhani',sans-serif"}}>🔄 CAMBIAR</button>}
                           </div>
                         </div>
                         <div style={{padding:"0 14px 12px 56px"}}>
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,ex.name)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                            <button onClick={e=>onLogWeight(key,e,ex.name)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
+                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                            <button onClick={e=>onLogWeight(key,e,exDisplayName)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
                           </div>
-                          {exHistory[ex.name]?.length>0&&(
-                            <button onClick={()=>setHistoryModal({exName:ex.name,history:exHistory[ex.name],color:ph.color})}
+                          {exHistory[exDisplayName]?.length>0&&(
+                            <button onClick={()=>setHistoryModal({exName:exDisplayName,history:exHistory[exDisplayName],color:ph.color})}
                               style={{marginTop:6,width:"100%",padding:"8px",background:`${ph.color}11`,border:`1px solid ${ph.color}44`,borderRadius:8,color:ph.color,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
                               📊 VER HISTORIAL
                             </button>
@@ -4826,6 +4837,49 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
         );
       })}
       {historyModal&&<ExHistoryModal exName={historyModal.exName} history={historyModal.history} color={historyModal.color} onClose={()=>setHistoryModal(null)}/>}
+      {/* ── SWAP EXERCISE MODAL (program) ── */}
+      {swapModal&&(()=>{
+        const q=searchQ.toLowerCase();
+        let pool=EXERCISE_DB;
+        if(swapModal.muscles?.length) pool=EXERCISE_DB.filter(e=>e.muscle.some(m=>swapModal.muscles.includes(m)));
+        if(q) pool=pool.filter(e=>e.name.toLowerCase().includes(q)||e.muscle.some(m=>m.toLowerCase().includes(q)));
+        const filteredExs=pool.slice(0,40);
+        return(
+          <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>{setSwapModal(null);setSearchQ("");}}>
+            <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",display:"flex",flexDirection:"column"}}>
+              <div style={{padding:"16px 20px 12px",borderBottom:"1px solid #1A1A2E"}}>
+                <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>🔄 INTERCAMBIAR EJERCICIO</div>
+                <div style={{fontSize:11,color:"#444",marginBottom:8}}>Actual: <span style={{color:"#FFF",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>
+                <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar por nombre o músculo..."
+                  style={{width:"100%",padding:"10px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+              </div>
+              <div style={{overflowY:"auto",flex:1}}>
+                {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"#333",fontSize:12}}>Sin resultados</div>}
+                {filteredExs.map(ex=>{
+                  const isCurrent=ex.name===swapModal.exName;
+                  return(
+                    <button key={ex.id} disabled={isCurrent} onClick={()=>{onSwapEx&&onSwapEx(swapModal.key,ex.name);setSwapModal(null);setSearchQ("");}}
+                      style={{width:"100%",textAlign:"left",padding:"12px 20px",background:isCurrent?"#1A1A2E":"transparent",border:"none",borderBottom:"1px solid #1A1A2C",cursor:isCurrent?"default":"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      <div>
+                        <div style={{fontSize:13,fontWeight:700,color:isCurrent?"#444":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}{isCurrent&&" (actual)"}</div>
+                        <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
+                          {ex.muscle.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"#1A1A2E",border:"1px solid #2A2A3E",borderRadius:10,color:"#666",letterSpacing:1}}>{m.toUpperCase()}</span>)}
+                        </div>
+                      </div>
+                      <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
+                        <div style={{fontSize:10,color:"#555"}}>{ex.level}</div>
+                        <div style={{fontSize:11,color:"#A78BFA",fontWeight:700}}>+{ex.xpBase} XP</div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              <button onClick={()=>{setSwapModal(null);setSearchQ("");}}
+                style={{margin:"12px 20px",padding:"12px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
+            </div>
+          </div>
+        );
+      })()}
       {extraRoutines.filter(rt=>rt.assignedByAdmin===true).length>0&&(
         <div style={{marginTop:20}}>
           <div style={{display:"flex",alignItems:"center",gap:10,margin:"0 0 8px"}}>
