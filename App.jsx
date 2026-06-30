@@ -1244,7 +1244,17 @@ function LoginScreen({onLogin}){
     if(!birthdate) return err("Selecciona tu fecha de nacimiento");
     const age=calcAge(birthdate);
     if(age<10||age>99) return err("Edad inválida");
-    const users=getUsers(), key=email.toLowerCase().trim();
+    const key=email.toLowerCase().trim();
+    // Always fetch the latest users from Firebase first to avoid overwriting
+    // users registered from other devices (localStorage is device-local)
+    const fbUsers=await fbGet("users").catch(()=>null);
+    const localUsers=getUsers();
+    const users={...localUsers};
+    if(fbUsers){
+      Object.values(fbUsers).forEach(u=>{
+        if(u&&u.email) users[u.email]=u;
+      });
+    }
     users[key]={name:name.trim(),password:hashPw(password),createdAt:Date.now(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
@@ -1984,10 +1994,18 @@ function AdminPanel({onLogout}){
 
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
 
-  const createNewUser=()=>{
+  const createNewUser=async()=>{
     if(!nuName.trim()||!nuEmail.trim()||nuPass.length<6){flash("Rellena todos los campos (contrasena min. 6 caracteres)",false);return;}
     const email=nuEmail.trim().toLowerCase();
-    const users=getUsers();
+    // Always fetch the latest users from Firebase first to avoid overwriting users from other devices
+    const fbUsers=await fbGet("users").catch(()=>null);
+    const localUsers=getUsers();
+    const users={...localUsers};
+    if(fbUsers){
+      Object.values(fbUsers).forEach(u=>{
+        if(u&&u.email) users[u.email]=u;
+      });
+    }
     if(users[email]){flash("Ya existe un usuario con ese email",false);return;}
     users[email]={name:nuName.trim(),email,password:hashPw(nuPass),createdAt:Date.now(),isTest:nuIsTest};
     saveUsers(users);
@@ -2007,13 +2025,20 @@ function AdminPanel({onLogout}){
     markAdminRead(email);
   };
 
-  const saveEdit=()=>{
+  const saveEdit=async()=>{
     saveUserData(selUser,editData);
     setAllUserData(p=>({...p,[selUser]:editData}));
     if(newPw.trim().length>=6){
-      const users=getUsers();
-      users[selUser].password=hashPw(newPw.trim());
-      saveUsers(users);
+      const fbUsers=await fbGet("users").catch(()=>null);
+      const localUsers=getUsers();
+      const users={...localUsers};
+      if(fbUsers){
+        Object.values(fbUsers).forEach(u=>{ if(u&&u.email) users[u.email]=u; });
+      }
+      if(users[selUser]){
+        users[selUser].password=hashPw(newPw.trim());
+        saveUsers(users);
+      }
     }
     flash("✅ Cambios guardados");
     setSelUser(null);setEditData(null);
@@ -3307,11 +3332,16 @@ function ProfileFisico({userEmail}){
   const imcLabel=imc===0?"—":imc<18.5?"Bajo peso":imc<25?"Peso normal":imc<30?"Sobrepeso":"Obesidad";
   const imcColor=imc===0?"#444":imc<18.5?"#60A5FA":imc<25?"#34D399":imc<30?"#FBBF24":"#F87171";
 
-  const update=()=>{
+  const update=async()=>{
     const wVal=parseFloat(newW)||w;
     const hVal=parseInt(newH)||h;
     if(wVal<20||wVal>300||hVal<100||hVal>250) return;
-    const users=getUsers();
+    const fbUsers=await fbGet("users").catch(()=>null);
+    const localUsers=getUsers();
+    const users={...localUsers};
+    if(fbUsers){
+      Object.values(fbUsers).forEach(u=>{ if(u&&u.email) users[u.email]=u; });
+    }
     users[userEmail]={...users[userEmail],weight:wVal,height:hVal};
     saveUsers(users);
     setUserData(users[userEmail]);
