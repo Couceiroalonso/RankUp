@@ -64,12 +64,17 @@ const syncFromFirebase = async (email) => {
   const localData = getUserData(email);
   // Merge remote + local, keeping highest progress
   const merged = mergeUserData(localData, remoteData);
+  // Safety: detect suspiciously empty data — if remote looks freshly wiped (all zero)
+  // but local also has nothing, don't silently confirm it; flag it so the UI can warn.
+  const looksWiped = remoteData && (remoteData.totalXp||0)===0 && (remoteData.coins||0)===0
+    && Object.keys(remoteData.checked||{}).length===0
+    && (!localData || ((localData.totalXp||0)===0 && Object.keys(localData.checked||{}).length===0));
   if(merged){
     localStorage.setItem(`rku_data_${email}`, JSON.stringify(merged));
-    // Write merged back to Firebase so both are in sync
-    if(remoteData) await fbSet(`userData/${key}`, merged).catch(()=>{});
+    // Only write back to Firebase if data doesn't look wiped — avoids re-confirming a data loss
+    if(remoteData && !looksWiped) await fbSet(`userData/${key}`, merged).catch(()=>{});
   }
-  return { users: getUsers(), userData: merged };
+  return { users: getUsers(), userData: merged, suspiciousEmpty: looksWiped };
 };
 const syncUsersFromFirebase = async () => {
   const safeUsers = await fbGet("users");
@@ -1980,6 +1985,7 @@ function AdminPanel({onLogout}){
   // Helper: get user data preferring Firebase cache over localStorage
   const [msg,setMsg]=useState("");
   const [confirmDel,setConfirmDel]=useState(null);
+  const [confirmReset,setConfirmReset]=useState(null);
   const [newPw,setNewPw]=useState("");
   const [editRaids,setEditRaids]=useState(0);
   const [showNewUserForm,setShowNewUserForm]=useState(false);
@@ -2519,7 +2525,7 @@ function AdminPanel({onLogout}){
           {/* Danger zone */}
           <div style={{background:"#120808",borderRadius:12,padding:14,border:"1px solid #E84A5F33",marginBottom:16}}>
             <div style={{fontSize:9,color:"#E84A5F88",letterSpacing:3,marginBottom:12}}>⚠️ ZONA PELIGROSA</div>
-            <button onClick={()=>{resetProgress(selUser);}} style={{width:"100%",padding:11,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>🔄 REINICIAR PROGRESO</button>
+            <button onClick={()=>setConfirmReset(selUser)} style={{width:"100%",padding:11,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>🔄 REINICIAR PROGRESO</button>
             <button onClick={()=>setConfirmDel(selUser)} style={{width:"100%",padding:11,background:"#E84A5F33",border:"1px solid #E84A5F",borderRadius:8,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🗑️ ELIMINAR USUARIO</button>
           </div>
 
@@ -2540,6 +2546,22 @@ function AdminPanel({onLogout}){
             </div>
           </div>
         )}
+
+        {/* Confirm reset progress modal */}
+        {confirmReset&&(
+          <div onClick={()=>setConfirmReset(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
+              <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Reiniciar progreso?</div>
+              <div style={{fontSize:12,color:"#888",marginBottom:20}}>Se pondrá a cero el XP, monedas, ejercicios y logros de <strong style={{color:"#FFF"}}>{allUsers[confirmReset]?.name}</strong>. Esta acción no se puede deshacer.</div>
+              <div style={{display:"flex",gap:10}}>
+                <button onClick={()=>setConfirmReset(null)} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#888",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+                <button onClick={()=>{resetProgress(confirmReset);setConfirmReset(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>REINICIAR</button>
+              </div>
+            </div>
+          </div>
+        )}
+
 
         {/* Assign routine modal */}
         {assignModal&&(
