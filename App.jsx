@@ -1981,6 +1981,7 @@ function AdminPanel({onLogout}){
   const [msg,setMsg]=useState("");
   const [confirmDel,setConfirmDel]=useState(null);
   const [newPw,setNewPw]=useState("");
+  const [editRaids,setEditRaids]=useState(0);
   const [showNewUserForm,setShowNewUserForm]=useState(false);
   const [nuName,setNuName]=useState("");
   const [nuEmail,setNuEmail]=useState("");
@@ -2022,11 +2023,14 @@ function AdminPanel({onLogout}){
     flash(existingData?`Usuario ${nuName.trim()} recreado — progreso recuperado`:`Usuario ${nuName.trim()} creado`);
   };
 
-  const openUser=(email)=>{
+  const openUser=async(email)=>{
     const data=getUD(email)||defaultData();
     setSelUser(email);
     setEditData(JSON.parse(JSON.stringify(data)));
     setNewPw("");
+    const raidKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const raidData=await fbGet(`raidCounts/${raidKey}`).catch(()=>null);
+    setEditRaids(raidData?.raids||0);
     loadUserMessages(email);
     markAdminRead(email);
   };
@@ -2034,6 +2038,9 @@ function AdminPanel({onLogout}){
   const saveEdit=async()=>{
     saveUserData(selUser,editData);
     setAllUserData(p=>({...p,[selUser]:editData}));
+    // Save raids count
+    const raidKey=selUser.replace(/\./g,"_").replace(/@/g,"_at_");
+    await fbSet(`raidCounts/${raidKey}`,{email:selUser,raids:editRaids}).catch(()=>{});
     if(newPw.trim().length>=6){
       const fbUsers=await fbGet("users").catch(()=>null);
       const localUsers=getUsers();
@@ -2325,9 +2332,13 @@ function AdminPanel({onLogout}){
               <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>XP TOTAL</div>
               <input style={inp} type="number" value={editData.totalXp||0} onChange={e=>setEditData({...editData,totalXp:Math.max(0,parseInt(e.target.value)||0)})}/>
             </div>
-            <div>
+            <div style={{marginBottom:10}}>
               <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>MONEDAS</div>
               <input style={inp} type="number" value={editData.coins||0} onChange={e=>setEditData({...editData,coins:Math.max(0,parseInt(e.target.value)||0)})}/>
+            </div>
+            <div>
+              <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>⚔️ RAIDS COMPLETADAS</div>
+              <input style={inp} type="number" value={editRaids} onChange={e=>setEditRaids(Math.max(0,parseInt(e.target.value)||0))}/>
             </div>
           </div>
 
