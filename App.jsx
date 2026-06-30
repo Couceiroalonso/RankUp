@@ -2009,11 +2009,17 @@ function AdminPanel({onLogout}){
     if(users[email]){flash("Ya existe un usuario con ese email",false);return;}
     users[email]={name:nuName.trim(),email,password:hashPw(nuPass),createdAt:Date.now(),isTest:nuIsTest};
     saveUsers(users);
-    saveUserData(email,defaultData());
+    // Check if this user already has progress data in Firebase (e.g. was accidentally removed
+    // from the users list but their data survived) — never overwrite existing progress
+    const dataKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
+    const existingData=await fbGet(`userData/${dataKey}`).catch(()=>null);
+    if(!existingData||Object.keys(existingData).length===0){
+      saveUserData(email,defaultData());
+    }
     setAllUsers({...users});
     setNuName("");setNuEmail("");setNuPass("");setNuIsTest(false);
     setShowNewUserForm(false);
-    flash("Usuario "+nuName.trim()+" creado");
+    flash(existingData?`Usuario ${nuName.trim()} recreado — progreso recuperado`:`Usuario ${nuName.trim()} creado`);
   };
 
   const openUser=(email)=>{
