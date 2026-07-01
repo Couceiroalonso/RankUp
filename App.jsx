@@ -921,7 +921,9 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
   const [tick,setTick]=useState(0);
   useEffect(()=>{const iv=setInterval(()=>setTick(t=>t+1),1000);return()=>clearInterval(iv);},[]);
 
-  const userContrib=raid.contributions?.[userEmail]||{};
+  // Use safe Firebase key (no dots or @ allowed)
+  const safeEmail=(userEmail||"").replace(/\./g,"_").replace(/@/g,"_at_");
+  const userContrib=raid.contributions?.[safeEmail]||{};
   const totalUserReps=Object.values(userContrib).reduce((a,v)=>a+v,0);
   const totalNeeded=raid.phases.reduce((a,ph)=>a+ph.total,0);
   const minReps=Math.round(totalNeeded*0.10);
@@ -3788,7 +3790,10 @@ function RankUpApp({user,onLogout}){
   // Track how many setState calls have fired since load, to avoid saving before all are applied
   const loadedRef=useRef(null); // stores the raw Firebase snapshot until all states are settled
   useEffect(()=>{
+    // Safety check: never save if our current state looks clearly empty
+    // (would indicate we're saving before data loaded, or after a wipe)
     if(!dataLoaded.current) return;
+    if(totalXp===0 && coins===0 && Object.keys(checked).length===0 && earnedAchs.length===0) return;
     // Always take the MAX between current state and the Firebase snapshot
     // This prevents any race condition from overwriting real progress with empty state
     const base=loadedRef.current||{};
@@ -3975,10 +3980,12 @@ function RankUpApp({user,onLogout}){
     const fresh=await fbGet("guildRaid").catch(()=>null);
     if(!fresh||fresh.defeated||fresh.escaped) return;
     const contributions={...(fresh.contributions||{})};
-    const userContrib=contributions[user.email]||{};
+    // Use safe Firebase key (no dots or @ allowed in Firebase keys)
+    const safeEmail=(user.email||"").replace(/\./g,"_").replace(/@/g,"_at_");
+    const userContrib=contributions[safeEmail]||{};
     const newPhaseReps=(userContrib[`p${phaseIdx}`]||0)+reps;
     userContrib[`p${phaseIdx}`]=newPhaseReps;
-    contributions[user.email]=userContrib;
+    contributions[safeEmail]=userContrib;
     const progress=[...(fresh.progress||[0,0,0])];
     progress[phaseIdx]=(progress[phaseIdx]||0)+reps;
     // Cap at total
@@ -4155,15 +4162,28 @@ function RankUpApp({user,onLogout}){
     } else addXp(15,evt);
   },[weights,wInputs,addXp,exHistory]);
 
-  const deleteWeight=useCallback((key,idx)=>{
+  const deleteWeight=useCallback((key,idx,exName)=>{
     setWeights(p=>{
       const arr=[...(p[key]||[])];
+      const removed=arr[idx];
       arr.splice(idx,1);
       // Renumber sessions
       const renumbered=arr.map((w,i)=>({...w,session:`S${i+1}`}));
       // Recalculate PR
       const newMax=renumbered.length>0?Math.max(...renumbered.map(w=>w.kg)):0;
       setPR(pp=>({...pp,[key]:newMax||undefined}));
+      // Subtract XP for deleted log
+      setTotalXp(xp=>Math.max(0,xp-15));
+      // Remove from exHistory too
+      if(exName&&removed){
+        setExHistory(eh=>{
+          const hist=[...(eh[exName]||[])];
+          // Find and remove matching entry by kg value (best match)
+          const matchIdx=hist.findIndex(h=>h.kg===removed.kg);
+          if(matchIdx>=0) hist.splice(matchIdx,1);
+          return {...eh,[exName]:hist};
+        });
+      }
       return {...p,[key]:renumbered};
     });
   },[]);
@@ -4704,7 +4724,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                               {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=>(
                                 <span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}>
                                   <span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}
-                                  <button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button>
+                                  <button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,ex.name)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button>
                                 </span>
                               ))}</div>}
                               {isChartOpen&&exW.length>=2&&<MiniChart data={exW} color={c}/>}
@@ -4889,7 +4909,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             </button>
                           )}
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
-                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
+                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,exDisplayName)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                           {/* User notes */}
                           <textarea
                             placeholder="📝 Anotaciones personales..."
