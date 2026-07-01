@@ -3718,7 +3718,7 @@ function RankUpApp({user,onLogout}){
       fbGet("guildRaid").then(gr=>{
         if(gr) setActiveGuildRaid(gr);
         // Show season 1 popup if never seen
-        if(!fresh.season1Seen&&Date.now()>=SEASON1_START_DATE) setSeason1Popup(true);
+        if(fresh.season1Seen!=="T1"&&Date.now()>=SEASON1_START_DATE) setSeason1Popup(true);
         // Check guild raid trigger
         setTimeout(()=>checkGuildRaidTrigger(gr),3000);
       }).catch(()=>{});
@@ -3813,7 +3813,7 @@ function RankUpApp({user,onLogout}){
       activeRaid,
       exHistory,
       exOverrides,
-      season1Seen:true
+      season1Seen:"T1"
     });
   },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
@@ -3864,6 +3864,8 @@ function RankUpApp({user,onLogout}){
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
 
   const triggerRaidCheck=useCallback((currentRaid)=>{
+    // If there's an active Guild Raid, skip individual raids entirely
+    if(activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped) return;
     // If there's an active raid, check if expired
     if(currentRaid&&!currentRaid.done){
       const elapsed=(Date.now()-currentRaid.startTime)/1000;
