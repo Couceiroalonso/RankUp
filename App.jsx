@@ -2707,48 +2707,6 @@ function AdminPanel({onLogout}){
           </div>
         )}
 
-        {/* AI Routine Generator modal */}
-        {showAIGen&&(
-          <div onClick={()=>setShowAIGen(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
-              <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:4}}>🔮 GENERADOR DE RUTINAS IA</div>
-              <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
-
-              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
-              <div style={{display:"flex",gap:6,marginBottom:14}}>
-                {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"]].map(([v,l])=>(
-                  <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
-                ))}
-              </div>
-
-              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>DÍAS POR SEMANA</div>
-              <div style={{display:"flex",gap:6,marginBottom:14}}>
-                {[1,2,3,4,5,6].map(d=>(
-                  <button key={d} onClick={()=>setAiParams(p=>({...p,dias:d}))} style={{flex:1,padding:"9px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.dias===d?"#F59E0B":"#1A1A2E",color:aiParams.dias===d?"#07070F":"#555"}}>{d}</button>
-                ))}
-              </div>
-
-              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>SEXO</div>
-              <div style={{display:"flex",gap:6,marginBottom:14}}>
-                {[["hombre","Hombre"],["mujer","Mujer"],["otro","Prefiero no decir"]].map(([v,l])=>(
-                  <button key={v} onClick={()=>setAiParams(p=>({...p,sexo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.sexo===v?"#F59E0B":"#1A1A2E",color:aiParams.sexo===v?"#07070F":"#555"}}>{l}</button>
-                ))}
-              </div>
-
-              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>NIVEL</div>
-              <div style={{display:"flex",gap:6,marginBottom:18}}>
-                {["Principiante","Intermedio","Avanzado"].map(v=>(
-                  <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"#1A1A2E",color:aiParams.nivel===v?"#07070F":"#555"}}>{v}</button>
-                ))}
-              </div>
-
-              <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
-                🔮 GENERAR RUTINA
-              </button>
-            </div>
-          </div>
-        )}
-
         {/* Assign diet modal */}
         {assignDietModal&&(
           <div onClick={()=>setAssignDietModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
@@ -2969,7 +2927,7 @@ function AdminPanel({onLogout}){
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                   <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>RUTINAS DEL ADMIN ({adminRoutines.length})</div>
                   <div style={{display:"flex",gap:8}}>
-                    <button onClick={()=>{alert("CLIC DETECTADO — el botón funciona");setShowAIGen(true);}} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
+                    <button onClick={()=>setShowAIGen(true)} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
                     <button onClick={openNewRoutine} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA</button>
                   </div>
                 </div>
@@ -3320,6 +3278,48 @@ function AdminPanel({onLogout}){
           </div>
         )}
       </div>
+
+      {/* AI Routine Generator modal */}
+      {showAIGen&&(
+        <div onClick={()=>setShowAIGen(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
+            <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:4}}>🔮 GENERADOR DE RUTINAS IA</div>
+            <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
+
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
+            <div style={{display:"flex",gap:6,marginBottom:14}}>
+              {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"]].map(([v,l])=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>DÍAS POR SEMANA</div>
+            <div style={{display:"flex",gap:6,marginBottom:14}}>
+              {[1,2,3,4,5,6].map(d=>(
+                <button key={d} onClick={()=>setAiParams(p=>({...p,dias:d}))} style={{flex:1,padding:"9px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.dias===d?"#F59E0B":"#1A1A2E",color:aiParams.dias===d?"#07070F":"#555"}}>{d}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>SEXO</div>
+            <div style={{display:"flex",gap:6,marginBottom:14}}>
+              {[["hombre","Hombre"],["mujer","Mujer"],["otro","Prefiero no decir"]].map(([v,l])=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,sexo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.sexo===v?"#F59E0B":"#1A1A2E",color:aiParams.sexo===v?"#07070F":"#555"}}>{l}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>NIVEL</div>
+            <div style={{display:"flex",gap:6,marginBottom:18}}>
+              {["Principiante","Intermedio","Avanzado"].map(v=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"#1A1A2E",color:aiParams.nivel===v?"#07070F":"#555"}}>{v}</button>
+              ))}
+            </div>
+
+            <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+              🔮 GENERAR RUTINA
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Flash message */}
       {msg&&<div style={{position:"fixed",bottom:24,left:"50%",transform:"translateX(-50%)",background:msg.ok?"#0F1F0F":"#1F0F0F",border:`1px solid ${msg.ok?"#34D399":"#E84A5F"}`,borderRadius:10,padding:"10px 20px",color:msg.ok?"#34D399":"#E84A5F",fontSize:13,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",zIndex:9999,whiteSpace:"nowrap"}}>{msg.text}</div>}
