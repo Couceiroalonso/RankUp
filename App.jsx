@@ -1361,8 +1361,6 @@ function LoginScreen({onLogin}){
     if(!name.trim()) return err("Escribe tu nombre de jugador");
     if(!email.includes("@")) return err("Email inválido");
     if(password.length<6) return err("Contraseña mínimo 6 caracteres");
-    const users=getUsers(), key=email.toLowerCase().trim();
-    if(users[key]) return err("Email ya registrado");
     setError(""); setStep(2);
   };
 
