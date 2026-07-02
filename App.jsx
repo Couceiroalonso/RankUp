@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { fbSet, fbGet } from "./Firebase.js";
+import { fbSet, fbGet, fbLogin, fbSignup, fbLogout, fbResetPassword, fbAdminCreateUser } from "./Firebase.js";
 
 // ─── FIREBASE CONFIG ─────────────────────────────────────────────────────────
 
@@ -910,11 +910,11 @@ const getLevel=xp=>Math.floor(xp/XP_PER_LEVEL)+1;
 const getXpInLevel=xp=>xp%XP_PER_LEVEL;
 const getMR=xp=>[...MUSCLE_RANKS].reverse().find(r=>xp>=r.min)||MUSCLE_RANKS[0];
 const getNextMR=xp=>{const i=MUSCLE_RANKS.findIndex(r=>r.min>xp);return i>=0?MUSCLE_RANKS[i]:null;};
-const hashPw=str=>btoa(unescape(encodeURIComponent(str+"_rankup_salt_2024")));
 
-// ─── ADMIN CREDENTIALS (cambia estas en producción) ──────────────────────────
+// ─── ADMIN CREDENTIALS ─────────────────────────────────────────────────────
+// La contraseña de admin ya NO vive aquí — se verifica contra Firebase Auth.
+// El email solo se usa para identificar qué cuenta autenticada es "la admin".
 const ADMIN_EMAIL="admin@rankup.fit";
-const ADMIN_PASSWORD=hashPw("RankUp2024!");
 
 // ─── AUTH HELPERS ─────────────────────────────────────────────────────────────
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
@@ -1318,14 +1318,22 @@ function LoginScreen({onLogin}){
   const [email,setEmail]=useState(""), [password,setPassword]=useState(""), [name,setName]=useState("");
   const [sex,setSex]=useState(""), [birthdate,setBirthdate]=useState(""), [height,setHeight]=useState(""), [weight,setWeight]=useState("");
   const [error,setError]=useState(""), [shake,setShake]=useState(false), [showPw,setShowPw]=useState(false);
+  const [resetSent,setResetSent]=useState(false);
   const err=msg=>{setError(msg);setShake(true);setTimeout(()=>setShake(false),600);};
   const calcAge=bd=>{if(!bd)return 0;const b=new Date(bd),t=new Date();let a=t.getFullYear()-b.getFullYear();if(t<new Date(t.getFullYear(),b.getMonth(),b.getDate()))a--;return a;};
   const calcIMC=(w,h)=>h>0?Math.round((w/(h/100)**2)*10)/10:0;
 
   const doLogin=async()=>{
     const emailKey=email.toLowerCase().trim();
+    try{
+      await fbLogin(emailKey,password);
+    }catch(e){
+      if(e.code==="auth/too-many-requests") return err("Demasiados intentos. Espera unos minutos e inténtalo de nuevo.");
+      if(["auth/user-not-found","auth/wrong-password","auth/invalid-credential"].includes(e.code))
+        return err(emailKey===ADMIN_EMAIL?"Contraseña de administrador incorrecta":"Email o contraseña incorrectos");
+      return err("No se pudo iniciar sesión. Inténtalo de nuevo.");
+    }
     if(emailKey===ADMIN_EMAIL){
-      if(hashPw(password)!==ADMIN_PASSWORD) return err("Contraseña de administrador incorrecta");
       // Sync all users from Firebase for admin
       await syncUsersFromFirebase();
       setSession(ADMIN_EMAIL); onLogin(ADMIN_EMAIL,"Administrador",true); return;
@@ -1333,9 +1341,20 @@ function LoginScreen({onLogin}){
     // Sync from Firebase first, then check locally
     await syncFromFirebase(emailKey);
     const users=getUsers(), u=users[emailKey];
-    if(!u) return err("Email no registrado");
-    if(u.password!==hashPw(password)) return err("Contraseña incorrecta");
+    if(!u) return err("Cuenta verificada pero sin perfil — contacta con el admin");
     setSession(emailKey); onLogin(emailKey,u.name,false);
+  };
+
+  const doForgotPassword=async()=>{
+    const emailKey=email.toLowerCase().trim();
+    if(!emailKey.includes("@")) return err("Escribe tu email arriba primero");
+    try{
+      await fbResetPassword(emailKey);
+      setError(""); setResetSent(true);
+    }catch(e){
+      if(e.code==="auth/user-not-found") return err("No hay ninguna cuenta con ese email");
+      return err("No se pudo enviar el email. Inténtalo de nuevo.");
+    }
   };
 
   const goStep2=()=>{
@@ -1353,6 +1372,14 @@ function LoginScreen({onLogin}){
     const age=calcAge(birthdate);
     if(age<10||age>99) return err("Edad inválida");
     const key=email.toLowerCase().trim();
+    try{
+      await fbSignup(key,password);
+    }catch(e){
+      if(e.code==="auth/email-already-in-use") return err("Ese email ya está registrado");
+      if(e.code==="auth/weak-password") return err("Contraseña demasiado débil");
+      if(e.code==="auth/invalid-email") return err("Email inválido");
+      return err("No se pudo crear la cuenta. Inténtalo de nuevo.");
+    }
     // Always fetch the latest users from Firebase first to avoid overwriting
     // users registered from other devices (localStorage is device-local)
     const fbUsers=await fbGet("users").catch(()=>null);
@@ -1363,7 +1390,7 @@ function LoginScreen({onLogin}){
         if(u&&u.email) users[u.email]=u;
       });
     }
-    users[key]={name:name.trim(),password:hashPw(password),createdAt:Date.now(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0};
+    users[key]={name:name.trim(),createdAt:Date.now(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.removeItem(`rku_data_${key}`);
@@ -1405,6 +1432,10 @@ function LoginScreen({onLogin}){
               <input style={{...inp,paddingRight:48}} placeholder="🔒 Contraseña" type={showPw?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doLogin()}/>
               <button onClick={()=>setShowPw(!showPw)} style={{position:"absolute",right:12,top:14,background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:16}}>{showPw?"🙈":"👁"}</button>
             </div>
+            <div style={{textAlign:"right",marginBottom:10,marginTop:-4}}>
+              <button onClick={doForgotPassword} style={{background:"none",border:"none",color:"#666",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",textDecoration:"underline"}}>¿Olvidaste tu contraseña?</button>
+            </div>
+            {resetSent&&<div style={{fontSize:12,color:"#34D399",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#34D39922",borderRadius:8}}>📧 Revisa tu correo para restablecerla</div>}
             {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
             <button onClick={doLogin} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,marginTop:4}}>⚔️ ENTRAR A RANKUP</button>
           </>
@@ -2105,8 +2136,15 @@ function AdminPanel({onLogout}){
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
 
   const createNewUser=async()=>{
-    if(!nuName.trim()||!nuEmail.trim()||nuPass.length<6){flash("Rellena todos los campos (contrasena min. 6 caracteres)",false);return;}
+    if(!nuName.trim()||!nuEmail.trim()||nuPass.length<6){flash("Rellena todos los campos (contraseña mín. 6 caracteres)",false);return;}
     const email=nuEmail.trim().toLowerCase();
+    try{
+      await fbAdminCreateUser(email,nuPass);
+    }catch(e){
+      if(e.code==="auth/email-already-in-use"){flash("Ya existe una cuenta con ese email",false);return;}
+      flash("No se pudo crear la cuenta: "+(e.code||"error desconocido"),false);
+      return;
+    }
     // Always fetch the latest users from Firebase first to avoid overwriting users from other devices
     const fbUsers=await fbGet("users").catch(()=>null);
     const localUsers=getUsers();
@@ -2116,8 +2154,7 @@ function AdminPanel({onLogout}){
         if(u&&u.email) users[u.email]=u;
       });
     }
-    if(users[email]){flash("Ya existe un usuario con ese email",false);return;}
-    users[email]={name:nuName.trim(),email,password:hashPw(nuPass),createdAt:Date.now(),isTest:nuIsTest};
+    users[email]={name:nuName.trim(),email,createdAt:Date.now(),isTest:nuIsTest};
     saveUsers(users);
     // Check if this user already has progress data in Firebase (e.g. was accidentally removed
     // from the users list but their data survived) — never overwrite existing progress
@@ -2150,20 +2187,17 @@ function AdminPanel({onLogout}){
     // Save raids count
     const raidKey=selUser.replace(/\./g,"_").replace(/@/g,"_at_");
     await fbSet(`raidCounts/${raidKey}`,{email:selUser,raids:editRaids}).catch(()=>{});
-    if(newPw.trim().length>=6){
-      const fbUsers=await fbGet("users").catch(()=>null);
-      const localUsers=getUsers();
-      const users={...localUsers};
-      if(fbUsers){
-        Object.values(fbUsers).forEach(u=>{ if(u&&u.email) users[u.email]=u; });
-      }
-      if(users[selUser]){
-        users[selUser].password=hashPw(newPw.trim());
-        saveUsers(users);
-      }
-    }
     flash("✅ Cambios guardados");
     setSelUser(null);setEditData(null);
+  };
+
+  const sendPasswordReset=async(email)=>{
+    try{
+      await fbResetPassword(email);
+      flash(`📧 Email de restablecimiento enviado a ${email}`);
+    }catch(e){
+      flash("No se pudo enviar el email: "+(e.code||"error desconocido"),false);
+    }
   };
 
   const deleteUser=(email)=>{
@@ -2464,14 +2498,11 @@ function AdminPanel({onLogout}){
             </div>
           </div>
 
-          {/* Change password */}
+          {/* Reset password */}
           <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:14}}>
-            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>CAMBIAR CONTRASEÑA</div>
-            <div style={{position:"relative"}}>
-              <input style={{...inp,paddingRight:44}} type={showNewPw?"text":"password"} placeholder="Nueva contraseña (mín 6 caracteres)" value={newPw} onChange={e=>setNewPw(e.target.value)}/>
-              <button onClick={()=>setShowNewPw(!showNewPw)} style={{position:"absolute",right:10,top:10,background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:15}}>{showNewPw?"🙈":"👁"}</button>
-            </div>
-            {newPw.length>0&&newPw.length<6&&<div style={{fontSize:11,color:"#F87171",marginBottom:8}}>Mínimo 6 caracteres</div>}
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:10}}>CONTRASEÑA</div>
+            <div style={{fontSize:11,color:"#666",marginBottom:10,lineHeight:1.5}}>Por seguridad ya no puedes fijar la contraseña directamente. Envía un email para que {selUser} elija una nueva.</div>
+            <button onClick={()=>sendPasswordReset(selUser)} style={{width:"100%",padding:11,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📧 ENVIAR EMAIL DE RESTABLECIMIENTO</button>
           </div>
 
           {/* Rutinas asignadas */}
@@ -3337,8 +3368,8 @@ export default function App(){
     (s&&users[s.email]?{email:s.email,name:users[s.email].name,isAdmin:false}:null)
   );
   if(!user) return <LoginScreen onLogin={(email,name,isAdmin)=>setUser({email,name,isAdmin})}/>;
-  if(user.isAdmin) return <AdminPanel onLogout={()=>{clearSession();setUser(null);}}/>;
-  return <RankUpApp user={user} onLogout={()=>{clearSession();setUser(null);}}/>;
+  if(user.isAdmin) return <AdminPanel onLogout={()=>{fbLogout();clearSession();setUser(null);}}/>;
+  return <RankUpApp user={user} onLogout={()=>{fbLogout();clearSession();setUser(null);}}/>;
 }
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
