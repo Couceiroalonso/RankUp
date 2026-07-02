@@ -2969,7 +2969,7 @@ function AdminPanel({onLogout}){
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                   <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>RUTINAS DEL ADMIN ({adminRoutines.length})</div>
                   <div style={{display:"flex",gap:8}}>
-                    <button onClick={()=>setShowAIGen(true)} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
+                    <button onClick={()=>{alert("CLIC DETECTADO — el botón funciona");setShowAIGen(true);}} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
                     <button onClick={openNewRoutine} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA</button>
                   </div>
                 </div>
