@@ -2146,6 +2146,26 @@ function AdminPanel({onLogout}){
 
   const flash=(m,ok=true)=>{setMsg({text:m,ok});setTimeout(()=>setMsg(""),3000);};
 
+  const [exporting,setExporting]=useState(false);
+  const exportBackup=async()=>{
+    setExporting(true);
+    try{
+      const keys=["users","userData","adminRoutines","guildRaid","guildRaidStatus","messages","photos","raidCooldown","raidCounts"];
+      const entries=await Promise.all(keys.map(async k=>[k, await fbGet(k).catch(()=>null)]));
+      const backup=Object.fromEntries(entries);
+      const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,"-");
+      const blob=new Blob([JSON.stringify({exportedAt:new Date().toISOString(),data:backup},null,2)],{type:"application/json"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url; a.download=`rankup-backup-${stamp}.json`; a.click();
+      URL.revokeObjectURL(url);
+      flash("💾 Copia de seguridad descargada");
+    }catch(e){
+      flash("No se pudo generar la copia: "+(e.message||"error"),false);
+    }
+    setExporting(false);
+  };
+
   const createNewUser=async()=>{
     if(!nuName.trim()||!nuEmail.trim()||nuPass.length<6){flash("Rellena todos los campos (contraseña mín. 6 caracteres)",false);return;}
     const email=nuEmail.trim().toLowerCase();
@@ -2800,7 +2820,10 @@ function AdminPanel({onLogout}){
           <div style={{fontSize:9,color:"#A78BFA",letterSpacing:5}}>PANEL DE CONTROL</div>
           <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>ADMINISTRADOR</div>
         </div>
-        <button onClick={onLogout} style={{background:"#1A1A2E",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>SALIR</button>
+        <div style={{display:"flex",gap:8}}>
+          <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
+          <button onClick={onLogout} style={{background:"#1A1A2E",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>SALIR</button>
+        </div>
       </div>
 
       {/* Tab bar */}
