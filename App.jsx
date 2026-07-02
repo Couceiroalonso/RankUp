@@ -473,7 +473,108 @@ const EXERCISE_DB = [
 
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
 
+// ─── GENERADOR DE RUTINAS IA ──────────────────────────────────────────────────
+// Genera una rutina completa a partir de 4 parámetros usando solo EXERCISE_DB.
+// 100% algorítmico y determinista — sin llamadas externas ni coste.
+const AI_OBJETIVO_CONF = {
+  fuerza:      {label:"Fuerza",      setsReps:"4x5",  rest:"150s", xpMult:1.15, exPerDay:5},
+  hipertrofia: {label:"Hipertrofia", setsReps:"4x10", rest:"75s",  xpMult:1.0,  exPerDay:6},
+  resistencia: {label:"Resistencia", setsReps:"3x18", rest:"40s",  xpMult:0.85, exPerDay:6},
+};
+const AI_NIVEL_ALLOWED = {
+  Principiante:["Principiante"],
+  Intermedio:["Principiante","Intermedio"],
+  Avanzado:["Principiante","Intermedio","Avanzado"],
+};
+const AI_SPLITS = {
+  1:[{label:"Full Body",muscles:["piernas","pecho","espalda","hombros","abdomen"]}],
+  2:[{label:"Full Body A",muscles:["piernas","pecho","espalda","abdomen"]},
+     {label:"Full Body B",muscles:["gluteos","hombros","biceps","triceps","abdomen"]}],
+  3:[{label:"Empuje (Push)",muscles:["pecho","hombros","triceps"]},
+     {label:"Tirón (Pull)",muscles:["espalda","biceps","antebrazos"]},
+     {label:"Pierna (Legs)",muscles:["piernas","gluteos","gemelos"]}],
+  4:[{label:"Torso A",muscles:["pecho","espalda","hombros"]},
+     {label:"Pierna A",muscles:["piernas","gluteos","gemelos"]},
+     {label:"Torso B",muscles:["hombros","biceps","triceps","abdomen"]},
+     {label:"Pierna B",muscles:["gluteos","piernas","gemelos"]}],
+  5:[{label:"Pecho",muscles:["pecho","triceps"]},
+     {label:"Espalda",muscles:["espalda","biceps"]},
+     {label:"Pierna",muscles:["piernas","gluteos","gemelos"]},
+     {label:"Hombro",muscles:["hombros","abdomen"]},
+     {label:"Glúteo & Core",muscles:["gluteos","abdomen","antebrazos"]}],
+  6:[{label:"Empuje A",muscles:["pecho","hombros","triceps"]},
+     {label:"Tirón A",muscles:["espalda","biceps","antebrazos"]},
+     {label:"Pierna A",muscles:["piernas","gluteos","gemelos"]},
+     {label:"Empuje B",muscles:["pecho","hombros","triceps"]},
+     {label:"Tirón B",muscles:["espalda","biceps"]},
+     {label:"Pierna B",muscles:["gluteos","piernas","gemelos"]}],
+};
+const AI_UPPER=["pecho","espalda","hombros","biceps","triceps","antebrazos"];
+const AI_LOWER=["piernas","gluteos","gemelos"];
+const AI_COLORS=["#34D399","#60A5FA","#F87171","#FBBF24","#A78BFA","#F4714A"];
 
+function aiMuscleWeight(muscle,sexo){
+  if(sexo==="mujer"){
+    if(AI_LOWER.includes(muscle)) return 1.4;
+    if(AI_UPPER.includes(muscle)) return 0.8;
+  }
+  if(sexo==="hombre"){
+    if(AI_UPPER.includes(muscle)) return 1.25;
+    if(AI_LOWER.includes(muscle)) return 0.9;
+  }
+  return 1;
+}
+
+function generateAIRoutine({objetivo,dias,sexo,nivel}){
+  const conf=AI_OBJETIVO_CONF[objetivo]||AI_OBJETIVO_CONF.hipertrofia;
+  const allowedLevels=AI_NIVEL_ALLOWED[nivel]||AI_NIVEL_ALLOWED.Intermedio;
+  const template=AI_SPLITS[dias]||AI_SPLITS[3];
+  const used=new Set(); // ids ya usados esta semana, evita repetir ejercicio
+  const color=AI_COLORS[Math.floor(Math.random()*AI_COLORS.length)];
+
+  const sessions=template.map((day,di)=>{
+    const weights=day.muscles.map(m=>aiMuscleWeight(m,sexo));
+    const totalWeight=weights.reduce((a,b)=>a+b,0);
+    let slots=day.muscles.map((m,i)=>Math.max(1,Math.round(conf.exPerDay*weights[i]/totalWeight)));
+    let diff=conf.exPerDay-slots.reduce((a,b)=>a+b,0);
+    let guard=0;
+    while(diff!==0&&guard<20){
+      const idx=diff>0?slots.indexOf(Math.min(...slots)):slots.indexOf(Math.max(...slots));
+      slots[idx]+=diff>0?1:-1;
+      slots[idx]=Math.max(1,slots[idx]);
+      diff=conf.exPerDay-slots.reduce((a,b)=>a+b,0);
+      guard++;
+    }
+
+    const exercises=[];
+    day.muscles.forEach((m,i)=>{
+      let pool=EXERCISE_DB.filter(e=>e.muscle[0]===m&&allowedLevels.includes(e.level));
+      if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level));
+      let fresh=pool.filter(e=>!used.has(e.id));
+      if(fresh.length<slots[i]) fresh=pool;
+      const sorted=[...fresh].sort((a,b)=>(b.muscle.length-a.muscle.length)||(b.xpBase-a.xpBase));
+      const picked=sorted.slice(0,slots[i]);
+      picked.forEach(ex=>used.add(ex.id));
+      picked.forEach((ex,pi)=>{
+        exercises.push({
+          name:ex.name,
+          sets:conf.setsReps,
+          rest:conf.rest,
+          xp:Math.round(ex.xpBase*conf.xpMult),
+          done:false,
+          boss:pi===0&&i===0,
+        });
+      });
+    });
+    return {day:`Día ${di+1}: ${day.label}`, exercises};
+  });
+
+  return {
+    name:`🔮 IA · ${conf.label} · ${dias}d`,
+    color,
+    sessions,
+  };
+}
 
 // ─── GUILD RAID DATABASE — TEMPORADA I ──────────────────────────────────────
 const GUILD_RAID_DURATION = 48 * 3600000; // 48h in ms
@@ -2194,6 +2295,19 @@ function AdminPanel({onLogout}){
   const [rtSessions,setRtSessions]=useState([{day:"Día 1",exercises:[]}]);
   const [rtExInput,setRtExInput]=useState({});
   const [assignModal,setAssignModal]=useState(null); // {routineId}
+  const [showAIGen,setShowAIGen]=useState(false);
+  const [aiParams,setAiParams]=useState({objetivo:"hipertrofia",dias:3,sexo:"otro",nivel:"Intermedio"});
+
+  const applyAIRoutine=()=>{
+    const gen=generateAIRoutine(aiParams);
+    setEditingRoutine(null);
+    setRtName(gen.name);
+    setRtColor(gen.color);
+    setRtSessions(gen.sessions);
+    setShowAIGen(false);
+    setShowRoutineBuilder(true);
+    flash("🔮 Rutina generada — revisa y guarda");
+  };
 
   const openNewRoutine=()=>{setEditingRoutine(null);setRtName("");setRtColor("#A78BFA");setRtSessions([{day:"Día 1",exercises:[]}]);setShowRoutineBuilder(true);};
   const openEditRoutine=rt=>{setEditingRoutine(rt.id);setRtName(rt.name);setRtColor(rt.color||"#A78BFA");setRtSessions(JSON.parse(JSON.stringify(rt.sessions)));setShowRoutineBuilder(true);};
@@ -2593,6 +2707,48 @@ function AdminPanel({onLogout}){
           </div>
         )}
 
+        {/* AI Routine Generator modal */}
+        {showAIGen&&(
+          <div onClick={()=>setShowAIGen(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
+              <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:4}}>🔮 GENERADOR DE RUTINAS IA</div>
+              <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
+
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
+              <div style={{display:"flex",gap:6,marginBottom:14}}>
+                {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"]].map(([v,l])=>(
+                  <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
+                ))}
+              </div>
+
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>DÍAS POR SEMANA</div>
+              <div style={{display:"flex",gap:6,marginBottom:14}}>
+                {[1,2,3,4,5,6].map(d=>(
+                  <button key={d} onClick={()=>setAiParams(p=>({...p,dias:d}))} style={{flex:1,padding:"9px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.dias===d?"#F59E0B":"#1A1A2E",color:aiParams.dias===d?"#07070F":"#555"}}>{d}</button>
+                ))}
+              </div>
+
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>SEXO</div>
+              <div style={{display:"flex",gap:6,marginBottom:14}}>
+                {[["hombre","Hombre"],["mujer","Mujer"],["otro","Prefiero no decir"]].map(([v,l])=>(
+                  <button key={v} onClick={()=>setAiParams(p=>({...p,sexo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.sexo===v?"#F59E0B":"#1A1A2E",color:aiParams.sexo===v?"#07070F":"#555"}}>{l}</button>
+                ))}
+              </div>
+
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>NIVEL</div>
+              <div style={{display:"flex",gap:6,marginBottom:18}}>
+                {["Principiante","Intermedio","Avanzado"].map(v=>(
+                  <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"#1A1A2E",color:aiParams.nivel===v?"#07070F":"#555"}}>{v}</button>
+                ))}
+              </div>
+
+              <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                🔮 GENERAR RUTINA
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Assign diet modal */}
         {assignDietModal&&(
           <div onClick={()=>setAssignDietModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
@@ -2812,14 +2968,20 @@ function AdminPanel({onLogout}){
               <div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                   <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>RUTINAS DEL ADMIN ({adminRoutines.length})</div>
-                  <button onClick={openNewRoutine} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA</button>
+                  <div style={{display:"flex",gap:8}}>
+                    <button onClick={()=>setShowAIGen(true)} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
+                    <button onClick={openNewRoutine} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA</button>
+                  </div>
                 </div>
 
                 {adminRoutines.length===0
                   ? <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
                       <div style={{fontSize:40,marginBottom:12}}>🛠️</div>
                       <div style={{fontSize:13,color:"#444",marginBottom:16}}>Aún no hay rutinas.<br/>Crea una para asignarla a tus jugadores.</div>
-                      <button onClick={openNewRoutine} style={{padding:"12px 24px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CREAR PRIMERA RUTINA</button>
+                      <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+                        <button onClick={()=>setShowAIGen(true)} style={{padding:"12px 24px",background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 GENERAR CON IA</button>
+                        <button onClick={openNewRoutine} style={{padding:"12px 24px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CREAR PRIMERA RUTINA</button>
+                      </div>
                     </div>
                   : adminRoutines.map(rt=>{
                       const c=rt.color||"#A78BFA";
@@ -3896,7 +4058,7 @@ function RankUpApp({user,onLogout}){
         setTimeout(()=>setRaidModal(true),800);
       }
     }).catch(()=>{});
-  },[]);
+  },[activeGuildRaid,user]);
 
   const completeRaid=useCallback(()=>{
     if(!activeRaid||activeRaid.done) return;
