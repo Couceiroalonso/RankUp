@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { fbSet, fbGet, fbLogin, fbSignup, fbLogout, fbResetPassword, fbAdminCreateUser } from "./Firebase.js";
+import { fbSet, fbGet, fbGetStrict, fbLogin, fbSignup, fbLogout, fbResetPassword, fbAdminCreateUser } from "./Firebase.js";
 
 // ─── FIREBASE CONFIG ─────────────────────────────────────────────────────────
 
@@ -1388,15 +1388,28 @@ function LoginScreen({onLogin}){
         if(u&&u.email) users[u.email]=u;
       });
     }
-    users[key]={name:name.trim(),createdAt:Date.now(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0};
+    users[key]={...(users[key]||{}),name:name.trim(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0,createdAt:(users[key]&&users[key].createdAt)||Date.now()};
+    // IMPORTANT: never blindly reset progress. If this email already has
+    // real data in Firebase (e.g. an old account "reclaiming" itself after
+    // the auth migration), keep it. Only brand-new accounts get zeroed data.
+    // Uses fbGetStrict (throws on failure) so a network hiccup can NEVER be
+    // mistaken for "no existing data" — if we can't confirm it's empty, we
+    // don't touch Firebase at all, full stop.
+    const dataKey=key.replace(/\./g,"_").replace(/@/g,"_at_");
+    let existingData=null, checkFailed=false;
+    try{ existingData=await fbGetStrict(`userData/${dataKey}`); }
+    catch(e){ checkFailed=true; }
+    if(checkFailed){
+      return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
+    }
+    const hasExisting=existingData&&Object.keys(existingData).length>0;
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
-    localStorage.removeItem(`rku_data_${key}`);
-    const initData={totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
     // Firebase in background - don't await
     saveUsers(users).catch(()=>{});
-    saveUserData(key, initData).catch(()=>{});
+    if(!hasExisting) saveUserData(key, initData).catch(()=>{});
     setSession(key); onLogin(key,name.trim(),false);
   };
 
@@ -2153,11 +2166,19 @@ function AdminPanel({onLogout}){
       });
     }
     users[email]={name:nuName.trim(),email,createdAt:Date.now(),isTest:nuIsTest};
-    saveUsers(users);
     // Check if this user already has progress data in Firebase (e.g. was accidentally removed
-    // from the users list but their data survived) — never overwrite existing progress
+    // from the users list but their data survived) — never overwrite existing progress.
+    // fbGetStrict throws on failure instead of silently returning null, so a
+    // network hiccup can't be mistaken for "no data" and trigger a wipe.
     const dataKey=email.replace(/\./g,"_").replace(/@/g,"_at_");
-    const existingData=await fbGet(`userData/${dataKey}`).catch(()=>null);
+    let existingData=null, checkFailed=false;
+    try{ existingData=await fbGetStrict(`userData/${dataKey}`); }
+    catch(e){ checkFailed=true; }
+    if(checkFailed){
+      flash("No se pudo verificar si ya hay progreso para ese email (fallo de conexión). Inténtalo de nuevo — no se ha tocado nada.",false);
+      return;
+    }
+    saveUsers(users);
     if(!existingData||Object.keys(existingData).length===0){
       saveUserData(email,defaultData());
     }
