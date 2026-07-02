@@ -36,6 +36,15 @@ export const fbGet = async (path) => {
   }
 };
 
+// Same as fbGet but RE-THROWS on failure instead of swallowing it.
+// Used in the handful of places (like re-registering an account) where it's
+// critical to tell "genuinely no data" apart from "couldn't check right now" —
+// mistaking the second for the first is what can wipe someone's progress.
+export const fbGetStrict = async (path) => {
+  const snap = await get(ref(db, path));
+  return snap.exists() ? snap.val() : null;
+};
+
 // ─── AUTH ──────────────────────────────────────────────────────────────────
 // Real Firebase Authentication. Replaces the old client-side base64 "hash"
 // check — Firebase now verifies credentials server-side and issues an ID
