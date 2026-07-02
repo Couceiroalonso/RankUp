@@ -2166,6 +2166,52 @@ function AdminPanel({onLogout}){
     setExporting(false);
   };
 
+  // ─── Restore from backup ───────────────────────────────────────────────
+  const [pendingRestore,setPendingRestore]=useState(null); // {exportedAt, data, filename}
+  const [restoreConfirmText,setRestoreConfirmText]=useState("");
+  const [restoring,setRestoring]=useState(false);
+  const restoreInputRef=useRef(null);
+
+  const handleRestoreFile=(e)=>{
+    const file=e.target.files?.[0];
+    e.target.value=""; // allow selecting the same file again later
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try{
+        const parsed=JSON.parse(reader.result);
+        if(!parsed||typeof parsed.data!=="object"){
+          flash("Ese archivo no parece una copia de seguridad válida de RankUp",false);
+          return;
+        }
+        setPendingRestore({exportedAt:parsed.exportedAt||"fecha desconocida",data:parsed.data,filename:file.name});
+        setRestoreConfirmText("");
+      }catch(e){
+        flash("No se pudo leer el archivo (¿es un .json válido?)",false);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const doRestore=async()=>{
+    if(restoreConfirmText.trim().toUpperCase()!=="RESTAURAR") return;
+    setRestoring(true);
+    try{
+      const entries=Object.entries(pendingRestore.data);
+      for(const [k,v] of entries){
+        await fbSet(k,v);
+      }
+      flash("♻️ Copia de seguridad restaurada — recarga la página");
+      setPendingRestore(null);
+      setRestoreConfirmText("");
+      // Refresh local caches so the UI reflects the restored data
+      setTimeout(()=>window.location.reload(),1500);
+    }catch(e){
+      flash("Error restaurando: "+(e.message||"error desconocido"),false);
+    }
+    setRestoring(false);
+  };
+
   const createNewUser=async()=>{
     if(!nuName.trim()||!nuEmail.trim()||nuPass.length<6){flash("Rellena todos los campos (contraseña mín. 6 caracteres)",false);return;}
     const email=nuEmail.trim().toLowerCase();
@@ -2822,6 +2868,8 @@ function AdminPanel({onLogout}){
         </div>
         <div style={{display:"flex",gap:8}}>
           <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
+          <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
+          <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
           <button onClick={onLogout} style={{background:"#1A1A2E",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>SALIR</button>
         </div>
       </div>
@@ -3390,6 +3438,26 @@ function AdminPanel({onLogout}){
             <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
               🔮 GENERAR RUTINA
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Restore backup confirmation modal */}
+      {pendingRestore&&(
+        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+          <div style={{background:"#0D0D1A",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:420}}>
+            <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:10}}>⚠️ RESTAURAR COPIA DE SEGURIDAD</div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:8}}>Archivo: <b style={{color:"#FFF"}}>{pendingRestore.filename}</b></div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:14}}>Fecha de la copia: <b style={{color:"#FFF"}}>{pendingRestore.exportedAt}</b></div>
+            <div style={{fontSize:12,color:"#F87171",lineHeight:1.6,marginBottom:16,background:"#F8717118",padding:10,borderRadius:8}}>
+              Esto va a <b>sobrescribir todos los datos actuales</b> (usuarios, progreso, rutinas, guild raids...) con lo que había en el momento de esta copia. Cualquier cosa creada o cambiada después de esa fecha se perderá.
+            </div>
+            <div style={{fontSize:11,color:"#666",marginBottom:8}}>Escribe <b style={{color:"#E84A5F"}}>RESTAURAR</b> para confirmar:</div>
+            <input value={restoreConfirmText} onChange={e=>setRestoreConfirmText(e.target.value)} style={{width:"100%",padding:"11px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}} placeholder="RESTAURAR"/>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>{setPendingRestore(null);setRestoreConfirmText("");}} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+              <button onClick={doRestore} disabled={restoreConfirmText.trim().toUpperCase()!=="RESTAURAR"||restoring} style={{flex:1,padding:12,background:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"linear-gradient(135deg,#E84A5F,#B91C3C)":"#2A2A44",border:"none",borderRadius:10,color:"#FFF",fontSize:12,fontWeight:700,cursor:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>{restoring?"⏳ RESTAURANDO...":"SOBRESCRIBIR TODO"}</button>
+            </div>
           </div>
         </div>
       )}
