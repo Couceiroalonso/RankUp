@@ -4444,8 +4444,13 @@ function RankUpApp({user,onLogout}){
 
   const logWeight=useCallback((key,evt,exName)=>{
     const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<0||wInputs[key]==="")return;
-    const arr=weights[key]||[];const prevMax=arr.length>0?Math.max(...arr.map(w=>w.kg)):0;
-    const isRec=kg>0&&kg>prevMax&&arr.length>0;
+    const arr=weights[key]||[];
+    // Compare against the GLOBAL history for this exercise (every routine/day
+    // it appears in), not just this slot's own log — otherwise the same
+    // exercise tracked in two different routines has two separate "records".
+    const globalHist=exName?(exHistory[exName]||[]):arr;
+    const prevMax=globalHist.length>0?Math.max(...globalHist.map(w=>w.kg)):0;
+    const isRec=kg>0&&kg>prevMax&&globalHist.length>0;
     const dateStr=new Date().toISOString();
     setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg}]}));
     // Also write to global exercise history
@@ -4457,13 +4462,13 @@ function RankUpApp({user,onLogout}){
     }
     setWInputs(p=>({...p,[key]:""}));
     if(isRec){
-      setPR(p=>({...p,[key]:kg}));
+      setPR(p=>({...p,[exName||key]:kg}));
       const recMult=getClassMultiplier(playerClass,"",80,true);
       const recXp=Math.round(80*recMult);
       addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);
       setTimeout(()=>setPrCard({exName:exName||"Ejercicio",kg,prevMax,xp:recXp}),600);
     } else addXp(15,evt);
-  },[weights,wInputs,addXp,exHistory]);
+  },[weights,wInputs,addXp,exHistory,playerClass]);
 
   const deleteWeight=useCallback((key,idx,exName)=>{
     setWeights(p=>{
@@ -4472,18 +4477,18 @@ function RankUpApp({user,onLogout}){
       arr.splice(idx,1);
       // Renumber sessions
       const renumbered=arr.map((w,i)=>({...w,session:`S${i+1}`}));
-      // Recalculate PR
-      const newMax=renumbered.length>0?Math.max(...renumbered.map(w=>w.kg)):0;
-      setPR(pp=>({...pp,[key]:newMax||undefined}));
       // Subtract XP for deleted log
       setTotalXp(xp=>Math.max(0,xp-15));
-      // Remove from exHistory too
+      // Remove from exHistory too, then recalculate the GLOBAL personal
+      // record for this exercise (across every routine it appears in) —
+      // not just this one slot's local log.
       if(exName&&removed){
         setExHistory(eh=>{
           const hist=[...(eh[exName]||[])];
-          // Find and remove matching entry by kg value (best match)
           const matchIdx=hist.findIndex(h=>h.kg===removed.kg);
           if(matchIdx>=0) hist.splice(matchIdx,1);
+          const newMax=hist.length>0?Math.max(...hist.map(h=>h.kg)):0;
+          setPR(pp=>({...pp,[exName]:newMax||undefined}));
           return {...eh,[exName]:hist};
         });
       }
@@ -4525,7 +4530,7 @@ function RankUpApp({user,onLogout}){
       {lvlModal&&<LevelUpModal level={lvlModal} onClose={()=>setLvlModal(null)}/>}
       {/* DUNGEON COMPLETE MODAL */}
       {/* ── RAID MODAL ── */}
-      {raidModal&&activeRaid&&!activeRaid.done&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid} onSkip={skipRaid}/>}
+      {raidModal&&activeRaid&&!activeRaid.done&&!(activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped)&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid} onSkip={skipRaid}/>}
 
       {/* ── RAID COMPLETE MODAL ── */}
       {raidComplete&&<RaidCompleteCard raid={raidComplete} onClose={()=>setRaidComplete(null)}/>}
@@ -4735,7 +4740,7 @@ function RankUpApp({user,onLogout}){
                   <span>☠️</span><span>GUILD RAID</span>
                 </button>
               )}
-              {activeRaid&&!activeRaid.done&&(
+              {activeRaid&&!activeRaid.done&&!(activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped)&&(
                 <button onClick={()=>setRaidModal(true)}
                   style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"1px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 2s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
                   <span>{activeRaid.raid.icon}</span><span>RAID</span>
@@ -4972,8 +4977,12 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                         const isDone=!!checked[key];
                         const exW=weights[key]||[];
                         const lastKg=exW.length>0?exW[exW.length-1].kg:null;
-                        const maxKg=exW.length>0?Math.max(...exW.map(w=>w.kg)):null;
-                        const isPR=maxKg&&pr[key]===maxKg;
+                        // Personal record compares against this exercise's FULL history
+                        // across every routine/day it appears in — not just this slot —
+                        // so beating a PR set elsewhere still counts.
+                        const globalHist=exHistory[ex.name]||[];
+                        const maxKg=globalHist.length>0?Math.max(...globalHist.map(w=>w.kg)):(exW.length>0?Math.max(...exW.map(w=>w.kg)):null);
+                        const isPR=maxKg!=null&&lastKg===maxKg;
                         const isChartOpen=openChart===key;
                         const exMuscles=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];
                         return(
@@ -5174,8 +5183,11 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                     const exDisplayName=exOverrides[key]||ex.name;
                     const exMuscles=MUSCLE_MAP[exDisplayName]||EXERCISE_DB.find(e=>e.name===exDisplayName)?.muscle||[];
                     const exW=weights[key]||[];const lastKg=exW.length>0?exW[exW.length-1].kg:null;
-                    const maxKg=exW.length>0?Math.max(...exW.map(w=>w.kg)):null;
-                    const isPR=maxKg&&pr[key]===maxKg;const isChartOpen=openChart===key;
+                    // Personal record compares against this exercise's FULL history
+                    // across every routine/day it appears in — not just this slot.
+                    const globalHist=exHistory[exDisplayName]||[];
+                    const maxKg=globalHist.length>0?Math.max(...globalHist.map(w=>w.kg)):(exW.length>0?Math.max(...exW.map(w=>w.kg)):null);
+                    const isPR=maxKg!=null&&lastKg===maxKg;const isChartOpen=openChart===key;
                     return(
                       <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                         <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
