@@ -37,6 +37,7 @@ const mergeUserData = (local, remote) => {
                       ? (remote.redeemedRewards||[])
                       : (local.redeemedRewards||[]),
     dungeonCoins: {...(remote.dungeonCoins||{}), ...(local.dungeonCoins||{})},
+    sessionKg: {...(remote.sessionKg||{}), ...(local.sessionKg||{})},
     customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
@@ -100,6 +101,24 @@ const RANKS = [
   { rank:"S", title:"Mítico",    minLevel:50, maxLevel:99, color:"#A78BFA", glow:"#8B5CF6" },
 ];
 const XP_PER_LEVEL=500, COIN_DUNGEON=75, COIN_BOSS_EX=30, COIN_WEEK=150, COIN_PHASE=500;
+
+// ─── WEIGHT COMPARISONS ─────────────────────────────────────────────────────
+// Fun RPG-flavored comparisons for total kg lifted in a session. Shared by
+// the completion popup AND the persistent "peso total" badge, so both always
+// show the same "🦣 un mamut de guerra"-style example, not just a raw number.
+const WEIGHT_COMPARISONS=[
+  {min:0,   max:10,   emoji:"🐀", name:"una rata de mazmorra",    title:"NOVATO DE MAZMORRA"},
+  {min:10,  max:30,   emoji:"🐺", name:"un lobo del bosque",       title:"CAZADOR DEL BOSQUE"},
+  {min:30,  max:60,   emoji:"🐗", name:"un jabalí salvaje",        title:"BESTIA SALVAJE"},
+  {min:60,  max:100,  emoji:"🦁", name:"un león de combate",       title:"GUERRERO FELINO"},
+  {min:100, max:200,  emoji:"🐉", name:"un dragón joven",          title:"DOMADOR DE DRAGONES"},
+  {min:200, max:350,  emoji:"🦣", name:"un mamut de guerra",       title:"COLOSO DE HIELO"},
+  {min:350, max:600,  emoji:"🗿", name:"un gólem de piedra",       title:"TITÁN DE PIEDRA"},
+  {min:600, max:1000, emoji:"🐋", name:"una ballena legendaria",   title:"LEVIATÁN"},
+  {min:1000,max:2000, emoji:"🌋", name:"un volcán en erupción",    title:"FUERZA PRIMORDIAL"},
+  {min:2000,max:99999,emoji:"⭐", name:"una estrella enana",       title:"SEMIDIÓS"},
+];
+const getWeightComparison=kg=>kg>0?(WEIGHT_COMPARISONS.find(c=>kg>=c.min&&kg<c.max)||WEIGHT_COMPARISONS[WEIGHT_COMPARISONS.length-1]):null;
 
 const MUSCLE_RANKS = [
   { rank:"—", label:"Sin activar",  color:"#2A2A44", glow:"#2A2A4466", min:0    },
@@ -920,7 +939,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1403,7 +1422,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -3913,6 +3932,7 @@ function RankUpApp({user,onLogout}){
   const [earnedAchs,setEarned]=useState(saved.earnedAchs||[]);
   const [redeemed,setRedeemed]=useState(saved.redeemedRewards||[]);
   const [dc,setDC]=useState(saved.dungeonCoins||{});
+  const [sessionKg,setSessionKg]=useState(saved.sessionKg||{});
   const [routines,setRoutines]=useState([]);
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
@@ -3965,6 +3985,8 @@ function RankUpApp({user,onLogout}){
       if(fresh.redeemedRewards?.length>0) setRedeemed(fresh.redeemedRewards);
       const freshDC=fresh.dungeonCoins||{};
       if(Object.keys(freshDC).length>0) setDC(freshDC);
+      const freshSessionKg=fresh.sessionKg||{};
+      if(Object.keys(freshSessionKg).length>0) setSessionKg(freshSessionKg);
       // Load coins: if Firebase has a value >0 respect it always.
       // Only recalculate if coins===0 AND dungeonCoins exists (sign of corruption).
       const storedCoins=fresh.coins||0;
@@ -4103,6 +4125,7 @@ function RankUpApp({user,onLogout}){
     const safeChecked={...(base.checked||{}),...checked};
     const safeWeights={...(base.weights||{}),...weights};
     const safeDC={...(base.dungeonCoins||{}),...dc};
+    const safeSessionKg={...(base.sessionKg||{}),...sessionKg};
     const safeEarned=[...new Set([...(base.earnedAchs||[]),...earnedAchs])];
     saveUserData(user.email,{
       totalXp: Math.max(totalXp, base.totalXp||0),
@@ -4113,6 +4136,7 @@ function RankUpApp({user,onLogout}){
       earnedAchs: safeEarned,
       redeemedRewards:redeemed,
       dungeonCoins: safeDC,
+      sessionKg: safeSessionKg,
       customRoutines:routines,
       playerClass,
       assignedDiets,
@@ -4123,7 +4147,7 @@ function RankUpApp({user,onLogout}){
       exOverrides,
       season1Seen:"T1"
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -4381,6 +4405,7 @@ function RankUpApp({user,onLogout}){
               const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
               return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
             },0);
+            setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
             setTimeout(()=>setDungeonComplete({
               dayName:day.day, totalKg:Math.round(sessKg),
               exercises:day.exercises.length, coins:dungeonCoins, bossDone
@@ -4427,6 +4452,7 @@ function RankUpApp({user,onLogout}){
                   const wArr=weights[`rt_${rt.id}_${si}_${ei}`]||[];
                   return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
                 },0);
+                setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
                 setTimeout(()=>setDungeonComplete({
                   dayName:sess.day, totalKg:Math.round(sessKg),
                   exercises:sess.exercises.length, coins:dungeonCoins, bossDone
@@ -4586,19 +4612,7 @@ function RankUpApp({user,onLogout}){
 
       {dungeonComplete&&(()=>{
         const kg=dungeonComplete.totalKg;
-        const comparisons=[
-          {min:0,   max:10,   emoji:"🐀", name:"una rata de mazmorra",    title:"NOVATO DE MAZMORRA"},
-          {min:10,  max:30,   emoji:"🐺", name:"un lobo del bosque",       title:"CAZADOR DEL BOSQUE"},
-          {min:30,  max:60,   emoji:"🐗", name:"un jabalí salvaje",        title:"BESTIA SALVAJE"},
-          {min:60,  max:100,  emoji:"🦁", name:"un león de combate",       title:"GUERRERO FELINO"},
-          {min:100, max:200,  emoji:"🐉", name:"un dragón joven",          title:"DOMADOR DE DRAGONES"},
-          {min:200, max:350,  emoji:"🦣", name:"un mamut de guerra",       title:"COLOSO DE HIELO"},
-          {min:350, max:600,  emoji:"🗿", name:"un gólem de piedra",       title:"TITÁN DE PIEDRA"},
-          {min:600, max:1000, emoji:"🐋", name:"una ballena legendaria",   title:"LEVIATÁN"},
-          {min:1000,max:2000, emoji:"🌋", name:"un volcán en erupción",    title:"FUERZA PRIMORDIAL"},
-          {min:2000,max:99999,emoji:"⭐", name:"una estrella enana",       title:"SEMIDIÓS"},
-        ];
-        const comp=kg>0?(comparisons.find(c=>kg>=c.min&&kg<c.max)||comparisons[comparisons.length-1]):null;
+        const comp=getWeightComparison(kg);
 
         return(
           <div style={{position:"fixed",inset:0,zIndex:9999,background:"#03020A",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24,overflow:"hidden"}}>
@@ -4796,7 +4810,7 @@ function RankUpApp({user,onLogout}){
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))} sessionKg={sessionKg}/>
                     </>
                   );
                 })()}
@@ -4819,6 +4833,7 @@ function RankUpApp({user,onLogout}){
                   exNotes={exNotes}
                   onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))}
                   exHistory={exHistory}
+                  sessionKg={sessionKg}
                 />
               ):(
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
@@ -4869,7 +4884,7 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={}}){
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={},sessionKg={}}){
   const [rtHistoryModal,setRtHistoryModal]=useState(null);
   const [openSess,setOpenSess]=useState(null);
   const [addModal,setAddModal]=useState(null);   // {rtId, si} — session to add to
@@ -4968,6 +4983,11 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                       <div style={{fontSize:12,color:c,fontWeight:700}}>+{sessXpDone}/{sessXpTotal} XP</div>
                       <div style={{fontSize:11,color:allDone?c:"#444"}}>{sessDone}/{sessTotal} ✓</div>
                       {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
+                      {allDone&&sessionKg[`rt_${rt.id}_done_${si}`]>0&&(()=>{
+                        const skg=sessionKg[`rt_${rt.id}_done_${si}`];
+                        const comp=getWeightComparison(skg);
+                        return <div title={comp?`Equivalente a ${comp.name}`:""} style={{fontSize:10,color:"#60A5FA",fontWeight:700,marginTop:2}}>{comp?.emoji||"🏋️"} {skg}kg</div>;
+                      })()}
                     </div>
                   </button>
                   {isOpen&&(
@@ -5139,7 +5159,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx}){
+function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx,sessionKg={}}){
   const [historyModal,setHistoryModal]=useState(null);
   const [swapModal,setSwapModal]=useState(null); // {key, exName, muscles}
   const [searchQ,setSearchQ]=useState("");
@@ -5174,6 +5194,11 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                   <div style={{fontSize:12,color:ph.color,fontWeight:700}}>+{dayXpE}/{dayXpT} XP</div>
                   <div style={{fontSize:11,color:allDone?ph.color:"#444"}}>{dayDone}/{day.exercises.length} ✓</div>
                   {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
+                  {allDone&&sessionKg[`${ph.id}_${di}`]>0&&(()=>{
+                    const skg=sessionKg[`${ph.id}_${di}`];
+                    const comp=getWeightComparison(skg);
+                    return <div title={comp?`Equivalente a ${comp.name}`:""} style={{fontSize:10,color:"#60A5FA",fontWeight:700,marginTop:2}}>{comp?.emoji||"🏋️"} {skg}kg</div>;
+                  })()}
                 </div>
               </button>
               {isOpen&&(
