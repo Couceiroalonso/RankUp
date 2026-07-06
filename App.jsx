@@ -38,6 +38,14 @@ const mergeUserData = (local, remote) => {
                       : (local.redeemedRewards||[]),
     dungeonCoins: {...(remote.dungeonCoins||{}), ...(local.dungeonCoins||{})},
     sessionKg: {...(remote.sessionKg||{}), ...(local.sessionKg||{})},
+    routineHistory: (()=>{
+      const combined=[...(remote.routineHistory||[]),...(local.routineHistory||[])];
+      const seen=new Set();
+      return combined.filter(h=>{
+        if(seen.has(h.routineId)) return false;
+        seen.add(h.routineId); return true;
+      });
+    })(),
     customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
@@ -939,7 +947,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1422,7 +1430,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -2608,6 +2616,19 @@ function AdminPanel({onLogout}){
             <div style={{fontSize:11,color:"#666",marginBottom:10,lineHeight:1.5}}>Por seguridad ya no puedes fijar la contraseña directamente. Envía un email para que {selUser} elija una nueva.</div>
             <button onClick={()=>sendPasswordReset(selUser)} style={{width:"100%",padding:11,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📧 ENVIAR EMAIL DE RESTABLECIMIENTO</button>
           </div>
+
+          {/* Historial de rutinas completadas */}
+          {(editData.routineHistory||[]).length>0&&(
+            <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #34D39944",marginBottom:14}}>
+              <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:10}}>📜 RUTINAS COMPLETADAS ({editData.routineHistory.length})</div>
+              {[...editData.routineHistory].sort((a,b)=>b.completedAt-a.completedAt).map(h=>(
+                <div key={h.routineId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid #1A1A2E"}}>
+                  <div style={{fontSize:12,fontWeight:700,color:"#E8E6FF"}}>🏅 {h.routineName}</div>
+                  <div style={{fontSize:10,color:"#34D399"}} title={h.approx?"Fecha aproximada (rescatada, no exacta)":""}>{h.approx?"~":""}{new Date(h.completedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</div>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Rutinas asignadas */}
           <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #60A5FA33",marginBottom:14}}>
@@ -3933,6 +3954,7 @@ function RankUpApp({user,onLogout}){
   const [redeemed,setRedeemed]=useState(saved.redeemedRewards||[]);
   const [dc,setDC]=useState(saved.dungeonCoins||{});
   const [sessionKg,setSessionKg]=useState(saved.sessionKg||{});
+  const [routineHistory,setRoutineHistory]=useState(saved.routineHistory||[]);
   const [routines,setRoutines]=useState([]);
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
@@ -3987,6 +4009,54 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshDC).length>0) setDC(freshDC);
       const freshSessionKg=fresh.sessionKg||{};
       if(Object.keys(freshSessionKg).length>0) setSessionKg(freshSessionKg);
+      const freshRoutineHistory=fresh.routineHistory||[];
+      if(freshRoutineHistory.length>0) setRoutineHistory(freshRoutineHistory);
+
+      // ── ONE-TIME BACKFILL ──────────────────────────────────────────────
+      // Retroactively fill sessionKg + routineHistory for dungeons/routines
+      // that were already completed before these features existed. Weight
+      // totals are reconstructed accurately from historical logs. Routine
+      // completion DATES are not recoverable (never stored before), so
+      // backfilled entries use today's date and are flagged approx:true.
+      if(!fresh.backfillV1){
+        const bfSessionKg={...freshSessionKg};
+        let sessionKgChanged=false;
+        PHASES.forEach(p=>p.training.forEach((day,di)=>{
+          const ck=`${p.id}_${di}`;
+          if(freshDC[ck]&&bfSessionKg[ck]==null){
+            const kg=day.exercises.reduce((sum,ex,ei)=>{
+              const wArr=(fresh.weights||{})[exKey(p.id,di,ei)]||[];
+              return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+            },0);
+            if(kg>0){ bfSessionKg[ck]=Math.round(kg); sessionKgChanged=true; }
+          }
+        }));
+        const bfRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
+        const bfRoutineHistory=[...freshRoutineHistory];
+        let routineHistoryChanged=false;
+        bfRoutines.forEach(rt=>{
+          rt.sessions?.forEach((sess,si)=>{
+            const ck=`rt_${rt.id}_done_${si}`;
+            if(freshDC[ck]&&bfSessionKg[ck]==null){
+              const kg=sess.exercises.reduce((sum,ex,ei)=>{
+                const wArr=(fresh.weights||{})[`rt_${rt.id}_${si}_${ei}`]||[];
+                return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+              },0);
+              if(kg>0){ bfSessionKg[ck]=Math.round(kg); sessionKgChanged=true; }
+            }
+          });
+          const allSessionsDone=rt.sessions?.length>0&&rt.sessions.every((s2,si2)=>
+            s2.exercises.every((_,ei2)=>(fresh.checked||{})[`rt_${rt.id}_${si2}_${ei2}`])
+          );
+          if(allSessionsDone&&!bfRoutineHistory.some(h=>h.routineId===rt.id)){
+            bfRoutineHistory.push({routineId:rt.id,routineName:rt.name,completedAt:Date.now(),approx:true});
+            routineHistoryChanged=true;
+          }
+        });
+        if(sessionKgChanged) setSessionKg(bfSessionKg);
+        if(routineHistoryChanged) setRoutineHistory(bfRoutineHistory);
+        saveUserData(user.email,{...fresh,sessionKg:bfSessionKg,routineHistory:bfRoutineHistory,backfillV1:true}).catch(()=>{});
+      }
       // Load coins: if Firebase has a value >0 respect it always.
       // Only recalculate if coins===0 AND dungeonCoins exists (sign of corruption).
       const storedCoins=fresh.coins||0;
@@ -4126,6 +4196,14 @@ function RankUpApp({user,onLogout}){
     const safeWeights={...(base.weights||{}),...weights};
     const safeDC={...(base.dungeonCoins||{}),...dc};
     const safeSessionKg={...(base.sessionKg||{}),...sessionKg};
+    const safeRoutineHistory=(()=>{
+      const combined=[...(base.routineHistory||[]),...routineHistory];
+      const seen=new Set();
+      return combined.filter(h=>{
+        if(seen.has(h.routineId)) return false;
+        seen.add(h.routineId); return true;
+      });
+    })();
     const safeEarned=[...new Set([...(base.earnedAchs||[]),...earnedAchs])];
     saveUserData(user.email,{
       totalXp: Math.max(totalXp, base.totalXp||0),
@@ -4137,6 +4215,7 @@ function RankUpApp({user,onLogout}){
       redeemedRewards:redeemed,
       dungeonCoins: safeDC,
       sessionKg: safeSessionKg,
+      routineHistory: safeRoutineHistory,
       customRoutines:routines,
       playerClass,
       assignedDiets,
@@ -4147,7 +4226,7 @@ function RankUpApp({user,onLogout}){
       exOverrides,
       season1Seen:"T1"
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -4459,6 +4538,14 @@ function RankUpApp({user,onLogout}){
                 }),400);
                 setTimeout(()=>triggerRaidCheck(activeRaid),2500);
                 return {...prevDC,[ck]:true};
+              });
+            }
+            // Whole-routine completion (every session, every exercise) → log to history once
+            const wholeRoutineDone=rt.sessions.every((s2,si2)=>s2.exercises.every((_,ei2)=>nc[`rt_${rt.id}_${si2}_${ei2}`]));
+            if(wholeRoutineDone){
+              setRoutineHistory(prev=>{
+                if(prev.some(h=>h.routineId===rt.id)) return prev;
+                return [...prev,{routineId:rt.id,routineName:rt.name,completedAt:Date.now()}];
               });
             }
           }
@@ -4871,7 +4958,7 @@ function RankUpApp({user,onLogout}){
               )}
             </>
           )}
-          {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines}/>}
+          {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
           {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
         </div>
@@ -6602,11 +6689,12 @@ function NutricionTab({ph, assignedDiets=[]}){
 }
 
 // ─── LOGROS TAB ───────────────────────────────────────────────────────────────
-function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines}){
+function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines,routineHistory=[]}){
   const totalDone=Object.values(checked).filter(Boolean).length;
   const totalWL=Object.values(weights).reduce((a,arr)=>a+(arr||[]).length,0);
   const prCount=Object.keys(pr).length;
   const daysComplete=PHASES.reduce((t,p)=>t+p.training.filter((d,di)=>d.exercises.every((_,ei)=>checked[exKey(p.id,di,ei)])).length,0);
+  const sortedHistory=[...routineHistory].sort((a,b)=>b.completedAt-a.completedAt);
   return(
     <div>
       <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>SALA DE TROFEOS</div>
@@ -6629,6 +6717,17 @@ function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines}){
           </div>
         );})}
       </div>
+      {sortedHistory.length>0&&(
+        <div style={{background:"#0F0F1C",borderRadius:12,padding:16,border:"1px solid #34D39944",marginBottom:18}}>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:12}}>📜 RUTINAS COMPLETADAS</div>
+          {sortedHistory.map(h=>(
+            <div key={h.routineId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
+              <div style={{fontSize:12,fontWeight:700,color:"#E8E6FF",fontFamily:"'Rajdhani',sans-serif"}}>🏅 {h.routineName}</div>
+              <div style={{fontSize:10,color:"#34D399"}} title={h.approx?"Fecha aproximada (rescatada, no exacta)":""}>{h.approx?"~":""}{new Date(h.completedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</div>
+            </div>
+          ))}
+        </div>
+      )}
       <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>LOGROS</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,paddingBottom:20}}>
         {ACHIEVEMENTS.map(ach=>{const done=earnedAchs.includes(ach.id);return(
