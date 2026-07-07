@@ -108,7 +108,26 @@ const RANKS = [
   { rank:"A", title:"Maestro",    minLevel:40, maxLevel:49, color:"#F87171", glow:"#EF4444" },
   { rank:"S", title:"Mítico",    minLevel:50, maxLevel:99, color:"#A78BFA", glow:"#8B5CF6" },
 ];
-const XP_PER_LEVEL=500, COIN_DUNGEON=75, COIN_BOSS_EX=30, COIN_WEEK=150, COIN_PHASE=500;
+const COIN_DUNGEON=75, COIN_BOSS_EX=30, COIN_WEEK=150, COIN_PHASE=500;
+
+// ─── LEVEL CURVE (exponencial estilo RPG) ───────────────────────────────────
+// Antes: 500 XP fijos por nivel, sin importar el nivel (sin progresión real).
+// Ahora: cada nivel exige más XP que el anterior — subir del 1 al 10 es rápido,
+// pero acercarse al 99 (rango Mítico) requiere cientos de miles de XP.
+const MAX_LEVEL=99, LEVEL_XP_BASE=50, LEVEL_XP_EXPONENT=2.2;
+// XP total acumulada necesaria para ALCANZAR un nivel dado (nivel 1 = 0 XP)
+const levelThreshold=lvl=>lvl<=1?0:Math.round(LEVEL_XP_BASE*Math.pow(lvl-1,LEVEL_XP_EXPONENT));
+const LEVEL_THRESHOLDS=Array.from({length:MAX_LEVEL+1},(_,i)=>levelThreshold(i)); // índice = nivel
+const getLevel=xp=>{
+  let lvl=1;
+  for(let l=2;l<=MAX_LEVEL;l++){ if(xp>=LEVEL_THRESHOLDS[l]) lvl=l; else break; }
+  return lvl;
+};
+const getXpInLevel=xp=>xp-LEVEL_THRESHOLDS[getLevel(xp)];
+const getXpForNextLevel=xp=>{
+  const lvl=getLevel(xp);
+  return lvl>=MAX_LEVEL?0:LEVEL_THRESHOLDS[lvl+1]-LEVEL_THRESHOLDS[lvl];
+};
 
 // ─── WEIGHT COMPARISONS ─────────────────────────────────────────────────────
 // Fun RPG-flavored comparisons for total kg lifted in a session. Shared by
@@ -933,8 +952,6 @@ const PHASES = [
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 const exKey=(phId,di,ei)=>`p${phId}_d${di}_e${ei}`;
 const getRank=lvl=>RANKS.find(r=>lvl>=r.minLevel&&lvl<=r.maxLevel)||RANKS[RANKS.length-1];
-const getLevel=xp=>Math.floor(xp/XP_PER_LEVEL)+1;
-const getXpInLevel=xp=>xp%XP_PER_LEVEL;
 const getMR=xp=>[...MUSCLE_RANKS].reverse().find(r=>xp>=r.min)||MUSCLE_RANKS[0];
 const getNextMR=xp=>{const i=MUSCLE_RANKS.findIndex(r=>r.min>xp);return i>=0?MUSCLE_RANKS[i]:null;};
 
@@ -2438,7 +2455,7 @@ function AdminPanel({onLogout}){
   const [editingRoutine,setEditingRoutine]=useState(null);
   const [rtName,setRtName]=useState("");
   const [rtColor,setRtColor]=useState("#A78BFA");
-  const [rtSessions,setRtSessions]=useState([{day:"Día 1",exercises:[]}]);
+  const [rtSessions,setRtSessions]=useState([{day:"Día 1",exercises:[],week:1}]);
   const [rtExInput,setRtExInput]=useState({});
   const [assignModal,setAssignModal]=useState(null); // {routineId}
   const [showAIGen,setShowAIGen]=useState(false);
@@ -2455,7 +2472,7 @@ function AdminPanel({onLogout}){
     flash("🔮 Rutina generada — revisa y guarda");
   };
 
-  const openNewRoutine=()=>{setEditingRoutine(null);setRtName("");setRtColor("#A78BFA");setRtSessions([{day:"Día 1",exercises:[]}]);setShowRoutineBuilder(true);};
+  const openNewRoutine=()=>{setEditingRoutine(null);setRtName("");setRtColor("#A78BFA");setRtSessions([{day:"Día 1",exercises:[],week:1}]);setShowRoutineBuilder(true);};
   const openEditRoutine=rt=>{setEditingRoutine(rt.id);setRtName(rt.name);setRtColor(rt.color||"#A78BFA");setRtSessions(JSON.parse(JSON.stringify(rt.sessions)));setShowRoutineBuilder(true);};
 
   const saveRoutine=()=>{
@@ -2466,6 +2483,82 @@ function AdminPanel({onLogout}){
   };
 
   const deleteAdminRoutine=id=>{saveAR(adminRoutines.filter(r=>r.id!==id));flash("🗑️ Rutina eliminada");};
+
+  // ── ONE-TIME REPAIR: infer week numbers for routines created before the
+  // week-cloning tools tagged sessions with real week metadata. There's no
+  // reliable stored data for this — it's inferred from the session's `day`
+  // label text, so it's a best-effort guess, not guaranteed 100% accurate.
+  // Recommend reviewing routines afterward if a name looks unusual.
+  const repairRoutineWeeks=async()=>{
+    const inferWeek=day=>{
+      let m=day.match(/\(S(\d+)\)\s*$/);           // "Día 1 (S2)"
+      if(m) return parseInt(m[1]);
+      m=day.match(/\sS(\d+)\s*$/);                  // "Día 1 A S2"
+      if(m) return parseInt(m[1]);
+      if(/\sB\s*$/.test(day)) return 2;             // "Día 1 B"
+      if(/\sA\s*$/.test(day)) return 1;             // "Día 1 A"
+      return 1;                                     // no pattern → assume week 1
+    };
+    let routinesFixed=0, sessionsFixed=0;
+    const updatedRoutines=adminRoutines.map(rt=>{
+      const needsFix=rt.sessions?.some(s=>!s.week);
+      if(!needsFix) return rt;
+      routinesFixed++;
+      return {...rt,sessions:rt.sessions.map(s=>{
+        if(s.week) return s;
+        sessionsFixed++;
+        return {...s,week:inferWeek(s.day)};
+      })};
+    });
+    if(routinesFixed===0){flash("Todas las rutinas ya tienen semanas asignadas");return;}
+    saveAR(updatedRoutines);
+
+    // Retroactively: 1) patch each user's OWN copy of the routine (assigned
+    // routines are copied into the user's data, not shared live with admin's
+    // master copy) with the same inferred week numbers, matching sessions by
+    // position — skipped if the user's copy has drifted (different session
+    // count) to avoid corrupting mismatched data. 2) Award the week-completion
+    // coin bonus to anyone who had already finished a week that just became
+    // identifiable, without double-awarding anyone who gets it normally later.
+    let usersAwarded=0, weeksAwarded=0, usersSkipped=0;
+    const entries=Object.entries(allUserData||{});
+    for(const [email,data] of entries){
+      if(!data) continue;
+      const userRoutines=data.customRoutines||[];
+      let routinesChanged=false;
+      const userChecked=data.checked||{};
+      const userDC={...(data.dungeonCoins||{})};
+      let userCoins=data.coins||0;
+      let userChanged=false;
+      const patchedRoutines=userRoutines.map(rt=>{
+        if(!rt.assignedByAdmin) return rt;
+        const fixedRt=updatedRoutines.find(r=>r.id===rt.id);
+        if(!fixedRt) return rt;
+        if(!rt.sessions||rt.sessions.length!==fixedRt.sessions.length){ usersSkipped++; return rt; }
+        const alreadyTagged=rt.sessions.every(s=>s.week);
+        if(alreadyTagged) return rt;
+        routinesChanged=true;
+        const newSessions=rt.sessions.map((s,i)=>s.week?s:{...s,week:fixedRt.sessions[i].week});
+        // Check week completion for THIS user with the newly patched weeks
+        const weeksInRoutine=[...new Set(newSessions.map(s=>s.week).filter(Boolean))];
+        weeksInRoutine.forEach(weekNum=>{
+          const wk=`rt_${rt.id}_week_${weekNum}`;
+          if(userDC[wk]) return;
+          const sessIdxs=newSessions.map((s,i)=>s.week===weekNum?i:null).filter(i=>i!==null);
+          const weekAllDone=sessIdxs.every(si=>newSessions[si].exercises.every((_,ei)=>userChecked[`rt_${rt.id}_${si}_${ei}`]));
+          if(weekAllDone){ userDC[wk]=true; userCoins+=COIN_WEEK; userChanged=true; weeksAwarded++; }
+        });
+        return {...rt,sessions:newSessions};
+      });
+      if(routinesChanged||userChanged){
+        usersAwarded+= userChanged?1:0;
+        const newData={...data,customRoutines:patchedRoutines,dungeonCoins:userDC,coins:userCoins};
+        await saveUserData(email,newData).catch(()=>{});
+        setAllUserData(p=>({...p,[email]:newData}));
+      }
+    }
+    flash(`🔧 ${routinesFixed} rutina(s) reparadas · ${weeksAwarded} semana(s) retroactivas premiadas a ${usersAwarded} usuario(s)${usersSkipped>0?` (${usersSkipped} copias no coincidían y se dejaron sin tocar)`:""}`);
+  };
 
   const assignRoutineToUser=(email,routine)=>{
     const data=getUD(email)||defaultData();
@@ -3008,16 +3101,19 @@ function AdminPanel({onLogout}){
                 ))}
 
                 <div style={{display:"flex",gap:8,marginBottom:8}}>
-                  <button onClick={()=>setRtSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[]}])}
+                  <button onClick={()=>setRtSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[],week:p[p.length-1]?.week||1}])}
                     style={{flex:1,padding:11,background:"#0D0D1A",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                     + AÑADIR SESIÓN
                   </button>
                   <button onClick={()=>{
-                    const copies=rtSessions.map(s=>({
+                    const normalized=rtSessions.map(s=>({...s,week:s.week||1}));
+                    const maxWeek=Math.max(...normalized.map(s=>s.week));
+                    const copies=normalized.map(s=>({
                       ...JSON.parse(JSON.stringify(s)),
-                      day:s.day.includes(" A")?s.day.replace(" A"," B"):s.day+" B"
+                      day:s.day.includes(" A")?s.day.replace(" A"," B"):s.day+" B",
+                      week:maxWeek+1
                     }));
-                    setRtSessions(p=>[...p,...copies]);
+                    setRtSessions([...normalized,...copies]);
                   }} style={{flex:1,padding:11,background:"#34D39911",border:"1px dashed #34D39944",borderRadius:10,color:"#34D399",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                     🔄 DUPLICAR SEMANA B
                   </button>
@@ -3028,13 +3124,14 @@ function AdminPanel({onLogout}){
                   <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap"}}>
                     {[2,3,4].map(weeks=>(
                       <button key={weeks} onClick={()=>{
-                        const base=JSON.parse(JSON.stringify(rtSessions));
+                        const base=JSON.parse(JSON.stringify(rtSessions)).map(s=>({...s,week:1}));
                         const copies=[];
                         for(let w=1;w<weeks;w++){
                           base.forEach((sess,i)=>{
                             copies.push({
                               ...JSON.parse(JSON.stringify(sess)),
-                              day:`${sess.day} (S${w+1})`
+                              day:`${sess.day} (S${w+1})`,
+                              week:w+1
                             });
                           });
                         }
@@ -3058,7 +3155,7 @@ function AdminPanel({onLogout}){
                         const result=[];
                         for(let w=0;w<4;w++){
                           const week=w%2===0?sessA:sessB;
-                          week.forEach(s=>result.push({...JSON.parse(JSON.stringify(s)),day:`${s.day} S${w+1}`}));
+                          week.forEach(s=>result.push({...JSON.parse(JSON.stringify(s)),day:`${s.day} S${w+1}`,week:w+1}));
                         }
                         setRtSessions(result);
                       } else {
@@ -3068,7 +3165,7 @@ function AdminPanel({onLogout}){
                         const result=[];
                         for(let w=0;w<4;w++){
                           const week=w%2===0?sessA:sessB;
-                          week.forEach(s=>result.push({...JSON.parse(JSON.stringify(s)),day:`${s.day} S${w+1}`}));
+                          week.forEach(s=>result.push({...JSON.parse(JSON.stringify(s)),day:`${s.day} S${w+1}`,week:w+1}));
                         }
                         setRtSessions(result);
                       }
@@ -3088,6 +3185,7 @@ function AdminPanel({onLogout}){
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
                   <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>RUTINAS DEL ADMIN ({adminRoutines.length})</div>
                   <div style={{display:"flex",gap:8}}>
+                    <button onClick={repairRoutineWeeks} style={{padding:"8px 14px",background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔧 REPARAR SEMANAS</button>
                     <button onClick={()=>setShowAIGen(true)} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
                     <button onClick={openNewRoutine} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA</button>
                   </div>
@@ -3989,7 +4087,7 @@ function RankUpApp({user,onLogout}){
   const [showProfile,setShowProfile]=useState(false);
   const prevLvl=useRef(getLevel(totalXp));
   const ph=PHASES[activePhase];
-  const level=getLevel(totalXp),xpInLvl=getXpInLevel(totalXp),ri=getRank(level);
+  const level=getLevel(totalXp),xpInLvl=getXpInLevel(totalXp),xpNext=getXpForNextLevel(totalXp),ri=getRank(level);
 
   const dataLoaded = useRef(false);
 
@@ -4537,7 +4635,23 @@ function RankUpApp({user,onLogout}){
                   exercises:sess.exercises.length, coins:dungeonCoins, bossDone
                 }),400);
                 setTimeout(()=>triggerRaidCheck(activeRaid),2500);
-                return {...prevDC,[ck]:true};
+                const newDC={...prevDC,[ck]:true};
+                // Whole-WEEK reward — only for routines built with the week
+                // duplication tools (each cloned week has its own `week` number).
+                // Older routines without that metadata simply skip this, same
+                // as before — no change in behavior for them.
+                if(sess.week){
+                  const wk=`rt_${rt.id}_week_${sess.week}`;
+                  if(!newDC[wk]){
+                    const weekSessIdxs=rt.sessions.map((s2,i2)=>s2.week===sess.week?i2:null).filter(i2=>i2!==null);
+                    const weekAllDone=weekSessIdxs.every(si2=>{
+                      const s2=rt.sessions[si2];
+                      return s2.exercises.every((_,ei2)=>nc[`rt_${rt.id}_${si2}_${ei2}`]);
+                    });
+                    if(weekAllDone){newDC[wk]=true;addCoins(COIN_WEEK,`🗓️ Semana ${sess.week} completada`);}
+                  }
+                }
+                return newDC;
               });
             }
             // Whole-routine completion (every session, every exercise) → log to history once
@@ -4633,7 +4747,7 @@ function RankUpApp({user,onLogout}){
   const phDone=ph.training.reduce((a,d,di)=>a+d.exercises.filter((_,ei)=>checked[exKey(ph.id,di,ei)]).length,0);
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
-  const xpPct=Math.min((xpInLvl/XP_PER_LEVEL)*100,100);
+  const xpPct=level>=MAX_LEVEL?100:Math.min((xpInLvl/xpNext)*100,100);
   const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
 
   return(
@@ -4833,7 +4947,7 @@ function RankUpApp({user,onLogout}){
           </button>
           <div style={{textAlign:"right",display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
             <div style={{fontSize:20,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{totalXp.toLocaleString()} XP</div>
-            <div style={{fontSize:10,color:"#555"}}>{xpInLvl}/{XP_PER_LEVEL} → lv.{level+1}</div>
+            <div style={{fontSize:10,color:"#555"}}>{level>=MAX_LEVEL?"¡NIVEL MÁXIMO!":`${xpInLvl}/${xpNext} → lv.${level+1}`}</div>
             <div style={{display:"flex",gap:6}}>
               {activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
                 <button onClick={()=>setGuildRaidModal(true)}
@@ -5755,7 +5869,7 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
   const COLORS=["#34D399","#60A5FA","#F87171","#FBBF24","#A78BFA","#F4714A"];
   const [name,setName]=useState(routine?.name||"");
   const [color,setColor]=useState(routine?.color||COLORS[0]);
-  const [sessions,setSessions]=useState(routine?.sessions||[{day:"Día 1",exercises:[]}]);
+  const [sessions,setSessions]=useState(routine?.sessions||[{day:"Día 1",exercises:[],week:1}]);
   const [activeSess,setActiveSess]=useState(0);
   const [picking,setPicking]=useState(false);
   const [exSearch,setExSearch]=useState("");
