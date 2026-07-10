@@ -2183,6 +2183,23 @@ function AdminPanel({onLogout}){
   const [nuPass,setNuPass]=useState("");
   const [nuIsTest,setNuIsTest]=useState(false);
   const [showNewPw,setShowNewPw]=useState(false);
+  const [seasonActive,setSeasonActiveState]=useState(true);
+  const [seasonLoaded,setSeasonLoaded]=useState(false);
+
+  useEffect(()=>{
+    fbGet("guildRaidStatus").then(s=>{
+      setSeasonActiveState(s?.seasonActive!==false);
+      setSeasonLoaded(true);
+    }).catch(()=>setSeasonLoaded(true));
+  },[]);
+
+  const toggleSeason=async()=>{
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
+    const newVal=!seasonActive;
+    await fbSet("guildRaidStatus",{...grStatus,seasonActive:newVal}).catch(()=>{});
+    setSeasonActiveState(newVal);
+    flash(newVal?"⚔️ Temporada 1 reactivada":"⏸️ Temporada 1 pausada — no aparecerán nuevos Señores Oscuros ni el popup de bienvenida");
+  };
 
   const [allUsers,setAllUsers]=useState(getUsers());
   const userList=Object.entries(allUsers).map(([email,u])=>({email,...u}));
@@ -2510,8 +2527,7 @@ function AdminPanel({onLogout}){
         return {...s,week:inferWeek(s.day)};
       })};
     });
-    if(routinesFixed===0){flash("Todas las rutinas ya tienen semanas asignadas");return;}
-    saveAR(updatedRoutines);
+    if(routinesFixed>0) saveAR(updatedRoutines);
 
     // Retroactively: 1) patch each user's OWN copy of the routine (assigned
     // routines are copied into the user's data, not shared live with admin's
@@ -3000,6 +3016,7 @@ function AdminPanel({onLogout}){
           <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>ADMINISTRADOR</div>
         </div>
         <div style={{display:"flex",gap:8}}>
+          {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
           <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
           <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
           <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
@@ -4062,6 +4079,7 @@ function RankUpApp({user,onLogout}){
   const [exOverrides,setExOverrides]=useState(saved.exOverrides||{});  // {exKey: newExName} — program exercise swaps
   const [activeRaid,setActiveRaid]=useState(saved.activeRaid||null);
   const [activeGuildRaid,setActiveGuildRaid]=useState(null); // loaded from Firebase
+  const [seasonActive,setSeasonActive]=useState(true); // loaded from Firebase (guildRaidStatus.seasonActive)
   const [guildRaidModal,setGuildRaidModal]=useState(false);
   const [guildRaidComplete,setGuildRaidComplete]=useState(null);
   const [season1Popup,setSeason1Popup]=useState(false);
@@ -4210,12 +4228,14 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
       // Load global guild raid from Firebase
-      fbGet("guildRaid").then(gr=>{
+      Promise.all([fbGet("guildRaid"),fbGet("guildRaidStatus")]).then(([gr,grStatus])=>{
         if(gr) setActiveGuildRaid(gr);
-        // Show season 1 popup if never seen
-        if(fresh.season1Seen!=="T1"&&Date.now()>=SEASON1_START_DATE) setSeason1Popup(true);
-        // Check guild raid trigger
-        setTimeout(()=>checkGuildRaidTrigger(gr),3000);
+        const isSeasonActive=grStatus?.seasonActive!==false; // default true if never set
+        setSeasonActive(isSeasonActive);
+        // Show season 1 popup if never seen — only while the season is active
+        if(isSeasonActive&&fresh.season1Seen!=="T1"&&Date.now()>=SEASON1_START_DATE) setSeason1Popup(true);
+        // Check guild raid trigger — only while the season is active
+        if(isSeasonActive) setTimeout(()=>checkGuildRaidTrigger(gr),3000);
       }).catch(()=>{});
       // Check raid on app open
       setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
@@ -4427,6 +4447,16 @@ function RankUpApp({user,onLogout}){
     setEarned(p=>p.includes("first_raid")?p:[...p,"first_raid"]);
   },[activeRaid,addXp,addCoins]);
 
+  const contributeRaidProgress=useCallback((amount)=>{
+    if(!activeRaid||activeRaid.done||amount<=0) return;
+    const goal=activeRaid.raid.reps;
+    const newProgress=Math.min((activeRaid.progress||0)+amount,goal);
+    setActiveRaid(p=>p?{...p,progress:newProgress}:p);
+    if(newProgress>=goal){
+      setTimeout(()=>completeRaid(),300);
+    }
+  },[activeRaid,completeRaid]);
+
   const dismissRaid=useCallback(()=>setRaidModal(false),[]);
   const skipRaid=useCallback(()=>{
     if(!activeRaid) return;
@@ -4440,6 +4470,7 @@ function RankUpApp({user,onLogout}){
   // ── GUILD RAID FUNCTIONS ──────────────────────────────────────────────────
   const checkGuildRaidTrigger=useCallback(async(currentGR)=>{
     if(Date.now()<SEASON1_START_DATE) return; // Temporada I no ha comenzado aún
+    if(!seasonActive) return; // Temporada I pausada por el admin
     // If active guild raid exists, check expiry
     if(currentGR&&!currentGR.defeated&&!currentGR.escaped){
       const elapsed=Date.now()-currentGR.startTime;
@@ -4475,9 +4506,10 @@ function RankUpApp({user,onLogout}){
       setActiveGuildRaid(newGR);
       setTimeout(()=>setGuildRaidModal(true),800);
     }
-  },[]);
+  },[seasonActive]);
 
   const contributeGuildRaid=useCallback(async(phaseIdx,reps)=>{
+    if(!seasonActive) return;
     if(!activeGuildRaid||activeGuildRaid.defeated||activeGuildRaid.escaped) return;
     if(reps<=0) return;
     // Fetch fresh from Firebase
@@ -4524,7 +4556,7 @@ function RankUpApp({user,onLogout}){
     }
     await fbSet("guildRaid",updated).catch(()=>{});
     setActiveGuildRaid(updated);
-  },[activeGuildRaid,user,addXp,addCoins]);
+  },[activeGuildRaid,user,addXp,addCoins,seasonActive]);
 
   const checkSeasonEnd=useCallback(async(currentGR)=>{
     const grStatus=await fbGet("guildRaidStatus").catch(()=>({}));
@@ -4757,7 +4789,7 @@ function RankUpApp({user,onLogout}){
       {lvlModal&&<LevelUpModal level={lvlModal} onClose={()=>setLvlModal(null)}/>}
       {/* DUNGEON COMPLETE MODAL */}
       {/* ── RAID MODAL ── */}
-      {raidModal&&activeRaid&&!activeRaid.done&&!(activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped)&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} onComplete={completeRaid} onDismiss={dismissRaid} onSkip={skipRaid}/>}
+      {raidModal&&activeRaid&&!activeRaid.done&&!(seasonActive&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped)&&<RaidModal raid={activeRaid.raid} startTime={activeRaid.startTime} progress={activeRaid.progress||0} onContribute={contributeRaidProgress} onComplete={completeRaid} onDismiss={dismissRaid} onSkip={skipRaid}/>}
 
       {/* ── RAID COMPLETE MODAL ── */}
       {raidComplete&&<RaidCompleteCard raid={raidComplete} onClose={()=>setRaidComplete(null)}/>}
@@ -4769,7 +4801,7 @@ function RankUpApp({user,onLogout}){
       {season1End&&<Season1End activeGuildRaid={activeGuildRaid} onClose={()=>setSeason1End(false)}/>}
 
       {/* ── GUILD RAID MODAL ── */}
-      {guildRaidModal&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&
+      {seasonActive&&guildRaidModal&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&
         <GuildRaidModal raid={activeGuildRaid} userEmail={user.email} onContribute={contributeGuildRaid} onClose={()=>setGuildRaidModal(false)}/>}
 
       {/* ── GUILD RAID COMPLETE ── */}
@@ -4949,13 +4981,13 @@ function RankUpApp({user,onLogout}){
             <div style={{fontSize:20,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{totalXp.toLocaleString()} XP</div>
             <div style={{fontSize:10,color:"#555"}}>{level>=MAX_LEVEL?"¡NIVEL MÁXIMO!":`${xpInLvl}/${xpNext} → lv.${level+1}`}</div>
             <div style={{display:"flex",gap:6}}>
-              {activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
+              {seasonActive&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
                 <button onClick={()=>setGuildRaidModal(true)}
                   style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"2px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 1s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
                   <span>☠️</span><span>GUILD RAID</span>
                 </button>
               )}
-              {activeRaid&&!activeRaid.done&&!(activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped)&&(
+              {activeRaid&&!activeRaid.done&&!(seasonActive&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped)&&(
                 <button onClick={()=>setRaidModal(true)}
                   style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"1px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 2s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
                   <span>{activeRaid.raid.icon}</span><span>RAID</span>
@@ -5984,7 +6016,8 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
 }
 
 // ─── RAID MODAL COMPONENT ────────────────────────────────────────────────────
-function RaidModal({raid,startTime,onComplete,onDismiss,onSkip}){
+function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,onSkip}){
+  const [contribInput,setContribInput]=useState("");
   const c=RAID_RARITY_COLOR[raid.rarity]||"#A78BFA";
   const [tick,setTick]=useState(0);
   useEffect(()=>{
@@ -6087,9 +6120,26 @@ function RaidModal({raid,startTime,onComplete,onDismiss,onSkip}){
               boxShadow:`inset 0 0 20px ${c}08`}}>
               <div style={{fontSize:8,color:c,letterSpacing:4,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TU MISIÓN</div>
               <div style={{fontSize:20,fontWeight:900,color:"#FFF",
-                fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,lineHeight:1.3}}>
+                fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,lineHeight:1.3,marginBottom:raid.reps?12:0}}>
                 {raid.challenge}
               </div>
+              {raid.reps&&(
+                <>
+                  <div style={{height:8,background:"#1A1A2E",borderRadius:6,overflow:"hidden",marginBottom:6}}>
+                    <div style={{height:"100%",width:`${Math.min((progress/raid.reps)*100,100)}%`,background:`linear-gradient(90deg,${c},${c}CC)`,transition:"width .3s ease",boxShadow:`0 0 8px ${c}`}}/>
+                  </div>
+                  <div style={{fontSize:11,color:"#888",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>{progress}/{raid.reps} completadas</div>
+                  <div style={{display:"flex",gap:8}}>
+                    <input type="number" min="1" placeholder="ej: 10" value={contribInput} onChange={e=>setContribInput(e.target.value)}
+                      onKeyDown={e=>{if(e.key==="Enter"){const n=parseInt(contribInput);if(n>0){onContribute(n);setContribInput("");}}}}
+                      style={{flex:1,padding:"10px 12px",background:"#07070F",border:`1px solid ${c}44`,borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    <button onClick={()=>{const n=parseInt(contribInput);if(n>0){onContribute(n);setContribInput("");}}}
+                      style={{padding:"10px 18px",background:`${c}22`,border:`1px solid ${c}66`,borderRadius:10,color:c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap"}}>
+                      ➕ APORTAR
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Rewards row */}
