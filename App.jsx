@@ -1003,12 +1003,12 @@ function Particle({x,y,text,color,onDone}){
   return <div style={{position:"fixed",left:x,top:y,zIndex:9999,pointerEvents:"none",fontWeight:900,fontSize:18,fontFamily:"'Rajdhani',sans-serif",color,textShadow:`0 0 12px ${color}`,animation:"xpFloat 1.3s ease-out forwards"}}>{text}</div>;
 }
 function AchToast({ach,onDone}){
-  useEffect(()=>{const t=setTimeout(onDone,3500);return()=>clearTimeout(t);},[]);
-  return <div style={{position:"fixed",bottom:90,right:14,zIndex:9997,background:"#0F0F1A",border:"1px solid #A78BFA",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #A78BFA44",animation:"toastR .4s ease-out forwards",maxWidth:290}}><div style={{fontSize:30}}>{ach.icon}</div><div><div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:2}}>LOGRO DESBLOQUEADO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ach.name}</div><div style={{fontSize:11,color:"#A78BFA",fontWeight:700,marginTop:3}}>+{ach.xp} XP</div></div></div>;
+  useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
+  return <div onClick={onDone} style={{position:"fixed",bottom:90,right:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #A78BFA",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #A78BFA44",animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:30}}>{ach.icon}</div><div><div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:2}}>LOGRO DESBLOQUEADO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ach.name}</div><div style={{fontSize:11,color:"#A78BFA",fontWeight:700,marginTop:3}}>+{ach.xp} XP</div></div></div>;
 }
 function CoinToast({msg,coins,onDone}){
-  useEffect(()=>{const t=setTimeout(onDone,3500);return()=>clearTimeout(t);},[]);
-  return <div style={{position:"fixed",bottom:90,left:14,zIndex:9997,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
+  useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
+  return <div onClick={onDone} style={{position:"fixed",bottom:90,left:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
 }
 
 // ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
@@ -5087,6 +5087,7 @@ function RankUpApp({user,onLogout}){
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
 function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={},sessionKg={}}){
   const [rtHistoryModal,setRtHistoryModal]=useState(null);
+  const [showArchivedRt,setShowArchivedRt]=useState(false);
   const [openSess,setOpenSess]=useState(null);
   const [addModal,setAddModal]=useState(null);   // {rtId, si} — session to add to
   const [swapModal,setSwapModal]=useState(null); // {rtId, si, ei, exName, muscles}
@@ -5148,7 +5149,14 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   return(
     <div>
       <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:14}}>👑 MAZMORRAS ASIGNADAS · {routines.length} RUTINAS</div>
-      {routines.map(rt=>{
+      {(()=>{
+        const isRoutineFullyDone=rt=>{
+          const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
+          return sessions.every((sess,si)=>sess.exercises.every((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]));
+        };
+        const activeRoutines=routines.filter(rt=>!isRoutineFullyDone(rt));
+        const archivedRoutines=routines.filter(rt=>isRoutineFullyDone(rt));
+        const renderRoutine=rt=>{
         const c=rt.color||"#A78BFA";
         const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
         return(
@@ -5285,7 +5293,23 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
             })}
           </div>
         );
-      })}
+        };
+        return(<>
+          {activeRoutines.length===0&&archivedRoutines.length===0&&(
+            <div style={{textAlign:"center",padding:"40px 20px",color:"#333",fontSize:12}}>Sin rutinas asignadas.</div>
+          )}
+          {activeRoutines.map(renderRoutine)}
+          {archivedRoutines.length>0&&(
+            <div style={{marginTop:10}}>
+              <button onClick={()=>setShowArchivedRt(p=>!p)} style={{width:"100%",padding:"10px 14px",background:"#0F0F1C",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                <span>📦 RUTINAS COMPLETADAS ({archivedRoutines.length})</span>
+                <span>{showArchivedRt?"▲":"▼"}</span>
+              </button>
+              {showArchivedRt&&<div style={{marginTop:12,opacity:.75}}>{archivedRoutines.map(renderRoutine)}</div>}
+            </div>
+          )}
+        </>);
+      })()}
 
       {/* ── PENDING ADD CONFIG MODAL ── */}
       {pendingAdd&&(
