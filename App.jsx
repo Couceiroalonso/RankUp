@@ -2193,12 +2193,34 @@ function AdminPanel({onLogout}){
     }).catch(()=>setSeasonLoaded(true));
   },[]);
 
-  const toggleSeason=async()=>{
+  const [confirmSeasonStart,setConfirmSeasonStart]=useState(false);
+
+  const pauseSeason=async()=>{
     const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
-    const newVal=!seasonActive;
-    await fbSet("guildRaidStatus",{...grStatus,seasonActive:newVal}).catch(()=>{});
-    setSeasonActiveState(newVal);
-    flash(newVal?"⚔️ Temporada 1 reactivada":"⏸️ Temporada 1 pausada — no aparecerán nuevos Señores Oscuros ni el popup de bienvenida");
+    await fbSet("guildRaidStatus",{...grStatus,seasonActive:false}).catch(()=>{});
+    setSeasonActiveState(false);
+    flash("⏸️ Temporada 1 pausada — no aparecerán nuevos Señores Oscuros ni el popup de bienvenida");
+  };
+
+  const startSeasonFresh=async()=>{
+    await fbSet("guildRaid",null).catch(()=>{});
+    await fbSet("guildRaidStatus",{seasonActive:true,appeared:[]}).catch(()=>{});
+    setSeasonActiveState(true);
+    setConfirmSeasonStart(false);
+    flash("⚔️ Temporada 1 reactivada desde cero — ningún Señor Oscuro ha aparecido aún");
+  };
+
+  const resumeSeason=async()=>{
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
+    await fbSet("guildRaidStatus",{...grStatus,seasonActive:true}).catch(()=>{});
+    setSeasonActiveState(true);
+    setConfirmSeasonStart(false);
+    flash("⚔️ Temporada 1 reactivada, continuando donde se quedó");
+  };
+
+  const toggleSeason=()=>{
+    if(seasonActive) pauseSeason();
+    else setConfirmSeasonStart(true);
   };
 
   const [allUsers,setAllUsers]=useState(getUsers());
@@ -3593,6 +3615,19 @@ function AdminPanel({onLogout}){
             <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
               🔮 GENERAR RUTINA
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Season restart choice modal */}
+      {confirmSeasonStart&&(
+        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+          <div style={{background:"#0D0D1A",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
+            <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:14}}>⚔️ REACTIVAR TEMPORADA 1</div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde cero (ningún Señor Oscuro habrá aparecido todavía) o que continúe justo donde se quedó cuando la pausaste?</div>
+            <button onClick={startSeasonFresh} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#E84A5F,#B91C3C)",border:"none",borderRadius:10,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>🔄 EMPEZAR DE CERO</button>
+            <button onClick={resumeSeason} style={{width:"100%",padding:13,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>▶️ CONTINUAR DONDE ESTABA</button>
+            <button onClick={()=>setConfirmSeasonStart(false)} style={{width:"100%",padding:11,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
           </div>
         </div>
       )}
