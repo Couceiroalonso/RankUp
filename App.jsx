@@ -1027,6 +1027,7 @@ const CSS=`
   @keyframes lvlPop{0%{opacity:0;transform:scale(.4)}70%{transform:scale(1.07)}100%{opacity:1;transform:scale(1)}}
   @keyframes toastR{0%{opacity:0;transform:translateX(100px)}100%{opacity:1;transform:translateX(0)}}
   @keyframes toastL{0%{opacity:0;transform:translateX(-100px)}100%{opacity:1;transform:translateX(0)}}
+  @keyframes toastTop{0%{opacity:0;transform:translate(-50%,-24px)}100%{opacity:1;transform:translate(-50%,0)}}
   @keyframes coinPop{0%{opacity:0;transform:scale(.5)}70%{transform:scale(1.1)}100%{opacity:1;transform:scale(1)}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   @keyframes scanline{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
@@ -1063,7 +1064,7 @@ function CoinToast({msg,coins,onDone}){
 function LootToast({item,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=RARITY_INFO[item.rarity]?.color||"#A78BFA";
-  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",transform:"translateX(-50%)",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
 }
 
 // ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
