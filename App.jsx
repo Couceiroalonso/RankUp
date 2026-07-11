@@ -6999,7 +6999,7 @@ function InventarioTab({inventory={}}){
       {totalItems===0&&(
         <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
           <div style={{fontSize:40,marginBottom:12}}>🎒</div>
-          <div style={{fontSize:13,color:"#444",lineHeight:1.6}}>Tu mochila está vacía.<br/>Completa ejercicios (más si son 💀 Boss) o dungeons enteros para tener opciones de encontrar materiales.</div>
+          <div style={{fontSize:13,color:"#444",lineHeight:1.6}}>Tu mochila está vacía.</div>
         </div>
       )}
       {rarityOrder.map(rarKey=>{
