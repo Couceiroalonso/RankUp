@@ -1111,6 +1111,47 @@ function Season1Popup({onClose}){
   );
 }
 
+function LootUpdatePopup({onClose}){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at center,#1a0033 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0718 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+        <div style={{background:"linear-gradient(135deg,#A78BFA33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#A78BFA88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
+          <div style={{fontSize:11,letterSpacing:4,color:"#A78BFA",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🎒 NUEVA ACTUALIZACIÓN</div>
+          <div style={{fontSize:24,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #A78BFA88"}}>
+            LAS BESTIAS<br/>EMPIEZAN A CAER
+          </div>
+          <div style={{fontSize:12,color:"#888",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
+            "Algo ha cambiado en el territorio de caza. Los monstruos que antes solo caían derrotados ahora dejan tras de sí fragmentos de su esencia. Los cazadores más atentos ya han empezado a recolectarlos..."
+          </div>
+        </div>
+        <div style={{display:"flex",justifyContent:"center",gap:14,padding:"16px 24px",borderTop:"1px solid #A78BFA22",borderBottom:"1px solid #A78BFA22",background:"#0A0714"}}>
+          {["🪵","🥉","⚙️","🌌","🏆"].map((icon,i)=>(
+            <div key={i} style={{fontSize:26,filter:"drop-shadow(0 0 8px #A78BFA66)"}}>{icon}</div>
+          ))}
+        </div>
+        <div style={{padding:"16px 24px 8px",textAlign:"center",overflowY:"auto"}}>
+          <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>🎒 MATERIALES DE CAZA — NUEVO</div>
+          <div style={{fontSize:12,color:"#666",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:6,textAlign:"left"}}>
+            🗡️ Cada ejercicio completado es un golpe certero — y hay opción de que suelte un material al instante.<br/><br/>
+            💀 Los ejercicios <b style={{color:"#E84A5F"}}>Boss</b> son presas mayores: mucha más probabilidad de botín, y de mejor calidad.<br/><br/>
+            🏰 Al completar el dungeon entero, tallas un material <b style={{color:"#A78BFA"}}>garantizado</b> — con opción de que sea Épico o incluso Legendario.<br/><br/>
+            🎒 Todo lo que consigas se guarda en tu mochila, en la nueva pestaña dedicada.
+          </div>
+          <button onClick={onClose}
+            style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:12,
+              color:"#FFF",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:3,
+              boxShadow:"0 0 20px #A78BFA55",marginTop:10,marginBottom:20}}>
+            🎒 EMPEZAR A CAZAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── GUILD RAID MODAL ────────────────────────────────────────────────────────
 function GuildRaidModal({raid,userEmail,onContribute,onClose}){
   const [inputs,setInputs]=useState({0:"",1:"",2:""});
@@ -4181,6 +4222,7 @@ function RankUpApp({user,onLogout}){
   const [guildRaidModal,setGuildRaidModal]=useState(false);
   const [guildRaidComplete,setGuildRaidComplete]=useState(null);
   const [season1Popup,setSeason1Popup]=useState(false);
+  const [lootUpdatePopup,setLootUpdatePopup]=useState(false);
   const [season1End,setSeason1End]=useState(false); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
   const [raidComplete,setRaidComplete]=useState(null);
@@ -4334,6 +4376,7 @@ function RankUpApp({user,onLogout}){
         setSeasonActive(isSeasonActive);
         // Show season 1 popup if never seen — only while the season is active
         if(isSeasonActive&&fresh.season1Seen!=="T1"&&Date.now()>=SEASON1_START_DATE) setSeason1Popup(true);
+        if(!fresh.lootUpdateSeen) setLootUpdatePopup(true);
         // Check guild raid trigger — only while the season is active
         if(isSeasonActive) setTimeout(()=>checkGuildRaidTrigger(gr),3000);
       }).catch(()=>{});
@@ -4449,7 +4492,8 @@ function RankUpApp({user,onLogout}){
       activeRaid,
       exHistory,
       exOverrides,
-      season1Seen:"T1"
+      season1Seen:"T1",
+      lootUpdateSeen:true
     });
   },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
@@ -4906,6 +4950,7 @@ function RankUpApp({user,onLogout}){
 
       {/* ── SEASON 1 POPUP ── */}
       {season1Popup&&<Season1Popup onClose={()=>setSeason1Popup(false)}/>}
+      {lootUpdatePopup&&<LootUpdatePopup onClose={()=>setLootUpdatePopup(false)}/>}
 
       {/* ── SEASON 1 END ── */}
       {season1End&&<Season1End activeGuildRaid={activeGuildRaid} onClose={()=>setSeason1End(false)}/>}
