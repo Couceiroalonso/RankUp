@@ -46,6 +46,12 @@ const mergeUserData = (local, remote) => {
         seen.add(h.routineId); return true;
       });
     })(),
+    inventory: (()=>{
+      const keys=new Set([...Object.keys(remote.inventory||{}),...Object.keys(local.inventory||{})]);
+      const out={};
+      keys.forEach(k=>{ out[k]=Math.max((remote.inventory||{})[k]||0,(local.inventory||{})[k]||0); });
+      return out;
+    })(),
     customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
@@ -146,6 +152,50 @@ const WEIGHT_COMPARISONS=[
   {min:2000,max:99999,emoji:"⭐", name:"una estrella enana",       title:"SEMIDIÓS"},
 ];
 const getWeightComparison=kg=>kg>0?(WEIGHT_COMPARISONS.find(c=>kg>=c.min&&kg<c.max)||WEIGHT_COMPARISONS[WEIGHT_COMPARISONS.length-1]):null;
+
+// ─── LOOT SYSTEM (Fase 1) ────────────────────────────────────────────────────
+// Materiales que pueden caer al completar ejercicios/dungeons. Genéricos a
+// propósito — los trofeos temáticos (escama de tal dragón, corazón de tal
+// Señor Oscuro) se reservan como recompensa exclusiva de derrotarlos de
+// verdad en la Guild Raid, no de sacarlos por sorteo antes de conocerlos.
+const RARITY_INFO={
+  comun:      {label:"Común",       color:"#9CA3AF"},
+  pocoComun:  {label:"Poco común",  color:"#34D399"},
+  raro:       {label:"Raro",        color:"#60A5FA"},
+  epico:      {label:"Épico",       color:"#A78BFA"},
+  legendario: {label:"Legendario",  color:"#F59E0B"},
+};
+const LOOT_ITEMS=[
+  {id:"madera_roble",       name:"Madera de Roble",      icon:"🪵", rarity:"comun"},
+  {id:"piedra_pulida",      name:"Piedra Pulida",        icon:"🪨", rarity:"comun"},
+  {id:"fibra_cazador",      name:"Fibra de Cazador",     icon:"🧵", rarity:"comun"},
+  {id:"fragmento_bronce",   name:"Fragmento de Bronce",  icon:"🥉", rarity:"pocoComun"},
+  {id:"hueso_bestia",       name:"Hueso de Bestia",      icon:"🦴", rarity:"pocoComun"},
+  {id:"hierba_luminosa",    name:"Hierba Luminosa",      icon:"🍃", rarity:"pocoComun"},
+  {id:"engranaje_arcano",   name:"Engranaje Arcano",     icon:"⚙️", rarity:"raro"},
+  {id:"cristal_mana",       name:"Cristal de Maná",      icon:"🔵", rarity:"raro"},
+  {id:"colmillo_alfa",      name:"Colmillo de Alfa",     icon:"🐺", rarity:"raro"},
+  {id:"viento_primordial",  name:"Viento Primordial",    icon:"🌪️", rarity:"epico"},
+  {id:"esencia_vacio",      name:"Esencia del Vacío",    icon:"🌌", rarity:"epico"},
+  {id:"sello_gremio",       name:"Sello del Gremio",     icon:"👑", rarity:"epico"},
+  {id:"fragmento_estrella", name:"Fragmento de Estrella",icon:"☄️", rarity:"legendario"},
+  {id:"orbe_ancestral",     name:"Orbe Ancestral",       icon:"🔮", rarity:"legendario"},
+  {id:"reliquia_mitica",    name:"Reliquia Mítica",      icon:"🏆", rarity:"legendario"},
+];
+const LOOT_TABLES={
+  normal:  {chance:0.18, weights:[["comun",0.70],["pocoComun",0.25],["raro",0.05]]},
+  boss:    {chance:0.45, weights:[["comun",0.40],["pocoComun",0.35],["raro",0.20],["epico",0.05]]},
+  dungeon: {chance:1.00, weights:[["comun",0.30],["pocoComun",0.35],["raro",0.25],["epico",0.08],["legendario",0.02]]},
+};
+const rollLoot=context=>{
+  const t=LOOT_TABLES[context];
+  if(!t||Math.random()>t.chance) return null;
+  const roll=Math.random();
+  let cum=0, rarity=t.weights[0][0];
+  for(const [r,w] of t.weights){ cum+=w; if(roll<=cum){ rarity=r; break; } }
+  const pool=LOOT_ITEMS.filter(i=>i.rarity===rarity);
+  return pool[Math.floor(Math.random()*pool.length)];
+};
 
 const MUSCLE_RANKS = [
   { rank:"—", label:"Sin activar",  color:"#2A2A44", glow:"#2A2A4466", min:0    },
@@ -964,7 +1014,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1009,6 +1059,11 @@ function AchToast({ach,onDone}){
 function CoinToast({msg,coins,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   return <div onClick={onDone} style={{position:"fixed",bottom:90,left:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
+}
+function LootToast({item,onDone}){
+  useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
+  const c=RARITY_INFO[item.rarity]?.color||"#A78BFA";
+  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",transform:"translateX(-50%)",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
 }
 
 // ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
@@ -1447,7 +1502,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -4105,6 +4160,13 @@ function RankUpApp({user,onLogout}){
   const [dc,setDC]=useState(saved.dungeonCoins||{});
   const [sessionKg,setSessionKg]=useState(saved.sessionKg||{});
   const [routineHistory,setRoutineHistory]=useState(saved.routineHistory||[]);
+  const [inventory,setInventory]=useState(saved.inventory||{});
+  const [lootToast,setLootToast]=useState(null);
+  const addLoot=useCallback((item)=>{
+    if(!item) return;
+    setInventory(p=>({...p,[item.id]:(p[item.id]||0)+1}));
+    setLootToast(item);
+  },[]);
   const [routines,setRoutines]=useState([]);
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
@@ -4162,6 +4224,8 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshSessionKg).length>0) setSessionKg(freshSessionKg);
       const freshRoutineHistory=fresh.routineHistory||[];
       if(freshRoutineHistory.length>0) setRoutineHistory(freshRoutineHistory);
+      const freshInventory=fresh.inventory||{};
+      if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
 
       // ── ONE-TIME BACKFILL ──────────────────────────────────────────────
       // Retroactively fill sessionKg + routineHistory for dungeons/routines
@@ -4357,6 +4421,12 @@ function RankUpApp({user,onLogout}){
         seen.add(h.routineId); return true;
       });
     })();
+    const safeInventory=(()=>{
+      const keys=new Set([...Object.keys(base.inventory||{}),...Object.keys(inventory)]);
+      const out={};
+      keys.forEach(k=>{ out[k]=Math.max((base.inventory||{})[k]||0,inventory[k]||0); });
+      return out;
+    })();
     const safeEarned=[...new Set([...(base.earnedAchs||[]),...earnedAchs])];
     saveUserData(user.email,{
       totalXp: Math.max(totalXp, base.totalXp||0),
@@ -4369,6 +4439,7 @@ function RankUpApp({user,onLogout}){
       dungeonCoins: safeDC,
       sessionKg: safeSessionKg,
       routineHistory: safeRoutineHistory,
+      inventory: safeInventory,
       customRoutines:routines,
       playerClass,
       assignedDiets,
@@ -4379,7 +4450,7 @@ function RankUpApp({user,onLogout}){
       exOverrides,
       season1Seen:"T1"
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -4627,13 +4698,14 @@ function RankUpApp({user,onLogout}){
 
   const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins}
 
-  const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt,exName)=>{
+  const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt,exName,isBoss)=>{
     const was=!!checked[key];const nc={...checked,[key]:!was};setChecked(nc);
     if(!was){
       const mult=getClassMultiplier(playerClass,exName||"",xp);
       const finalXp=Math.round(xp*mult);
       const label=mult>1?`+${finalXp} XP ×${mult}`:null;
       addXp(finalXp,evt,label);
+      addLoot(rollLoot(isBoss?"boss":"normal"));
       const phase=PHASES.find(p=>p.id===phaseId);const day=phase?.training[dayIdx];
       if(day){
         // ── PROGRAM dungeon reward ──
@@ -4650,6 +4722,7 @@ function RankUpApp({user,onLogout}){
               return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
             },0);
             setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
+            addLoot(rollLoot("dungeon"));
             setTimeout(()=>setDungeonComplete({
               dayName:day.day, totalKg:Math.round(sessKg),
               exercises:day.exercises.length, coins:dungeonCoins, bossDone
@@ -4697,6 +4770,7 @@ function RankUpApp({user,onLogout}){
                   return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
                 },0);
                 setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
+                addLoot(rollLoot("dungeon"));
                 setTimeout(()=>setDungeonComplete({
                   dayName:sess.day, totalKg:Math.round(sessKg),
                   exercises:sess.exercises.length, coins:dungeonCoins, bossDone
@@ -4734,7 +4808,7 @@ function RankUpApp({user,onLogout}){
         }
       }
     } else setTotalXp(p=>Math.max(0,p-xp));
-  },[checked,dc,addXp,addCoins,weights,routines]);
+  },[checked,dc,addXp,addCoins,weights,routines,addLoot]);
 
   const logWeight=useCallback((key,evt,exName)=>{
     const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<0||wInputs[key]==="")return;
@@ -4815,7 +4889,7 @@ function RankUpApp({user,onLogout}){
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
   const xpPct=level>=MAX_LEVEL?100:Math.min((xpInLvl/xpNext)*100,100);
-  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
+  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"inventario",l:"🎒"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
 
   return(
     <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
@@ -4961,6 +5035,7 @@ function RankUpApp({user,onLogout}){
       {showClassModal&&<ClassSelectModal current={playerClass} onSelect={id=>{setPlayerClass(id);setShowClassModal(false);}}/>}
       {achToast&&<AchToast ach={achToast} onDone={()=>setAchToast(null)}/>}
       {coinToast&&<CoinToast msg={coinToast.msg} coins={coinToast.coins} onDone={()=>setCoinToast(null)}/>}
+      {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
 
       {/* Profile drawer */}
       {showProfile&&(
@@ -5139,6 +5214,7 @@ function RankUpApp({user,onLogout}){
               )}
             </>
           )}
+          {tab==="inventario"&&<InventarioTab inventory={inventory}/>}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
           {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
@@ -5284,7 +5360,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                         return(
                           <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                             <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                              <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name)}
+                              <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name,ex.boss)}
                                 style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
                                   border:`2px solid ${isDone?c:ex.boss?"#E84A5F":"#2A2A44"}`,
                                   background:isDone?c:"transparent",
@@ -5508,7 +5584,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                     return(
                       <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                         <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
+                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName,ex.boss)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
                             {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                           </button>
                           <div style={{flex:1,minWidth:0}}>
@@ -6912,6 +6988,43 @@ function NutricionTab({ph, assignedDiets=[]}){
 }
 
 // ─── LOGROS TAB ───────────────────────────────────────────────────────────────
+function InventarioTab({inventory={}}){
+  const totalItems=Object.values(inventory).reduce((a,b)=>a+b,0);
+  const totalUnique=LOOT_ITEMS.filter(i=>inventory[i.id]>0).length;
+  const rarityOrder=["legendario","epico","raro","pocoComun","comun"];
+  return(
+    <div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:4}}>🎒 INVENTARIO</div>
+      <div style={{fontSize:11,color:"#555",marginBottom:18}}>{totalItems} objeto{totalItems!==1?"s":""} · {totalUnique}/{LOOT_ITEMS.length} tipos distintos descubiertos</div>
+      {totalItems===0&&(
+        <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
+          <div style={{fontSize:40,marginBottom:12}}>🎒</div>
+          <div style={{fontSize:13,color:"#444",lineHeight:1.6}}>Tu mochila está vacía.<br/>Completa ejercicios (más si son 💀 Boss) o dungeons enteros para tener opciones de encontrar materiales.</div>
+        </div>
+      )}
+      {rarityOrder.map(rarKey=>{
+        const items=LOOT_ITEMS.filter(i=>i.rarity===rarKey&&inventory[i.id]>0);
+        if(items.length===0) return null;
+        const info=RARITY_INFO[rarKey];
+        return(
+          <div key={rarKey} style={{marginBottom:18}}>
+            <div style={{fontSize:9,color:info.color,letterSpacing:3,marginBottom:10,fontWeight:700}}>{info.label.toUpperCase()}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+              {items.map(item=>(
+                <div key={item.id} title={item.name} style={{background:`${info.color}14`,border:`1px solid ${info.color}55`,borderRadius:12,padding:"14px 6px",textAlign:"center",boxShadow:`0 0 12px ${info.color}22`}}>
+                  <div style={{fontSize:28,marginBottom:4}}>{item.icon}</div>
+                  <div style={{fontSize:10,color:"#CCC",fontWeight:700,lineHeight:1.3,marginBottom:4,minHeight:26}}>{item.name}</div>
+                  <div style={{fontSize:11,fontWeight:700,color:info.color}}>×{inventory[item.id]}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines,routineHistory=[]}){
   const totalDone=Object.values(checked).filter(Boolean).length;
   const totalWL=Object.values(weights).reduce((a,arr)=>a+(arr||[]).length,0);
