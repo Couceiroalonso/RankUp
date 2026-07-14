@@ -59,6 +59,23 @@ const mergeUserData = (local, remote) => {
       return out;
     })(),
     equipped: {...(remote.equipped||{}), ...(local.equipped||{})},
+    lootStats: (()=>{
+      const r=remote.lootStats||{total:0,rarities:[],types:[]}, l=local.lootStats||{total:0,rarities:[],types:[]};
+      return {
+        total: Math.max(r.total||0,l.total||0),
+        rarities: [...new Set([...(r.rarities||[]),...(l.rarities||[])])],
+        types: [...new Set([...(r.types||[]),...(l.types||[])])],
+      };
+    })(),
+    craftStats: (()=>{
+      const r=remote.craftStats||{total:0,slots:[],tiers:[],maestroSlots:[]}, l=local.craftStats||{total:0,slots:[],tiers:[],maestroSlots:[]};
+      return {
+        total: Math.max(r.total||0,l.total||0),
+        slots: [...new Set([...(r.slots||[]),...(l.slots||[])])],
+        tiers: [...new Set([...(r.tiers||[]),...(l.tiers||[])])],
+        maestroSlots: [...new Set([...(r.maestroSlots||[]),...(l.maestroSlots||[])])],
+      };
+    })(),
     customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
@@ -210,7 +227,7 @@ const rollLoot=context=>{
 const EQUIPMENT_SLOTS=[
   {id:"arma",     name:"Arma",     icon:"⚔️"},
   {id:"armadura", name:"Armadura", icon:"🛡️"},
-  {id:"casco",    name:"Casco",    icon:"🪖"},
+  {id:"casco",    name:"Casco",    icon:"⛑️"},
   {id:"anillo",   name:"Anillo",   icon:"💍"},
   {id:"botas",    name:"Botas",    icon:"🥾"},
 ];
@@ -970,6 +987,18 @@ const ACHIEVEMENTS = [
   {id:"raids_10",       icon:"💀", name:"Exterminador",          desc:"Completa 10 Raids",                   xp:800,  check:s=>s.raidsComplete>=10},
   {id:"raids_25",       icon:"👑", name:"Leyenda de las Raids",  desc:"Completa 25 Raids",                   xp:1500, check:s=>s.raidsComplete>=25},
   {id:"raid_legendary", icon:"🐉", name:"Mata Dragones",         desc:"Completa una Raid legendaria",        xp:1000, check:s=>s.legendaryRaids>=1},
+
+  // ── BOTÍN Y FORJA ─────────────────────────────────────────────────────────
+  {id:"first_loot",     icon:"🎒", name:"Primer Botín",          desc:"Consigue tu primer material",         xp:50,   check:s=>s.lootTotal>=1},
+  {id:"loot_20",        icon:"🧵", name:"Recolector",            desc:"Consigue 20 materiales en total",     xp:200,  check:s=>s.lootTotal>=20},
+  {id:"loot_50",        icon:"📦", name:"Acumulador",            desc:"Consigue 50 materiales en total",     xp:400,  check:s=>s.lootTotal>=50},
+  {id:"all_rarities",   icon:"🌈", name:"Coleccionista",         desc:"Consigue un material de cada rareza", xp:400,  check:s=>s.lootRarities>=5},
+  {id:"all_types",      icon:"📖", name:"Enciclopedia del Cazador",desc:"Descubre los 15 materiales distintos",xp:800, check:s=>s.lootTypes>=15},
+  {id:"legendary_loot", icon:"⭐", name:"Golpe de Suerte",        desc:"Consigue un material Legendario",     xp:600,  check:s=>s.hasLegendaryLoot},
+  {id:"first_craft",    icon:"🛠️", name:"Aprendiz de Herrero",   desc:"Forja tu primera pieza de equipo",    xp:100,  check:s=>s.craftTotal>=1},
+  {id:"full_set",       icon:"⚜️", name:"Equipo Completo",       desc:"Forja las 5 piezas de equipo (cualquier calidad)", xp:600, check:s=>s.craftSlots>=5},
+  {id:"maestro_craft",  icon:"🏆", name:"Maestro Herrero",       desc:"Forja una pieza de calidad Maestro",  xp:500,  check:s=>s.hasMaestroCraft},
+  {id:"full_maestro",   icon:"👑", name:"Forjador Legendario",   desc:"Forja las 5 piezas en calidad Maestro",xp:1500,check:s=>s.craftMaestroSlots>=5},
 ];
 
 const REWARDS = [
@@ -1072,7 +1101,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1607,7 +1636,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -4273,10 +4302,17 @@ function RankUpApp({user,onLogout}){
   },[]);
   const [craftToast,setCraftToast]=useState(null);
   const [lootToast,setLootToast]=useState(null);
+  const [lootStats,setLootStats]=useState(saved.lootStats||{total:0,rarities:[],types:[]});
+  const [craftStats,setCraftStats]=useState(saved.craftStats||{total:0,slots:[],tiers:[],maestroSlots:[]});
   const addLoot=useCallback((item)=>{
     if(!item) return;
     setInventory(p=>({...p,[item.id]:(p[item.id]||0)+1}));
     setLootToast(item);
+    setLootStats(p=>({
+      total:p.total+1,
+      rarities:p.rarities.includes(item.rarity)?p.rarities:[...p.rarities,item.rarity],
+      types:p.types.includes(item.id)?p.types:[...p.types,item.id],
+    }));
   },[]);
   const craftEquipment=useCallback((slot,tier)=>{
     const recipe=CRAFT_RECIPES[slot]?.[tier];
@@ -4284,13 +4320,19 @@ function RankUpApp({user,onLogout}){
     if(!canCraft(inventory,recipe)) return;
     setInventory(p=>{
       const next={...p};
-      recipe.forEach(r=>{ next[r.id]=(next[r.id]||0)-r.qty; });
+      recipe.forEach(r=>{ next[r.id]=Math.max(0,(next[r.id]||0)-r.qty); });
       return next;
     });
     const ek=`${slot}_${tier}`;
     setEquipment(p=>({...p,[ek]:(p[ek]||0)+1}));
     const slotInfo=EQUIPMENT_SLOTS.find(s=>s.id===slot);
     setCraftToast({name:`${slotInfo.icon} ${EQUIPMENT_NAMES[slot][tier]}`,tier});
+    setCraftStats(p=>({
+      total:p.total+1,
+      slots:p.slots.includes(slot)?p.slots:[...p.slots,slot],
+      tiers:p.tiers.includes(tier)?p.tiers:[...p.tiers,tier],
+      maestroSlots:(tier==="maestro"&&!p.maestroSlots.includes(slot))?[...p.maestroSlots,slot]:p.maestroSlots,
+    }));
   },[inventory]);
   const [routines,setRoutines]=useState([]);
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
@@ -4356,6 +4398,8 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshEquipment).length>0) setEquipment(freshEquipment);
       const freshEquipped=fresh.equipped||{};
       if(Object.keys(freshEquipped).length>0) setEquipped(freshEquipped);
+      if(fresh.lootStats&&fresh.lootStats.total>0) setLootStats(fresh.lootStats);
+      if(fresh.craftStats&&fresh.craftStats.total>0) setCraftStats(fresh.craftStats);
 
       // ── ONE-TIME BACKFILL ──────────────────────────────────────────────
       // Retroactively fill sessionKg + routineHistory for dungeons/routines
@@ -4579,6 +4623,8 @@ function RankUpApp({user,onLogout}){
       inventory: safeInventory,
       equipment: safeEquipment,
       equipped,
+      lootStats,
+      craftStats,
       customRoutines:routines,
       playerClass,
       assignedDiets,
@@ -4590,7 +4636,7 @@ function RankUpApp({user,onLogout}){
       season1Seen:"T1",
       lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,equipped,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -4613,7 +4659,9 @@ function RankUpApp({user,onLogout}){
     const completedRoutines=routines.filter(rt=>
       (rt.sessions||[]).length>0 && (rt.sessions||[]).every((_,si)=>dc[`rt_${rt.id}_done_${si}`])
     ).length;
-    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids};
+    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids,
+      lootTotal:lootStats.total,lootRarities:lootStats.rarities.length,lootTypes:lootStats.types.length,hasLegendaryLoot:lootStats.rarities.includes("legendario"),
+      craftTotal:craftStats.total,craftSlots:craftStats.slots.length,hasMaestroCraft:craftStats.tiers.includes("maestro"),craftMaestroSlots:craftStats.maestroSlots.length};
     // Use functional setEarned to always read latest list — avoids stale closure bug
     setEarned(currentEarned=>{
       let newEarned=[...currentEarned];
@@ -4632,7 +4680,7 @@ function RankUpApp({user,onLogout}){
       }
       return newEarned;
     });
-  },[checked,weights,pr,routines,coins,redeemed,dc]);
+  },[checked,weights,pr,routines,coins,redeemed,dc,lootStats,craftStats]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
@@ -7186,7 +7234,7 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
               const c=tier?TIER_INFO[tier].color:"#333";
               return(
                 <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
-                  <div style={{width:"100%",aspectRatio:"1",borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:ek?`0 0 10px ${c}55`:"none"}}>{slot.icon}</div>
+                  <div style={{width:"100%",height:56,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,boxShadow:ek?`0 0 10px ${c}55`:"none"}}>{slot.icon}</div>
                   <div style={{fontSize:8,color:ek?c:"#444",fontWeight:700,marginTop:4}}>{tier?TIER_INFO[tier].label:"Vacío"}</div>
                 </div>
               );
