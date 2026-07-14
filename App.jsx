@@ -640,6 +640,13 @@ const EXERCISE_DB = [
   {id:"e236",name:"Shoulder Pass-Through",        muscle:["hombros","espalda"],equip:"Barra",     level:"Principiante", xpBase:12, desc:"Palo detras de la espalda agarre ancho. Movilidad completa de hombro, previene lesiones."},
   {id:"e237",name:"Foam Roller Espalda",          muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Rodillo de espuma en columna. Libera tension toracica y mejora la extension de espalda."},
   {id:"e238",name:"Puente de Glúteo",             muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Glute Bridge. Tumbado bocarriba con rodillas flexionadas, eleva la cadera apretando el glúteo. El básico de activación, a dos piernas."},
+  {id:"e239",name:"Frog Pumps",                   muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante", xpBase:24, desc:"Puente de glúteo con plantas de los pies unidas y rodillas abiertas. Máxima activación del glúteo, rango corto y controlado."},
+  {id:"e240",name:"V-Ups Contralateral",          muscle:["abdomen"],          equip:"Sin equipo",level:"Intermedio",   xpBase:35, desc:"Tumbado, eleva el brazo y la pierna contraria a la vez tocando mano con pie. Trabaja abdomen y oblicuos con rotación."},
+  {id:"e241",name:"Toques Frontales Alternativos en Plancha",muscle:["abdomen"],equip:"Sin equipo",level:"Intermedio",  xpBase:30, desc:"Shoulder taps. En posición de plancha, toca el hombro contrario con cada mano alternando. Exige estabilidad y evita rotación de cadera."},
+  {id:"e242",name:"Elevaciones de Piernas Tumbado con Fitball",muscle:["abdomen"],equip:"Fitball",level:"Intermedio",   xpBase:34, desc:"Tumbado bocarriba sujetando el fitball con los pies, eleva las piernas manteniendo el balón sujeto. Abdomen bajo con mayor exigencia de control."},
+  {id:"e243",name:"Abdomen Isométrico en Fitball",muscle:["abdomen"],          equip:"Fitball",   level:"Intermedio",   xpBase:32, desc:"Mantén una posición de plancha o equilibrio sobre el fitball sin moverte. Isometría pura, activa todo el core para estabilizar."},
+  {id:"e244",name:"Deadbugs con Fitball",         muscle:["abdomen"],          equip:"Fitball",   level:"Principiante", xpBase:28, desc:"Dead Bug sujetando el fitball entre manos y rodillas, extendiendo brazo y pierna contraria. El balón añade tensión y control extra."},
+  {id:"e245",name:"Press Alterno con Mancuernas", muscle:["pecho","triceps"],  equip:"Mancuernas",level:"Intermedio",   xpBase:44, desc:"Una mancuerna baja mientras la otra sube, alternando. Mayor demanda de estabilidad de core y trabajo unilateral que el press tradicional."},
 ];
 
 
