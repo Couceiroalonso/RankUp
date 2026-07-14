@@ -2685,6 +2685,7 @@ function AdminPanel({onLogout}){
   const [rtColor,setRtColor]=useState("#A78BFA");
   const [rtSessions,setRtSessions]=useState([{day:"Día 1",exercises:[],week:1}]);
   const [rtExInput,setRtExInput]=useState({});
+  const [rtDbSearch,setRtDbSearch]=useState({}); // {si: "texto buscado"}
   const [assignModal,setAssignModal]=useState(null); // {routineId}
   const [showAIGen,setShowAIGen]=useState(false);
   const [aiParams,setAiParams]=useState({objetivo:"hipertrofia",dias:3,sexo:"otro",nivel:"Intermedio"});
@@ -3281,33 +3282,40 @@ function AdminPanel({onLogout}){
 
                     {/* Exercises in session */}
                     {sess.exercises.map((ex,ei)=>(
-                      <div key={ei} style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,background:"#07070F",borderRadius:8,padding:"6px 10px"}}>
+                      <div key={ei} style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,background:"#07070F",borderRadius:8,padding:"6px 10px",border:ex.boss?"1px solid #E84A5F66":"1px solid transparent"}}>
                         <div style={{flex:1}}>
                           <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.name}</div>
                           <div style={{fontSize:10,color:"#555"}}>{ex.sets} · {ex.rest} descanso</div>
                         </div>
+                        <button onClick={()=>{const s=[...rtSessions];s[si].exercises[ei]={...ex,boss:!ex.boss};setRtSessions(s);}}
+                          title={ex.boss?"Quitar Boss":"Marcar como Boss"}
+                          style={{background:ex.boss?"#E84A5F22":"none",border:ex.boss?"1px solid #E84A5F":"1px solid #2A2A44",borderRadius:6,color:ex.boss?"#E84A5F":"#444",cursor:"pointer",fontSize:13,padding:"3px 7px"}}>💀</button>
                         <button onClick={()=>{const s=[...rtSessions];s[si].exercises=s[si].exercises.filter((_,i)=>i!==ei);setRtSessions(s);}} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:13}}>✕</button>
                       </div>
                     ))}
 
                     {/* Add exercise */}
                     <div style={{marginTop:8}}>
-                      {/* DB picker */}
-                      <select style={{...inp,marginBottom:6,color:"#AAA",fontSize:11}} onChange={e=>{
-                        if(!e.target.value) return;
-                        const ex=EXERCISE_DB.find(x=>x.name===e.target.value);
-                        if(ex) setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
-                        e.target.value="";
-                      }}>
-                        <option value="">📚 Buscar en base de ejercicios...</option>
-                        {Object.keys(MUSCLE_DEFS).map(m=>(
-                          <optgroup key={m} label={MUSCLE_DEFS[m].label}>
-                            {EXERCISE_DB.filter(e=>e.muscle.includes(m)).map(e=>(
-                              <option key={e.id} value={e.name}>{e.name} ({e.xpBase}XP)</option>
+                      {/* DB search — texto libre, funciona bien en móvil (el <select> nativo no dejaba escribir para filtrar) */}
+                      <div style={{position:"relative",marginBottom:6}}>
+                        <input placeholder="🔍 Buscar en base de ejercicios..." value={rtDbSearch[si]||""} onChange={e=>setRtDbSearch(p=>({...p,[si]:e.target.value}))}
+                          style={{...inp,marginBottom:0,color:"#AAA",fontSize:12}}/>
+                        {rtDbSearch[si]&&rtDbSearch[si].trim().length>0&&(
+                          <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,marginTop:4,maxHeight:220,overflowY:"auto",boxShadow:"0 8px 20px #00000088"}}>
+                            {EXERCISE_DB.filter(x=>x.name.toLowerCase().includes(rtDbSearch[si].trim().toLowerCase())).slice(0,20).map(ex=>(
+                              <button key={ex.id} onClick={()=>{
+                                setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
+                                setRtDbSearch(p=>({...p,[si]:""}));
+                              }} style={{display:"block",width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid #1A1A2E",color:"#DDD",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                                {ex.name} <span style={{color:"#666",fontSize:10}}>({ex.xpBase}XP)</span>
+                              </button>
                             ))}
-                          </optgroup>
-                        ))}
-                      </select>
+                            {EXERCISE_DB.filter(x=>x.name.toLowerCase().includes(rtDbSearch[si].trim().toLowerCase())).length===0&&(
+                              <div style={{padding:"10px 12px",color:"#555",fontSize:11}}>Sin resultados</div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr auto auto auto",gap:6}}>
                         <input placeholder="Ejercicio..." value={rtExInput[si]?.name||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],name:e.target.value}}))}
                           style={{...inp,marginBottom:0,fontSize:11}}/>
