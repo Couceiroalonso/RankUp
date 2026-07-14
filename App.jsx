@@ -639,6 +639,7 @@ const EXERCISE_DB = [
   {id:"e235",name:"Leg Swing Lateral",            muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Pendulo lateral de pierna. Movilidad de abductores y aductores. Activa gluteo medio."},
   {id:"e236",name:"Shoulder Pass-Through",        muscle:["hombros","espalda"],equip:"Barra",     level:"Principiante", xpBase:12, desc:"Palo detras de la espalda agarre ancho. Movilidad completa de hombro, previene lesiones."},
   {id:"e237",name:"Foam Roller Espalda",          muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Rodillo de espuma en columna. Libera tension toracica y mejora la extension de espalda."},
+  {id:"e238",name:"Puente de Glúteo",             muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Glute Bridge. Tumbado bocarriba con rodillas flexionadas, eleva la cadera apretando el glúteo. El básico de activación, a dos piernas."},
 ];
 
 
