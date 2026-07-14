@@ -52,6 +52,13 @@ const mergeUserData = (local, remote) => {
       keys.forEach(k=>{ out[k]=Math.max((remote.inventory||{})[k]||0,(local.inventory||{})[k]||0); });
       return out;
     })(),
+    equipment: (()=>{
+      const keys=new Set([...Object.keys(remote.equipment||{}),...Object.keys(local.equipment||{})]);
+      const out={};
+      keys.forEach(k=>{ out[k]=Math.max((remote.equipment||{})[k]||0,(local.equipment||{})[k]||0); });
+      return out;
+    })(),
+    equipped: {...(remote.equipped||{}), ...(local.equipped||{})},
     customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
@@ -195,6 +202,57 @@ const rollLoot=context=>{
   for(const [r,w] of t.weights){ cum+=w; if(roll<=cum){ rarity=r; break; } }
   const pool=LOOT_ITEMS.filter(i=>i.rarity===rarity);
   return pool[Math.floor(Math.random()*pool.length)];
+};
+
+// ─── CRAFTING SYSTEM (Fase 3) ────────────────────────────────────────────────
+// Combina materiales del inventario para forjar piezas de equipo. Por ahora
+// solo se guardan (Fase 4 les dará efecto visual real en la app).
+const EQUIPMENT_SLOTS=[
+  {id:"arma",     name:"Arma",     icon:"⚔️"},
+  {id:"armadura", name:"Armadura", icon:"🛡️"},
+  {id:"casco",    name:"Casco",    icon:"🪖"},
+  {id:"anillo",   name:"Anillo",   icon:"💍"},
+  {id:"botas",    name:"Botas",    icon:"🥾"},
+];
+const TIER_INFO={
+  basico:   {label:"Básico",   color:"#9CA3AF"},
+  avanzado: {label:"Avanzado", color:"#60A5FA"},
+  maestro:  {label:"Maestro",  color:"#F59E0B"},
+};
+const CRAFT_RECIPES={
+  arma:{
+    basico:  [{id:"piedra_pulida",qty:3},{id:"fragmento_bronce",qty:1}],
+    avanzado:[{id:"fragmento_bronce",qty:2},{id:"engranaje_arcano",qty:2}],
+    maestro: [{id:"engranaje_arcano",qty:1},{id:"sello_gremio",qty:1},{id:"fragmento_estrella",qty:1}],
+  },
+  armadura:{
+    basico:  [{id:"madera_roble",qty:3},{id:"hueso_bestia",qty:1}],
+    avanzado:[{id:"hueso_bestia",qty:2},{id:"cristal_mana",qty:2}],
+    maestro: [{id:"cristal_mana",qty:1},{id:"esencia_vacio",qty:1},{id:"reliquia_mitica",qty:1}],
+  },
+  casco:{
+    basico:  [{id:"piedra_pulida",qty:3},{id:"hierba_luminosa",qty:1}],
+    avanzado:[{id:"hierba_luminosa",qty:2},{id:"engranaje_arcano",qty:2}],
+    maestro: [{id:"engranaje_arcano",qty:1},{id:"viento_primordial",qty:1},{id:"orbe_ancestral",qty:1}],
+  },
+  anillo:{
+    basico:  [{id:"fibra_cazador",qty:3},{id:"fragmento_bronce",qty:1}],
+    avanzado:[{id:"fragmento_bronce",qty:2},{id:"cristal_mana",qty:2}],
+    maestro: [{id:"cristal_mana",qty:1},{id:"esencia_vacio",qty:1},{id:"fragmento_estrella",qty:1}],
+  },
+  botas:{
+    basico:  [{id:"fibra_cazador",qty:3},{id:"hueso_bestia",qty:1}],
+    avanzado:[{id:"hueso_bestia",qty:2},{id:"colmillo_alfa",qty:2}],
+    maestro: [{id:"colmillo_alfa",qty:1},{id:"sello_gremio",qty:1},{id:"orbe_ancestral",qty:1}],
+  },
+};
+const canCraft=(inventory,recipe)=>recipe.every(r=>(inventory[r.id]||0)>=r.qty);
+const EQUIPMENT_NAMES={
+  arma:    {basico:"Daga del Cazador Novato",  avanzado:"Espada de Engranajes",       maestro:"Hoja del Sello Eterno"},
+  armadura:{basico:"Peto de Cuero Curtido",    avanzado:"Coraza de Cristal Rúnico",   maestro:"Armadura del Vacío"},
+  casco:   {basico:"Capucha del Explorador",   avanzado:"Yelmo de Viento Arcano",     maestro:"Corona del Orbe Ancestral"},
+  anillo:  {basico:"Anillo de Bronce Forjado", avanzado:"Sortija de Maná Cristalizado",maestro:"Anillo de la Estrella Caída"},
+  botas:   {basico:"Botas de Fibra Trenzada",  avanzado:"Botas del Alfa",             maestro:"Botas del Gremio Ancestral"},
 };
 
 const MUSCLE_RANKS = [
@@ -1014,7 +1072,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1065,6 +1123,11 @@ function LootToast({item,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=RARITY_INFO[item.rarity]?.color||"#A78BFA";
   return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
+}
+function CraftToast({name,tier,onDone}){
+  useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
+  const c=TIER_INFO[tier]?.color||"#F59E0B";
+  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>🛠️</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div></div>;
 }
 
 // ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
@@ -1544,7 +1607,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -4203,12 +4266,32 @@ function RankUpApp({user,onLogout}){
   const [sessionKg,setSessionKg]=useState(saved.sessionKg||{});
   const [routineHistory,setRoutineHistory]=useState(saved.routineHistory||[]);
   const [inventory,setInventory]=useState(saved.inventory||{});
+  const [equipment,setEquipment]=useState(saved.equipment||{});
+  const [equipped,setEquipped]=useState(saved.equipped||{}); // {slotId: "slot_tier"|null}
+  const toggleEquip=useCallback((slot,ek)=>{
+    setEquipped(p=>({...p,[slot]:p[slot]===ek?null:ek}));
+  },[]);
+  const [craftToast,setCraftToast]=useState(null);
   const [lootToast,setLootToast]=useState(null);
   const addLoot=useCallback((item)=>{
     if(!item) return;
     setInventory(p=>({...p,[item.id]:(p[item.id]||0)+1}));
     setLootToast(item);
   },[]);
+  const craftEquipment=useCallback((slot,tier)=>{
+    const recipe=CRAFT_RECIPES[slot]?.[tier];
+    if(!recipe) return;
+    if(!canCraft(inventory,recipe)) return;
+    setInventory(p=>{
+      const next={...p};
+      recipe.forEach(r=>{ next[r.id]=(next[r.id]||0)-r.qty; });
+      return next;
+    });
+    const ek=`${slot}_${tier}`;
+    setEquipment(p=>({...p,[ek]:(p[ek]||0)+1}));
+    const slotInfo=EQUIPMENT_SLOTS.find(s=>s.id===slot);
+    setCraftToast({name:`${slotInfo.icon} ${EQUIPMENT_NAMES[slot][tier]}`,tier});
+  },[inventory]);
   const [routines,setRoutines]=useState([]);
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
@@ -4269,6 +4352,10 @@ function RankUpApp({user,onLogout}){
       if(freshRoutineHistory.length>0) setRoutineHistory(freshRoutineHistory);
       const freshInventory=fresh.inventory||{};
       if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
+      const freshEquipment=fresh.equipment||{};
+      if(Object.keys(freshEquipment).length>0) setEquipment(freshEquipment);
+      const freshEquipped=fresh.equipped||{};
+      if(Object.keys(freshEquipped).length>0) setEquipped(freshEquipped);
 
       // ── ONE-TIME BACKFILL ──────────────────────────────────────────────
       // Retroactively fill sessionKg + routineHistory for dungeons/routines
@@ -4471,6 +4558,12 @@ function RankUpApp({user,onLogout}){
       keys.forEach(k=>{ out[k]=Math.max((base.inventory||{})[k]||0,inventory[k]||0); });
       return out;
     })();
+    const safeEquipment=(()=>{
+      const keys=new Set([...Object.keys(base.equipment||{}),...Object.keys(equipment)]);
+      const out={};
+      keys.forEach(k=>{ out[k]=Math.max((base.equipment||{})[k]||0,equipment[k]||0); });
+      return out;
+    })();
     const safeEarned=[...new Set([...(base.earnedAchs||[]),...earnedAchs])];
     saveUserData(user.email,{
       totalXp: Math.max(totalXp, base.totalXp||0),
@@ -4484,6 +4577,8 @@ function RankUpApp({user,onLogout}){
       sessionKg: safeSessionKg,
       routineHistory: safeRoutineHistory,
       inventory: safeInventory,
+      equipment: safeEquipment,
+      equipped,
       customRoutines:routines,
       playerClass,
       assignedDiets,
@@ -4495,7 +4590,7 @@ function RankUpApp({user,onLogout}){
       season1Seen:"T1",
       lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,equipped,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5082,6 +5177,7 @@ function RankUpApp({user,onLogout}){
       {achToast&&<AchToast ach={achToast} onDone={()=>setAchToast(null)}/>}
       {coinToast&&<CoinToast msg={coinToast.msg} coins={coinToast.coins} onDone={()=>setCoinToast(null)}/>}
       {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
+      {craftToast&&<CraftToast name={craftToast.name} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
 
       {/* Profile drawer */}
       {showProfile&&(
@@ -5260,7 +5356,7 @@ function RankUpApp({user,onLogout}){
               )}
             </>
           )}
-          {tab==="inventario"&&<InventarioTab inventory={inventory}/>}
+          {tab==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
           {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
@@ -7034,39 +7130,120 @@ function NutricionTab({ph, assignedDiets=[]}){
 }
 
 // ─── LOGROS TAB ───────────────────────────────────────────────────────────────
-function InventarioTab({inventory={}}){
+function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEquip}){
+  const [view,setView]=useState("materiales"); // "materiales" | "forja"
   const totalItems=Object.values(inventory).reduce((a,b)=>a+b,0);
   const totalUnique=LOOT_ITEMS.filter(i=>inventory[i.id]>0).length;
+  const totalEquip=Object.values(equipment).reduce((a,b)=>a+b,0);
   const rarityOrder=["legendario","epico","raro","pocoComun","comun"];
   return(
     <div>
-      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:4}}>🎒 INVENTARIO</div>
-      <div style={{fontSize:11,color:"#555",marginBottom:18}}>{totalItems} objeto{totalItems!==1?"s":""} · {totalUnique}/{LOOT_ITEMS.length} tipos distintos descubiertos</div>
-      {totalItems===0&&(
-        <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
-          <div style={{fontSize:40,marginBottom:12}}>🎒</div>
-          <div style={{fontSize:13,color:"#444",lineHeight:1.6}}>Tu mochila está vacía.</div>
-        </div>
-      )}
-      {rarityOrder.map(rarKey=>{
-        const items=LOOT_ITEMS.filter(i=>i.rarity===rarKey&&inventory[i.id]>0);
-        if(items.length===0) return null;
-        const info=RARITY_INFO[rarKey];
-        return(
-          <div key={rarKey} style={{marginBottom:18}}>
-            <div style={{fontSize:9,color:info.color,letterSpacing:3,marginBottom:10,fontWeight:700}}>{info.label.toUpperCase()}</div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
-              {items.map(item=>(
-                <div key={item.id} title={item.name} style={{background:`${info.color}14`,border:`1px solid ${info.color}55`,borderRadius:12,padding:"14px 6px",textAlign:"center",boxShadow:`0 0 12px ${info.color}22`}}>
-                  <div style={{fontSize:28,marginBottom:4}}>{item.icon}</div>
-                  <div style={{fontSize:10,color:"#CCC",fontWeight:700,lineHeight:1.3,marginBottom:4,minHeight:26}}>{item.name}</div>
-                  <div style={{fontSize:11,fontWeight:700,color:info.color}}>×{inventory[item.id]}</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>🎒 INVENTARIO</div>
+      <div style={{display:"flex",gap:8,marginBottom:18}}>
+        <button onClick={()=>setView("materiales")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${view==="materiales"?"#A78BFA":"#2A2A44"}`,background:view==="materiales"?"#A78BFA18":"#0F0F1C",color:view==="materiales"?"#A78BFA":"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🧵 MATERIALES</button>
+        <button onClick={()=>setView("forja")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${view==="forja"?"#F59E0B":"#2A2A44"}`,background:view==="forja"?"#F59E0B18":"#0F0F1C",color:view==="forja"?"#F59E0B":"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🛠️ FORJA</button>
+      </div>
+
+      {view==="materiales"&&(<>
+        <div style={{fontSize:11,color:"#555",marginBottom:18}}>{totalItems} objeto{totalItems!==1?"s":""} · {totalUnique}/{LOOT_ITEMS.length} tipos distintos descubiertos</div>
+        {totalItems===0&&(
+          <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
+            <div style={{fontSize:40,marginBottom:12}}>🎒</div>
+            <div style={{fontSize:13,color:"#444",lineHeight:1.6}}>Tu mochila está vacía.</div>
+          </div>
+        )}
+        {rarityOrder.map(rarKey=>{
+          const items=LOOT_ITEMS.filter(i=>i.rarity===rarKey&&inventory[i.id]>0);
+          if(items.length===0) return null;
+          const info=RARITY_INFO[rarKey];
+          return(
+            <div key={rarKey} style={{marginBottom:18}}>
+              <div style={{fontSize:9,color:info.color,letterSpacing:3,marginBottom:10,fontWeight:700}}>{info.label.toUpperCase()}</div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+                {items.map(item=>(
+                  <div key={item.id} title={item.name} style={{background:`${info.color}14`,border:`1px solid ${info.color}55`,borderRadius:12,padding:"14px 6px",textAlign:"center",boxShadow:`0 0 12px ${info.color}22`}}>
+                    <div style={{fontSize:28,marginBottom:4}}>{item.icon}</div>
+                    <div style={{fontSize:10,color:"#CCC",fontWeight:700,lineHeight:1.3,marginBottom:4,minHeight:26}}>{item.name}</div>
+                    <div style={{fontSize:11,fontWeight:700,color:info.color}}>×{inventory[item.id]}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </>)}
+
+      {view==="forja"&&(<>
+        <div style={{fontSize:11,color:"#555",marginBottom:14}}>{totalEquip} pieza{totalEquip!==1?"s":""} forjada{totalEquip!==1?"s":""} · combina materiales para fabricar equipo</div>
+
+        {/* Equipo activo */}
+        <div style={{background:"#0F0F1C",border:"1px solid #A78BFA44",borderRadius:12,padding:14,marginBottom:20}}>
+          <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:10}}>⚡ EQUIPO ACTIVO</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
+            {EQUIPMENT_SLOTS.map(slot=>{
+              const ek=equipped[slot.id];
+              const tier=ek?ek.split("_")[1]:null;
+              const c=tier?TIER_INFO[tier].color:"#333";
+              return(
+                <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
+                  <div style={{width:"100%",aspectRatio:"1",borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,boxShadow:ek?`0 0 10px ${c}55`:"none"}}>{slot.icon}</div>
+                  <div style={{fontSize:8,color:ek?c:"#444",fontWeight:700,marginTop:4}}>{tier?TIER_INFO[tier].label:"Vacío"}</div>
                 </div>
-              ))}
+              );
+            })}
+          </div>
+        </div>
+
+        {EQUIPMENT_SLOTS.map(slot=>(
+          <div key={slot.id} style={{marginBottom:20}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+              <span style={{fontSize:16}}>{slot.icon}</span>
+              <span style={{fontSize:12,fontWeight:700,color:"#DDD",fontFamily:"'Rajdhani',sans-serif"}}>{slot.name}</span>
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {["basico","avanzado","maestro"].map(tier=>{
+                const recipe=CRAFT_RECIPES[slot.id][tier];
+                const ek=`${slot.id}_${tier}`;
+                const owned=equipment[ek]||0;
+                const ready=canCraft(inventory,recipe);
+                const isEquipped=equipped[slot.id]===ek;
+                const c=TIER_INFO[tier].color;
+                return(
+                  <div key={tier} style={{background:"#0F0F1C",border:`1px solid ${isEquipped?c:ready?c:"#2A2A44"}${isEquipped?"":ready?"88":""}`,borderRadius:12,padding:12,boxShadow:isEquipped?`0 0 14px ${c}44`:"none"}}>
+                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
+                      <div>
+                        <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{EQUIPMENT_NAMES[slot.id][tier]}</div>
+                        <div style={{fontSize:10,fontWeight:700,color:c,marginTop:2}}>{TIER_INFO[tier].label}</div>
+                      </div>
+                      {owned>0&&<div style={{fontSize:10,color:"#34D399",fontWeight:700,whiteSpace:"nowrap"}}>✅ ×{owned}</div>}
+                    </div>
+                    <div style={{display:"flex",gap:10,flexWrap:"wrap",marginBottom:10}}>
+                      {recipe.map(r=>{
+                        const item=LOOT_ITEMS.find(i=>i.id===r.id);
+                        const have=inventory[r.id]||0;
+                        const enough=have>=r.qty;
+                        return(
+                          <div key={r.id} style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:enough?"#AAA":"#E84A5F",fontWeight:700}}>
+                            <span>{item.icon}</span><span>{have}/{r.qty}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {owned>0
+                      ? <button onClick={()=>onToggleEquip(slot.id,ek)} style={{width:"100%",padding:9,borderRadius:8,border:isEquipped?`1px solid ${c}`:"none",background:isEquipped?"transparent":`linear-gradient(135deg,${c},${c}CC)`,color:isEquipped?c:"#07070F",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                          {isEquipped?"✓ EQUIPADO — quitar":"EQUIPAR"}
+                        </button>
+                      : <button onClick={()=>onCraft(slot.id,tier)} disabled={!ready} style={{width:"100%",padding:9,borderRadius:8,border:"none",background:ready?`linear-gradient(135deg,${c},${c}CC)`:"#1A1A2E",color:ready?"#07070F":"#444",fontSize:11,fontWeight:700,cursor:ready?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>
+                          {ready?"🛠️ FORJAR":"Materiales insuficientes"}
+                        </button>
+                    }
+                  </div>
+                );
+              })}
             </div>
           </div>
-        );
-      })}
+        ))}
+      </>)}
     </div>
   );
 }
