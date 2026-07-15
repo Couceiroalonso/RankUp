@@ -4346,9 +4346,9 @@ function RankUpApp({user,onLogout}){
     setInventory(p=>({...p,[item.id]:(p[item.id]||0)+1}));
     setLootToast(item);
     setLootStats(p=>({
-      total:p.total+1,
-      rarities:p.rarities.includes(item.rarity)?p.rarities:[...p.rarities,item.rarity],
-      types:p.types.includes(item.id)?p.types:[...p.types,item.id],
+      total:(p.total||0)+1,
+      rarities:(p.rarities||[]).includes(item.rarity)?(p.rarities||[]):[...(p.rarities||[]),item.rarity],
+      types:(p.types||[]).includes(item.id)?(p.types||[]):[...(p.types||[]),item.id],
     }));
   },[]);
   const craftEquipment=useCallback((slot,tier)=>{
@@ -4365,10 +4365,10 @@ function RankUpApp({user,onLogout}){
     const slotInfo=EQUIPMENT_SLOTS.find(s=>s.id===slot);
     setCraftToast({name:EQUIPMENT_NAMES[slot][tier],slot,icon:slotInfo.icon,tier});
     setCraftStats(p=>({
-      total:p.total+1,
-      slots:p.slots.includes(slot)?p.slots:[...p.slots,slot],
-      tiers:p.tiers.includes(tier)?p.tiers:[...p.tiers,tier],
-      maestroSlots:(tier==="maestro"&&!p.maestroSlots.includes(slot))?[...p.maestroSlots,slot]:p.maestroSlots,
+      total:(p.total||0)+1,
+      slots:(p.slots||[]).includes(slot)?(p.slots||[]):[...(p.slots||[]),slot],
+      tiers:(p.tiers||[]).includes(tier)?(p.tiers||[]):[...(p.tiers||[]),tier],
+      maestroSlots:(tier==="maestro"&&!(p.maestroSlots||[]).includes(slot))?[...(p.maestroSlots||[]),slot]:(p.maestroSlots||[]),
     }));
   },[inventory]);
   const [routines,setRoutines]=useState([]);
@@ -4435,8 +4435,8 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshEquipment).length>0) setEquipment(freshEquipment);
       const freshEquipped=fresh.equipped||{};
       if(Object.keys(freshEquipped).length>0) setEquipped(freshEquipped);
-      if(fresh.lootStats&&fresh.lootStats.total>0) setLootStats(fresh.lootStats);
-      if(fresh.craftStats&&fresh.craftStats.total>0) setCraftStats(fresh.craftStats);
+      if(fresh.lootStats&&fresh.lootStats.total>0) setLootStats({total:0,rarities:[],types:[],...fresh.lootStats});
+      if(fresh.craftStats&&fresh.craftStats.total>0) setCraftStats({total:0,slots:[],tiers:[],maestroSlots:[],...fresh.craftStats});
 
       // ── ONE-TIME BACKFILL ──────────────────────────────────────────────
       // Retroactively fill sessionKg + routineHistory for dungeons/routines
@@ -4697,8 +4697,8 @@ function RankUpApp({user,onLogout}){
       (rt.sessions||[]).length>0 && (rt.sessions||[]).every((_,si)=>dc[`rt_${rt.id}_done_${si}`])
     ).length;
     const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids,
-      lootTotal:lootStats.total,lootRarities:lootStats.rarities.length,lootTypes:lootStats.types.length,hasLegendaryLoot:lootStats.rarities.includes("legendario"),
-      craftTotal:craftStats.total,craftSlots:craftStats.slots.length,hasMaestroCraft:craftStats.tiers.includes("maestro"),craftMaestroSlots:craftStats.maestroSlots.length};
+      lootTotal:lootStats.total||0,lootRarities:(lootStats.rarities||[]).length,lootTypes:(lootStats.types||[]).length,hasLegendaryLoot:(lootStats.rarities||[]).includes("legendario"),
+      craftTotal:craftStats.total||0,craftSlots:(craftStats.slots||[]).length,hasMaestroCraft:(craftStats.tiers||[]).includes("maestro"),craftMaestroSlots:(craftStats.maestroSlots||[]).length};
     // Use functional setEarned to always read latest list — avoids stale closure bug
     setEarned(currentEarned=>{
       let newEarned=[...currentEarned];
