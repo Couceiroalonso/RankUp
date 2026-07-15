@@ -5329,8 +5329,8 @@ function RankUpApp({user,onLogout}){
         <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",opacity:.025}}><div style={{width:"100%",height:2,background:"#FFF",animation:"scanline 4s linear infinite"}}/></div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
           <button onClick={()=>setShowProfile(true)} style={{display:"flex",alignItems:"center",gap:10,background:"none",border:"none",cursor:"pointer",padding:0}}>
-            <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${equippedColor("casco",ri.color)}`,background:`${equippedTexture("casco")?`${equippedTexture("casco")},`:""}${equippedColor("casco",ri.color)}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:900,fontFamily:"'Cinzel',serif",color:equippedColor("casco",ri.color),boxShadow:`0 0 16px ${equippedColor("casco",ri.color)}88`,overflow:"hidden",flexShrink:0}}>
-                    {(()=>{const p=localStorage.getItem(`rku_photo_${user.email}`);return p?<img src={p} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:ri.rank;})()}
+            <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${equippedColor("casco",ri.color)}`,background:`${equippedTexture("casco")?`${equippedTexture("casco")},`:""}${equippedColor("casco",ri.color)}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:900,fontFamily:"'Cinzel',serif",color:equippedColor("casco",ri.color),boxShadow:`0 0 16px ${equippedColor("casco",ri.color)}88`,overflow:"hidden",flexShrink:0,padding:equippedTexture("casco")?3:0,boxSizing:"border-box"}}>
+                    {(()=>{const p=localStorage.getItem(`rku_photo_${user.email}`);return p?<img src={p} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:6}}/>:ri.rank;})()}
                   </div>
             <div style={{textAlign:"left"}}>
               <div style={{fontSize:9,letterSpacing:3,color:"#444"}}>RANKUP{cls?` · ${cls.name.toUpperCase()}`:""}</div>
@@ -5354,7 +5354,7 @@ function RankUpApp({user,onLogout}){
                   <span>{activeRaid.raid.icon}</span><span>RAID</span>
                 </button>
               )}
-              <button onClick={()=>setTab("tienda")} style={{fontSize:14,fontWeight:700,color:"#F59E0B",background:"#F59E0B18",border:"1px solid #F59E0B44",borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
+              <button onClick={()=>setTab("tienda")} style={{fontSize:14,fontWeight:700,color:equippedColor("anillo","#F59E0B"),background:`${equippedTexture("anillo")?`${equippedTexture("anillo")},`:""}${equippedColor("anillo","#F59E0B")}18`,border:`1px solid ${equippedColor("anillo","#F59E0B")}44`,borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
               <button onClick={onLogout} title="Cerrar sesión" style={{fontSize:13,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#E84A5F",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>✕</button>
             </div>
           </div>
@@ -5367,7 +5367,7 @@ function RankUpApp({user,onLogout}){
       {/* SCROLL AREA */}
       <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"0 14px 20px"}}>
         {/* Tabs */}
-        <div style={{display:"flex",gap:5,paddingTop:12}}>
+        <div style={{display:"flex",gap:5,paddingTop:12,paddingBottom:equippedTexture("botas")?8:0,borderBottom:equipped.botas?`2px solid ${equippedColor("botas","#1E1E32")}66`:"none",background:equippedTexture("botas")||"none",borderRadius:equipped.botas?"8px 8px 0 0":0}}>
           {TABS.map(t=>(
             <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="buzon")markMessagesRead();}} style={{position:"relative",flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>
               {t.l}
