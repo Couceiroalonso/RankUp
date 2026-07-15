@@ -4337,6 +4337,30 @@ function RankUpApp({user,onLogout}){
   const toggleEquip=useCallback((slot,ek)=>{
     setEquipped(p=>({...p,[slot]:p[slot]===ek?null:ek}));
   },[]);
+  // Fase 4: el equipo forjado cambia de verdad el aspecto de la app en unos
+  // pocos sitios muy visibles (marco de avatar, barra de XP, borde de perfil).
+  // Si no hay nada equipado en esa ranura, se usa el color por defecto (fallback).
+  const equippedColor=useCallback((slot,fallback)=>{
+    const ek=equipped[slot];
+    if(!ek) return fallback;
+    const tier=ek.split("_")[1];
+    return TIER_INFO[tier]?.color||fallback;
+  },[equipped]);
+  // Textura CSS por calidad — sin necesidad de imágenes extra. Básico: rayas
+  // sutiles (cuero desgastado). Avanzado: rejilla fina (mecanismo/circuito).
+  // Maestro: motas doradas dispersas (destello). Devuelve null si no hay
+  // nada equipado en esa ranura (así no se aplica ningún patrón encima).
+  const equippedTexture=useCallback((slot)=>{
+    const ek=equipped[slot];
+    if(!ek) return null;
+    const tier=ek.split("_")[1];
+    const c=TIER_INFO[tier]?.color;
+    if(!c) return null;
+    if(tier==="basico") return `repeating-linear-gradient(45deg,${c}26 0px,${c}26 2px,transparent 2px,transparent 7px)`;
+    if(tier==="avanzado") return `repeating-linear-gradient(90deg,${c}22 0px,${c}22 1px,transparent 1px,transparent 8px),repeating-linear-gradient(0deg,${c}22 0px,${c}22 1px,transparent 1px,transparent 8px)`;
+    if(tier==="maestro") return `radial-gradient(circle at 18% 28%,${c}55 0%,transparent 4%),radial-gradient(circle at 68% 58%,${c}55 0%,transparent 4%),radial-gradient(circle at 38% 82%,${c}55 0%,transparent 4%),radial-gradient(circle at 85% 15%,${c}55 0%,transparent 4%),radial-gradient(circle at 10% 65%,${c}55 0%,transparent 4%)`;
+    return null;
+  },[equipped]);
   const [craftToast,setCraftToast]=useState(null);
   const [lootToast,setLootToast]=useState(null);
   const [lootStats,setLootStats]=useState(saved.lootStats||{total:0,rarities:[],types:[]});
@@ -5267,7 +5291,7 @@ function RankUpApp({user,onLogout}){
       {/* Profile drawer */}
       {showProfile&&(
         <div onClick={()=>setShowProfile(false)} style={{position:"fixed",inset:0,zIndex:9990,background:"rgba(0,0,0,.75)",backdropFilter:"blur(6px)"}}>
-          <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:0,right:0,width:260,height:"100%",background:"#0D0D1A",borderLeft:"1px solid #A78BFA33",padding:28,display:"flex",flexDirection:"column",gap:14}}>
+          <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:0,right:0,width:260,height:"100%",background:`${equippedTexture("armadura")?`${equippedTexture("armadura")},`:""}#0D0D1A`,borderLeft:`1px solid ${equippedColor("armadura","#A78BFA")}33`,padding:28,display:"flex",flexDirection:"column",gap:14}}>
             <div style={{fontSize:9,letterSpacing:5,color:"#444",marginBottom:4}}>PERFIL RANKUP</div>
             <ProfileAvatar userEmail={user.email} riColor={ri.color} clsIcon={cls?cls.icon:"🗡️"}/>
             <div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{user.name}</div><div style={{fontSize:11,color:"#555",marginTop:2}}>{user.email}</div></div>
@@ -5305,7 +5329,7 @@ function RankUpApp({user,onLogout}){
         <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",opacity:.025}}><div style={{width:"100%",height:2,background:"#FFF",animation:"scanline 4s linear infinite"}}/></div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
           <button onClick={()=>setShowProfile(true)} style={{display:"flex",alignItems:"center",gap:10,background:"none",border:"none",cursor:"pointer",padding:0}}>
-            <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:900,fontFamily:"'Cinzel',serif",color:ri.color,boxShadow:`0 0 16px ${ri.color}88`,overflow:"hidden",flexShrink:0}}>
+            <div style={{width:38,height:38,borderRadius:10,border:`2px solid ${equippedColor("casco",ri.color)}`,background:`${equippedTexture("casco")?`${equippedTexture("casco")},`:""}${equippedColor("casco",ri.color)}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,fontWeight:900,fontFamily:"'Cinzel',serif",color:equippedColor("casco",ri.color),boxShadow:`0 0 16px ${equippedColor("casco",ri.color)}88`,overflow:"hidden",flexShrink:0}}>
                     {(()=>{const p=localStorage.getItem(`rku_photo_${user.email}`);return p?<img src={p} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:ri.rank;})()}
                   </div>
             <div style={{textAlign:"left"}}>
@@ -5336,7 +5360,7 @@ function RankUpApp({user,onLogout}){
           </div>
         </div>
         <div style={{height:6,background:"#1A1A2E",borderRadius:3,overflow:"hidden"}}>
-          <div style={{height:"100%",width:`${xpPct}%`,background:`linear-gradient(90deg,${ri.color}88,${ri.color})`,borderRadius:3,transition:"width .8s ease",boxShadow:`0 0 10px ${ri.color}`}}/>
+          <div style={{height:"100%",width:`${xpPct}%`,background:`${equippedTexture("arma")?`${equippedTexture("arma")},`:""}linear-gradient(90deg,${equippedColor("arma",ri.color)}88,${equippedColor("arma",ri.color)})`,borderRadius:3,transition:"width .8s ease",boxShadow:`0 0 10px ${equippedColor("arma",ri.color)}`}}/>
         </div>
       </div>
 
