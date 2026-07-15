@@ -647,6 +647,9 @@ const EXERCISE_DB = [
   {id:"e243",name:"Abdomen Isométrico en Fitball",muscle:["abdomen"],          equip:"Fitball",   level:"Intermedio",   xpBase:32, desc:"Mantén una posición de plancha o equilibrio sobre el fitball sin moverte. Isometría pura, activa todo el core para estabilizar."},
   {id:"e244",name:"Deadbugs con Fitball",         muscle:["abdomen"],          equip:"Fitball",   level:"Principiante", xpBase:28, desc:"Dead Bug sujetando el fitball entre manos y rodillas, extendiendo brazo y pierna contraria. El balón añade tensión y control extra."},
   {id:"e245",name:"Press Alterno con Mancuernas", muscle:["pecho","triceps"],  equip:"Mancuernas",level:"Intermedio",   xpBase:44, desc:"Una mancuerna baja mientras la otra sube, alternando. Mayor demanda de estabilidad de core y trabajo unilateral que el press tradicional."},
+  {id:"e246",name:"Pistol Squat",                 muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Avanzado",     xpBase:55, desc:"Sentadilla a una pierna completa, con la otra extendida al frente. Fuerza, equilibrio y movilidad de tobillo al máximo nivel."},
+  {id:"e247",name:"Aperturas Declinado",           muscle:["pecho"],           equip:"Mancuernas",level:"Intermedio",   xpBase:38, desc:"Aperturas en banco declinado. Enfatiza la porción inferior del pectoral con un ángulo distinto a la versión plana o inclinada."},
+  {id:"e248",name:"Sentadilla Lateral (Cossack)",  muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",   xpBase:40, desc:"Cossack Squat. Desde de pie con piernas separadas, flexiona una rodilla llevando el peso hacia un lado manteniendo la otra pierna estirada. Movilidad de cadera y fuerza unilateral."},
 ];
 
 
@@ -1161,10 +1164,15 @@ function LootToast({item,onDone}){
   const c=RARITY_INFO[item.rarity]?.color||"#A78BFA";
   return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
 }
-function CraftToast({name,tier,onDone}){
+function CraftToast({name,slot,icon,tier,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=TIER_INFO[tier]?.color||"#F59E0B";
-  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>🛠️</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}>
+    <div style={{width:38,height:38,flexShrink:0,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,overflow:"hidden"}}>
+      {slot?<img src={equipImg(slot,tier)} alt="" style={{width:"100%",height:"100%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=icon;}}/>:icon}
+    </div>
+    <div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div>
+  </div>;
 }
 
 // ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
@@ -3308,21 +3316,34 @@ function AdminPanel({onLogout}){
                       <div style={{position:"relative",marginBottom:6}}>
                         <input placeholder="🔍 Buscar en base de ejercicios..." value={rtDbSearch[si]||""} onChange={e=>setRtDbSearch(p=>({...p,[si]:e.target.value}))}
                           style={{...inp,marginBottom:0,color:"#AAA",fontSize:12}}/>
-                        {rtDbSearch[si]&&rtDbSearch[si].trim().length>0&&(
-                          <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,marginTop:4,maxHeight:220,overflowY:"auto",boxShadow:"0 8px 20px #00000088"}}>
-                            {EXERCISE_DB.filter(x=>x.name.toLowerCase().includes(rtDbSearch[si].trim().toLowerCase())).slice(0,20).map(ex=>(
-                              <button key={ex.id} onClick={()=>{
-                                setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
-                                setRtDbSearch(p=>({...p,[si]:""}));
-                              }} style={{display:"block",width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid #1A1A2E",color:"#DDD",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                                {ex.name} <span style={{color:"#666",fontSize:10}}>({ex.xpBase}XP)</span>
-                              </button>
-                            ))}
-                            {EXERCISE_DB.filter(x=>x.name.toLowerCase().includes(rtDbSearch[si].trim().toLowerCase())).length===0&&(
+                        {rtDbSearch[si]&&rtDbSearch[si].trim().length>0&&(()=>{
+                          const q=rtDbSearch[si].trim().toLowerCase();
+                          const matches=EXERCISE_DB.filter(x=>x.name.toLowerCase().includes(q));
+                          return(
+                          <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,marginTop:4,maxHeight:260,overflowY:"auto",boxShadow:"0 8px 20px #00000088"}}>
+                            {Object.keys(MUSCLE_DEFS).map(m=>{
+                              const group=matches.filter(x=>x.muscle.includes(m));
+                              if(group.length===0) return null;
+                              return(
+                                <div key={m}>
+                                  <div style={{padding:"6px 12px 4px",fontSize:9,color:"#666",letterSpacing:2,fontWeight:700,background:"#07070F"}}>{MUSCLE_DEFS[m].label.toUpperCase()}</div>
+                                  {group.map(ex=>(
+                                    <button key={ex.id} onClick={()=>{
+                                      setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
+                                      setRtDbSearch(p=>({...p,[si]:""}));
+                                    }} style={{display:"block",width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid #1A1A2E",color:"#DDD",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                                      {ex.name} <span style={{color:"#666",fontSize:10}}>({ex.xpBase}XP)</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              );
+                            })}
+                            {matches.length===0&&(
                               <div style={{padding:"10px 12px",color:"#555",fontSize:11}}>Sin resultados</div>
                             )}
                           </div>
-                        )}
+                          );
+                        })()}
                       </div>
                       <div style={{display:"grid",gridTemplateColumns:"1fr auto auto auto",gap:6}}>
                         <input placeholder="Ejercicio..." value={rtExInput[si]?.name||""} onChange={e=>setRtExInput(p=>({...p,[si]:{...p[si],name:e.target.value}}))}
@@ -4342,7 +4363,7 @@ function RankUpApp({user,onLogout}){
     const ek=`${slot}_${tier}`;
     setEquipment(p=>({...p,[ek]:(p[ek]||0)+1}));
     const slotInfo=EQUIPMENT_SLOTS.find(s=>s.id===slot);
-    setCraftToast({name:`${slotInfo.icon} ${EQUIPMENT_NAMES[slot][tier]}`,tier});
+    setCraftToast({name:EQUIPMENT_NAMES[slot][tier],slot,icon:slotInfo.icon,tier});
     setCraftStats(p=>({
       total:p.total+1,
       slots:p.slots.includes(slot)?p.slots:[...p.slots,slot],
@@ -5241,7 +5262,7 @@ function RankUpApp({user,onLogout}){
       {achToast&&<AchToast ach={achToast} onDone={()=>setAchToast(null)}/>}
       {coinToast&&<CoinToast msg={coinToast.msg} coins={coinToast.coins} onDone={()=>setCoinToast(null)}/>}
       {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
-      {craftToast&&<CraftToast name={craftToast.name} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
+      {craftToast&&<CraftToast name={craftToast.name} slot={craftToast.slot} icon={craftToast.icon} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
 
       {/* Profile drawer */}
       {showProfile&&(
@@ -7194,6 +7215,8 @@ function NutricionTab({ph, assignedDiets=[]}){
 }
 
 // ─── LOGROS TAB ───────────────────────────────────────────────────────────────
+const equipImg=(slot,tier)=>`/equipment/${slot}_${tier}.png`;
+
 function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEquip}){
   const [view,setView]=useState("materiales"); // "materiales" | "forja"
   const totalItems=Object.values(inventory).reduce((a,b)=>a+b,0);
@@ -7250,7 +7273,9 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
               const c=tier?TIER_INFO[tier].color:"#333";
               return(
                 <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
-                  <div style={{width:"100%",height:56,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,boxShadow:ek?`0 0 10px ${c}55`:"none"}}>{slot.icon}</div>
+                  <div style={{width:"100%",height:56,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
+                    {ek?<img src={equipImg(slot.id,tier)} alt={slot.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;}}/>:slot.icon}
+                  </div>
                   <div style={{fontSize:8,color:ek?c:"#444",fontWeight:700,marginTop:4}}>{tier?TIER_INFO[tier].label:"Vacío"}</div>
                 </div>
               );
@@ -7273,7 +7298,11 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
                 const isEquipped=equipped[slot.id]===ek;
                 const c=TIER_INFO[tier].color;
                 return(
-                  <div key={tier} style={{background:"#0F0F1C",border:`1px solid ${isEquipped?c:ready?c:"#2A2A44"}${isEquipped?"":ready?"88":""}`,borderRadius:12,padding:12,boxShadow:isEquipped?`0 0 14px ${c}44`:"none"}}>
+                  <div key={tier} style={{background:"#0F0F1C",border:`1px solid ${isEquipped?c:ready?c:"#2A2A44"}${isEquipped?"":ready?"88":""}`,borderRadius:12,padding:12,boxShadow:isEquipped?`0 0 14px ${c}44`:"none",display:"flex",gap:12}}>
+                    <div style={{width:52,height:52,flexShrink:0,borderRadius:8,background:`${c}12`,border:`1px solid ${c}44`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                      <img src={equipImg(slot.id,tier)} alt={EQUIPMENT_NAMES[slot.id][tier]} style={{width:"100%",height:"100%",objectFit:"contain",padding:3}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;e.target.parentElement.style.fontSize="20px";}}/>
+                    </div>
+                    <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
                       <div>
                         <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{EQUIPMENT_NAMES[slot.id][tier]}</div>
@@ -7301,6 +7330,7 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
                           {ready?"🛠️ FORJAR":"Materiales insuficientes"}
                         </button>
                     }
+                    </div>
                   </div>
                 );
               })}
