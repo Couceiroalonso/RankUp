@@ -7273,10 +7273,10 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
               const c=tier?TIER_INFO[tier].color:"#333";
               return(
                 <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
-                  <div style={{width:"100%",height:56,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
-                    {ek?<img src={equipImg(slot.id,tier)} alt={slot.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:4}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;}}/>:slot.icon}
+                  <div style={{width:"100%",height:80,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
+                    {ek?<img src={equipImg(slot.id,tier)} alt={slot.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;}}/>:slot.icon}
                   </div>
-                  <div style={{fontSize:8,color:ek?c:"#444",fontWeight:700,marginTop:4}}>{tier?TIER_INFO[tier].label:"Vacío"}</div>
+                  <div style={{fontSize:8,color:ek?c:"#444",fontWeight:700,marginTop:4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",padding:"0 2px"}}>{ek?EQUIPMENT_NAMES[slot.id][tier]:"Vacío"}</div>
                 </div>
               );
             })}
