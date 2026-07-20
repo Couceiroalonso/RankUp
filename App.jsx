@@ -284,10 +284,10 @@ const MUSCLE_RANKS = [
 
 const CLASSES = [
   { id:"guerrero",   icon:"⚔️",  name:"Guerrero",    goal:"Masa muscular",        color:"#F87171", desc:"Forja músculo con hierro y voluntad. Fuerza e hipertrofia son tu camino.",     bonus:"XP x1.2 en ejercicios de fuerza" },
-  { id:"explorador", icon:"🏃",  name:"Explorador",  goal:"Pérdida de grasa",     color:"#34D399", desc:"Velocidad, resistencia y quema de calorías. El movimiento es tu arma.",        bonus:"XP x1.3 en cardio y circuitos"   },
-  { id:"titan",      icon:"🛡️",  name:"Titán",       goal:"Fuerza máxima",        color:"#FBBF24", desc:"Levantar lo que otros no pueden ni imaginar. Potencia pura y récords.",          bonus:"XP x1.5 al superar un récord"    },
-  { id:"acrobata",   icon:"🤸",  name:"Acróbata",    goal:"Movilidad y agilidad", color:"#60A5FA", desc:"Control total del cuerpo. Flexibilidad, equilibrio y movimiento funcional.",    bonus:"XP x1.3 en ejercicios de movilidad" },
-  { id:"alquimista", icon:"⚗️",  name:"Alquimista",  goal:"Recomposición corporal",color:"#F59E0B", desc:"La ciencia del cuerpo: ganar músculo y perder grasa al mismo tiempo.",          bonus:"XP x1.1 en todos los ejercicios" },
+  { id:"explorador", icon:"🗡️",  name:"Pícaro",      goal:"Pérdida de grasa",     color:"#34D399", desc:"Rápido, ágil, imposible de alcanzar. La velocidad y la resistencia son tu sello.", bonus:"XP x1.3 en cardio y circuitos"   },
+  { id:"titan",      icon:"🪓",  name:"Bárbaro",     goal:"Fuerza máxima",        color:"#FBBF24", desc:"Furia desatada. Levantar lo que otros no pueden ni imaginar, récord tras récord.", bonus:"XP x1.5 al superar un récord"    },
+  { id:"acrobata",   icon:"🥋",  name:"Monje",       goal:"Movilidad y agilidad", color:"#60A5FA", desc:"Control total del cuerpo y la mente. Flexibilidad, equilibrio y movimiento funcional.", bonus:"XP x1.3 en ejercicios de movilidad" },
+  { id:"alquimista", icon:"⚗️",  name:"Alquimista",  goal:"Recomposición corporal",color:"#F59E0B", desc:"La ciencia del cuerpo y la forja a partes iguales: ganar músculo y perder grasa mientras dominas el arte de crear.", bonus:"XP x1.1 en todos los ejercicios" },
 ];
 
 
