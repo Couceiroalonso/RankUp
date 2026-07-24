@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { fbSet, fbGet, fbGetStrict, fbLogin, fbSignup, fbLogout, fbResetPassword, fbAdminCreateUser } from "./Firebase.js";
+import { fbSet, fbGet, fbGetStrict, fbListen, fbLogin, fbSignup, fbLogout, fbResetPassword, fbAdminCreateUser } from "./Firebase.js";
 
 // ─── FIREBASE CONFIG ─────────────────────────────────────────────────────────
 
@@ -211,6 +211,29 @@ const LOOT_TABLES={
   boss:    {chance:0.45, weights:[["comun",0.40],["pocoComun",0.35],["raro",0.20],["epico",0.05]]},
   dungeon: {chance:1.00, weights:[["comun",0.30],["pocoComun",0.35],["raro",0.25],["epico",0.08],["legendario",0.02]]},
 };
+// Comprime una imagen en el navegador (canvas) antes de guardarla — evita
+// llenar la base de datos con fotos pesadas sin comprimir. Redimensiona al
+// ancho máximo indicado y la exporta como JPEG con la calidad dada.
+const compressImage=(file,maxWidth=900,quality=0.75)=>new Promise((resolve,reject)=>{
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1,maxWidth/img.width);
+      const w=Math.round(img.width*scale), h=Math.round(img.height*scale);
+      const canvas=document.createElement("canvas");
+      canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext("2d");
+      ctx.drawImage(img,0,0,w,h);
+      resolve(canvas.toDataURL("image/jpeg",quality));
+    };
+    img.onerror=()=>reject(new Error("No se pudo leer la imagen"));
+    img.src=ev.target.result;
+  };
+  reader.onerror=()=>reject(new Error("No se pudo leer el archivo"));
+  reader.readAsDataURL(file);
+});
+
 const rollLoot=context=>{
   const t=LOOT_TABLES[context];
   if(!t||Math.random()>t.chance) return null;
@@ -4922,6 +4945,52 @@ function RankUpApp({user,onLogout}){
     }
   },[]);
 
+  const [socialPosts,setSocialPosts]=useState({});
+  const [socialLoading,setSocialLoading]=useState(true);
+  const genSocialId=(prefix)=>`${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+
+  // Muro social en tiempo real: se suscribe una vez al montar y se desuscribe
+  // al desmontar/cerrar sesión. Cualquier publicación o comentario nuevo de
+  // cualquier usuario llega solo, sin recargar ni pulsar ningún botón.
+  useEffect(()=>{
+    const unsubscribe=fbListen("socialPosts",(data)=>{
+      setSocialPosts(data||{});
+      setSocialLoading(false);
+    });
+    return unsubscribe;
+  },[]);
+
+  const addSocialPost=useCallback(async(photoData,caption)=>{
+    const id=genSocialId("post");
+    const post={email:user.email.toLowerCase().trim(),name:user.name,photo:photoData,caption:(caption||"").trim(),createdAt:Date.now()};
+    setSocialPosts(p=>({...p,[id]:post}));
+    await fbSet(`socialPosts/${id}`,post).catch(()=>{});
+  },[user]);
+
+  const deleteSocialPost=useCallback(async(postId)=>{
+    setSocialPosts(p=>{const n={...p};delete n[postId];return n;});
+    await fbSet(`socialPosts/${postId}`,null).catch(()=>{});
+  },[]);
+
+  const addSocialComment=useCallback(async(postId,text)=>{
+    if(!text.trim()) return;
+    const id=genSocialId("comment");
+    const comment={email:user.email.toLowerCase().trim(),name:user.name,text:text.trim(),createdAt:Date.now()};
+    setSocialPosts(p=>({...p,[postId]:{...p[postId],comments:{...(p[postId]?.comments||{}),[id]:comment}}}));
+    await fbSet(`socialPosts/${postId}/comments/${id}`,comment).catch(()=>{});
+  },[user]);
+
+  const deleteSocialComment=useCallback(async(postId,commentId)=>{
+    setSocialPosts(p=>{
+      const post={...p[postId]};
+      const c={...(post.comments||{})};
+      delete c[commentId];
+      post.comments=c;
+      return {...p,[postId]:post};
+    });
+    await fbSet(`socialPosts/${postId}/comments/${commentId}`,null).catch(()=>{});
+  },[]);
+
   const sendMessage=useCallback(async(text)=>{
     if(!text.trim()) return;
     const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
@@ -5138,7 +5207,7 @@ function RankUpApp({user,onLogout}){
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
   const xpPct=level>=MAX_LEVEL?100:Math.min((xpInLvl/xpNext)*100,100);
-  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"inventario",l:"🎒"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
+  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"inventario",l:"🎒"},{id:"social",l:"📸"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
 
   return(
     <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
@@ -5468,6 +5537,7 @@ function RankUpApp({user,onLogout}){
           {tab==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
+          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment}/>}
           {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
         </div>
       </div>
@@ -6777,6 +6847,140 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
 
 
 // ─── BUZÓN TAB ────────────────────────────────────────────────────────────────
+function timeAgo(ts){
+  const diff=Date.now()-ts;
+  const min=Math.floor(diff/60000), hr=Math.floor(diff/3600000), day=Math.floor(diff/86400000);
+  if(min<1) return "ahora mismo";
+  if(min<60) return `hace ${min} min`;
+  if(hr<24) return `hace ${hr}h`;
+  if(day<7) return `hace ${day}d`;
+  return new Date(ts).toLocaleDateString("es-ES",{day:"2-digit",month:"short"});
+}
+
+function SocialTab({posts={},loading,currentEmail,onPost,onDeletePost,onComment,onDeleteComment}){
+  const [showUpload,setShowUpload]=useState(false);
+  const [preview,setPreview]=useState(null);
+  const [caption,setCaption]=useState("");
+  const [compressing,setCompressing]=useState(false);
+  const [posting,setPosting]=useState(false);
+  const [error,setError]=useState("");
+  const [openComments,setOpenComments]=useState({});
+  const [commentInputs,setCommentInputs]=useState({});
+  const fileRef=useRef();
+  const me=(currentEmail||"").toLowerCase().trim();
+
+  const handleFile=async(e)=>{
+    const file=e.target.files?.[0];
+    if(!file) return;
+    if(file.size>15*1024*1024){setError("Máximo 15MB antes de comprimir");return;}
+    setError(""); setCompressing(true);
+    try{
+      const data=await compressImage(file);
+      setPreview(data);
+    }catch(err){ setError("No se pudo procesar la imagen"); }
+    setCompressing(false);
+  };
+
+  const submitPost=async()=>{
+    if(!preview) return;
+    setPosting(true);
+    await onPost(preview,caption);
+    setPosting(false);
+    setPreview(null); setCaption(""); setShowUpload(false);
+  };
+
+  const sortedPosts=Object.entries(posts).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+        <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>📸 MURO SOCIAL</div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <div title="Actualizaciones en tiempo real" style={{display:"flex",alignItems:"center",gap:5,fontSize:9,color:"#34D399",fontWeight:700}}>
+            <span style={{width:6,height:6,borderRadius:"50%",background:"#34D399",boxShadow:"0 0 6px #34D399",display:"inline-block"}}/>
+            EN DIRECTO
+          </div>
+          <button onClick={()=>setShowUpload(true)} style={{padding:"7px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ 📸 PUBLICAR</button>
+        </div>
+      </div>
+
+      {showUpload&&(
+        <div style={{background:"#0F0F1C",border:"1px solid #A78BFA44",borderRadius:14,padding:16,marginBottom:18}}>
+          <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/>
+          {!preview?(
+            <button onClick={()=>fileRef.current?.click()} disabled={compressing} style={{width:"100%",padding:30,background:"#07070F",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+              {compressing?"⏳ Procesando imagen...":"📷 Elegir foto"}
+            </button>
+          ):(
+            <>
+              <img src={preview} style={{width:"100%",maxHeight:280,objectFit:"cover",borderRadius:10,marginBottom:10}}/>
+              <textarea placeholder="Añade un comentario (opcional)..." value={caption} onChange={e=>setCaption(e.target.value)} rows={2}
+                style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",marginBottom:10,boxSizing:"border-box"}}/>
+            </>
+          )}
+          {error&&<div style={{fontSize:11,color:"#F87171",marginTop:8}}>{error}</div>}
+          <div style={{display:"flex",gap:8,marginTop:10}}>
+            <button onClick={()=>{setShowUpload(false);setPreview(null);setCaption("");setError("");}} style={{flex:1,padding:10,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+            {preview&&<button onClick={submitPost} disabled={posting} style={{flex:1,padding:10,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:8,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{posting?"Publicando...":"📸 PUBLICAR"}</button>}
+          </div>
+        </div>
+      )}
+
+      {sortedPosts.length===0&&!loading&&(
+        <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
+          <div style={{fontSize:40,marginBottom:12}}>📸</div>
+          <div style={{fontSize:13,color:"#444"}}>Nadie ha publicado nada todavía. ¡Sé el primero!</div>
+        </div>
+      )}
+
+      {sortedPosts.map(([postId,post])=>{
+        const isOwnPost=post.email===me;
+        const comments=Object.entries(post.comments||{}).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
+        const isOpen=!!openComments[postId];
+        return(
+          <div key={postId} style={{background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:14,marginBottom:16,overflow:"hidden"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px"}}>
+              <div>
+                <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{post.name}</div>
+                <div style={{fontSize:10,color:"#555"}}>{timeAgo(post.createdAt)}</div>
+              </div>
+              {isOwnPost&&<button onClick={()=>onDeletePost(postId)} title="Borrar foto" style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:14}}>🗑️</button>}
+            </div>
+            <img src={post.photo} style={{width:"100%",maxHeight:420,objectFit:"cover",display:"block"}}/>
+            {post.caption&&<div style={{padding:"10px 14px 4px",fontSize:12,color:"#CCC",lineHeight:1.5}}>{post.caption}</div>}
+            <button onClick={()=>setOpenComments(p=>({...p,[postId]:!p[postId]}))} style={{width:"100%",textAlign:"left",padding:"8px 14px",background:"none",border:"none",color:"#666",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+              💬 {comments.length>0?`${comments.length} comentario${comments.length!==1?"s":""}`:"Comentar"} {isOpen?"▲":"▼"}
+            </button>
+            {isOpen&&(
+              <div style={{padding:"0 14px 14px"}}>
+                {comments.map(([cId,c])=>{
+                  const canDelete=c.email===me||isOwnPost;
+                  return(
+                    <div key={cId} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"6px 0",borderTop:"1px solid #1A1A2E"}}>
+                      <div style={{flex:1}}>
+                        <span style={{fontSize:11,fontWeight:700,color:"#A78BFA"}}>{c.name}: </span>
+                        <span style={{fontSize:11,color:"#CCC"}}>{c.text}</span>
+                        <div style={{fontSize:9,color:"#444",marginTop:2}}>{timeAgo(c.createdAt)}</div>
+                      </div>
+                      {canDelete&&<button onClick={()=>onDeleteComment(postId,cId)} style={{background:"none",border:"none",color:"#E84A5F44",cursor:"pointer",fontSize:11,marginLeft:8}}>✕</button>}
+                    </div>
+                  );
+                })}
+                <div style={{display:"flex",gap:6,marginTop:8}}>
+                  <input placeholder="Escribe un comentario..." value={commentInputs[postId]||""} onChange={e=>setCommentInputs(p=>({...p,[postId]:e.target.value}))}
+                    onKeyDown={e=>{if(e.key==="Enter"&&commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}}
+                    style={{flex:1,padding:"8px 10px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                  <button onClick={()=>{if(commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function BuzonTab({messages,onSend,userName}){
   const [input,setInput]=useState("");
   const bottomRef=useRef(null);
