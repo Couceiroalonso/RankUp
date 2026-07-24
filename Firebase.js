@@ -1,5 +1,5 @@
 import { initializeApp, deleteApp } from "firebase/app";
-import { getDatabase, ref, set, get } from "firebase/database";
+import { getDatabase, ref, set, get, onValue, off } from "firebase/database";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -43,6 +43,17 @@ export const fbGet = async (path) => {
 export const fbGetStrict = async (path) => {
   const snap = await get(ref(db, path));
   return snap.exists() ? snap.val() : null;
+};
+
+// Escucha cambios EN VIVO en una ruta (a diferencia de fbGet, que solo lee
+// una vez). `callback` se llama con el valor actual nada más suscribirse, y
+// de nuevo cada vez que cambia en Firebase — sin necesidad de recargar.
+// Devuelve una función para dejar de escuchar (llámala al desmontar/cerrar sesión).
+export const fbListen = (path, callback) => {
+  const r = ref(db, path);
+  const handler = (snap) => callback(snap.exists() ? snap.val() : null);
+  onValue(r, handler, (e) => console.log("FB listen error:", e));
+  return () => off(r, "value", handler);
 };
 
 // ─── AUTH ──────────────────────────────────────────────────────────────────
