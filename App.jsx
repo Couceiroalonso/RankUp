@@ -7043,16 +7043,16 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
             </div>
 
             {/* Barra de interacción */}
-            <div style={{display:"flex",alignItems:"center",gap:16,padding:"10px 12px 4px"}}>
-              <button onClick={()=>onToggleLike(postId)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0,transform:iLiked?"scale(1.05)":"scale(1)",transition:"transform .15s"}}>
-                <IconHeart filled={iLiked} color={iLiked?"#F59E0B":"#EEE"}/>
+            <div style={{display:"flex",alignItems:"center",gap:18,padding:"10px 12px 6px"}}>
+              <button onClick={()=>onToggleLike(postId)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0,transform:iLiked?"scale(1.08)":"scale(1)",transition:"transform .15s"}}>
+                <span style={{fontSize:20,filter:iLiked?"none":"grayscale(1) opacity(0.55)",transition:"filter .15s"}}>🔥</span>
+                {likeCount>0&&<span style={{fontSize:13,fontWeight:700,color:iLiked?"#F59E0B":"#AAA",fontFamily:"'Rajdhani',sans-serif"}}>{likeCount}</span>}
               </button>
               <button onClick={()=>setOpenComments(p=>({...p,[postId]:!p[postId]}))} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0}}>
                 <IconComment color="#EEE"/>
+                {comments.length>0&&<span style={{fontSize:13,fontWeight:700,color:"#AAA",fontFamily:"'Rajdhani',sans-serif"}}>{comments.length}</span>}
               </button>
             </div>
-
-            {likeCount>0&&<div style={{padding:"2px 12px 0",fontSize:12,fontWeight:700,color:"#FAFAFA"}}>{likeCount} apoyo{likeCount!==1?"s":""}</div>}
 
             {post.caption&&(
               <div style={{padding:"5px 12px 2px",fontSize:12,color:"#DDD",lineHeight:1.5}}>
@@ -7080,12 +7080,12 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
                         <span style={{fontSize:11,color:"#DDD"}}>{c.text}</span>
                         <div style={{display:"flex",alignItems:"center",gap:10,marginTop:3}}>
                           <span style={{fontSize:9,color:"#555"}}>{timeAgo(c.createdAt)}</span>
-                          {cLikeCount>0&&<span style={{fontSize:9,color:"#555",fontWeight:700}}>{cLikeCount} apoyo{cLikeCount!==1?"s":""}</span>}
                           {canDelete&&<button onClick={()=>onDeleteComment(postId,cId)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:9,fontWeight:700,padding:0}}>Borrar</button>}
                         </div>
                       </div>
-                      <button onClick={()=>onToggleCommentLike(postId,cId)} style={{background:"none",border:"none",cursor:"pointer",padding:2,flexShrink:0,marginTop:1}}>
-                        <IconHeart filled={cLiked} size={13} color={cLiked?"#F59E0B":"#666"}/>
+                      <button onClick={()=>onToggleCommentLike(postId,cId)} style={{display:"flex",alignItems:"center",gap:4,background:"none",border:"none",cursor:"pointer",padding:2,flexShrink:0,marginTop:1}}>
+                        <span style={{fontSize:13,filter:cLiked?"none":"grayscale(1) opacity(0.55)"}}>🔥</span>
+                        {cLikeCount>0&&<span style={{fontSize:10,fontWeight:700,color:cLiked?"#F59E0B":"#666"}}>{cLikeCount}</span>}
                       </button>
                     </div>
                   );
