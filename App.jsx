@@ -4960,15 +4960,29 @@ function RankUpApp({user,onLogout}){
     return unsubscribe;
   },[]);
 
-  // Fotos de perfil de TODOS los usuarios, en tiempo real — así el Muro Social
-  // puede mostrar la foto real de cada autor (antes solo mostraba la inicial).
+  // Fotos de perfil para el Muro Social. IMPORTANTE: las reglas de Firebase solo
+  // permiten leer "photos/$key" (clave por usuario), NO el nodo "photos" completo
+  // de golpe — por eso un fbListen("photos",...) global se queda siempre vacío
+  // (permiso denegado en silencio). Aquí se pide cada foto individualmente, por
+  // cada autor de post/comentario que vaya apareciendo, que sí está permitido.
   const [allProfilePhotos,setAllProfilePhotos]=useState({});
+  const fetchedPhotoKeysRef=useRef(new Set());
   useEffect(()=>{
-    const unsubscribe=fbListen("photos",(data)=>{
-      setAllProfilePhotos(data||{});
+    const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+    const emailsSeen=new Set();
+    Object.values(socialPosts).forEach(post=>{
+      if(post?.email) emailsSeen.add(post.email);
+      Object.values(post?.comments||{}).forEach(c=>{if(c?.email) emailsSeen.add(c.email);});
     });
-    return unsubscribe;
-  },[]);
+    emailsSeen.forEach(email=>{
+      const key=keyOf(email);
+      if(fetchedPhotoKeysRef.current.has(key)) return;
+      fetchedPhotoKeysRef.current.add(key);
+      fbGet(`photos/${key}`).then(url=>{
+        if(url) setAllProfilePhotos(p=>({...p,[key]:url}));
+      }).catch(()=>{});
+    });
+  },[socialPosts]);
 
   const addSocialPost=useCallback(async(photoData,caption)=>{
     const id=genSocialId("post");
