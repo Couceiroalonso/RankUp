@@ -4960,6 +4960,16 @@ function RankUpApp({user,onLogout}){
     return unsubscribe;
   },[]);
 
+  // Fotos de perfil de TODOS los usuarios, en tiempo real — así el Muro Social
+  // puede mostrar la foto real de cada autor (antes solo mostraba la inicial).
+  const [allProfilePhotos,setAllProfilePhotos]=useState({});
+  useEffect(()=>{
+    const unsubscribe=fbListen("photos",(data)=>{
+      setAllProfilePhotos(data||{});
+    });
+    return unsubscribe;
+  },[]);
+
   const addSocialPost=useCallback(async(photoData,caption)=>{
     const id=genSocialId("post");
     const post={email:user.email.toLowerCase().trim(),name:user.name,photo:photoData,caption:(caption||"").trim(),createdAt:Date.now()};
@@ -5003,6 +5013,22 @@ function RankUpApp({user,onLogout}){
     });
     const isLiked=!!socialPosts[postId]?.likes?.[key];
     await fbSet(`socialPosts/${postId}/likes/${key}`,isLiked?null:true).catch(()=>{});
+  },[socialUserKey,socialPosts]);
+
+  const toggleSocialCommentLike=useCallback(async(postId,commentId)=>{
+    const key=socialUserKey;
+    setSocialPosts(p=>{
+      const post={...p[postId]};
+      const comments={...(post.comments||{})};
+      const c={...(comments[commentId]||{})};
+      const likes={...(c.likes||{})};
+      if(likes[key]) delete likes[key]; else likes[key]=true;
+      comments[commentId]={...c,likes};
+      post.comments=comments;
+      return {...p,[postId]:post};
+    });
+    const isLiked=!!socialPosts[postId]?.comments?.[commentId]?.likes?.[key];
+    await fbSet(`socialPosts/${postId}/comments/${commentId}/likes/${key}`,isLiked?null:true).catch(()=>{});
   },[socialUserKey,socialPosts]);
 
   const sendMessage=useCallback(async(text)=>{
@@ -5551,7 +5577,7 @@ function RankUpApp({user,onLogout}){
           {tab==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
-          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike}/>}
+          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} profilePhotos={allProfilePhotos} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike} onToggleCommentLike={toggleSocialCommentLike}/>}
           {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
         </div>
       </div>
@@ -6871,7 +6897,30 @@ function timeAgo(ts){
   return new Date(ts).toLocaleDateString("es-ES",{day:"2-digit",month:"short"});
 }
 
-function SocialTab({posts={},loading,currentEmail,onPost,onDeletePost,onComment,onDeleteComment,onToggleLike}){
+// Iconos estilo Instagram (SVG en línea, sin librerías externas)
+function IconHeart({filled,size=22,color="#EEE"}){
+  return(
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled?color:"none"} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+    </svg>
+  );
+}
+function IconComment({size=22,color="#EEE"}){
+  return(
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+    </svg>
+  );
+}
+function IconDots({size=18,color="#888"}){
+  return(
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+      <circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>
+    </svg>
+  );
+}
+
+function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDeletePost,onComment,onDeleteComment,onToggleLike,onToggleCommentLike}){
   const [showUpload,setShowUpload]=useState(false);
   const [preview,setPreview]=useState(null);
   const [caption,setCaption]=useState("");
@@ -6883,6 +6932,7 @@ function SocialTab({posts={},loading,currentEmail,onPost,onDeletePost,onComment,
   const fileRef=useRef();
   const me=(currentEmail||"").toLowerCase().trim();
   const myKey=me.replace(/\./g,"_").replace(/@/g,"_at_");
+  const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
 
   // Color de avatar determinista a partir del nombre — misma persona, mismo color siempre
   const AVATAR_COLORS=["#A78BFA","#60A5FA","#34D399","#F59E0B","#E84A5F","#38BDF8","#FB923C"];
@@ -6963,70 +7013,87 @@ function SocialTab({posts={},loading,currentEmail,onPost,onDeletePost,onComment,
         const likeCount=Object.keys(likes).length;
         const iLiked=!!likes[myKey];
         const ac=avatarColor(post.name);
+        const authorPhoto=profilePhotos[keyOf(post.email)];
         return(
-          <div key={postId} style={{background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:14,marginBottom:18,overflow:"hidden"}}>
+          <div key={postId} style={{background:"#000",border:"1px solid #1F1F1F",borderRadius:14,marginBottom:22,overflow:"hidden"}}>
             {/* Cabecera */}
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 14px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 12px"}}>
               <div style={{display:"flex",alignItems:"center",gap:10}}>
-                <div style={{width:32,height:32,borderRadius:"50%",background:`${ac}22`,border:`1.5px solid ${ac}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:ac,fontFamily:"'Cinzel',serif",flexShrink:0}}>
-                  {(post.name||"?")[0]?.toUpperCase()}
+                <div style={{width:34,height:34,borderRadius:"50%",padding:authorPhoto?2:0,background:authorPhoto?"linear-gradient(45deg,#F59E0B,#E84A5F,#A78BFA)":"transparent",flexShrink:0}}>
+                  <div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",background:`${ac}22`,border:authorPhoto?"2px solid #000":`1.5px solid ${ac}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    {authorPhoto?
+                      <img src={authorPhoto} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.currentTarget.style.display="none";}}/>
+                      :<span style={{fontSize:13,fontWeight:900,color:ac,fontFamily:"'Cinzel',serif"}}>{(post.name||"?")[0]?.toUpperCase()}</span>}
+                  </div>
                 </div>
                 <div>
-                  <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{post.name}</div>
-                  <div style={{fontSize:10,color:"#555"}}>{timeAgo(post.createdAt)}</div>
+                  <span style={{fontSize:12,fontWeight:700,color:"#FAFAFA",fontFamily:"'Rajdhani',sans-serif"}}>{post.name}</span>
+                  <span style={{fontSize:11,color:"#666"}}> · {timeAgo(post.createdAt)}</span>
                 </div>
               </div>
-              {isOwnPost&&<button onClick={()=>onDeletePost(postId)} title="Borrar foto" style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:14}}>🗑️</button>}
+              {isOwnPost&&
+                <button onClick={()=>{if(window.confirm("¿Borrar esta publicación?")) onDeletePost(postId);}} title="Opciones" style={{background:"none",border:"none",cursor:"pointer",padding:6,display:"flex"}}>
+                  <IconDots/>
+                </button>}
             </div>
 
             {/* Imagen */}
-            <img src={post.photo} style={{width:"100%",maxHeight:460,objectFit:"cover",display:"block",background:"#07070F"}}/>
+            <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
+              <img src={post.photo} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+            </div>
 
             {/* Barra de interacción */}
-            <div style={{display:"flex",alignItems:"center",gap:16,padding:"12px 14px 6px"}}>
-              <button onClick={()=>onToggleLike(postId)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0}}>
-                <span style={{fontSize:19,filter:iLiked?"none":"grayscale(1) opacity(0.6)",transition:"filter .15s"}}>{iLiked?"🔥":"🔥"}</span>
-                <span style={{fontSize:12,fontWeight:700,color:iLiked?"#F59E0B":"#666",fontFamily:"'Rajdhani',sans-serif"}}>{likeCount>0?likeCount:""}</span>
+            <div style={{display:"flex",alignItems:"center",gap:16,padding:"10px 12px 4px"}}>
+              <button onClick={()=>onToggleLike(postId)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0,transform:iLiked?"scale(1.05)":"scale(1)",transition:"transform .15s"}}>
+                <IconHeart filled={iLiked} color={iLiked?"#F59E0B":"#EEE"}/>
               </button>
               <button onClick={()=>setOpenComments(p=>({...p,[postId]:!p[postId]}))} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0}}>
-                <span style={{fontSize:18,opacity:0.7}}>💬</span>
-                <span style={{fontSize:12,fontWeight:700,color:"#666",fontFamily:"'Rajdhani',sans-serif"}}>{comments.length>0?comments.length:""}</span>
+                <IconComment color="#EEE"/>
               </button>
             </div>
 
-            {likeCount>0&&<div style={{padding:"0 14px",fontSize:11,fontWeight:700,color:"#DDD"}}>{likeCount} apoyo{likeCount!==1?"s":""}</div>}
+            {likeCount>0&&<div style={{padding:"2px 12px 0",fontSize:12,fontWeight:700,color:"#FAFAFA"}}>{likeCount} apoyo{likeCount!==1?"s":""}</div>}
 
             {post.caption&&(
-              <div style={{padding:"6px 14px 4px",fontSize:12,color:"#CCC",lineHeight:1.5}}>
-                <span style={{fontWeight:700,color:"#EEE"}}>{post.name}</span> {post.caption}
+              <div style={{padding:"5px 12px 2px",fontSize:12,color:"#DDD",lineHeight:1.5}}>
+                <span style={{fontWeight:700,color:"#FAFAFA"}}>{post.name}</span> {post.caption}
               </div>
             )}
 
             {!isOpen&&comments.length>0&&(
-              <button onClick={()=>setOpenComments(p=>({...p,[postId]:true}))} style={{display:"block",padding:"4px 14px 10px",background:"none",border:"none",color:"#555",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+              <button onClick={()=>setOpenComments(p=>({...p,[postId]:true}))} style={{display:"block",padding:"4px 12px 12px",background:"none",border:"none",color:"#666",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                 Ver los {comments.length} comentario{comments.length!==1?"s":""}
               </button>
             )}
 
             {isOpen&&(
-              <div style={{padding:"4px 14px 14px"}}>
+              <div style={{padding:"4px 12px 14px"}}>
                 {comments.map(([cId,c])=>{
                   const canDelete=c.email===me||isOwnPost;
+                  const cLikes=c.likes||{};
+                  const cLikeCount=Object.keys(cLikes).length;
+                  const cLiked=!!cLikes[myKey];
                   return(
-                    <div key={cId} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"6px 0",borderTop:"1px solid #1A1A2E"}}>
-                      <div style={{flex:1}}>
+                    <div key={cId} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"7px 0",borderTop:"1px solid #161616"}}>
+                      <div style={{flex:1,paddingRight:8}}>
                         <span style={{fontSize:11,fontWeight:700,color:"#A78BFA"}}>{c.name}: </span>
-                        <span style={{fontSize:11,color:"#CCC"}}>{c.text}</span>
-                        <div style={{fontSize:9,color:"#444",marginTop:2}}>{timeAgo(c.createdAt)}</div>
+                        <span style={{fontSize:11,color:"#DDD"}}>{c.text}</span>
+                        <div style={{display:"flex",alignItems:"center",gap:10,marginTop:3}}>
+                          <span style={{fontSize:9,color:"#555"}}>{timeAgo(c.createdAt)}</span>
+                          {cLikeCount>0&&<span style={{fontSize:9,color:"#555",fontWeight:700}}>{cLikeCount} apoyo{cLikeCount!==1?"s":""}</span>}
+                          {canDelete&&<button onClick={()=>onDeleteComment(postId,cId)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:9,fontWeight:700,padding:0}}>Borrar</button>}
+                        </div>
                       </div>
-                      {canDelete&&<button onClick={()=>onDeleteComment(postId,cId)} style={{background:"none",border:"none",color:"#E84A5F44",cursor:"pointer",fontSize:11,marginLeft:8}}>✕</button>}
+                      <button onClick={()=>onToggleCommentLike(postId,cId)} style={{background:"none",border:"none",cursor:"pointer",padding:2,flexShrink:0,marginTop:1}}>
+                        <IconHeart filled={cLiked} size={13} color={cLiked?"#F59E0B":"#666"}/>
+                      </button>
                     </div>
                   );
                 })}
                 <div style={{display:"flex",gap:6,marginTop:8}}>
                   <input placeholder="Escribe un comentario..." value={commentInputs[postId]||""} onChange={e=>setCommentInputs(p=>({...p,[postId]:e.target.value}))}
                     onKeyDown={e=>{if(e.key==="Enter"&&commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}}
-                    style={{flex:1,padding:"8px 10px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    style={{flex:1,padding:"8px 10px",background:"#0A0A0A",border:"1px solid #222",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                   <button onClick={()=>{if(commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
                 </div>
               </div>
