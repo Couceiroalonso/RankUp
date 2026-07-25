@@ -5730,7 +5730,7 @@ function RankUpApp({user,onLogout}){
           {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} profilePhotos={allProfilePhotos} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike} onToggleCommentLike={toggleSocialCommentLike} onProfileClick={setProfileTarget}/>}
           {tab==="perfil"&&(
             perfilSection===null?(
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
                 {[
                   {id:"cuerpo",icon:"🫀",label:"Cuerpo",color:"#E84A5F"},
                   {id:"medidas",icon:"📏",label:"Medidas",color:"#38BDF8"},
@@ -5738,9 +5738,9 @@ function RankUpApp({user,onLogout}){
                   {id:"inventario",icon:"🎒",label:"Inventario",color:"#A78BFA"},
                   {id:"logros",icon:"🏆",label:"Logros",color:"#34D399"},
                 ].map(s=>(
-                  <button key={s.id} onClick={()=>setPerfilSection(s.id)} style={{padding:"26px 12px",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:14,display:"flex",flexDirection:"column",alignItems:"center",gap:10,cursor:"pointer"}}>
-                    <span style={{fontSize:32}}>{s.icon}</span>
-                    <span style={{fontSize:12,fontWeight:700,color:s.color,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>{s.label.toUpperCase()}</span>
+                  <button key={s.id} onClick={()=>setPerfilSection(s.id)} style={{padding:"14px 4px",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:12,display:"flex",flexDirection:"column",alignItems:"center",gap:6,cursor:"pointer"}}>
+                    <span style={{fontSize:22}}>{s.icon}</span>
+                    <span style={{fontSize:8,fontWeight:700,color:s.color,fontFamily:"'Rajdhani',sans-serif",letterSpacing:0.5,textAlign:"center",lineHeight:1.2}}>{s.label.toUpperCase()}</span>
                   </button>
                 ))}
               </div>
@@ -5748,7 +5748,7 @@ function RankUpApp({user,onLogout}){
               <>
                 <button onClick={()=>setPerfilSection(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:14,padding:0}}>← VOLVER</button>
                 {perfilSection==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex} userEmail={user.email} bodyMeasurements={bodyMeasurements}/>}
-                {perfilSection==="medidas"&&<MedidasSection measurements={bodyMeasurements} onAdd={setBodyMeasurements}/>}
+                {perfilSection==="medidas"&&<MedidasSection measurements={bodyMeasurements} onAdd={setBodyMeasurements} sex={userSex} userEmail={user.email}/>}
                 {perfilSection==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
                 {perfilSection==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
                 {perfilSection==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
@@ -7830,10 +7830,16 @@ const MEASURE_FIELDS=[
   {id:"calfR",label:"Gemelo Derecha",unit:"cm"},
 ];
 
-function MedidasSection({measurements={},onAdd}){
+function MedidasSection({measurements={},onAdd,sex="M",userEmail}){
   const [showForm,setShowForm]=useState(false);
   const [expanded,setExpanded]=useState(null);
   const [formValues,setFormValues]=useState({});
+  const [heightCm,setHeightCm]=useState(()=>getUsers()[userEmail]?.height||0);
+  useEffect(()=>{
+    if(!userEmail) return;
+    const key=userEmail.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+    fbGet(`users/${key}`).then(u=>{ if(u?.height) setHeightCm(u.height); }).catch(()=>{});
+  },[userEmail]);
 
   const latestOf=id=>{
     const arr=measurements[id]||[];
@@ -7843,6 +7849,21 @@ function MedidasSection({measurements={},onAdd}){
     const arr=measurements[id]||[];
     return arr.length>1?arr[arr.length-2]:null;
   };
+  const latestValueOf=id=>latestOf(id)?.value??null;
+
+  // Análisis automático a partir de las últimas medidas registradas
+  const navyBF=computeNavyBodyFat({sex,heightCm,neckCm:latestValueOf("neck"),waistCm:latestValueOf("waist"),hipCm:latestValueOf("hips")});
+  const whr=computeWaistHipRatio(latestValueOf("waist"),latestValueOf("hips"));
+  const waistVal=latestValueOf("waist");
+  const waistLimit=WHO_WAIST_LIMIT[sex]||WHO_WAIST_LIMIT.M;
+  const waistOverLimit=waistVal&&waistVal>waistLimit;
+  const asymmetries=BILATERAL_PAIRS.map(p=>{
+    const l=latestValueOf(p.L), r=latestValueOf(p.R);
+    if(l==null||r==null) return null;
+    const diff=Math.round(Math.abs(l-r)*10)/10;
+    return diff>=1.5?{...p,diff,bigger:l>r?"izquierdo":"derecho"}:null;
+  }).filter(Boolean);
+  const hasAnalysis=navyBF||whr||asymmetries.length>0;
 
   const save=()=>{
     const now=Date.now();
@@ -7864,6 +7885,43 @@ function MedidasSection({measurements={},onAdd}){
 
   return(
     <div>
+      {hasAnalysis&&(
+        <div style={{background:"#0D0D1A",border:"1px solid #38BDF844",borderRadius:14,padding:"14px 16px",marginBottom:16}}>
+          <div style={{fontSize:9,color:"#38BDF8",letterSpacing:4,marginBottom:10}}>📊 ANÁLISIS AUTOMÁTICO</div>
+
+          {navyBF&&(
+            <div style={{marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+                <span style={{fontSize:12,color:"#CCC",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>Grasa corporal estimada</span>
+                <span style={{fontSize:16,fontWeight:900,color:"#38BDF8",fontFamily:"'Cinzel',serif"}}>{navyBF}%</span>
+              </div>
+              <div style={{fontSize:9,color:"#555",marginTop:2}}>Fórmula U.S. Navy (cuello, cintura{sex==="F"?", cadera":""} y altura) — estimación, no sustituye una medición real.</div>
+            </div>
+          )}
+
+          {whr&&(
+            <div style={{marginBottom:10}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
+                <span style={{fontSize:12,color:"#CCC",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>Índice Cintura-Cadera</span>
+                <span style={{fontSize:16,fontWeight:900,color:"#38BDF8",fontFamily:"'Cinzel',serif"}}>{whr}</span>
+              </div>
+              {waistOverLimit&&
+                <div style={{fontSize:9,color:"#F59E0B",marginTop:2}}>⚠️ Tu cintura ({waistVal}cm) supera el umbral de referencia de la OMS ({waistLimit}cm) asociado a mayor riesgo cardiometabólico.</div>}
+            </div>
+          )}
+
+          {asymmetries.length>0&&(
+            <div>
+              <div style={{fontSize:12,color:"#CCC",fontFamily:"'Rajdhani',sans-serif",fontWeight:600,marginBottom:4}}>Asimetrías detectadas</div>
+              {asymmetries.map((a,i)=>(
+                <div key={i} style={{fontSize:10,color:"#F59E0B",marginBottom:2}}>⚠️ {a.label}: {a.diff}cm más grande el lado {a.bigger}</div>
+              ))}
+              <div style={{fontSize:9,color:"#555",marginTop:2}}>Diferencias por encima de 1.5cm pueden indicar compensación técnica o falta de trabajo unilateral.</div>
+            </div>
+          )}
+        </div>
+      )}
+
       <button onClick={()=>setShowForm(true)} style={{width:"100%",padding:"13px",marginBottom:16,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
         📏 Registrar medidas
       </button>
@@ -8001,6 +8059,42 @@ function BuzonTab({messages,onSend,userName}){
 // % de grasa corporal y proporción hombro/cintura — no es un diagnóstico
 // médico ni un análisis Heath-Carter de laboratorio, es una aproximación
 // con los datos que el propio Aventurero introduce en Medidas.
+// ─── Análisis de composición corporal (a partir de Medidas) ──────────────
+// Estimaciones matemáticas estándar de la industria fitness — no sustituyen
+// una medición real (bioimpedancia, DEXA, plicómetro), pero dan una
+// referencia gratuita con datos que el Aventurero ya introduce.
+
+// Fórmula U.S. Navy — estima % de grasa corporal a partir de perímetros.
+const computeNavyBodyFat=({sex="M",heightCm,neckCm,waistCm,hipCm})=>{
+  if(!heightCm||!neckCm||!waistCm) return null;
+  if(sex==="F"){
+    if(!hipCm) return null;
+    const denom=1.29579-0.35004*Math.log10(waistCm+hipCm-neckCm)+0.22100*Math.log10(heightCm);
+    if(denom<=0) return null;
+    const bf=495/denom-450;
+    return bf>0&&bf<70?Math.round(bf*10)/10:null;
+  }
+  const denom=1.0324-0.19077*Math.log10(waistCm-neckCm)+0.15456*Math.log10(heightCm);
+  if(denom<=0) return null;
+  const bf=495/denom-450;
+  return bf>0&&bf<70?Math.round(bf*10)/10:null;
+};
+
+// Índice Cintura-Cadera + umbral OMS de cintura absoluta.
+const computeWaistHipRatio=(waistCm,hipCm)=>{
+  if(!waistCm||!hipCm) return null;
+  return Math.round((waistCm/hipCm)*100)/100;
+};
+const WHO_WAIST_LIMIT={M:102,F:88};
+
+// Pares bilaterales para detectar asimetrías (>1.5cm de diferencia).
+const BILATERAL_PAIRS=[
+  {L:"bicepsL",R:"bicepsR",label:"Bíceps"},
+  {L:"forearmL",R:"forearmR",label:"Antebrazo"},
+  {L:"thighL",R:"thighR",label:"Muslo"},
+  {L:"calfL",R:"calfR",label:"Gemelo"},
+];
+
 const SOMATOTYPES={
   ecto:{label:"Ectomorfo",color:"#60A5FA",icon:"🏹",desc:"Estructura ósea fina y metabolismo rápido. Cuesta ganar tanto grasa como músculo — la fuerza se construye con paciencia, volumen alto y constancia."},
   meso:{label:"Mesomorfo",color:"#34D399",icon:"⚔️",desc:"Estructura atlética natural. Responde rápido tanto al entrenamiento de fuerza como al cardio — el equilibrio es su terreno natural."},
