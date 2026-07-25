@@ -673,6 +673,32 @@ const EXERCISE_DB = [
   {id:"e246",name:"Pistol Squat",                 muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Avanzado",     xpBase:55, desc:"Sentadilla a una pierna completa, con la otra extendida al frente. Fuerza, equilibrio y movilidad de tobillo al máximo nivel."},
   {id:"e247",name:"Aperturas Declinado",           muscle:["pecho"],           equip:"Mancuernas",level:"Intermedio",   xpBase:38, desc:"Aperturas en banco declinado. Enfatiza la porción inferior del pectoral con un ángulo distinto a la versión plana o inclinada."},
   {id:"e248",name:"Sentadilla Lateral (Cossack)",  muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",   xpBase:40, desc:"Cossack Squat. Desde de pie con piernas separadas, flexiona una rodilla llevando el peso hacia un lado manteniendo la otra pierna estirada. Movilidad de cadera y fuerza unilateral."},
+  {id:"e249",name:"Sentadilla (Peso Corporal)",    muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Sentadilla básica sin peso añadido. La base de cualquier progresión de pierna."},
+  {id:"e250",name:"Flexiones de Rodillas",         muscle:["pecho","triceps"], equip:"Sin equipo",level:"Principiante", xpBase:22, desc:"Flexión de brazos apoyando las rodillas en el suelo. Variante más accesible de la flexión estándar."},
+  {id:"e251",name:"Perro de Caza",                 muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:18, desc:"Bird Dog. A cuatro patas, extiende brazo y pierna contrarios manteniendo la zona lumbar estable. Core y equilibrio."},
+  {id:"e252",name:"Zancada",                       muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:30, desc:"Zancada con el propio peso corporal, alternando piernas. Trabaja cuádriceps y glúteo con énfasis unilateral."},
+  {id:"e253",name:"Elevación de Gemelos de Pie",   muscle:["gemelos"],         equip:"Sin equipo",level:"Principiante", xpBase:20, desc:"De pie, sube los talones lo más alto posible sin ningún material. Aislamiento básico de gemelo."},
+  {id:"e254",name:"Remo Invertido",                muscle:["espalda","biceps"],equip:"Sin equipo",level:"Intermedio",   xpBase:35, desc:"Tumbado bajo una barra fija a la altura de la cadera, tira del pecho hacia la barra. Versión con el propio peso corporal del remo."},
+  {id:"e255",name:"Patadas Boca de Incendio",      muscle:["gluteos"],         equip:"Sin equipo",level:"Principiante", xpBase:24, desc:"Fire Hydrant. A cuatro patas, eleva una rodilla hacia el lateral manteniendo el ángulo de 90°. Glúteo medio."},
+  {id:"e256",name:"Elevación de Rodillas",         muscle:["piernas","cardio"],equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"High Knees. Carrera en el sitio llevando las rodillas lo más alto posible. Cardio y activación de cuádriceps."},
+  {id:"e257",name:"Flexión en Pica",               muscle:["hombros","triceps"],equip:"Sin equipo",level:"Intermedio",  xpBase:35, desc:"Pike Push-up. En posición de V invertida, flexiona los codos llevando la cabeza hacia el suelo. Preparación para el press militar en pino."},
+  {id:"e258",name:"Curls Nórdicos de Isquiotibiales",muscle:["piernas"],       equip:"Sin equipo",level:"Avanzado",     xpBase:50, desc:"Nordic Curl. De rodillas con los tobillos anclados, baja el tronco controlando con los isquiotibiales. Uno de los ejercicios de isquios más exigentes que existen."},
+  {id:"e259",name:"Sentadilla Pistol Asistida",    muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",  xpBase:42, desc:"Sentadilla a una pierna apoyándote en una superficie o agarre para ayudar al equilibrio. Progresión hacia el Pistol Squat completo."},
+  {id:"e260",name:"Sentadilla Búlgara (Peso Corporal)",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",xpBase:40, desc:"Sentadilla búlgara con el pie trasero elevado, sin peso añadido. Fuerza unilateral de pierna."},
+  {id:"e261",name:"Elevación Frontal (Suspensión)",muscle:["hombros"],        equip:"Sin equipo",level:"Intermedio",  xpBase:30, desc:"Con correas de suspensión (o toalla anclada), eleva el cuerpo inclinado hacia delante trabajando el hombro. Requiere un anclaje tipo TRX."},
+  {id:"e262",name:"Curl de Bíceps (Suspensión)",   muscle:["biceps"],          equip:"Sin equipo",level:"Intermedio",  xpBase:30, desc:"Curl de bíceps con correas de suspensión, inclinando el cuerpo hacia atrás. Requiere un anclaje tipo TRX."},
+  {id:"e263",name:"Elevación en Y (Prono)",        muscle:["espalda","hombros"],equip:"Sin equipo",level:"Principiante",xpBase:22, desc:"Tumbado boca abajo, eleva los brazos formando una Y por encima de la cabeza apretando la espalda alta. Trabaja el trapecio inferior y el manguito rotador, distinto al Superman."},
+  {id:"e264",name:"Press en el Suelo (Mancuerna)", muscle:["pecho","triceps"], equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Press de banca tumbado directamente en el suelo. El recorrido se acorta al tocar los codos con el suelo, protegiendo el hombro."},
+  {id:"e265",name:"Remo Inclinado (Mancuerna)",    muscle:["espalda","antebrazos"],equip:"Mancuernas",level:"Principiante",xpBase:42, desc:"Remo con dos mancuernas a la vez, tronco inclinado hacia delante. Versión con mancuernas del remo con barra."},
+  {id:"e266",name:"Elevación de Gemelos de Pie (Mancuerna)",muscle:["gemelos"],equip:"Mancuernas",level:"Principiante",xpBase:28, desc:"De pie sujetando una mancuerna, sube los talones lo más alto posible. Añade carga al gemelo respecto a la versión sin peso."},
+  {id:"e267",name:"Aperturas (Banda)",             muscle:["pecho"],           equip:"Goma",level:"Principiante",       xpBase:26, desc:"Aperturas de pecho con banda anclada detrás, simulando el movimiento de un cable cruzado."},
+  {id:"e268",name:"Elevación Laterales (Banda)",   muscle:["hombros"],         equip:"Goma",level:"Principiante",       xpBase:24, desc:"Elevación lateral de hombro pisando la banda o con ella anclada a un punto bajo."},
+  {id:"e269",name:"Jalón al Pecho (Banda)",        muscle:["espalda","biceps"],equip:"Goma",level:"Principiante",       xpBase:32, desc:"Banda anclada en alto (puerta o barra), tira hacia el pecho imitando un jalón en polea."},
+  {id:"e270",name:"Curl Martillo (Banda)",         muscle:["biceps","antebrazos"],equip:"Goma",level:"Principiante",    xpBase:24, desc:"Curl con agarre neutro pisando la banda, palmas enfrentadas todo el recorrido."},
+  {id:"e271",name:"Remo con Banda",                muscle:["espalda","biceps"],equip:"Goma",level:"Principiante",       xpBase:32, desc:"Banda anclada al frente, remo tirando hacia el abdomen con los codos pegados al cuerpo."},
+  {id:"e272",name:"Peso Muerto (Banda)",           muscle:["piernas","espalda"],equip:"Goma",level:"Principiante",      xpBase:30, desc:"Pisando la banda con ambos pies, patrón de bisagra de cadera igual que un peso muerto convencional."},
+  {id:"e273",name:"Sentadilla (Banda)",            muscle:["piernas","gluteos"],equip:"Goma",level:"Principiante",      xpBase:26, desc:"Sentadilla sujetando la banda a la altura del pecho o pisándola sobre los hombros para añadir resistencia."},
+  {id:"e274",name:"Caminata Lateral con Banda Elástica",muscle:["gluteos"],    equip:"Goma",level:"Principiante",       xpBase:22, desc:"Banda alrededor de los tobillos o rodillas, pasos laterales manteniendo tensión constante. Activación de glúteo medio."},
 ];
 
 
@@ -4452,6 +4478,23 @@ function RankUpApp({user,onLogout}){
   const [achToast,setAchToast]=useState(null);
   const [coinToast,setCoinToast]=useState(null);
   const [showProfile,setShowProfile]=useState(false);
+  const [showBuzon,setShowBuzon]=useState(false);
+  const [showDMs,setShowDMs]=useState(false);
+  const [hasUnreadDMs,setHasUnreadDMs]=useState(false);
+  const checkUnreadDMs=useCallback(()=>{
+    const myKey=user.email.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+    fbGet(`dmIndex/${myKey}`).then(d=>{
+      setHasUnreadDMs(!!d&&Object.values(d).some(t=>t?.unread));
+    }).catch(()=>{});
+  },[user]);
+  useEffect(()=>{checkUnreadDMs();},[checkUnreadDMs]);
+  const [perfilSection,setPerfilSection]=useState(null);
+  const [showBuilder,setShowBuilder]=useState(null); // null | {equipFilter,suggestedName}
+  const [showExplorar,setShowExplorar]=useState(false);
+  const saveNewRoutine=useCallback(routine=>{
+    setRoutines(prev=>[...prev,routine]);
+    setShowBuilder(null);
+  },[]);
   const prevLvl=useRef(getLevel(totalXp));
   const ph=PHASES[activePhase];
   const level=getLevel(totalXp),xpInLvl=getXpInLevel(totalXp),xpNext=getXpForNextLevel(totalXp),ri=getRank(level);
@@ -4604,7 +4647,10 @@ function RankUpApp({user,onLogout}){
       }).catch(()=>{});
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Migrate old ex.done system → checked keys
-      const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
+      // IMPORTANTE: antes esto filtraba SOLO rt.assignedByAdmin===true, así que
+      // cualquier rutina creada por el propio usuario desaparecía al recargar.
+      // Ahora se conservan ambas: asignadas por admin Y creadas por el usuario.
+      const cleanRoutines=(fresh.customRoutines||[]);
       if(cleanRoutines.length>0){
         const migratedChecked={...(fresh.checked||{})};
         let needsMigration=false;
@@ -4991,6 +5037,24 @@ function RankUpApp({user,onLogout}){
     await fbSet(`socialPosts/${id}`,post).catch(()=>{});
   },[user]);
 
+  const shareWorkoutPost=useCallback(async(details)=>{
+    const id=genSocialId("post");
+    const post={
+      type:"workout",
+      email:user.email.toLowerCase().trim(),
+      name:user.name,
+      dayName:details.dayName,
+      totalKg:details.totalKg,
+      exerciseCount:details.exercises,
+      exerciseDetails:details.exerciseDetails||[],
+      coins:details.coins,
+      bossDone:details.bossDone||0,
+      createdAt:Date.now(),
+    };
+    setSocialPosts(p=>({...p,[id]:post}));
+    await fbSet(`socialPosts/${id}`,post).catch(()=>{});
+  },[user]);
+
   const deleteSocialPost=useCallback(async(postId)=>{
     setSocialPosts(p=>{const n={...p};delete n[postId];return n;});
     await fbSet(`socialPosts/${postId}`,null).catch(()=>{});
@@ -5068,7 +5132,8 @@ function RankUpApp({user,onLogout}){
 
   const unreadFromAdmin=messages.filter(m=>m.from==="admin"&&!m.read).length;
 
-  const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins}
+  const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins, exerciseDetails}
+  const [workoutShared,setWorkoutShared]=useState(false);
 
   const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt,exName,isBoss)=>{
     const was=!!checked[key];const nc={...checked,[key]:!was};setChecked(nc);
@@ -5089,16 +5154,17 @@ function RankUpApp({user,onLogout}){
             const bossDone=day.exercises.filter((ex,ei)=>ex.boss&&nc[exKey(phaseId,dayIdx,ei)]).length;
             const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
             addCoins(dungeonCoins,"¡Dungeon completado!");
-            const sessKg=day.exercises.reduce((sum,ex,ei)=>{
+            const exDetails=day.exercises.map((ex,ei)=>{
               const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
-              return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
-            },0);
+              return {name:ex.name,kg:Math.round(wArr.reduce((s,w)=>s+(w.kg||0),0)),boss:!!ex.boss};
+            });
+            const sessKg=exDetails.reduce((sum,e)=>sum+e.kg,0);
             setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
             addLoot(rollLoot("dungeon"));
-            setTimeout(()=>setDungeonComplete({
+            setTimeout(()=>{setWorkoutShared(false);setDungeonComplete({
               dayName:day.day, totalKg:Math.round(sessKg),
-              exercises:day.exercises.length, coins:dungeonCoins, bossDone
-            }),400);
+              exercises:day.exercises.length, coins:dungeonCoins, bossDone, exerciseDetails:exDetails
+            });},400);
             // Roll for raid after dungeon complete (pass current state to avoid overwriting an active raid)
             setTimeout(()=>triggerRaidCheck(activeRaid),2500);
             const newDC={...prevDC,[ck]:true};
@@ -5137,16 +5203,17 @@ function RankUpApp({user,onLogout}){
                 const bossDone=sess.exercises.filter((ex,ei)=>ex.boss&&nc[`rt_${rt.id}_${si}_${ei}`]).length;
                 const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
                 addCoins(dungeonCoins,"¡Dungeon completado!");
-                const sessKg=sess.exercises.reduce((sum,ex,ei)=>{
+                const exDetails=sess.exercises.map((ex,ei)=>{
                   const wArr=weights[`rt_${rt.id}_${si}_${ei}`]||[];
-                  return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
-                },0);
+                  return {name:ex.name,kg:Math.round(wArr.reduce((s,w)=>s+(w.kg||0),0)),boss:!!ex.boss};
+                });
+                const sessKg=exDetails.reduce((sum,e)=>sum+e.kg,0);
                 setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
                 addLoot(rollLoot("dungeon"));
-                setTimeout(()=>setDungeonComplete({
+                setTimeout(()=>{setWorkoutShared(false);setDungeonComplete({
                   dayName:sess.day, totalKg:Math.round(sessKg),
-                  exercises:sess.exercises.length, coins:dungeonCoins, bossDone
-                }),400);
+                  exercises:sess.exercises.length, coins:dungeonCoins, bossDone, exerciseDetails:exDetails
+                });},400);
                 setTimeout(()=>triggerRaidCheck(activeRaid),2500);
                 const newDC={...prevDC,[ck]:true};
                 // Whole-WEEK reward — only for routines built with the week
@@ -5261,7 +5328,7 @@ function RankUpApp({user,onLogout}){
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
   const xpPct=level>=MAX_LEVEL?100:Math.min((xpInLvl/xpNext)*100,100);
-  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"inventario",l:"🎒"},{id:"social",l:"📸"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
+  const TABS=[{id:"social",l:"🏠"},{id:"misiones",l:"⚔️"},{id:"ranking",l:"🏅"},{id:"perfil",l:"👤"}];
 
   return(
     <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
@@ -5395,6 +5462,12 @@ function RankUpApp({user,onLogout}){
               </div>
             )}
 
+            {/* Share button */}
+            <button onClick={()=>{if(!workoutShared){shareWorkoutPost(dungeonComplete);setWorkoutShared(true);}}} disabled={workoutShared}
+              style={{padding:"13px 40px",marginBottom:12,background:workoutShared?"#0D0D1A":"#A78BFA18",border:`1px solid ${workoutShared?"#34D39955":"#A78BFA55"}`,borderRadius:12,color:workoutShared?"#34D399":"#A78BFA",fontSize:13,fontWeight:700,cursor:workoutShared?"default":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
+              {workoutShared?"✓ Compartido en el Muro":"📸 Compartir en el Muro"}
+            </button>
+
             {/* Continue button */}
             <button onClick={()=>setDungeonComplete(null)}
               style={{padding:"16px 48px",background:"linear-gradient(135deg,#7C3AED,#A78BFA,#7C3AED)",border:"none",borderRadius:14,color:"#FFF",fontSize:16,fontWeight:900,cursor:"pointer",fontFamily:"'Cinzel',serif",letterSpacing:3,boxShadow:"0 0 30px #A78BFA66",backgroundSize:"200%"}}>
@@ -5447,6 +5520,41 @@ function RankUpApp({user,onLogout}){
         </div>
       )}
 
+      {/* Buzón modal */}
+      {showBuzon&&(
+        <div onClick={()=>setShowBuzon(false)} style={{position:"fixed",inset:0,zIndex:9990,background:"rgba(0,0,0,.75)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"85vh",overflowY:"auto",background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{fontSize:9,letterSpacing:5,color:"#444"}}>✉️ BUZÓN</div>
+              <button onClick={()=>setShowBuzon(false)} style={{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
+            </div>
+            <BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>
+          </div>
+        </div>
+      )}
+
+      {/* Mensajes directos entre Aventureros */}
+      {showDMs&&<DMsModal user={user} onClose={()=>{setShowDMs(false);checkUnreadDMs();}}/>}
+
+      {/* Explorar (plantillas por categoría) */}
+      {showExplorar&&(
+        <ExplorarModal
+          onClose={()=>setShowExplorar(false)}
+          onPick={({equipFilter,suggestedName,template})=>{setShowExplorar(false);setShowBuilder({equipFilter,suggestedName,template});}}
+        />
+      )}
+
+      {/* Constructor de rutina propia */}
+      {showBuilder&&(
+        <RoutineBuilderModal
+          equipFilter={showBuilder.equipFilter}
+          suggestedName={showBuilder.suggestedName}
+          template={showBuilder.template}
+          onClose={()=>setShowBuilder(null)}
+          onSave={saveNewRoutine}
+        />
+      )}
+
       {/* HEADER */}
       <div style={{flexShrink:0,background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"14px 16px 12px",position:"relative",overflow:"hidden",borderBottom:`1px solid ${ri.color}44`}}>
         <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",opacity:.025}}><div style={{width:"100%",height:2,background:"#FFF",animation:"scanline 4s linear infinite"}}/></div>
@@ -5477,7 +5585,15 @@ function RankUpApp({user,onLogout}){
                   <span>{activeRaid.raid.icon}</span><span>RAID</span>
                 </button>
               )}
-              <button onClick={()=>setTab("tienda")} style={{fontSize:14,fontWeight:700,color:equippedColor("anillo","#F59E0B"),background:`${equippedTexture("anillo")?`${equippedTexture("anillo")},`:""}${equippedColor("anillo","#F59E0B")}18`,border:`1px solid ${equippedColor("anillo","#F59E0B")}44`,borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
+              <button onClick={()=>{setTab("perfil");setPerfilSection("tienda");}} style={{fontSize:14,fontWeight:700,color:equippedColor("anillo","#F59E0B"),background:`${equippedTexture("anillo")?`${equippedTexture("anillo")},`:""}${equippedColor("anillo","#F59E0B")}18`,border:`1px solid ${equippedColor("anillo","#F59E0B")}44`,borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
+              <button onClick={()=>{setShowBuzon(true);markMessagesRead();}} title="Buzón" style={{position:"relative",fontSize:13,background:"#A78BFA18",border:"1px solid #A78BFA44",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#A78BFA",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
+                ✉️
+                {unreadFromAdmin>0&&<span style={{position:"absolute",top:-2,right:-2,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
+              </button>
+              <button onClick={()=>setShowDMs(true)} title="Mensajes" style={{position:"relative",fontSize:13,background:"#34D39918",border:"1px solid #34D39944",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#34D399",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
+                💬
+                {hasUnreadDMs&&<span style={{position:"absolute",top:-2,right:-2,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
+              </button>
               <button onClick={onLogout} title="Cerrar sesión" style={{fontSize:13,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#E84A5F",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>✕</button>
             </div>
           </div>
@@ -5492,16 +5608,20 @@ function RankUpApp({user,onLogout}){
         {/* Tabs */}
         <div style={{display:"flex",gap:5,paddingTop:12,paddingBottom:equippedTexture("botas")?8:0,borderBottom:equipped.botas?`2px solid ${equippedColor("botas","#1E1E32")}66`:"none",background:equippedTexture("botas")||"none",borderRadius:equipped.botas?"8px 8px 0 0":0}}>
           {TABS.map(t=>(
-            <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="buzon")markMessagesRead();}} style={{position:"relative",flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>
+            <button key={t.id} onClick={()=>setTab(t.id)} style={{position:"relative",flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>
               {t.l}
-              {t.id==="buzon"&&unreadFromAdmin>0&&<span style={{position:"absolute",top:4,right:4,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
             </button>
           ))}
         </div>
         {/* Content */}
         <div key={tab+activePhase} className="fade-up" style={{marginTop:12,paddingBottom:10}}>
           {tab==="misiones"&&(
-            assignedProgram?(
+            <>
+              <div style={{display:"flex",gap:8,marginBottom:14}}>
+                <button onClick={()=>setShowBuilder({equipFilter:null,suggestedName:""})} style={{flex:1,padding:"9px 8px",background:"#A78BFA18",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA RUTINA</button>
+                <button onClick={()=>setShowExplorar(true)} style={{flex:1,padding:"9px 8px",background:"#34D39918",border:"1px solid #34D39944",borderRadius:10,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🧭 EXPLORAR</button>
+              </div>
+            {assignedProgram?(
               <>
                 {/* Phase selector */}
                 <div style={{display:"flex",gap:8,marginBottom:12}}>
@@ -5556,43 +5676,39 @@ function RankUpApp({user,onLogout}){
               <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
                 <div style={{fontSize:52,marginBottom:16}}>⚔️</div>
                 <div style={{fontSize:18,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin programa asignado</div>
-                <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado un programa.<br/>Pronto tendrás tus misiones esperándote.</div>
+                <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado un programa.<br/>Mientras tanto, crea tu propia rutina arriba ☝️</div>
               </div>
               )
-            )
-          )}
-          {tab==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
-          {tab==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
-          {tab==="nutricion"&&(
-            <>
-              {assignedProgram?(
-                <>
-                  <div style={{display:"flex",gap:8,marginBottom:12}}>
-                    {assignedProgram.phases.map((p,i)=>(
-                      <button key={i} onClick={()=>setActivePhase(i)} style={{flex:1,padding:"10px 4px",borderRadius:10,cursor:"pointer",background:activePhase===i?`${p.color}18`:"#0D0D1A",border:`1px solid ${activePhase===i?p.color:"#1E1E32"}`,boxShadow:activePhase===i?`0 0 20px ${p.color}44`:"none"}}>
-                        <div style={{fontSize:9,color:activePhase===i?p.color:"#444",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>{p.name}</div>
-                        <div style={{fontSize:11,color:activePhase===i?"#FFF":"#555",fontWeight:600}}>{p.subtitle}</div>
-                      </button>
-                    ))}
-                  </div>
-                  <NutricionTab ph={assignedProgram.phases[activePhase]||assignedProgram.phases[0]} assignedDiets={assignedDiets}/>
-                </>
-              ):assignedDiets.length>0?(
-                <NutricionTab ph={PHASES[0]} assignedDiets={assignedDiets}/>
-              ):(
-                <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
-                  <div style={{fontSize:52,marginBottom:16}}>🍖</div>
-                  <div style={{fontSize:18,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin dieta asignada</div>
-                  <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado una dieta.<br/>Pronto tendrás tu plan nutricional personalizado.</div>
-                </div>
-              )}
+            )}
             </>
           )}
-          {tab==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
-          {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
           {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} profilePhotos={allProfilePhotos} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike} onToggleCommentLike={toggleSocialCommentLike}/>}
-          {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
+          {tab==="perfil"&&(
+            perfilSection===null?(
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                {[
+                  {id:"cuerpo",icon:"🫀",label:"Cuerpo",color:"#E84A5F"},
+                  {id:"tienda",icon:"🪙",label:"Tienda",color:"#F59E0B"},
+                  {id:"inventario",icon:"🎒",label:"Inventario",color:"#A78BFA"},
+                  {id:"logros",icon:"🏆",label:"Logros",color:"#34D399"},
+                ].map(s=>(
+                  <button key={s.id} onClick={()=>setPerfilSection(s.id)} style={{padding:"26px 12px",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:14,display:"flex",flexDirection:"column",alignItems:"center",gap:10,cursor:"pointer"}}>
+                    <span style={{fontSize:32}}>{s.icon}</span>
+                    <span style={{fontSize:12,fontWeight:700,color:s.color,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>{s.label.toUpperCase()}</span>
+                  </button>
+                ))}
+              </div>
+            ):(
+              <>
+                <button onClick={()=>setPerfilSection(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:14,padding:0}}>← VOLVER</button>
+                {perfilSection==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
+                {perfilSection==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
+                {perfilSection==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
+                {perfilSection==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
+              </>
+            )
+          )}
         </div>
       </div>
       <div style={{flexShrink:0,background:"#07070F",padding:"8px 16px 12px",borderTop:`1px solid ${ri.color}33`,textAlign:"center"}}>
@@ -5902,6 +6018,269 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
+// ─── Constructor de rutinas propias ──────────────────────────────────────
+const EQUIP_OPTIONS=["Mancuernas","Barra","Banco","Goma","Kettlebell","Fitball","Disco","Comba","Rueda","Máquina","Polea","Trineo","Remo","Bicicleta","Cinta","Cuerdas","Balón"];
+const BUILDER_COLORS=["#60A5FA","#A78BFA","#34D399","#F59E0B","#E84A5F","#38BDF8","#FB923C"];
+
+// Plantillas de rutina reales, hechas con ejercicios que ya existen en EXERCISE_DB.
+// requiredEquip: para las de "casa", qué material necesitas tener seleccionado
+// (además de "Sin equipo", que siempre está disponible).
+const tplEx=(name,sets,rest,xp)=>({name,sets,rest,xp,boss:false});
+const ROUTINE_TEMPLATES={
+  gimnasio:[
+    {id:"tpl_ppl",name:"Push Pull Legs",level:"Principiante",days:[
+      {day:"Empuje",exercises:[tplEx("Press Banca Plano","5x4-15","90s",40),tplEx("Press Militar Mancuernas","3x12-15","75s",45),tplEx("Aperturas en Máquina (Peck Deck)","3x15-20","60s",32),tplEx("Elevaciones Laterales","3x15-20","45s",30),tplEx("Extensión Polea Cuerda","3x15-20","45s",33)]},
+      {day:"Tirón",exercises:[tplEx("Jalones al Pecho","3x10-12","60s",40),tplEx("Remo en Polea Baja","3x12-15","60s",42),tplEx("Encogimientos con Mancuernas","3x12-15","45s",28),tplEx("Curl Martillo","3x12-15","45s",32),tplEx("Face Pull","3x15-20","45s",30)]},
+      {day:"Piernas",exercises:[tplEx("Prensa 45°","5x5-12","90s",40),tplEx("Curl Femoral Tumbado","3x12-15","60s",30),tplEx("Extensión de Cuádriceps","3x12-15","60s",30),tplEx("Elevación de Talones","3x15-20","45s",25)]},
+    ]},
+    {id:"tpl_fullbody_gym",name:"Full Body Gimnasio",level:"Intermedio",days:[
+      {day:"Cuerpo Entero 1",exercises:[tplEx("Sentadilla con Barra","6x5-15","90s",55),tplEx("Press Inclinado Mancuernas","4x10-12","75s",40),tplEx("Curl Femoral Tumbado","4x12-15","60s",30),tplEx("Jalones al Pecho","3x12-15","60s",40),tplEx("Extensión Polea Cuerda","3x12-15","45s",33)]},
+      {day:"Cuerpo Entero 2",exercises:[tplEx("Remo con Barra","6x5-15","90s",45),tplEx("Prensa 45°","4x10-12","75s",40),tplEx("Press en Máquina","4x10-12","75s",35),tplEx("Curl con Barra Z","3x12-15","45s",36),tplEx("Elevación de Talones","3x15-20","45s",25)]},
+      {day:"Cuerpo Entero 3",exercises:[tplEx("Press Militar Mancuernas","5x10-12","75s",45),tplEx("Hip Extension en Máquina","5x10-12","75s",30),tplEx("Encogimientos con Mancuernas","4x10-12","45s",28),tplEx("Extensión de Cuádriceps","3x12-15","60s",30),tplEx("Crossover en Polea","3x15-20","45s",35),tplEx("Face Pull","3x15-20","45s",30)]},
+    ]},
+    {id:"tpl_ppl_intermedio",name:"Push Pull Legs (Intermedio)",level:"Intermedio",days:[
+      {day:"Empuje",exercises:[tplEx("Press Banca Plano","6x5-15","90s",40),tplEx("Press Inclinado Mancuernas","4x10-12","75s",40),tplEx("Press Máquina Hombros","4x10-12","75s",40),tplEx("Crossover en Polea","4x12-15","60s",35),tplEx("Elevaciones Laterales","3x12-15","45s",30),tplEx("Extensión Polea Cuerda","3x12-15","45s",33)]},
+      {day:"Tirón",exercises:[tplEx("Remo con Barra","6x5-15","90s",45),tplEx("Remo en Multipower","4x10-12","75s",44),tplEx("Jalones al Pecho","4x10-12","60s",40),tplEx("Encogimientos con Mancuernas","4x10-12","45s",28),tplEx("Curl con Barra","4x12-15","45s",35),tplEx("Face Pull","3x15-20","45s",30)]},
+      {day:"Piernas",exercises:[tplEx("Sentadilla con Barra","6x5-15","90s",55),tplEx("Prensa 45°","4x10-12","75s",40),tplEx("Hiperextensiones","4x10-12","60s",32),tplEx("Curl Femoral Tumbado","4x12-15","60s",30),tplEx("Extensión de Cuádriceps","3x12-15","60s",30),tplEx("Elevación de Talones","3x15-20","45s",25)]},
+    ]},
+  ],
+  peso:[
+    {id:"tpl_fullbody_peso",name:"Full Body Sin Material",level:"Principiante",days:[
+      {day:"Empuje + Core",exercises:[tplEx("Flexiones","4x12","60s",30),tplEx("Fondos en Silla","3x12","45s",28),tplEx("Plancha","3x30s","45s",25),tplEx("Mountain Climbers","3x20","45s",35)]},
+      {day:"Tirón + Piernas",exercises:[tplEx("Superman","3x15","30s",20),tplEx("Puente de Glúteo","3x15","30s",25),tplEx("Jump Squat","4x12","45s",40),tplEx("Sentadilla Lateral (Cossack)","3x10","45s",40)]},
+      {day:"Full Body + Cardio",exercises:[tplEx("Flexiones Declinadas","3x12","60s",32),tplEx("Crunch Abdominal","3x15","30s",22),tplEx("Elevación de Piernas","3x12","45s",30),tplEx("Burpees","3x10","60s",38)]},
+    ]},
+    {id:"tpl_hiit_peso",name:"HIIT Sin Material",level:"Intermedio",days:[
+      {day:"Circuito Único",exercises:[tplEx("Jump Squat","4x15","30s",40),tplEx("Burpees","4x10","45s",38),tplEx("Mountain Climbers","4x20","30s",35),tplEx("Flexiones Diamante","3x10","45s",35),tplEx("Plancha","3x40s","30s",25),tplEx("Salto de Tijera (Jumping Jack)","4x20","20s",25)]},
+    ]},
+    {id:"tpl_fullbody_hevy_peso",name:"Cuerpo Entero Sin Equipamiento",level:"Principiante",days:[
+      {day:"Cuerpo Entero 1",exercises:[tplEx("Sentadilla (Peso Corporal)","3x15","45s",28),tplEx("Flexiones de Rodillas","3x12","45s",22),tplEx("Superman","3x15","30s",20),tplEx("Puente de Glúteo","3x15","30s",25),tplEx("Mountain Climbers","3x20","30s",35)]},
+      {day:"Cuerpo Entero 2",exercises:[tplEx("Zancada","3x12","45s",30),tplEx("Perro de Caza","3x12","30s",18),tplEx("Elevación de Gemelos de Pie","3x20","30s",20),tplEx("Plancha","3x30s","30s",25),tplEx("Salto de Tijera (Jumping Jack)","3x20","20s",25)]},
+      {day:"Cuerpo Entero 3",exercises:[tplEx("Remo Invertido","3x10","45s",35),tplEx("Sentadilla (Peso Corporal)","3x15","45s",28),tplEx("Flexiones Inclinadas","3x12","45s",28),tplEx("Patadas Boca de Incendio","3x12","30s",24),tplEx("Elevación de Rodillas","3x20","30s",28)]},
+    ]},
+    {id:"tpl_ppl_peso",name:"Push Pull Legs Sin Equipo (Intermedio)",level:"Intermedio",days:[
+      {day:"Empuje",exercises:[tplEx("Flexiones Declinadas","5x12","60s",32),tplEx("Flexión en Pica","5x10","60s",35),tplEx("Flexiones Diamante","5x10","60s",35),tplEx("Fondos en Banco","5x12","45s",28),tplEx("Elevación Frontal (Suspensión)","4x12","45s",30)]},
+      {day:"Tirón",exercises:[tplEx("Remo Invertido","5x10","60s",35),tplEx("Elevación en Y (Prono)","4x15","45s",22),tplEx("Superman","4x15","30s",20),tplEx("Curl de Bíceps (Suspensión)","4x12","45s",30)]},
+      {day:"Piernas",exercises:[tplEx("Sentadilla Búlgara (Peso Corporal)","5x12","60s",40),tplEx("Curls Nórdicos de Isquiotibiales","5x8","60s",50),tplEx("Sentadilla Pistol Asistida","4x10","60s",42),tplEx("Elevación de Cadera Unilateral","4x15","45s",30),tplEx("Elevación de Gemelos de Pie","4x20","30s",20)]},
+    ]},
+  ],
+  casa:[
+    {id:"tpl_fullbody_mancuernas",name:"Push Pull Legs con Mancuernas",level:"Principiante",requiredEquip:["Mancuernas"],days:[
+      {day:"Empuje",exercises:[tplEx("Press en el Suelo (Mancuerna)","4x10-12","75s",35),tplEx("Press Militar Mancuernas","3x12-15","75s",45),tplEx("Flexiones de Rodillas","3x12","45s",22),tplEx("Elevaciones Laterales","3x15-20","45s",30)]},
+      {day:"Tirón",exercises:[tplEx("Remo Inclinado (Mancuerna)","4x10-12","75s",42),tplEx("Remo con Mancuerna","3x10-12","60s",40),tplEx("Encogimientos con Mancuernas","3x12-15","45s",28),tplEx("Pájaros","3x15-20","45s",28)]},
+      {day:"Piernas",exercises:[tplEx("Sentadilla Búlgara","3x12","75s",55),tplEx("Peso Muerto con Mancuernas","3x10-12","90s",45),tplEx("Sentadilla Goblet","3x12-15","75s",35),tplEx("Elevación de Gemelos de Pie (Mancuerna)","3x15-20","45s",28)]},
+    ]},
+    {id:"tpl_banda_casa",name:"Push Pull Legs con Banda",level:"Principiante",requiredEquip:["Goma"],days:[
+      {day:"Empuje",exercises:[tplEx("Flexión en Pica","3x10","60s",35),tplEx("Flexiones","3x12","60s",30),tplEx("Aperturas (Banda)","2x15-25","45s",26),tplEx("Fondos en Banco","2x12","45s",28),tplEx("Elevación Laterales (Banda)","2x15-25","45s",24)]},
+      {day:"Tirón",exercises:[tplEx("Remo Invertido","3x10","60s",35),tplEx("Jalón al Pecho (Banda)","2x15-25","45s",32),tplEx("Curl Martillo (Banda)","2x15-25","45s",24),tplEx("Remo con Banda","3x12","45s",32)]},
+      {day:"Piernas",exercises:[tplEx("Sentadilla Búlgara (Peso Corporal)","3x12-15","75s",40),tplEx("Peso Muerto (Banda)","3x8-10","75s",30),tplEx("Sentadilla (Banda)","2x12-15","60s",26),tplEx("Caminata Lateral con Banda Elástica","2x15","30s",22),tplEx("Elevación de Cadera Unilateral","2x12","30s",30)]},
+    ]},
+  ],
+};
+
+function RoutineBuilderModal({equipFilter=null,suggestedName="",template=null,onSave,onClose}){
+  const [name,setName]=useState(template?template.name:suggestedName);
+  const [days,setDays]=useState(()=>
+    template
+      ?template.days.map((d,i)=>({id:i+1,name:d.day,exercises:d.exercises.map(e=>({...e}))}))
+      :[{id:1,name:"Día 1",exercises:[]}]
+  );
+  const [addingDay,setAddingDay]=useState(null); // day id currently picking an exercise for
+  const [searchQ,setSearchQ]=useState("");
+
+  const pool=(()=>{
+    let p=EXERCISE_DB;
+    if(equipFilter&&equipFilter.length>0) p=p.filter(e=>equipFilter.includes(e.equip)||e.equip==="Sin equipo");
+    const q=searchQ.toLowerCase().trim();
+    if(q) p=p.filter(e=>e.name.toLowerCase().includes(q)||e.muscle.some(m=>m.toLowerCase().includes(q)));
+    return p.slice(0,40);
+  })();
+
+  const addDay=()=>setDays(d=>[...d,{id:Date.now(),name:`Día ${d.length+1}`,exercises:[]}]);
+  const removeDay=id=>setDays(d=>d.filter(x=>x.id!==id));
+  const renameDay=(id,val)=>setDays(d=>d.map(x=>x.id===id?{...x,name:val}:x));
+  const addExercise=(dayId,ex)=>{
+    setDays(d=>d.map(x=>x.id===dayId?{...x,exercises:[...x.exercises,{name:ex.name,sets:"3x10",rest:"60s",xp:ex.xpBase||35,boss:false}]}:x));
+    setAddingDay(null); setSearchQ("");
+  };
+  const removeExercise=(dayId,ei)=>setDays(d=>d.map(x=>x.id===dayId?{...x,exercises:x.exercises.filter((_,i)=>i!==ei)}:x));
+  const updateExercise=(dayId,ei,field,val)=>setDays(d=>d.map(x=>x.id===dayId?{...x,exercises:x.exercises.map((e,i)=>i===ei?{...e,[field]:val}:e)}:x));
+
+  const totalEx=days.reduce((a,d)=>a+d.exercises.length,0);
+  const canSave=name.trim().length>0&&totalEx>0;
+
+  const save=()=>{
+    if(!canSave) return;
+    const routine={
+      id:`custom_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,
+      name:name.trim(),
+      color:BUILDER_COLORS[Math.floor(Math.random()*BUILDER_COLORS.length)],
+      assignedByAdmin:false,
+      sessions:days.map(d=>({day:d.name||"Día",exercises:d.exercises})),
+    };
+    onSave(routine);
+  };
+
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.85)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"flex-start",padding:"20px 12px",overflowY:"auto"}}>
+      <div style={{width:"100%",maxWidth:480,background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box",marginBottom:20}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#444"}}>⚔️ NUEVA RUTINA</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
+        </div>
+
+        <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nombre de la rutina (ej: Mi rutina de fuerza)"
+          style={{width:"100%",padding:"12px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}}/>
+
+        {days.map(d=>(
+          <div key={d.id} style={{background:"#07070F",border:"1px solid #1E1E32",borderRadius:12,padding:12,marginBottom:12}}>
+            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10}}>
+              <input value={d.name} onChange={e=>renameDay(d.id,e.target.value)}
+                style={{flex:1,padding:"8px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#EEE",fontSize:12,fontWeight:700,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+              {days.length>1&&<button onClick={()=>removeDay(d.id)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:13}}>🗑️</button>}
+            </div>
+
+            {d.exercises.map((ex,ei)=>(
+              <div key={ei} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 0",borderTop:"1px solid #161622"}}>
+                <span style={{flex:1,fontSize:11,color:"#CCC"}}>{ex.name}</span>
+                <input value={ex.sets} onChange={e=>updateExercise(d.id,ei,"sets",e.target.value)} style={{width:48,padding:"4px 6px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:6,color:"#A78BFA",fontSize:10,textAlign:"center",outline:"none"}}/>
+                <input value={ex.rest} onChange={e=>updateExercise(d.id,ei,"rest",e.target.value)} style={{width:44,padding:"4px 6px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:6,color:"#666",fontSize:10,textAlign:"center",outline:"none"}}/>
+                <button onClick={()=>removeExercise(d.id,ei)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:11}}>✕</button>
+              </div>
+            ))}
+
+            {addingDay===d.id?(
+              <div style={{marginTop:8}}>
+                <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar ejercicio..."
+                  style={{width:"100%",padding:"8px 10px",background:"#0D0D1A",border:"1px solid #A78BFA44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
+                <div style={{maxHeight:180,overflowY:"auto"}}>
+                  {pool.map(ex=>(
+                    <button key={ex.id} onClick={()=>addExercise(d.id,ex)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",background:"none",border:"none",borderBottom:"1px solid #161622",color:"#DDD",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                      {ex.name} <span style={{color:"#444",fontSize:9}}>· {ex.equip}</span>
+                    </button>
+                  ))}
+                  {pool.length===0&&<div style={{fontSize:11,color:"#444",padding:"8px 0"}}>Sin resultados{equipFilter?" con tu equipo seleccionado":""}.</div>}
+                </div>
+                <button onClick={()=>{setAddingDay(null);setSearchQ("");}} style={{marginTop:6,background:"none",border:"none",color:"#555",fontSize:10,cursor:"pointer"}}>Cancelar búsqueda</button>
+              </div>
+            ):(
+              <button onClick={()=>setAddingDay(d.id)} style={{width:"100%",padding:"8px",marginTop:4,background:"#A78BFA12",border:"1px dashed #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ AÑADIR EJERCICIO</button>
+            )}
+          </div>
+        ))}
+
+        <button onClick={addDay} style={{width:"100%",padding:10,background:"#0D0D1A",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>+ AÑADIR DÍA</button>
+
+        <button onClick={save} disabled={!canSave} style={{width:"100%",padding:14,background:canSave?"linear-gradient(135deg,#7C3AED,#A78BFA)":"#1A1A2E",border:"none",borderRadius:12,color:canSave?"#FFF":"#555",fontSize:13,fontWeight:900,cursor:canSave?"pointer":"default",fontFamily:"'Cinzel',serif",letterSpacing:2}}>
+          ⚔ GUARDAR RUTINA ⚔
+        </button>
+        {!canSave&&<div style={{fontSize:10,color:"#444",textAlign:"center",marginTop:8}}>Ponle nombre y añade al menos un ejercicio</div>}
+      </div>
+    </div>
+  );
+}
+
+// ─── Explorar: plantillas por categoría ──────────────────────────────────
+function ExplorarModal({onPick,onClose}){
+  const [step,setStep]=useState("categorias"); // "categorias" | "equipo" | "plantillas"
+  const [selectedEquip,setSelectedEquip]=useState([]);
+  const [catId,setCatId]=useState(null);
+  const [equipFilter,setEquipFilter]=useState(null);
+
+  const toggleEquip=item=>setSelectedEquip(s=>s.includes(item)?s.filter(x=>x!==item):[...s,item]);
+
+  const CATS=[
+    {id:"casa",icon:"🏠",label:"En casa",desc:"Elige el material que tienes"},
+    {id:"gimnasio",icon:"🏢",label:"Gimnasio",desc:"Acceso a máquinas y peso libre"},
+    {id:"peso",icon:"🧘",label:"Con tu peso",desc:"Sin ningún material"},
+  ];
+  const CAT_SUGGESTED_NAME={casa:"Rutina en casa",gimnasio:"Rutina de Gimnasio",peso:"Rutina con tu peso"};
+
+  const pickCategory=cat=>{
+    if(cat.id==="casa"){ setCatId("casa"); setStep("equipo"); return; }
+    setCatId(cat.id);
+    setEquipFilter(cat.id==="peso"?["Sin equipo"]:null);
+    setStep("plantillas");
+  };
+
+  const confirmEquipo=()=>{
+    setEquipFilter([...selectedEquip,"Sin equipo"]);
+    setStep("plantillas");
+  };
+
+  const templates=(()=>{
+    const all=ROUTINE_TEMPLATES[catId]||[];
+    if(catId!=="casa") return all;
+    return all.filter(t=>!t.requiredEquip||t.requiredEquip.every(r=>selectedEquip.includes(r)));
+  })();
+
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.85)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"85vh",overflowY:"auto",background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#444"}}>🧭 EXPLORAR</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
+        </div>
+
+        {step==="categorias"&&(
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {CATS.map(c=>(
+              <button key={c.id} onClick={()=>pickCategory(c)} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 14px",background:"#A78BFA0D",border:"1px solid #A78BFA33",borderRadius:12,cursor:"pointer",textAlign:"left"}}>
+                <span style={{fontSize:28}}>{c.icon}</span>
+                <div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{c.label}</div>
+                  <div style={{fontSize:11,color:"#666"}}>{c.desc}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {step==="equipo"&&(
+          <div>
+            <div style={{fontSize:12,color:"#AAA",marginBottom:12}}>¿Qué material tienes en casa? Selecciona todo lo que tengas disponible.</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:18}}>
+              {EQUIP_OPTIONS.map(item=>{
+                const sel=selectedEquip.includes(item);
+                return(
+                  <button key={item} onClick={()=>toggleEquip(item)} style={{padding:"7px 12px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",background:sel?"#A78BFA22":"#0D0D1A",border:`1px solid ${sel?"#A78BFA":"#2A2A44"}`,color:sel?"#A78BFA":"#666"}}>
+                    {sel?"✓ ":""}{item}
+                  </button>
+                );
+              })}
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>setStep("categorias")} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>← ATRÁS</button>
+              <button onClick={confirmEquipo} style={{flex:2,padding:12,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:10,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                {selectedEquip.length>0?`CONTINUAR CON ${selectedEquip.length} ✓`:"CONTINUAR SIN MATERIAL"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step==="plantillas"&&(
+          <div>
+            <div style={{fontSize:12,color:"#AAA",marginBottom:12}}>Elige una plantilla para empezar (podrás editarla antes de guardar), o arranca en blanco.</div>
+            <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
+              {templates.map(t=>(
+                <button key={t.id} onClick={()=>onPick({equipFilter,suggestedName:t.name,template:t})} style={{textAlign:"left",padding:"14px",background:"#34D39912",border:"1px solid #34D39944",borderRadius:12,cursor:"pointer"}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#34D399",fontFamily:"'Rajdhani',sans-serif"}}>{t.name}</div>
+                  <div style={{fontSize:10,color:"#666",marginTop:2}}>{t.level} · {t.days.length} día{t.days.length!==1?"s":""} · {t.days.reduce((a,d)=>a+d.exercises.length,0)} ejercicios</div>
+                </button>
+              ))}
+              {templates.length===0&&<div style={{fontSize:11,color:"#444",padding:"6px 0"}}>No hay plantillas con ese material todavía — arranca en blanco.</div>}
+            </div>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>setStep(catId==="casa"?"equipo":"categorias")} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>← ATRÁS</button>
+              <button onClick={()=>onPick({equipFilter,suggestedName:CAT_SUGGESTED_NAME[catId]||"",template:null})} style={{flex:2,padding:12,background:"#0D0D1A",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ EMPEZAR EN BLANCO</button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx,sessionKg={}}){
   const [historyModal,setHistoryModal]=useState(null);
   const [swapModal,setSwapModal]=useState(null); // {key, exName, muscles}
@@ -6054,13 +6433,13 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
           </div>
         );
       })()}
-      {extraRoutines.filter(rt=>rt.assignedByAdmin===true).length>0&&(
+      {extraRoutines.length>0&&(
         <div style={{marginTop:20}}>
           <div style={{display:"flex",alignItems:"center",gap:10,margin:"0 0 8px"}}>
             <div style={{padding:"3px 12px",borderRadius:20,fontSize:9,fontWeight:700,letterSpacing:3,fontFamily:"'Rajdhani',sans-serif",background:"#A78BFA22",border:"1px solid #A78BFA55",color:"#A78BFA"}}>👑 RUTINAS ADICIONALES</div>
             <div style={{flex:1,height:1,background:"linear-gradient(90deg,#A78BFA33,transparent)"}}/>
           </div>
-          {extraRoutines.filter(rt=>rt.assignedByAdmin===true).map(rt=>{
+          {extraRoutines.map(rt=>{
             const c=rt.color||"#A78BFA";
             const totalEx=rt.sessions?.reduce((a,s)=>a+s.exercises.length,0)||0;
             const doneEx=rt.sessions?.reduce((a,s)=>a+s.exercises.filter(e=>e.done).length,0)||0;
@@ -7051,10 +7430,44 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
                 </button>}
             </div>
 
-            {/* Imagen */}
-            <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
-              <img src={post.photo} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-            </div>
+            {/* Imagen o tarjeta de entreno */}
+            {post.type==="workout"?(
+              <div style={{padding:"4px 14px 16px"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                  <span style={{fontSize:18}}>⚔️</span>
+                  <span style={{fontSize:15,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif"}}>{post.dayName}</span>
+                  {post.bossDone>0&&<span style={{fontSize:14}}>💀×{post.bossDone}</span>}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:post.exerciseDetails?.length?12:0}}>
+                  <div style={{textAlign:"center",background:"#A78BFA0D",border:"1px solid #A78BFA33",borderRadius:10,padding:"10px 4px"}}>
+                    <div style={{fontSize:17,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif"}}>{(post.totalKg||0).toLocaleString()}</div>
+                    <div style={{fontSize:8,color:"#666",letterSpacing:1}}>KG TOTALES</div>
+                  </div>
+                  <div style={{textAlign:"center",background:"#F59E0B0D",border:"1px solid #F59E0B33",borderRadius:10,padding:"10px 4px"}}>
+                    <div style={{fontSize:17,fontWeight:900,color:"#F59E0B",fontFamily:"'Cinzel',serif"}}>{post.exerciseCount||0}</div>
+                    <div style={{fontSize:8,color:"#666",letterSpacing:1}}>EJERCICIOS</div>
+                  </div>
+                  <div style={{textAlign:"center",background:"#34D3990D",border:"1px solid #34D39933",borderRadius:10,padding:"10px 4px"}}>
+                    <div style={{fontSize:17,fontWeight:900,color:"#34D399",fontFamily:"'Cinzel',serif"}}>+{post.coins||0}</div>
+                    <div style={{fontSize:8,color:"#666",letterSpacing:1}}>🪙 GANADAS</div>
+                  </div>
+                </div>
+                {post.exerciseDetails?.length>0&&(
+                  <div style={{background:"#0A0A0A",border:"1px solid #1A1A1A",borderRadius:10,padding:"10px 12px"}}>
+                    {post.exerciseDetails.map((ex,i)=>(
+                      <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderTop:i>0?"1px solid #161616":"none"}}>
+                        <span style={{fontSize:11,color:"#BBB"}}>{ex.boss?"💀 ":""}{ex.name}</span>
+                        {ex.kg>0&&<span style={{fontSize:11,color:"#666",fontWeight:700}}>{ex.kg}kg</span>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ):(
+              <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
+                <img src={post.photo} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+              </div>
+            )}
 
             {/* Barra de interacción */}
             <div style={{display:"flex",alignItems:"center",gap:18,padding:"10px 12px 6px"}}>
@@ -7115,6 +7528,163 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ─── Mensajes directos entre Aventureros ─────────────────────────────────
+function DMsModal({user,onClose}){
+  const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+  const myKey=keyOf(user.email);
+  const [view,setView]=useState("list"); // "list" | "pick" | "thread"
+  const [threads,setThreads]=useState({});
+  const [loadingThreads,setLoadingThreads]=useState(true);
+  const [allUsers,setAllUsers]=useState(null);
+  const [search,setSearch]=useState("");
+  const [activeThread,setActiveThread]=useState(null); // {threadId,otherKey,otherName}
+  const [messages,setMessages]=useState({});
+  const [input,setInput]=useState("");
+  const bottomRef=useRef();
+
+  useEffect(()=>{
+    fbGet(`dmIndex/${myKey}`).then(d=>{setThreads(d||{});setLoadingThreads(false);}).catch(()=>setLoadingThreads(false));
+  },[]);
+
+  const openPicker=()=>{
+    setView("pick");
+    if(!allUsers) fbGet("users").then(d=>setAllUsers(d||{})).catch(()=>setAllUsers({}));
+  };
+
+  const openThread=(otherKey,otherName)=>{
+    const threadId=[myKey,otherKey].sort().join("__");
+    setActiveThread({threadId,otherKey,otherName});
+    setView("thread");
+    setMessages({});
+    if(threads[otherKey]?.unread){
+      fbSet(`dmIndex/${myKey}/${otherKey}/unread`,false).catch(()=>{});
+      setThreads(t=>({...t,[otherKey]:{...t[otherKey],unread:false}}));
+    }
+  };
+
+  useEffect(()=>{
+    if(view!=="thread"||!activeThread) return;
+    const unsub=fbListen(`dms/${activeThread.threadId}/messages`,(data)=>{
+      setMessages(data||{});
+      setTimeout(()=>bottomRef.current?.scrollIntoView({behavior:"smooth"}),80);
+    });
+    return unsub;
+  },[view,activeThread?.threadId]);
+
+  const send=async()=>{
+    const text=input.trim();
+    if(!text||!activeThread) return;
+    setInput("");
+    const {threadId,otherKey,otherName}=activeThread;
+    const msgId=`m_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+    const msg={from:myKey,fromName:user.name,text,createdAt:Date.now()};
+    await fbSet(`dms/${threadId}/messages/${msgId}`,msg).catch(()=>{});
+    const now=Date.now();
+    await fbSet(`dmIndex/${myKey}/${otherKey}`,{name:otherName,lastMessage:text,lastAt:now,unread:false}).catch(()=>{});
+    await fbSet(`dmIndex/${otherKey}/${myKey}`,{name:user.name,lastMessage:text,lastAt:now,unread:true}).catch(()=>{});
+    setThreads(t=>({...t,[otherKey]:{name:otherName,lastMessage:text,lastAt:now,unread:false}}));
+  };
+
+  const threadList=Object.entries(threads).sort((a,b)=>(b[1].lastAt||0)-(a[1].lastAt||0));
+  const pickList=allUsers?Object.entries(allUsers)
+    .filter(([k,u])=>k!==myKey&&u&&u.name)
+    .filter(([k,u])=>u.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a,b)=>a[1].name.localeCompare(b[1].name)):[];
+  const msgList=Object.entries(messages).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
+
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9990,background:"rgba(0,0,0,.75)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"85vh",display:"flex",flexDirection:"column",background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,boxSizing:"border-box",overflow:"hidden"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 20px 12px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            {view==="thread"&&
+              <button onClick={()=>setView("list")} style={{background:"none",border:"none",color:"#888",fontSize:16,cursor:"pointer",padding:0}}>←</button>}
+            <div style={{fontSize:view==="thread"?13:9,letterSpacing:view==="thread"?0:5,color:view==="thread"?"#FAFAFA":"#444",fontWeight:view==="thread"?700:400,fontFamily:view==="thread"?"'Rajdhani',sans-serif":"inherit"}}>
+              {view==="list"&&"💬 MENSAJES"}
+              {view==="pick"&&"NUEVO MENSAJE"}
+              {view==="thread"&&activeThread?.otherName}
+            </div>
+          </div>
+          <div style={{display:"flex",gap:10,alignItems:"center"}}>
+            {view==="list"&&<button onClick={openPicker} style={{background:"#A78BFA18",border:"1px solid #A78BFA44",borderRadius:20,color:"#A78BFA",fontSize:16,cursor:"pointer",width:28,height:28,lineHeight:"26px",padding:0}}>+</button>}
+            <button onClick={onClose} style={{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
+          </div>
+        </div>
+
+        {view==="list"&&(
+          <div style={{overflowY:"auto",padding:"0 12px 16px"}}>
+            {loadingThreads&&<div style={{textAlign:"center",color:"#444",fontSize:12,padding:"30px 0"}}>Cargando...</div>}
+            {!loadingThreads&&threadList.length===0&&(
+              <div style={{textAlign:"center",padding:"40px 20px",color:"#444"}}>
+                <div style={{fontSize:36,marginBottom:10}}>💬</div>
+                <div style={{fontSize:12,lineHeight:1.6}}>Aún no tienes conversaciones.<br/>Toca + para escribir a otro Aventurero.</div>
+              </div>
+            )}
+            {threadList.map(([otherKey,t])=>(
+              <button key={otherKey} onClick={()=>openThread(otherKey,t.name)} style={{display:"flex",alignItems:"center",gap:12,width:"100%",padding:"10px 8px",background:"none",border:"none",borderBottom:"1px solid #161622",cursor:"pointer",textAlign:"left"}}>
+                <div style={{width:38,height:38,borderRadius:"50%",background:"#A78BFA18",border:"1.5px solid #A78BFA55",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",flexShrink:0}}>
+                  {(t.name||"?")[0]?.toUpperCase()}
+                </div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:13,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{t.name}</div>
+                  <div style={{fontSize:11,color:"#666",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.lastMessage}</div>
+                </div>
+                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
+                  <span style={{fontSize:9,color:"#444"}}>{timeAgo(t.lastAt)}</span>
+                  {t.unread&&<span style={{width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {view==="pick"&&(
+          <div style={{overflowY:"auto",padding:"0 16px 16px",display:"flex",flexDirection:"column"}}>
+            <input autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar Aventurero..."
+              style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
+            {allUsers===null&&<div style={{textAlign:"center",color:"#444",fontSize:12,padding:"20px 0"}}>Cargando...</div>}
+            {allUsers&&pickList.length===0&&<div style={{textAlign:"center",color:"#444",fontSize:12,padding:"20px 0"}}>Sin resultados.</div>}
+            {pickList.map(([k,u])=>(
+              <button key={k} onClick={()=>openThread(k,u.name)} style={{display:"flex",alignItems:"center",gap:12,width:"100%",padding:"9px 6px",background:"none",border:"none",borderBottom:"1px solid #161622",cursor:"pointer",textAlign:"left"}}>
+                <div style={{width:32,height:32,borderRadius:"50%",background:"#A78BFA18",border:"1.5px solid #A78BFA55",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",flexShrink:0}}>
+                  {(u.name||"?")[0]?.toUpperCase()}
+                </div>
+                <span style={{fontSize:13,color:"#EEE",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{u.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+
+        {view==="thread"&&(
+          <>
+            <div style={{flex:1,overflowY:"auto",padding:"4px 14px",display:"flex",flexDirection:"column",gap:8,minHeight:200}}>
+              {msgList.length===0&&<div style={{textAlign:"center",color:"#333",fontSize:11,padding:"30px 0"}}>Empieza la conversación ✦</div>}
+              {msgList.map(([mId,m])=>{
+                const mine=m.from===myKey;
+                return(
+                  <div key={mId} style={{alignSelf:mine?"flex-end":"flex-start",maxWidth:"78%"}}>
+                    <div style={{padding:"8px 12px",borderRadius:mine?"14px 14px 3px 14px":"14px 14px 14px 3px",background:mine?"linear-gradient(135deg,#7C3AED,#A78BFA)":"#1A1A2E",color:mine?"#FFF":"#DDD",fontSize:13,lineHeight:1.4,wordBreak:"break-word"}}>
+                      {m.text}
+                    </div>
+                    <div style={{fontSize:9,color:"#444",marginTop:2,textAlign:mine?"right":"left"}}>{timeAgo(m.createdAt)}</div>
+                  </div>
+                );
+              })}
+              <div ref={bottomRef}/>
+            </div>
+            <div style={{display:"flex",gap:8,padding:"10px 14px 16px"}}>
+              <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Escribe un mensaje..."
+                onKeyDown={e=>{if(e.key==="Enter") send();}}
+                style={{flex:1,padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+              <button onClick={send} style={{padding:"10px 16px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
