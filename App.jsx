@@ -4480,6 +4480,8 @@ function RankUpApp({user,onLogout}){
   const [showProfile,setShowProfile]=useState(false);
   const [showBuzon,setShowBuzon]=useState(false);
   const [showDMs,setShowDMs]=useState(false);
+  const [dmInitialTarget,setDmInitialTarget]=useState(null);
+  const [profileTarget,setProfileTarget]=useState(null);
   const [hasUnreadDMs,setHasUnreadDMs]=useState(false);
   const checkUnreadDMs=useCallback(()=>{
     const myKey=user.email.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
@@ -5534,7 +5536,16 @@ function RankUpApp({user,onLogout}){
       )}
 
       {/* Mensajes directos entre Aventureros */}
-      {showDMs&&<DMsModal user={user} onClose={()=>{setShowDMs(false);checkUnreadDMs();}}/>}
+      {showDMs&&<DMsModal user={user} initialTarget={dmInitialTarget} onClose={()=>{setShowDMs(false);setDmInitialTarget(null);checkUnreadDMs();}}/>}
+
+      {/* Mini-perfil al tocar a un Aventurero en el Muro */}
+      {profileTarget&&(
+        <MiniProfileModal
+          target={profileTarget}
+          onClose={()=>setProfileTarget(null)}
+          onMessage={()=>{setDmInitialTarget(profileTarget);setProfileTarget(null);setShowDMs(true);}}
+        />
+      )}
 
       {/* Explorar (plantillas por categoría) */}
       {showExplorar&&(
@@ -5683,7 +5694,7 @@ function RankUpApp({user,onLogout}){
             </>
           )}
           {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
-          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} profilePhotos={allProfilePhotos} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike} onToggleCommentLike={toggleSocialCommentLike}/>}
+          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} profilePhotos={allProfilePhotos} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike} onToggleCommentLike={toggleSocialCommentLike} onProfileClick={setProfileTarget}/>}
           {tab==="perfil"&&(
             perfilSection===null?(
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
@@ -7313,7 +7324,7 @@ function IconDots({size=18,color="#888"}){
   );
 }
 
-function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDeletePost,onComment,onDeleteComment,onToggleLike,onToggleCommentLike}){
+function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDeletePost,onComment,onDeleteComment,onToggleLike,onToggleCommentLike,onProfileClick}){
   const [showUpload,setShowUpload]=useState(false);
   const [preview,setPreview]=useState(null);
   const [caption,setCaption]=useState("");
@@ -7411,7 +7422,7 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
           <div key={postId} style={{background:"#000",border:"1px solid #1F1F1F",borderRadius:14,marginBottom:22,overflow:"hidden"}}>
             {/* Cabecera */}
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 12px"}}>
-              <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <button onClick={()=>{if(!isOwnPost&&onProfileClick) onProfileClick({key:keyOf(post.email),name:post.name,photo:authorPhoto});}} style={{display:"flex",alignItems:"center",gap:10,background:"none",border:"none",padding:0,cursor:isOwnPost?"default":"pointer",textAlign:"left"}}>
                 <div style={{width:34,height:34,borderRadius:"50%",padding:authorPhoto?2:0,background:authorPhoto?"linear-gradient(45deg,#F59E0B,#E84A5F,#A78BFA)":"transparent",flexShrink:0}}>
                   <div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",background:`${ac}22`,border:authorPhoto?"2px solid #000":`1.5px solid ${ac}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
                     {authorPhoto?
@@ -7423,7 +7434,7 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
                   <span style={{fontSize:12,fontWeight:700,color:"#FAFAFA",fontFamily:"'Rajdhani',sans-serif"}}>{post.name}</span>
                   <span style={{fontSize:11,color:"#666"}}> · {timeAgo(post.createdAt)}</span>
                 </div>
-              </div>
+              </button>
               {isOwnPost&&
                 <button onClick={()=>{if(window.confirm("¿Borrar esta publicación?")) onDeletePost(postId);}} title="Opciones" style={{background:"none",border:"none",cursor:"pointer",padding:6,display:"flex"}}>
                   <IconDots/>
@@ -7533,21 +7544,27 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
 }
 
 // ─── Mensajes directos entre Aventureros ─────────────────────────────────
-function DMsModal({user,onClose}){
+function DMsModal({user,onClose,initialTarget}){
   const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
   const myKey=keyOf(user.email);
-  const [view,setView]=useState("list"); // "list" | "pick" | "thread"
+  const [view,setView]=useState(initialTarget?"thread":"list"); // "list" | "pick" | "thread"
   const [threads,setThreads]=useState({});
   const [loadingThreads,setLoadingThreads]=useState(true);
   const [allUsers,setAllUsers]=useState(null);
   const [search,setSearch]=useState("");
-  const [activeThread,setActiveThread]=useState(null); // {threadId,otherKey,otherName}
+  const [activeThread,setActiveThread]=useState(initialTarget?{threadId:[myKey,initialTarget.key].sort().join("__"),otherKey:initialTarget.key,otherName:initialTarget.name}:null);
   const [messages,setMessages]=useState({});
   const [input,setInput]=useState("");
   const bottomRef=useRef();
 
   useEffect(()=>{
-    fbGet(`dmIndex/${myKey}`).then(d=>{setThreads(d||{});setLoadingThreads(false);}).catch(()=>setLoadingThreads(false));
+    fbGet(`dmIndex/${myKey}`).then(d=>{
+      setThreads(d||{});
+      setLoadingThreads(false);
+      if(initialTarget&&d?.[initialTarget.key]?.unread){
+        fbSet(`dmIndex/${myKey}/${initialTarget.key}/unread`,false).catch(()=>{});
+      }
+    }).catch(()=>setLoadingThreads(false));
   },[]);
 
   const openPicker=()=>{
@@ -7684,6 +7701,29 @@ function DMsModal({user,onClose}){
             </div>
           </>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Mini-perfil al tocar un Aventurero en el Muro ───────────────────────
+function MiniProfileModal({target,onClose,onMessage}){
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9996,background:"rgba(0,0,0,.8)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:320,background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:28,boxSizing:"border-box",display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
+        <button onClick={onClose} style={{alignSelf:"flex-end",background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1,marginTop:-10,marginRight:-10}}>✕</button>
+        <div style={{width:76,height:76,borderRadius:"50%",padding:target.photo?3:0,background:target.photo?"linear-gradient(45deg,#F59E0B,#E84A5F,#A78BFA)":"transparent",marginTop:-10}}>
+          <div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",background:"#A78BFA18",border:target.photo?"3px solid #0D0D1A":"1.5px solid #A78BFA",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            {target.photo?
+              <img src={target.photo} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
+              :<span style={{fontSize:28,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif"}}>{(target.name||"?")[0]?.toUpperCase()}</span>}
+          </div>
+        </div>
+        <div style={{fontSize:17,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif",textAlign:"center"}}>{target.name}</div>
+        <div style={{fontSize:9,letterSpacing:3,color:"#555"}}>AVENTURERO</div>
+        <button onClick={onMessage} style={{width:"100%",padding:"12px",marginTop:8,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
+          💬 Enviar mensaje
+        </button>
       </div>
     </div>
   );
