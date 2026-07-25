@@ -7408,10 +7408,6 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
         <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>📸 MURO SOCIAL</div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
-          <div title="Actualizaciones en tiempo real" style={{display:"flex",alignItems:"center",gap:5,fontSize:9,color:"#34D399",fontWeight:700}}>
-            <span style={{width:6,height:6,borderRadius:"50%",background:"#34D399",boxShadow:"0 0 6px #34D399",display:"inline-block"}}/>
-            EN DIRECTO
-          </div>
           <button onClick={()=>setShowUpload(true)} style={{padding:"7px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ 📸 PUBLICAR</button>
         </div>
       </div>
