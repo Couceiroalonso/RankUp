@@ -1161,7 +1161,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},bodyMeasurements:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -4382,6 +4382,7 @@ function RankUpApp({user,onLogout}){
   const [routineHistory,setRoutineHistory]=useState(saved.routineHistory||[]);
   const [inventory,setInventory]=useState(saved.inventory||{});
   const [equipment,setEquipment]=useState(saved.equipment||{});
+  const [bodyMeasurements,setBodyMeasurements]=useState(saved.bodyMeasurements||{});
   const [equipped,setEquipped]=useState(saved.equipped||{}); // {slotId: "slot_tier"|null}
   const toggleEquip=useCallback((slot,ek)=>{
     setEquipped(p=>({...p,[slot]:p[slot]===ek?null:ek}));
@@ -4525,6 +4526,8 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
       const freshEquipment=fresh.equipment||{};
       if(Object.keys(freshEquipment).length>0) setEquipment(freshEquipment);
+      const freshMeasurements=fresh.bodyMeasurements||{};
+      if(Object.keys(freshMeasurements).length>0) setBodyMeasurements(freshMeasurements);
       const freshEquipped=fresh.equipped||{};
       if(Object.keys(freshEquipped).length>0) setEquipped(freshEquipped);
       if(fresh.lootStats&&fresh.lootStats.total>0) setLootStats({total:0,rarities:[],types:[],...fresh.lootStats});
@@ -4754,6 +4757,7 @@ function RankUpApp({user,onLogout}){
       routineHistory: safeRoutineHistory,
       inventory: safeInventory,
       equipment: safeEquipment,
+      bodyMeasurements,
       equipped,
       lootStats,
       craftStats,
@@ -4768,7 +4772,7 @@ function RankUpApp({user,onLogout}){
       season1Seen:"T1",
       lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,bodyMeasurements,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5039,7 +5043,7 @@ function RankUpApp({user,onLogout}){
     await fbSet(`socialPosts/${id}`,post).catch(()=>{});
   },[user]);
 
-  const shareWorkoutPost=useCallback(async(details)=>{
+  const shareWorkoutPost=useCallback(async(details,photo)=>{
     const id=genSocialId("post");
     const post={
       type:"workout",
@@ -5051,6 +5055,7 @@ function RankUpApp({user,onLogout}){
       exerciseDetails:details.exerciseDetails||[],
       coins:details.coins,
       bossDone:details.bossDone||0,
+      photo:photo||null,
       createdAt:Date.now(),
     };
     setSocialPosts(p=>({...p,[id]:post}));
@@ -5136,6 +5141,15 @@ function RankUpApp({user,onLogout}){
 
   const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins, exerciseDetails}
   const [workoutShared,setWorkoutShared]=useState(false);
+  const [shareCardPhoto,setShareCardPhoto]=useState(null);
+  const shareCardFileRef=useRef();
+  const shareCardCameraRef=useRef();
+  const handleShareCardPhoto=async(e)=>{
+    const file=e.target.files?.[0];
+    if(!file) return;
+    try{ setShareCardPhoto(await compressImage(file)); }catch{}
+    e.target.value="";
+  };
 
   const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt,exName,isBoss)=>{
     const was=!!checked[key];const nc={...checked,[key]:!was};setChecked(nc);
@@ -5163,7 +5177,7 @@ function RankUpApp({user,onLogout}){
             const sessKg=exDetails.reduce((sum,e)=>sum+e.kg,0);
             setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
             addLoot(rollLoot("dungeon"));
-            setTimeout(()=>{setWorkoutShared(false);setDungeonComplete({
+            setTimeout(()=>{setWorkoutShared(false);setShareCardPhoto(null);setDungeonComplete({
               dayName:day.day, totalKg:Math.round(sessKg),
               exercises:day.exercises.length, coins:dungeonCoins, bossDone, exerciseDetails:exDetails
             });},400);
@@ -5212,7 +5226,7 @@ function RankUpApp({user,onLogout}){
                 const sessKg=exDetails.reduce((sum,e)=>sum+e.kg,0);
                 setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
                 addLoot(rollLoot("dungeon"));
-                setTimeout(()=>{setWorkoutShared(false);setDungeonComplete({
+                setTimeout(()=>{setWorkoutShared(false);setShareCardPhoto(null);setDungeonComplete({
                   dayName:sess.day, totalKg:Math.round(sessKg),
                   exercises:sess.exercises.length, coins:dungeonCoins, bossDone, exerciseDetails:exDetails
                 });},400);
@@ -5464,8 +5478,27 @@ function RankUpApp({user,onLogout}){
               </div>
             )}
 
-            {/* Share button */}
-            <button onClick={()=>{if(!workoutShared){shareWorkoutPost(dungeonComplete);setWorkoutShared(true);}}} disabled={workoutShared}
+            {/* Foto opcional + Share button */}
+            {!workoutShared&&(
+              shareCardPhoto?(
+                <div style={{position:"relative",marginBottom:10}}>
+                  <img src={shareCardPhoto} style={{width:120,height:120,objectFit:"cover",borderRadius:12,border:"1px solid #A78BFA55"}}/>
+                  <button onClick={()=>setShareCardPhoto(null)} style={{position:"absolute",top:-8,right:-8,width:24,height:24,borderRadius:"50%",background:"#0D0D1A",border:"1px solid #E84A5F55",color:"#E84A5F",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
+                </div>
+              ):(
+                <div style={{display:"flex",gap:8,marginBottom:10}}>
+                  <button onClick={()=>shareCardCameraRef.current?.click()} style={{padding:"9px 16px",background:"none",border:"1px dashed #444",borderRadius:10,color:"#888",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                    📷 Hacer foto
+                  </button>
+                  <button onClick={()=>shareCardFileRef.current?.click()} style={{padding:"9px 16px",background:"none",border:"1px dashed #444",borderRadius:10,color:"#888",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                    🖼️ Galería
+                  </button>
+                </div>
+              )
+            )}
+            <input ref={shareCardCameraRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={handleShareCardPhoto}/>
+            <input ref={shareCardFileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleShareCardPhoto}/>
+            <button onClick={()=>{if(!workoutShared){shareWorkoutPost(dungeonComplete,shareCardPhoto);setWorkoutShared(true);}}} disabled={workoutShared}
               style={{padding:"13px 40px",marginBottom:12,background:workoutShared?"#0D0D1A":"#A78BFA18",border:`1px solid ${workoutShared?"#34D39955":"#A78BFA55"}`,borderRadius:12,color:workoutShared?"#34D399":"#A78BFA",fontSize:13,fontWeight:700,cursor:workoutShared?"default":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
               {workoutShared?"✓ Compartido en el Muro":"📸 Compartir en el Muro"}
             </button>
@@ -5700,6 +5733,7 @@ function RankUpApp({user,onLogout}){
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 {[
                   {id:"cuerpo",icon:"🫀",label:"Cuerpo",color:"#E84A5F"},
+                  {id:"medidas",icon:"📏",label:"Medidas",color:"#38BDF8"},
                   {id:"tienda",icon:"🪙",label:"Tienda",color:"#F59E0B"},
                   {id:"inventario",icon:"🎒",label:"Inventario",color:"#A78BFA"},
                   {id:"logros",icon:"🏆",label:"Logros",color:"#34D399"},
@@ -5714,6 +5748,7 @@ function RankUpApp({user,onLogout}){
               <>
                 <button onClick={()=>setPerfilSection(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:14,padding:0}}>← VOLVER</button>
                 {perfilSection==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
+                {perfilSection==="medidas"&&<MedidasSection measurements={bodyMeasurements} onAdd={setBodyMeasurements}/>}
                 {perfilSection==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
                 {perfilSection==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
                 {perfilSection==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
@@ -7334,7 +7369,7 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
   const [openComments,setOpenComments]=useState({});
   const [commentInputs,setCommentInputs]=useState({});
   const fileRef=useRef();
-  const me=(currentEmail||"").toLowerCase().trim();
+  const cameraRef=useRef();
   const myKey=me.replace(/\./g,"_").replace(/@/g,"_at_");
   const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
 
@@ -7382,11 +7417,17 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
 
       {showUpload&&(
         <div style={{background:"#0F0F1C",border:"1px solid #A78BFA44",borderRadius:14,padding:16,marginBottom:18}}>
+          <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{display:"none"}}/>
           <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/>
           {!preview?(
-            <button onClick={()=>fileRef.current?.click()} disabled={compressing} style={{width:"100%",padding:30,background:"#07070F",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-              {compressing?"⏳ Procesando imagen...":"📷 Elegir foto"}
-            </button>
+            <div style={{display:"flex",gap:8}}>
+              <button onClick={()=>cameraRef.current?.click()} disabled={compressing} style={{flex:1,padding:30,background:"#07070F",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                {compressing?"⏳ Procesando...":"📷 Hacer foto"}
+              </button>
+              <button onClick={()=>fileRef.current?.click()} disabled={compressing} style={{flex:1,padding:30,background:"#07070F",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                {compressing?"⏳ Procesando...":"🖼️ Galería"}
+              </button>
+            </div>
           ):(
             <>
               <img src={preview} style={{width:"100%",maxHeight:280,objectFit:"cover",borderRadius:10,marginBottom:10}}/>
@@ -7443,36 +7484,43 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
 
             {/* Imagen o tarjeta de entreno */}
             {post.type==="workout"?(
-              <div style={{padding:"4px 14px 16px"}}>
-                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-                  <span style={{fontSize:18}}>⚔️</span>
-                  <span style={{fontSize:15,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif"}}>{post.dayName}</span>
-                  {post.bossDone>0&&<span style={{fontSize:14}}>💀×{post.bossDone}</span>}
-                </div>
-                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:post.exerciseDetails?.length?12:0}}>
-                  <div style={{textAlign:"center",background:"#A78BFA0D",border:"1px solid #A78BFA33",borderRadius:10,padding:"10px 4px"}}>
-                    <div style={{fontSize:17,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif"}}>{(post.totalKg||0).toLocaleString()}</div>
-                    <div style={{fontSize:8,color:"#666",letterSpacing:1}}>KG TOTALES</div>
-                  </div>
-                  <div style={{textAlign:"center",background:"#F59E0B0D",border:"1px solid #F59E0B33",borderRadius:10,padding:"10px 4px"}}>
-                    <div style={{fontSize:17,fontWeight:900,color:"#F59E0B",fontFamily:"'Cinzel',serif"}}>{post.exerciseCount||0}</div>
-                    <div style={{fontSize:8,color:"#666",letterSpacing:1}}>EJERCICIOS</div>
-                  </div>
-                  <div style={{textAlign:"center",background:"#34D3990D",border:"1px solid #34D39933",borderRadius:10,padding:"10px 4px"}}>
-                    <div style={{fontSize:17,fontWeight:900,color:"#34D399",fontFamily:"'Cinzel',serif"}}>+{post.coins||0}</div>
-                    <div style={{fontSize:8,color:"#666",letterSpacing:1}}>🪙 GANADAS</div>
-                  </div>
-                </div>
-                {post.exerciseDetails?.length>0&&(
-                  <div style={{background:"#0A0A0A",border:"1px solid #1A1A1A",borderRadius:10,padding:"10px 12px"}}>
-                    {post.exerciseDetails.map((ex,i)=>(
-                      <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderTop:i>0?"1px solid #161616":"none"}}>
-                        <span style={{fontSize:11,color:"#BBB"}}>{ex.boss?"💀 ":""}{ex.name}</span>
-                        {ex.kg>0&&<span style={{fontSize:11,color:"#666",fontWeight:700}}>{ex.kg}kg</span>}
-                      </div>
-                    ))}
+              <div>
+                {post.photo&&(
+                  <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
+                    <img src={post.photo} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
                   </div>
                 )}
+                <div style={{padding:"14px 14px 16px"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
+                    <span style={{fontSize:18}}>⚔️</span>
+                    <span style={{fontSize:15,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif"}}>{post.dayName}</span>
+                    {post.bossDone>0&&<span style={{fontSize:14}}>💀×{post.bossDone}</span>}
+                  </div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:post.exerciseDetails?.length?12:0}}>
+                    <div style={{textAlign:"center",background:"#A78BFA0D",border:"1px solid #A78BFA33",borderRadius:10,padding:"10px 4px"}}>
+                      <div style={{fontSize:17,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif"}}>{(post.totalKg||0).toLocaleString()}</div>
+                      <div style={{fontSize:8,color:"#666",letterSpacing:1}}>KG TOTALES</div>
+                    </div>
+                    <div style={{textAlign:"center",background:"#F59E0B0D",border:"1px solid #F59E0B33",borderRadius:10,padding:"10px 4px"}}>
+                      <div style={{fontSize:17,fontWeight:900,color:"#F59E0B",fontFamily:"'Cinzel',serif"}}>{post.exerciseCount||0}</div>
+                      <div style={{fontSize:8,color:"#666",letterSpacing:1}}>EJERCICIOS</div>
+                    </div>
+                    <div style={{textAlign:"center",background:"#34D3990D",border:"1px solid #34D39933",borderRadius:10,padding:"10px 4px"}}>
+                      <div style={{fontSize:17,fontWeight:900,color:"#34D399",fontFamily:"'Cinzel',serif"}}>+{post.coins||0}</div>
+                      <div style={{fontSize:8,color:"#666",letterSpacing:1}}>🪙 GANADAS</div>
+                    </div>
+                  </div>
+                  {post.exerciseDetails?.length>0&&(
+                    <div style={{background:"#0A0A0A",border:"1px solid #1A1A1A",borderRadius:10,padding:"10px 12px"}}>
+                      {post.exerciseDetails.map((ex,i)=>(
+                        <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderTop:i>0?"1px solid #161616":"none"}}>
+                          <span style={{fontSize:11,color:"#BBB"}}>{ex.boss?"💀 ":""}{ex.name}</span>
+                          {ex.kg>0&&<span style={{fontSize:11,color:"#666",fontWeight:700}}>{ex.kg}kg</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             ):(
               <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
@@ -7755,6 +7803,129 @@ function MiniProfileModal({target,onClose,onMessage}){
           💬 Enviar mensaje
         </button>
       </div>
+    </div>
+  );
+}
+
+// ─── Medidas corporales ────────────────────────────────────────────────
+const MEASURE_FIELDS=[
+  {id:"weight",label:"Peso Corporal",unit:"kg"},
+  {id:"waist",label:"Cintura",unit:"cm"},
+  {id:"bodyFat",label:"Grasa Corporal",unit:"%"},
+  {id:"leanMass",label:"Masa Corporal Magra",unit:"kg"},
+  {id:"neck",label:"Cuello",unit:"cm"},
+  {id:"shoulder",label:"Hombro",unit:"cm"},
+  {id:"chest",label:"Pecho",unit:"cm"},
+  {id:"bicepsL",label:"Bíceps Izquierdo",unit:"cm"},
+  {id:"bicepsR",label:"Bíceps Derecho",unit:"cm"},
+  {id:"forearmL",label:"Antebrazo Izquierdo",unit:"cm"},
+  {id:"forearmR",label:"Antebrazo Derecho",unit:"cm"},
+  {id:"abdomen",label:"Abdomen",unit:"cm"},
+  {id:"hips",label:"Caderas",unit:"cm"},
+  {id:"thighL",label:"Muslo Izquierdo",unit:"cm"},
+  {id:"thighR",label:"Muslo Derecho",unit:"cm"},
+  {id:"calfL",label:"Gemelo Izquierdo",unit:"cm"},
+  {id:"calfR",label:"Gemelo Derecha",unit:"cm"},
+];
+
+function MedidasSection({measurements={},onAdd}){
+  const [showForm,setShowForm]=useState(false);
+  const [expanded,setExpanded]=useState(null);
+  const [formValues,setFormValues]=useState({});
+
+  const latestOf=id=>{
+    const arr=measurements[id]||[];
+    return arr.length>0?arr[arr.length-1]:null;
+  };
+  const prevOf=id=>{
+    const arr=measurements[id]||[];
+    return arr.length>1?arr[arr.length-2]:null;
+  };
+
+  const save=()=>{
+    const now=Date.now();
+    const next={...measurements};
+    let any=false;
+    MEASURE_FIELDS.forEach(f=>{
+      const raw=formValues[f.id];
+      const val=parseFloat((raw||"").toString().replace(",","."));
+      if(raw&&!isNaN(val)){
+        next[f.id]=[...(next[f.id]||[]),{date:now,value:val}];
+        any=true;
+      }
+    });
+    if(!any){ setShowForm(false); return; }
+    onAdd(next);
+    setFormValues({});
+    setShowForm(false);
+  };
+
+  return(
+    <div>
+      <button onClick={()=>setShowForm(true)} style={{width:"100%",padding:"13px",marginBottom:16,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
+        📏 Registrar medidas
+      </button>
+
+      {MEASURE_FIELDS.map(f=>{
+        const latest=latestOf(f.id);
+        const prev=prevOf(f.id);
+        const delta=latest&&prev?Math.round((latest.value-prev.value)*10)/10:null;
+        const isOpen=expanded===f.id;
+        const history=[...(measurements[f.id]||[])].reverse();
+        return(
+          <div key={f.id} style={{background:"#0D0D1A",border:"1px solid #1E1E32",borderRadius:12,marginBottom:8,overflow:"hidden"}}>
+            <button onClick={()=>setExpanded(isOpen?null:f.id)} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 14px",background:"none",border:"none",cursor:"pointer",textAlign:"left"}}>
+              <span style={{fontSize:13,color:"#DDD",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{f.label}</span>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                {latest?(
+                  <>
+                    <span style={{fontSize:13,fontWeight:700,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif"}}>{latest.value} {f.unit}</span>
+                    {delta!==null&&delta!==0&&
+                      <span style={{fontSize:10,color:delta>0?"#F59E0B":"#34D399"}}>{delta>0?"▲":"▼"}{Math.abs(delta)}</span>}
+                  </>
+                ):<span style={{fontSize:12,color:"#444"}}>–</span>}
+              </div>
+            </button>
+            {isOpen&&(
+              <div style={{padding:"0 14px 12px",borderTop:"1px solid #161622"}}>
+                {history.length===0&&<div style={{fontSize:11,color:"#444",padding:"10px 0"}}>Sin registros todavía.</div>}
+                {history.map((h,i)=>(
+                  <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<history.length-1?"1px solid #161622":"none"}}>
+                    <span style={{fontSize:11,color:"#666"}}>{new Date(h.date).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</span>
+                    <span style={{fontSize:11,color:"#AAA",fontWeight:700}}>{h.value} {f.unit}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+
+      {showForm&&(
+        <div onClick={()=>setShowForm(false)} style={{position:"fixed",inset:0,zIndex:9997,background:"rgba(0,0,0,.85)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"flex-start",padding:"20px 12px",overflowY:"auto"}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box",marginBottom:20}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+              <div style={{fontSize:9,letterSpacing:5,color:"#444"}}>📏 REGISTRO DE MEDIDAS</div>
+              <button onClick={()=>setShowForm(false)} style={{background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
+            </div>
+            <div style={{fontSize:11,color:"#666",marginBottom:14}}>Rellena solo lo que quieras registrar hoy. Lo demás se deja en blanco.</div>
+            {MEASURE_FIELDS.map(f=>(
+              <div key={f.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,marginBottom:10}}>
+                <span style={{fontSize:12,color:"#CCC",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{f.label}</span>
+                <div style={{display:"flex",alignItems:"center",gap:6}}>
+                  <input type="number" inputMode="decimal" value={formValues[f.id]||""} onChange={e=>setFormValues(v=>({...v,[f.id]:e.target.value}))}
+                    placeholder="–"
+                    style={{width:70,padding:"7px 8px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",textAlign:"right",fontFamily:"'Rajdhani',sans-serif"}}/>
+                  <span style={{fontSize:10,color:"#555",width:20}}>{f.unit}</span>
+                </div>
+              </div>
+            ))}
+            <button onClick={save} style={{width:"100%",padding:14,marginTop:8,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"'Cinzel',serif",letterSpacing:2}}>
+              GUARDAR
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
