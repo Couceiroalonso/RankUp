@@ -5747,7 +5747,7 @@ function RankUpApp({user,onLogout}){
             ):(
               <>
                 <button onClick={()=>setPerfilSection(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:14,padding:0}}>← VOLVER</button>
-                {perfilSection==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
+                {perfilSection==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex} userEmail={user.email} bodyMeasurements={bodyMeasurements}/>}
                 {perfilSection==="medidas"&&<MedidasSection measurements={bodyMeasurements} onAdd={setBodyMeasurements}/>}
                 {perfilSection==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
                 {perfilSection==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
@@ -7370,6 +7370,7 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
   const [commentInputs,setCommentInputs]=useState({});
   const fileRef=useRef();
   const cameraRef=useRef();
+  const me=(currentEmail||"").toLowerCase().trim();
   const myKey=me.replace(/\./g,"_").replace(/@/g,"_at_");
   const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
 
@@ -7814,6 +7815,7 @@ const MEASURE_FIELDS=[
   {id:"bodyFat",label:"Grasa Corporal",unit:"%"},
   {id:"leanMass",label:"Masa Corporal Magra",unit:"kg"},
   {id:"neck",label:"Cuello",unit:"cm"},
+  {id:"wrist",label:"Muñeca",unit:"cm"},
   {id:"shoulder",label:"Hombro",unit:"cm"},
   {id:"chest",label:"Pecho",unit:"cm"},
   {id:"bicepsL",label:"Bíceps Izquierdo",unit:"cm"},
@@ -7994,14 +7996,94 @@ function BuzonTab({messages,onSend,userName}){
 
 
 // ─── CUERPO TAB ───────────────────────────────────────────────────────────────
-function CuerpoTab({mxp,sex="M"}){
+// ─── Somatotipo (ecto/meso/endomorfo) ────────────────────────────────────
+// Estimación ORIENTATIVA basada en complexión ósea (ratio altura/muñeca),
+// % de grasa corporal y proporción hombro/cintura — no es un diagnóstico
+// médico ni un análisis Heath-Carter de laboratorio, es una aproximación
+// con los datos que el propio Aventurero introduce en Medidas.
+const SOMATOTYPES={
+  ecto:{label:"Ectomorfo",color:"#60A5FA",icon:"🏹",desc:"Estructura ósea fina y metabolismo rápido. Cuesta ganar tanto grasa como músculo — la fuerza se construye con paciencia, volumen alto y constancia."},
+  meso:{label:"Mesomorfo",color:"#34D399",icon:"⚔️",desc:"Estructura atlética natural. Responde rápido tanto al entrenamiento de fuerza como al cardio — el equilibrio es su terreno natural."},
+  endo:{label:"Endomorfo",color:"#F59E0B",icon:"🛡️",desc:"Estructura ósea más ancha y facilidad para ganar masa. La fuerza bruta y el volumen son su punto fuerte — el cardio ayuda a definir."},
+};
+const computeSomatotype=({heightCm,wristCm,bodyFatPct,shoulderCm,waistCm})=>{
+  if(!heightCm||!wristCm) return null;
+  let ecto=0,meso=0,endo=0;
+  const ratio=heightCm/wristCm;
+  if(ratio>10.4) ecto+=2;
+  else if(ratio<9.6) endo+=2;
+  else meso+=2;
+  if(bodyFatPct!=null){
+    if(bodyFatPct<12){ ecto+=1; meso+=1; }
+    else if(bodyFatPct<20) meso+=2;
+    else endo+=2;
+  }
+  if(shoulderCm&&waistCm){
+    const vtaper=shoulderCm/waistCm;
+    if(vtaper>1.35) meso+=1;
+    else if(vtaper<1.15) endo+=1;
+  }
+  const scores={ecto,meso,endo};
+  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
+  const [topId,topScore]=sorted[0];
+  const [secondId,secondScore]=sorted[1];
+  const mixed=topScore>0&&secondScore>0&&(topScore-secondScore)<=1;
+  return{
+    primary:SOMATOTYPES[topId],
+    secondary:mixed?SOMATOTYPES[secondId]:null,
+  };
+};
+
+function CuerpoTab({mxp,sex="M",userEmail,bodyMeasurements={}}){
   const allXP=Object.values(mxp).reduce((a,b)=>a+b,0);
   const activated=Object.values(mxp).filter(v=>v>0).length;
   const frontList=["pecho","hombros","biceps","antebrazos","abdomen","piernas","cardio"];
   const backList=["espalda","hombros","triceps","antebrazos","gluteos","piernas","gemelos"];
   const allMuscles=Object.keys(MUSCLE_DEFS);
+
+  const [heightCm,setHeightCm]=useState(()=>getUsers()[userEmail]?.height||0);
+  useEffect(()=>{
+    if(!userEmail) return;
+    const key=userEmail.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+    fbGet(`users/${key}`).then(u=>{ if(u?.height) setHeightCm(u.height); }).catch(()=>{});
+  },[userEmail]);
+
+  const lastOf=id=>{
+    const arr=bodyMeasurements[id];
+    return arr&&arr.length>0?arr[arr.length-1].value:null;
+  };
+  const somatotype=computeSomatotype({
+    heightCm,
+    wristCm:lastOf("wrist"),
+    bodyFatPct:lastOf("bodyFat"),
+    shoulderCm:lastOf("shoulder"),
+    waistCm:lastOf("waist"),
+  });
+
   return(
     <div>
+      {/* Somatotipo */}
+      {somatotype?(
+        <div style={{padding:"14px 16px",background:`linear-gradient(135deg,#0D0D1A,${somatotype.primary.color}0D)`,border:`1px solid ${somatotype.primary.color}44`,borderRadius:14,marginBottom:16}}>
+          <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:somatotype.secondary?6:0}}>
+            <div style={{width:44,height:44,borderRadius:12,border:`2px solid ${somatotype.primary.color}`,display:"flex",alignItems:"center",justifyContent:"center",background:`${somatotype.primary.color}11`,boxShadow:`0 0 20px ${somatotype.primary.color}44`,flexShrink:0,fontSize:22}}>{somatotype.primary.icon}</div>
+            <div>
+              <div style={{fontSize:9,color:somatotype.primary.color,letterSpacing:4,marginBottom:3}}>SOMATOTIPO ESTIMADO</div>
+              <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>
+                {somatotype.primary.label}{somatotype.secondary?` · ${somatotype.secondary.label}`:""}
+              </div>
+            </div>
+          </div>
+          <div style={{fontSize:11,color:"#999",lineHeight:1.6,marginTop:8}}>{somatotype.primary.desc}</div>
+          <div style={{fontSize:9,color:"#444",marginTop:8}}>Estimación orientativa a partir de tu complexión, no un diagnóstico médico.</div>
+        </div>
+      ):(
+        <div style={{padding:"14px 16px",background:"#0D0D1A",border:"1px dashed #2A2A44",borderRadius:14,marginBottom:16,textAlign:"center"}}>
+          <div style={{fontSize:22,marginBottom:6}}>🔒</div>
+          <div style={{fontSize:11,color:"#666",lineHeight:1.6}}>Registra tu <b style={{color:"#888"}}>altura</b> y tu <b style={{color:"#888"}}>muñeca</b> en 📏 Medidas para desbloquear tu somatotipo.</div>
+        </div>
+      )}
+
       {/* Global stat */}
       <div style={{padding:"14px 16px",background:"linear-gradient(135deg,#0D0D1A,#080810)",border:"1px solid #0AF5FF33",borderRadius:14,marginBottom:16,display:"flex",alignItems:"center",gap:14}}>
         <div style={{width:44,height:44,borderRadius:12,border:"2px solid #0AF5FF",display:"flex",alignItems:"center",justifyContent:"center",background:"#0AF5FF11",boxShadow:"0 0 20px #0AF5FF44",flexShrink:0,fontSize:22}}>🫀</div>
