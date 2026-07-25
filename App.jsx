@@ -7708,9 +7708,23 @@ function DMsModal({user,onClose,initialTarget}){
 
 // ─── Mini-perfil al tocar un Aventurero en el Muro ───────────────────────
 function MiniProfileModal({target,onClose,onMessage}){
+  const [info,setInfo]=useState(null); // {level, rank, cls} | "error" | null(loading)
+  useEffect(()=>{
+    let cancelled=false;
+    fbGet(`userData/${target.key}`).then(d=>{
+      if(cancelled) return;
+      const totalXp=d?.totalXp||0;
+      const level=getLevel(totalXp);
+      const rank=RANKS.find(r=>level>=r.minLevel&&level<=r.maxLevel)||RANKS[0];
+      const cls=CLASSES.find(c=>c.id===d?.playerClass)||null;
+      setInfo({level,rank,cls});
+    }).catch(()=>{ if(!cancelled) setInfo({level:1,rank:RANKS[0],cls:null}); });
+    return ()=>{cancelled=true;};
+  },[target.key]);
+
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9996,background:"rgba(0,0,0,.8)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:320,background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:28,boxSizing:"border-box",display:"flex",flexDirection:"column",alignItems:"center",gap:14}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:320,background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:16,padding:28,boxSizing:"border-box",display:"flex",flexDirection:"column",alignItems:"center",gap:10}}>
         <button onClick={onClose} style={{alignSelf:"flex-end",background:"none",border:"none",color:"#666",fontSize:18,cursor:"pointer",lineHeight:1,marginTop:-10,marginRight:-10}}>✕</button>
         <div style={{width:76,height:76,borderRadius:"50%",padding:target.photo?3:0,background:target.photo?"linear-gradient(45deg,#F59E0B,#E84A5F,#A78BFA)":"transparent",marginTop:-10}}>
           <div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",background:"#A78BFA18",border:target.photo?"3px solid #0D0D1A":"1.5px solid #A78BFA",display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -7720,7 +7734,23 @@ function MiniProfileModal({target,onClose,onMessage}){
           </div>
         </div>
         <div style={{fontSize:17,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif",textAlign:"center"}}>{target.name}</div>
-        <div style={{fontSize:9,letterSpacing:3,color:"#555"}}>AVENTURERO</div>
+
+        {!info&&<div style={{fontSize:10,color:"#444"}}>Cargando...</div>}
+        {info&&(
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{padding:"3px 10px",borderRadius:20,fontSize:10,fontWeight:900,letterSpacing:1,fontFamily:"'Rajdhani',sans-serif",background:`${info.rank.color}18`,border:`1px solid ${info.rank.color}55`,color:info.rank.color}}>
+                RANGO {info.rank.rank} · {info.rank.title.toUpperCase()}
+              </span>
+            </div>
+            <div style={{fontSize:11,color:"#888",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>Nivel {info.level}</div>
+            {info.cls&&
+              <span style={{padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:`${info.cls.color}18`,border:`1px solid ${info.cls.color}55`,color:info.cls.color}}>
+                {info.cls.icon} {info.cls.name}
+              </span>}
+          </div>
+        )}
+
         <button onClick={onMessage} style={{width:"100%",padding:"12px",marginTop:8,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
           💬 Enviar mensaje
         </button>
