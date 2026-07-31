@@ -1610,11 +1610,71 @@ function RedeemModal({reward,coins,onClose}){
 }
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
+// ─── Cuestionario de onboarding (perfil de entrenamiento) ────────────────
+// Preguntas que rellena el Aventurero al registrarse. El resultado se
+// guarda en su perfil para que el entrenador tenga contexto real antes de
+// asignarle una rutina — no es solo decorativo.
+const ONBOARD_QUESTIONS=[
+  {id:"goal",title:"¿Cuál es tu objetivo?",type:"single",
+    options:["Ganar músculo","Perder peso","Verme mejor","Mantenerme en forma"]},
+  {id:"motivation",title:"¿Qué te motiva a entrenar?",type:"single",
+    options:["Salud","Perder peso","Estética","Aliviar estrés","Apoyo social","Disfrutar"]},
+  {id:"focusAreas",title:"Elige tus zonas de enfoque",type:"multi",
+    options:["Cuerpo completo","Pecho","Espalda","Brazos","Hombros","Abdomen","Piernas","Glúteos"]},
+  {id:"fitnessLevel",title:"¿Cuál es tu nivel actual?",type:"single",
+    options:[
+      {v:"Principiante",d:"Soy nuevo o he probado poco"},
+      {v:"Intermedio",d:"Ya he entrenado con pesas antes"},
+      {v:"Avanzado",d:"Llevo tiempo entrenando con pesas"},
+    ]},
+  {id:"activityLevel",title:"¿Cuál es tu nivel de actividad diaria?",type:"single",
+    options:[
+      {v:"Sedentario",d:"Poco o ningún ejercicio"},
+      {v:"Ligeramente activo",d:"Ejercicio ligero 1-3 días/semana"},
+      {v:"Moderadamente activo",d:"Ejercicio moderado 4-6 días/semana"},
+      {v:"Muy activo",d:"Ejercicio intenso todos los días"},
+    ]},
+  {id:"healthIssues",title:"¿Alguna molestia o lesión?",type:"multi",
+    options:["Ninguna","Rodilla","Cadera","Espalda o hernia","Brazos y hombros","No puedo saltar"]},
+  {id:"equipmentAccess",title:"¿A qué material tienes acceso?",type:"multi",
+    options:["Sin material (peso corporal)","Gimnasio completo","Barra","Mancuernas","Kettlebells","Máquinas"]},
+];
+const FITNESS_LEVEL_IDX={"Principiante":0,"Intermedio":1,"Avanzado":2};
+const ACTIVITY_LEVEL_IDX={"Sedentario":0,"Ligeramente activo":1,"Moderadamente activo":2,"Muy activo":3};
+
+// Stats RPG a partir de las respuestas — un cálculo simple y transparente
+// pensado como motivación visual, no como ciencia del ejercicio real.
+const computeAriseStats=(a)=>{
+  const fl=FITNESS_LEVEL_IDX[a.fitnessLevel]??0;
+  const al=ACTIVITY_LEVEL_IDX[a.activityLevel]??0;
+  const noIssues=(a.healthIssues||[]).includes("Ninguna")||(a.healthIssues||[]).length===0;
+  const equipCount=(a.equipmentAccess||[]).length;
+  const freq=a.frequency||3;
+  const current={
+    strength:10+fl*3+Math.min(equipCount,3),
+    vitality:10+al*2+(noIssues?2:0),
+    agility:10+al*2+((a.focusAreas||[]).includes("Piernas")?2:0),
+    recovery:10+(noIssues?4:0)+Math.min(freq,4),
+  };
+  const boost=55+freq*4+fl*3;
+  const potential={
+    strength:Math.min(98,current.strength+boost),
+    vitality:Math.min(98,current.vitality+boost-5),
+    agility:Math.min(98,current.agility+boost-8),
+    recovery:Math.min(98,current.recovery+boost-3),
+  };
+  return{current,potential};
+};
+
 function LoginScreen({onLogin}){
   const [mode,setMode]=useState("login");
   const [step,setStep]=useState(1); // register step 1=creds, 2=profile
   const [email,setEmail]=useState(""), [password,setPassword]=useState(""), [name,setName]=useState("");
   const [sex,setSex]=useState(""), [birthdate,setBirthdate]=useState(""), [height,setHeight]=useState(""), [weight,setWeight]=useState("");
+  const [onboard,setOnboard]=useState({goal:null,motivation:null,focusAreas:[],fitnessLevel:null,activityLevel:null,healthIssues:[],equipmentAccess:[],frequency:3});
+  const [statsRevealed,setStatsRevealed]=useState(false);
+  const TOTAL_STEPS=2+ONBOARD_QUESTIONS.length+2; // creds+perfil físico + preguntas + frecuencia + stats
+  const toggleMulti=(field,val)=>setOnboard(o=>({...o,[field]:o[field].includes(val)?o[field].filter(x=>x!==val):[...o[field],val]}));
   const [error,setError]=useState(""), [shake,setShake]=useState(false), [showPw,setShowPw]=useState(false);
   const [resetSent,setResetSent]=useState(false);
   const err=msg=>{setError(msg);setShake(true);setTimeout(()=>setShake(false),600);};
@@ -1686,7 +1746,10 @@ function LoginScreen({onLogin}){
         if(u&&u.email) users[u.email]=u;
       });
     }
-    users[key]={...(users[key]||{}),name:name.trim(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0,createdAt:(users[key]&&users[key].createdAt)||Date.now()};
+    users[key]={...(users[key]||{}),name:name.trim(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0,
+      goal:onboard.goal,motivation:onboard.motivation,focusAreas:onboard.focusAreas,fitnessLevel:onboard.fitnessLevel,
+      activityLevel:onboard.activityLevel,healthIssues:onboard.healthIssues,equipmentAccess:onboard.equipmentAccess,frequency:onboard.frequency,
+      createdAt:(users[key]&&users[key].createdAt)||Date.now()};
     // IMPORTANT: never blindly reset progress. If this email already has
     // real data in Firebase (e.g. an old account "reclaiming" itself after
     // the auth migration), keep it. Only brand-new accounts get zeroed data.
@@ -1816,9 +1879,112 @@ function LoginScreen({onLogin}){
             <div style={{fontSize:10,color:"#333",marginBottom:14,marginTop:6}}>Altura y peso opcionales · Para calcular tu IMC</div>
 
             {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
-            <button onClick={doRegister} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>🗡️ CREAR CUENTA</button>
+            <button onClick={()=>{
+              if(!sex) return err("Selecciona tu sexo");
+              if(!birthdate) return err("Selecciona tu fecha de nacimiento");
+              const age=calcAge(birthdate);
+              if(age<10||age>99) return err("Edad inválida");
+              setError(""); setStep(3);
+            }} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CONTINUAR →</button>
           </>
         )}
+
+        {/* Preguntas del cuestionario de onboarding (steps 3..3+N-1) */}
+        {mode==="register"&&step>=3&&step<3+ONBOARD_QUESTIONS.length&&(()=>{
+          const q=ONBOARD_QUESTIONS[step-3];
+          const val=onboard[q.id];
+          const canContinue=q.type==="single"?!!val:true; // multi puede ir vacío (ninguna molestia, etc.)
+          return(
+            <>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                <button onClick={()=>setStep(step-1)} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontSize:14,padding:0}}>←</button>
+                <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>PASO {step} DE {TOTAL_STEPS}</div>
+              </div>
+              <div style={{width:"100%",height:4,background:"#1A1A2E",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
+                <div style={{width:`${(step/TOTAL_STEPS)*100}%`,height:"100%",background:"linear-gradient(90deg,#7C3AED,#A78BFA)",borderRadius:2,transition:"width .3s"}}/>
+              </div>
+              <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:18,textAlign:"center",lineHeight:1.3}}>{q.title}</div>
+              <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:18}}>
+                {q.options.map(opt=>{
+                  const v=typeof opt==="string"?opt:opt.v;
+                  const d=typeof opt==="string"?null:opt.d;
+                  const selected=q.type==="single"?val===v:(val||[]).includes(v);
+                  return(
+                    <button key={v} onClick={()=>{
+                      if(q.type==="single") setOnboard(o=>({...o,[q.id]:v}));
+                      else toggleMulti(q.id,v);
+                    }} style={{padding:"14px 16px",borderRadius:10,cursor:"pointer",textAlign:"left",background:selected?"#A78BFA22":"#07070F",border:`1.5px solid ${selected?"#A78BFA":"#2A2A44"}`,transition:"all .15s"}}>
+                      <div style={{fontSize:14,fontWeight:700,color:selected?"#A78BFA":"#DDD",fontFamily:"'Rajdhani',sans-serif"}}>{v}</div>
+                      {d&&<div style={{fontSize:11,color:"#666",marginTop:2}}>{d}</div>}
+                    </button>
+                  );
+                })}
+              </div>
+              <button onClick={()=>canContinue&&setStep(step+1)} disabled={!canContinue} style={{width:"100%",padding:14,background:canContinue?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#1A1A2E",border:"none",borderRadius:10,color:canContinue?"#FFF":"#555",fontSize:15,fontWeight:700,cursor:canContinue?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CONTINUAR →</button>
+            </>
+          );
+        })()}
+
+        {/* Frecuencia semanal (step = 3+N) */}
+        {mode==="register"&&step===3+ONBOARD_QUESTIONS.length&&(
+          <>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+              <button onClick={()=>setStep(step-1)} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontSize:14,padding:0}}>←</button>
+              <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>PASO {step} DE {TOTAL_STEPS}</div>
+            </div>
+            <div style={{width:"100%",height:4,background:"#1A1A2E",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
+              <div style={{width:`${(step/TOTAL_STEPS)*100}%`,height:"100%",background:"linear-gradient(90deg,#7C3AED,#A78BFA)",borderRadius:2,transition:"width .3s"}}/>
+            </div>
+            <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:24,textAlign:"center"}}>¿Cuántas veces por semana quieres entrenar?</div>
+            <div style={{textAlign:"center",fontSize:56,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",marginBottom:6}}>{onboard.frequency}×</div>
+            <div style={{textAlign:"center",fontSize:12,color:"#666",marginBottom:24}}>{onboard.frequency} entreno{onboard.frequency!==1?"s":""} a la semana</div>
+            <input type="range" min={1} max={7} value={onboard.frequency} onChange={e=>setOnboard(o=>({...o,frequency:parseInt(e.target.value)}))}
+              style={{width:"100%",marginBottom:8,accentColor:"#A78BFA"}}/>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:24}}><span>Menos</span><span>Más</span></div>
+            <button onClick={()=>setStep(step+1)} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CONTINUAR →</button>
+          </>
+        )}
+
+        {/* Arise Stats — actuales y potenciales (últimos 2 pasos) */}
+        {mode==="register"&&step===4+ONBOARD_QUESTIONS.length&&(()=>{
+          const {current,potential}=computeAriseStats(onboard);
+          const stats=statsRevealed?potential:current;
+          const STAT_LABELS=[{k:"strength",l:"Fuerza"},{k:"vitality",l:"Vitalidad"},{k:"agility",l:"Agilidad"},{k:"recovery",l:"Recuperación"}];
+          return(
+            <>
+              <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",textAlign:"center",marginBottom:8}}>
+                {statsRevealed?"⚔️ Tu Potencial":"📊 Tus Stats Actuales"}
+              </div>
+              <div style={{fontSize:12,color:"#888",textAlign:"center",marginBottom:20,lineHeight:1.6}}>
+                {statsRevealed
+                  ?"Esto es lo que podrías alcanzar en 3 meses completando tus misiones con constancia."
+                  :"Basado en tus respuestas, así arranca tu personaje."}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
+                {STAT_LABELS.map(s=>(
+                  <div key={s.k} style={{background:"#0D0D1A",border:`1px solid ${statsRevealed?"#34D399":"#A78BFA"}33`,borderRadius:12,padding:14}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+                      <span style={{fontSize:12,color:"#CCC",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{s.l}</span>
+                      <span style={{fontSize:15,fontWeight:900,color:statsRevealed?"#34D399":"#A78BFA",fontFamily:"'Cinzel',serif"}}>{stats[s.k]}</span>
+                    </div>
+                    <div style={{width:"100%",height:6,background:"#1A1A2E",borderRadius:3,overflow:"hidden"}}>
+                      <div style={{width:`${stats[s.k]}%`,height:"100%",background:statsRevealed?"#34D399":"#A78BFA",borderRadius:3}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              {!statsRevealed?(
+                <button onClick={()=>setStatsRevealed(true)} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>MOSTRAR POTENCIAL</button>
+              ):(
+                <>
+                  <div style={{fontSize:9,color:"#444",textAlign:"center",marginBottom:14,lineHeight:1.6}}>Estos números son una proyección motivacional, no un cálculo científico — tu progreso real dependerá de tu constancia.</div>
+                  {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
+                  <button onClick={doRegister} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>🗡️ EMPEZAR AVENTURA</button>
+                </>
+              )}
+            </>
+          );
+        })()}
 
         <div style={{textAlign:"center",marginTop:20,fontSize:11,color:"#444"}}>
           {mode==="login"?<span>¿Sin cuenta? <button onClick={()=>{setMode("register");setStep(1);setError("");}} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700}}>REGÍSTRATE</button></span>:<span>¿Ya tienes cuenta? <button onClick={()=>{setMode("login");setError("");}} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700}}>ENTRA</button></span>}
@@ -2954,6 +3120,24 @@ function AdminPanel({onLogout}){
           </div>
         </div>
         <div style={{padding:16}}>
+          {/* Perfil de entrenamiento (respuestas del cuestionario de registro) */}
+          {(uInfo?.goal||uInfo?.fitnessLevel)&&(
+            <div style={{background:"#0F0F1C",border:"1px solid #38BDF844",borderRadius:12,padding:14,marginBottom:16}}>
+              <div style={{fontSize:9,color:"#38BDF8",letterSpacing:3,marginBottom:10}}>📋 PERFIL DE ENTRENAMIENTO</div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,fontSize:11}}>
+                {uInfo.goal&&<div><span style={{color:"#555"}}>Objetivo: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.goal}</span></div>}
+                {uInfo.motivation&&<div><span style={{color:"#555"}}>Motivación: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.motivation}</span></div>}
+                {uInfo.fitnessLevel&&<div><span style={{color:"#555"}}>Nivel: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.fitnessLevel}</span></div>}
+                {uInfo.activityLevel&&<div><span style={{color:"#555"}}>Actividad diaria: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.activityLevel}</span></div>}
+                {uInfo.frequency&&<div><span style={{color:"#555"}}>Frecuencia deseada: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.frequency}x/semana</span></div>}
+                {uInfo.focusAreas?.length>0&&<div style={{gridColumn:"1 / -1"}}><span style={{color:"#555"}}>Zonas de enfoque: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.focusAreas.join(", ")}</span></div>}
+                {uInfo.equipmentAccess?.length>0&&<div style={{gridColumn:"1 / -1"}}><span style={{color:"#555"}}>Material disponible: </span><span style={{color:"#DDD",fontWeight:700}}>{uInfo.equipmentAccess.join(", ")}</span></div>}
+                {uInfo.healthIssues?.length>0&&!uInfo.healthIssues.includes("Ninguna")&&
+                  <div style={{gridColumn:"1 / -1",color:"#F59E0B"}}>⚠️ Molestias/lesiones: <span style={{fontWeight:700}}>{uInfo.healthIssues.join(", ")}</span></div>}
+              </div>
+            </div>
+          )}
+
           {/* Quick stats */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:16}}>
             {[{l:"NIVEL",v:level,c:ri.color},{l:"XP",v:(editData.totalXp||0).toLocaleString(),c:ri.color},{l:"MONEDAS",v:editData.coins||0,c:"#F59E0B"},{l:"EJERCICIOS",v:totalDone,c:"#34D399"},{l:"LOGROS",v:(editData.earnedAchs||[]).length,c:"#A78BFA"},{l:"RUTINAS",v:(editData.customRoutines||[]).length,c:"#60A5FA"}].map(s=>(
