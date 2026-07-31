@@ -1623,9 +1623,9 @@ const ONBOARD_QUESTIONS=[
     options:["Cuerpo completo","Pecho","Espalda","Brazos","Hombros","Abdomen","Piernas","Glúteos"]},
   {id:"fitnessLevel",title:"¿Cuál es tu nivel actual?",type:"single",
     options:[
-      {v:"Principiante",d:"Soy nuevo o he probado poco"},
-      {v:"Intermedio",d:"Ya he entrenado con pesas antes"},
-      {v:"Avanzado",d:"Llevo tiempo entrenando con pesas"},
+      {v:"Principiante",d:"Soy nuevo o he entrenado muy poco"},
+      {v:"Intermedio",d:"Ya llevo un tiempo entrenando"},
+      {v:"Avanzado",d:"Entreno con constancia desde hace tiempo"},
     ]},
   {id:"activityLevel",title:"¿Cuál es tu nivel de actividad diaria?",type:"single",
     options:[
@@ -1958,7 +1958,7 @@ function LoginScreen({onLogin}){
               <div style={{fontSize:12,color:"#888",textAlign:"center",marginBottom:20,lineHeight:1.6}}>
                 {statsRevealed
                   ?"Esto es lo que podrías alcanzar en 3 meses completando tus misiones con constancia."
-                  :"Basado en tus respuestas, así arranca tu personaje."}
+                  :"Basado en tus respuestas, así empiezas tu aventura."}
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
                 {STAT_LABELS.map(s=>(
