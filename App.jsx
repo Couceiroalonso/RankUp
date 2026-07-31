@@ -1188,9 +1188,11 @@ const CSS=`
     --rk-t9: #DDD;
     --rk-t10: #EEE;
     --rk-ink: #07070F;
+    --rk-inset: #0A0A14;
   }
   [data-theme="light"] {
     --rk-ink: #07070F;
+    --rk-inset: #F7F6FC;
     --rk-bg: #F3F1FA;
     --rk-bg2: #FFFFFF;
     --rk-bg3: #FFFFFF;
@@ -1466,7 +1468,7 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
         {/* Rewards */}
         <div style={{padding:"0 20px 16px",display:"flex",gap:8}}>
           {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
-            <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:10,padding:"10px",textAlign:"center",border:`1px solid ${r.c}33`}}>
+            <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:10,padding:"10px",textAlign:"center",border:`1px solid ${r.c}33`}}>
               <div style={{fontSize:16,fontWeight:900,color:r.c,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
               <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2}}>{r.l}</div>
             </div>
@@ -1504,7 +1506,7 @@ function GuildRaidCompleteCard({raid,onClose}){
           <div style={{width:"70%",height:1,background:"linear-gradient(90deg,transparent,#E84A5F66,transparent)",margin:"0 auto 16px"}}/>
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
             {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
-              <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.c}33`}}>
+              <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.c}33`}}>
                 <div style={{fontSize:18,fontWeight:900,color:r.c,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
                 <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2,marginTop:3}}>{r.l}</div>
               </div>
@@ -1555,7 +1557,7 @@ function Season1End({activeGuildRaid,onClose}){
         <div style={{fontSize:12,color:"var(--rk-t4)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",marginBottom:20,padding:"0 8px"}}>
           "Los cinco han sido confrontados. El reino respira... por ahora. Las sombras se retiran hacia lo desconocido. Pero la oscuridad nunca duerme para siempre."
         </div>
-        <div style={{background:"#0A0A14",borderRadius:12,padding:"16px",marginBottom:20,border:"1px solid #A78BFA22"}}>
+        <div style={{background:"var(--rk-inset)",borderRadius:12,padding:"16px",marginBottom:20,border:"1px solid #A78BFA22"}}>
           <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>RESUMEN DE TEMPORADA</div>
           {[
             {l:"SEÑORES DERROTADOS",v:`${defeated}/5`,c:"#34D399"},
@@ -3534,7 +3536,7 @@ function AdminPanel({onLogout}){
       </div>
 
       {/* Tab bar */}
-      <div style={{display:"flex",gap:8,padding:"10px 16px",background:"#0A0A14",borderBottom:"1px solid var(--rk-border2)"}}>
+      <div style={{display:"flex",gap:8,padding:"10px 16px",background:"var(--rk-inset)",borderBottom:"1px solid var(--rk-border2)"}}>
         {TABS_ADMIN.map(t=>(
           <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"9px 8px",borderRadius:8,cursor:"pointer",background:tab===t.id?"#A78BFA22":"transparent",border:`1px solid ${tab===t.id?"#A78BFA":"var(--rk-border2)"}`,color:tab===t.id?"#A78BFA":"var(--rk-t3)",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
             {t.l}
@@ -6198,7 +6200,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                 placeholder="📝 Anotaciones personales..."
                                 value={exNotes[key]||""}
                                 onChange={e=>onNote&&onNote(key,e.target.value)}
-                                style={{width:"100%",marginTop:8,padding:"8px 10px",background:"#0A0A14",border:"1px solid var(--rk-bg5)",borderRadius:8,color:"var(--rk-t7)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
+                                style={{width:"100%",marginTop:8,padding:"8px 10px",background:"var(--rk-inset)",border:"1px solid var(--rk-bg5)",borderRadius:8,color:"var(--rk-t7)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
                                 rows={2}/>
                             </div>
                           </div>
@@ -6667,7 +6669,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             placeholder="📝 Anotaciones personales..."
                             value={exNotes[key]||""}
                             onChange={e=>onNote&&onNote(key,e.target.value)}
-                            style={{width:"100%",marginTop:8,padding:"8px 10px",background:"#0A0A14",border:"1px solid var(--rk-bg5)",borderRadius:8,color:"var(--rk-t7)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
+                            style={{width:"100%",marginTop:8,padding:"8px 10px",background:"var(--rk-inset)",border:"1px solid var(--rk-bg5)",borderRadius:8,color:"var(--rk-t7)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
                             rows={2}/>
                         </div>
                       </div>
@@ -7303,7 +7305,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
                 {l:"XP",v:`+${raid.xp}`,col:"#A78BFA",icon:"⚡"},
                 {l:"MONEDAS",v:`+${raid.coins}`,col:"#F59E0B",icon:"🪙"},
               ].map(r=>(
-                <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,
+                <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:12,
                   padding:"12px 8px",textAlign:"center",
                   border:`1px solid ${r.col}33`,
                   boxShadow:`0 0 12px ${r.col}11`}}>
@@ -7375,7 +7377,7 @@ function RaidCompleteCard({raid,onClose}){
           <div style={{width:"70%",height:1,background:`linear-gradient(90deg,transparent,${c}66,transparent)`,margin:"0 auto 16px"}}/>
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
             {[{l:"XP",v:`+${raid.xp}`,col:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,col:"#F59E0B"}].map(r=>(
-              <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.col}33`}}>
+              <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.col}33`}}>
                 <div style={{fontSize:18,fontWeight:900,color:r.col,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
                 <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2,marginTop:3}}>{r.l}</div>
               </div>
@@ -8866,7 +8868,7 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
               const c=tier?TIER_INFO[tier].color:"var(--rk-t1)";
               return(
                 <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
-                  <div style={{width:"100%",height:80,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
+                  <div style={{width:"100%",height:80,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"var(--rk-inset)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
                     {ek?<img src={equipImg(slot.id,tier)} alt={slot.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;}}/>:slot.icon}
                   </div>
                   <div style={{fontSize:8,color:ek?c:"var(--rk-t2)",fontWeight:700,marginTop:4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",padding:"0 2px"}}>{ek?EQUIPMENT_NAMES[slot.id][tier]:"Vacío"}</div>
@@ -8977,7 +8979,7 @@ function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines,rout
       <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>LOGROS</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,paddingBottom:20}}>
         {ACHIEVEMENTS.map(ach=>{const done=earnedAchs.includes(ach.id);return(
-          <div key={ach.id} style={{background:done?"#0F0F20":"#0A0A14",border:`1px solid ${done?"#A78BFA66":"#1E1E2E"}`,borderRadius:12,padding:14,opacity:done?1:.5,boxShadow:done?"0 0 16px #A78BFA22":"none"}}>
+          <div key={ach.id} style={{background:done?"#0F0F20":"var(--rk-inset)",border:`1px solid ${done?"#A78BFA66":"#1E1E2E"}`,borderRadius:12,padding:14,opacity:done?1:.5,boxShadow:done?"0 0 16px #A78BFA22":"none"}}>
             <div style={{fontSize:28,marginBottom:6}}>{ach.icon}</div>
             <div style={{fontSize:12,fontWeight:700,color:done?"#FFF":"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:3}}>{ach.name}</div>
             <div style={{fontSize:10,color:"var(--rk-t2)",lineHeight:1.4,marginBottom:6}}>{ach.desc}</div>
