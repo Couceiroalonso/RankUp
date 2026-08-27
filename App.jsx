@@ -1000,6 +1000,9 @@ const RAID_RARITY_COLOR = {normal:"#60A5FA", épica:"#A78BFA", legendaria:"#F59E
 const RAID_TRIGGER_CHANCE = 0.12; // 20% on dungeon complete or app open
 
 const ACHIEVEMENTS = [
+  // ── ACCESO ESPECIAL ──────────────────────────────────────────────────────────
+  {id:"beater", icon:"🗡️", name:"Beater", desc:"Jugaste la beta antes que nadie. Ibas un paso por delante desde el día uno.", xp:250, check:s=>s.isBetaTester===true},
+
   // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
   {id:"first_exercise", icon:"⚔️", name:"Primera Sangre",     desc:"Completa tu primer ejercicio",          xp:50,   check:s=>s.totalDone>=1},
   {id:"first_day",      icon:"🗡️", name:"Superviviente",      desc:"Completa tu primer día entero",         xp:150,  check:s=>s.daysComplete>=1},
@@ -1161,7 +1164,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},bodyMeasurements:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},bodyMeasurements:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null,betaTester:false});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1189,10 +1192,12 @@ const CSS=`
     --rk-t10: #EEE;
     --rk-ink: #07070F;
     --rk-inset: #0A0A14;
+    --rk-text: #FFFFFF;
   }
   [data-theme="light"] {
     --rk-ink: #07070F;
     --rk-inset: #F7F6FC;
+    --rk-text: #1A1030;
     --rk-bg: #F3F1FA;
     --rk-bg2: #FFFFFF;
     --rk-bg3: #FFFFFF;
@@ -1251,16 +1256,16 @@ function Particle({x,y,text,color,onDone}){
 }
 function AchToast({ach,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
-  return <div onClick={onDone} style={{position:"fixed",bottom:90,right:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #A78BFA",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #A78BFA44",animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:30}}>{ach.icon}</div><div><div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:2}}>LOGRO DESBLOQUEADO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ach.name}</div><div style={{fontSize:11,color:"#A78BFA",fontWeight:700,marginTop:3}}>+{ach.xp} XP</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",bottom:90,right:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #A78BFA",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #A78BFA44",animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:30}}>{ach.icon}</div><div><div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:2}}>LOGRO DESBLOQUEADO</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{ach.name}</div><div style={{fontSize:11,color:"#A78BFA",fontWeight:700,marginTop:3}}>+{ach.xp} XP</div></div></div>;
 }
 function CoinToast({msg,coins,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
-  return <div onClick={onDone} style={{position:"fixed",bottom:90,left:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",bottom:90,left:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
 }
 function LootToast({item,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=RARITY_INFO[item.rarity]?.color||"#A78BFA";
-  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
 }
 function CraftToast({name,slot,icon,tier,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
@@ -1269,7 +1274,7 @@ function CraftToast({name,slot,icon,tier,onDone}){
     <div style={{width:38,height:38,flexShrink:0,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,overflow:"hidden"}}>
       {slot?<img src={equipImg(slot,tier)} alt="" style={{width:"100%",height:"100%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=icon;}}/>:icon}
     </div>
-    <div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div>
+    <div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div>
   </div>;
 }
 
@@ -1284,7 +1289,7 @@ function Season1Popup({onClose}){
         <div style={{background:"linear-gradient(135deg,#E84A5F33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
           <div style={{fontSize:9,letterSpacing:5,color:"#E84A5F88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
           <div style={{fontSize:11,letterSpacing:4,color:"#E84A5F",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TEMPORADA I</div>
-          <div style={{fontSize:26,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #E84A5F88"}}>
+          <div style={{fontSize:26,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #E84A5F88"}}>
             EL AUGE DE LOS<br/>SEÑORES OSCUROS
           </div>
           <div style={{fontSize:12,color:"var(--rk-t6)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
@@ -1326,7 +1331,7 @@ function LootUpdatePopup({onClose}){
         <div style={{background:"linear-gradient(135deg,#A78BFA33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
           <div style={{fontSize:9,letterSpacing:5,color:"#A78BFA88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
           <div style={{fontSize:11,letterSpacing:4,color:"#A78BFA",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🎒 NUEVA ACTUALIZACIÓN</div>
-          <div style={{fontSize:24,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #A78BFA88"}}>
+          <div style={{fontSize:24,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #A78BFA88"}}>
             LAS BESTIAS<br/>EMPIEZAN A CAER
           </div>
           <div style={{fontSize:12,color:"var(--rk-t6)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
@@ -1389,7 +1394,7 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
         <div style={{background:"linear-gradient(135deg,#E84A5F33,transparent)",padding:"20px 20px 14px",textAlign:"center"}}>
           <div style={{fontSize:8,letterSpacing:4,color:"#E84A5F88",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>☠️ GUILD RAID — SEÑOR OSCURO</div>
           <div style={{fontSize:52,marginBottom:6,filter:"drop-shadow(0 0 16px #E84A5F)",animation:"bossGlow 1.5s ease-in-out infinite"}}>{raid.icon}</div>
-          <div style={{fontSize:16,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:8}}>{raid.name}</div>
+          <div style={{fontSize:16,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:8}}>{raid.name}</div>
           <div style={{fontSize:11,color:"var(--rk-t3)",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif"}}>{raid.lore}</div>
         </div>
 
@@ -1434,7 +1439,7 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
                       value={inputs[i]||""}
                       onChange={e=>setInputs(p=>({...p,[i]:e.target.value}))}
                       style={{flex:1,padding:"8px 10px",background:"var(--rk-bg2)",border:`1px solid ${ph.color}44`,
-                        borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                        borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                     <button onClick={()=>{
                       const r=parseInt(inputs[i]);
                       if(r>0){onContribute(i,r);setInputs(p=>({...p,[i]:""}));}
@@ -1454,7 +1459,7 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
           <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:"10px 14px",border:"1px solid #E84A5F22",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
               <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>TU CONTRIBUCIÓN</div>
-              <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{totalUserReps} reps</div>
+              <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{totalUserReps} reps</div>
             </div>
             <div style={{textAlign:"right"}}>
               <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>MÍNIMO PARA RECOMPENSA</div>
@@ -1502,7 +1507,7 @@ function GuildRaidCompleteCard({raid,onClose}){
           borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F88",padding:"28px 24px",textAlign:"center"}}>
           <div style={{fontSize:8,letterSpacing:5,color:"#E84A5F88",marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>━━ SEÑOR OSCURO DERROTADO ━━</div>
           <div style={{fontSize:64,marginBottom:8,filter:"drop-shadow(0 0 20px #E84A5F)",animation:"bossGlow 1.5s infinite"}}>{raid.icon}</div>
-          <div style={{fontSize:18,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16}}>{raid.name}</div>
+          <div style={{fontSize:18,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16}}>{raid.name}</div>
           <div style={{width:"70%",height:1,background:"linear-gradient(90deg,transparent,#E84A5F66,transparent)",margin:"0 auto 16px"}}/>
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
             {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
@@ -1551,7 +1556,7 @@ function Season1End({activeGuildRaid,onClose}){
         borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",padding:"32px 24px",textAlign:"center"}}>
         <div style={{fontSize:9,letterSpacing:5,color:"#A78BFA88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
         <div style={{fontSize:11,letterSpacing:4,color:"#A78BFA",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TEMPORADA I — CONCLUIDA</div>
-        <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16,textShadow:"0 0 20px #A78BFA88"}}>
+        <div style={{fontSize:22,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16,textShadow:"0 0 20px #A78BFA88"}}>
           EL AUGE DE LOS<br/>SEÑORES OSCUROS
         </div>
         <div style={{fontSize:12,color:"var(--rk-t4)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",marginBottom:20,padding:"0 8px"}}>
@@ -1630,7 +1635,7 @@ function LevelUpModal({level,onClose}){
           <div style={{fontSize:9,letterSpacing:5,color:`${ri.color}88`,marginBottom:14,fontFamily:"'Rajdhani',sans-serif"}}>━━ SISTEMA RANKUP ━━</div>
           <div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><HelmIcon size={72} glow={ri.color}/></div>
           <div style={{fontSize:10,letterSpacing:5,color:ri.color,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>HAS SUBIDO DE NIVEL</div>
-          <div style={{fontSize:52,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1,textShadow:`0 0 30px ${ri.color}88`}}>NIVEL {level}</div>
+          <div style={{fontSize:52,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1,textShadow:`0 0 30px ${ri.color}88`}}>NIVEL {level}</div>
           <div style={{width:"60%",height:1,background:`linear-gradient(90deg,transparent,${ri.color}66,transparent)`,margin:"14px auto"}}/>
           <div style={{fontSize:16,color:ri.color,fontWeight:700,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>[{ri.rank}] {ri.title}</div>
           <div style={{marginTop:16,fontSize:9,color:"var(--rk-t1)",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
@@ -1656,7 +1661,7 @@ function LevelUpModal({level,onClose}){
   );
 }
 function RedeemModal({reward,coins,onClose}){
-  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}><div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"var(--rk-t6)",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
+  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}><div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"var(--rk-t6)",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
 }
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
@@ -1814,7 +1819,19 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null,betaTester:false};
+    // Los primeros 20 Aventureros en registrarse desbloquean "Beater"
+    // automáticamente — contador atómico en Firebase, solo para cuentas nuevas
+    // y excluyendo al propio equipo (@rankup.fit).
+    if(!hasExisting&&!key.endsWith("@rankup.fit")){
+      try{
+        const count=(await fbGet("betaTesterCount").catch(()=>0))||0;
+        if(count<20){
+          initData.betaTester=true;
+          await fbSet("betaTesterCount",count+1).catch(()=>{});
+        }
+      }catch{}
+    }
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -1824,7 +1841,7 @@ function LoginScreen({onLogin}){
     setSession(key); onLogin(key,name.trim(),false);
   };
 
-  const inp={width:"100%",padding:"14px 16px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"};
+  const inp={width:"100%",padding:"14px 16px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"};
 
   return(
     <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"var(--rk-bg)",padding:24}}>
@@ -1834,7 +1851,7 @@ function LoginScreen({onLogin}){
           <HelmIcon size={88} glow="#A78BFA"/>
         </div>
         <div style={{fontSize:9,letterSpacing:6,color:"var(--rk-t2)",marginBottom:6}}> </div>
-        <div style={{fontSize:32,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>RANKUP</div>
+        <div style={{fontSize:32,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1}}>RANKUP</div>
       </div>
 
       <div className={shake?"shake":""} style={{width:"100%",maxWidth:360,background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:20,padding:28}}>
@@ -1953,7 +1970,7 @@ function LoginScreen({onLogin}){
               <div style={{width:"100%",height:4,background:"var(--rk-bg4)",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
                 <div style={{width:`${(step/TOTAL_STEPS)*100}%`,height:"100%",background:"linear-gradient(90deg,#7C3AED,#A78BFA)",borderRadius:2,transition:"width .3s"}}/>
               </div>
-              <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:18,textAlign:"center",lineHeight:1.3}}>{q.title}</div>
+              <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:18,textAlign:"center",lineHeight:1.3}}>{q.title}</div>
               <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:18}}>
                 {q.options.map(opt=>{
                   const v=typeof opt==="string"?opt:opt.v;
@@ -1985,7 +2002,7 @@ function LoginScreen({onLogin}){
             <div style={{width:"100%",height:4,background:"var(--rk-bg4)",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
               <div style={{width:`${(step/TOTAL_STEPS)*100}%`,height:"100%",background:"linear-gradient(90deg,#7C3AED,#A78BFA)",borderRadius:2,transition:"width .3s"}}/>
             </div>
-            <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:24,textAlign:"center"}}>¿Cuántas veces por semana quieres entrenar?</div>
+            <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:24,textAlign:"center"}}>¿Cuántas veces por semana quieres entrenar?</div>
             <div style={{textAlign:"center",fontSize:56,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",marginBottom:6}}>{onboard.frequency}×</div>
             <div style={{textAlign:"center",fontSize:12,color:"var(--rk-t4)",marginBottom:24}}>{onboard.frequency} entreno{onboard.frequency!==1?"s":""} a la semana</div>
             <input type="range" min={1} max={7} value={onboard.frequency} onChange={e=>setOnboard(o=>({...o,frequency:parseInt(e.target.value)}))}
@@ -2002,7 +2019,7 @@ function LoginScreen({onLogin}){
           const STAT_LABELS=[{k:"strength",l:"Fuerza"},{k:"vitality",l:"Vitalidad"},{k:"agility",l:"Agilidad"},{k:"recovery",l:"Recuperación"}];
           return(
             <>
-              <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",textAlign:"center",marginBottom:8}}>
+              <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",textAlign:"center",marginBottom:8}}>
                 {statsRevealed?"⚔️ Tu Potencial":"📊 Tus Stats Actuales"}
               </div>
               <div style={{fontSize:12,color:"var(--rk-t6)",textAlign:"center",marginBottom:20,lineHeight:1.6}}>
@@ -2388,7 +2405,7 @@ function ProgramasTab({userList, flash}){
             flash("🗑️ Programa eliminado");
           };
 
-          const inp2={width:"100%",padding:"10px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
+          const inp2={width:"100%",padding:"10px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
 
           if(view==="editDay"&&editProg&&editPhaseIdx!==null&&editDayIdx!==null){
             const phase=editProg.phases[editPhaseIdx];
@@ -2397,7 +2414,7 @@ function ProgramasTab({userList, flash}){
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <button onClick={()=>setView("editPhase")} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:12,color:"#FFF",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{day.day}</div>
+                  <div style={{fontSize:12,color:"var(--rk-text)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{day.day}</div>
                 </div>
                 {/* Day name edit */}
                 <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:12,border:"1px solid var(--rk-border)",marginBottom:12}}>
@@ -2413,7 +2430,7 @@ function ProgramasTab({userList, flash}){
                 {day.exercises.map((ex,ei)=>(
                   <div key={ei} style={{background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:9,padding:12,marginBottom:8}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                      <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
+                      <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
                       <button onClick={()=>{
                         const p=JSON.parse(JSON.stringify(editProg));
                         p.phases[editPhaseIdx].training[editDayIdx].exercises.splice(ei,1);
@@ -2487,7 +2504,7 @@ function ProgramasTab({userList, flash}){
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <button onClick={()=>setView("editProg")} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:12,color:"#FFF",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{phase.name}: {phase.subtitle}</div>
+                  <div style={{fontSize:12,color:"var(--rk-text)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{phase.name}: {phase.subtitle}</div>
                 </div>
                 <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:12,border:"1px solid var(--rk-border2)",marginBottom:12}}>
                   <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:8}}>NOMBRE DE FASE</div>
@@ -2509,7 +2526,7 @@ function ProgramasTab({userList, flash}){
                       style={{background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:9,padding:"12px 14px",marginBottom:6,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
                         <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:2}}>SESIÓN {di+1}</div>
-                        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:8}}>
                         <span style={{fontSize:10,color:"var(--rk-t3)"}}>{exCount} ejercicios</span>
@@ -2539,7 +2556,7 @@ function ProgramasTab({userList, flash}){
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
                   <button onClick={()=>{setView("list");setEditProg(null);}} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",flex:1}}>EDITANDO PROGRAMA</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",flex:1}}>EDITANDO PROGRAMA</div>
                 </div>
                 <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:12,border:"1px solid var(--rk-border2)",marginBottom:12}}>
                   <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6}}>NOMBRE DEL PROGRAMA</div>
@@ -2556,7 +2573,7 @@ function ProgramasTab({userList, flash}){
                       style={{background:"var(--rk-bg3)",border:`1px solid ${ph.color}33`,borderRadius:10,padding:14,marginBottom:8,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
                         <div style={{fontSize:9,color:ph.color,letterSpacing:3,marginBottom:2}}>{ph.name}</div>
-                        <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ph.subtitle}</div>
+                        <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{ph.subtitle}</div>
                         <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:2}}>{sessions} sesiones · {exTotal} ejercicios</div>
                       </div>
                       <span style={{color:ph.color,fontSize:18}}>›</span>
@@ -2588,7 +2605,7 @@ function ProgramasTab({userList, flash}){
                       <span style={{fontSize:22}}>{tpl.icon||"⚔️"}</span>
                       <div style={{flex:1}}>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{tpl.name}</div>
+                          <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{tpl.name}</div>
                           {isBuiltin&&<span style={{fontSize:9,padding:"2px 6px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA"}}>PLANTILLA</span>}
                         </div>
                         <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:1}}>{tpl.phases?.length||0} fases · {tpl.phases?.reduce((a,p)=>a+p.training.length,0)||0} sesiones</div>
@@ -2661,6 +2678,26 @@ function AdminPanel({onLogout}){
       setSeasonActiveState(s?.seasonActive!==false);
       setSeasonLoaded(true);
     }).catch(()=>setSeasonLoaded(true));
+  },[]);
+
+  // Migración única: si el contador de "Beater" no existe todavía, calcula
+  // quiénes de los ya registrados entran en los primeros 20 (por fecha de
+  // registro, excluyendo al equipo @rankup.fit) y les concede el logro.
+  useEffect(()=>{
+    (async()=>{
+      const existingCount=await fbGet("betaTesterCount").catch(()=>null);
+      if(existingCount!=null) return; // ya migrado antes, no repetir
+      const fbUsers=await fbGet("users").catch(()=>({}))||{};
+      const list=Object.values(fbUsers)
+        .filter(u=>u&&u.email&&!u.email.toLowerCase().endsWith("@rankup.fit"))
+        .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+      const first20=list.slice(0,20);
+      for(const u of first20){
+        const dataKey=u.email.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+        await fbSet(`userData/${dataKey}/betaTester`,true).catch(()=>{});
+      }
+      await fbSet("betaTesterCount",Math.min(list.length,20)).catch(()=>{});
+    })();
   },[]);
 
   const [confirmSeasonStart,setConfirmSeasonStart]=useState(false);
@@ -3142,7 +3179,7 @@ function AdminPanel({onLogout}){
   const totalXpAll=userList.reduce((a,u)=>{const d=getUD(u.email)||defaultData();return a+(d.totalXp||0);},0);
   const totalCoinsAll=userList.reduce((a,u)=>{const d=getUD(u.email)||defaultData();return a+(d.coins||0);},0);
 
-  const inp={width:"100%",padding:"10px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
+  const inp={width:"100%",padding:"10px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
 
   // User detail modal
   if(selUser&&editData){
@@ -3162,9 +3199,9 @@ function AdminPanel({onLogout}){
           <div>
             <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:2}}>EDITANDO JUGADOR</div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <div style={{fontSize:17,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
+              <div style={{fontSize:17,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
               {(userMessages[selUser]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
-                <span style={{background:"#E84A5F",color:"#FFF",fontSize:9,fontWeight:900,padding:"2px 7px",borderRadius:20,fontFamily:"'Rajdhani',sans-serif"}}>NUEVO MENSAJE</span>}
+                <span style={{background:"#E84A5F",color:"var(--rk-text)",fontSize:9,fontWeight:900,padding:"2px 7px",borderRadius:20,fontFamily:"'Rajdhani',sans-serif"}}>NUEVO MENSAJE</span>}
             </div>
             <div style={{fontSize:10,color:ri.color,letterSpacing:1,marginTop:2}}>[{ri.rank}] {ri.title} · Lv.{level}</div>
           </div>
@@ -3216,6 +3253,10 @@ function AdminPanel({onLogout}){
           {/* Edit XP & Coins directly */}
           <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:14}}>
             <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>EDITAR VALORES</div>
+            <button onClick={()=>setEditData({...editData,betaTester:!editData.betaTester})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"10px 12px",marginBottom:14,background:editData.betaTester?"#A78BFA1A":"var(--rk-bg3)",border:`1px solid ${editData.betaTester?"#A78BFA":"var(--rk-border)"}`,borderRadius:10,cursor:"pointer"}}>
+              <span style={{fontSize:11,fontWeight:700,color:editData.betaTester?"#A78BFA":"var(--rk-t4)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>🗡️ BEATER (betatester)</span>
+              <span style={{fontSize:11,fontWeight:900,color:editData.betaTester?"#A78BFA":"var(--rk-t2)"}}>{editData.betaTester?"ACTIVADO":"OFF"}</span>
+            </button>
             <div style={{marginBottom:10}}>
               <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>XP TOTAL</div>
               <input style={inp} type="number" value={editData.totalXp||0} onChange={e=>setEditData({...editData,totalXp:Math.max(0,parseInt(e.target.value)||0)})}/>
@@ -3265,7 +3306,7 @@ function AdminPanel({onLogout}){
                     <div key={rt.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
                       <div style={{width:8,height:8,borderRadius:"50%",background:c,flexShrink:0}}/>
                       <div style={{flex:1}}>
-                        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
                         <div style={{fontSize:10,color:"var(--rk-t2)"}}>{rt.sessions?.length||0} sesión(es) · {total} ejercicios{rt.assignedByAdmin?" · 👑 Admin":""}</div>
                       </div>
                       <button onClick={()=>removeRoutineFromUser(selUser,rt.id)} style={{background:"none",border:"none",color:"#E84A5F",fontSize:14,cursor:"pointer",padding:4}}>✕</button>
@@ -3289,7 +3330,7 @@ function AdminPanel({onLogout}){
                     <div key={dt.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
                       <div style={{width:8,height:8,borderRadius:"50%",background:c,flexShrink:0}}/>
                       <div style={{flex:1}}>
-                        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
                         <div style={{fontSize:10,color:"var(--rk-t2)"}}>{dt.calories&&`${dt.calories} · `}{dt.meals?.length||0} comidas{dt.assignedByAdmin?" · 👑 Admin":""}</div>
                       </div>
                       <button onClick={()=>removeDietFromUser(selUser,dt.id)} style={{background:"none",border:"none",color:"#E84A5F",fontSize:14,cursor:"pointer",padding:4}}>✕</button>
@@ -3305,7 +3346,7 @@ function AdminPanel({onLogout}){
             {editData.assignedProgram?(
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
                 <div style={{flex:1}}>
-                  <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{editData.assignedProgram.name}</div>
+                  <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{editData.assignedProgram.name}</div>
                   <div style={{fontSize:10,color:"var(--rk-t3)"}}>{editData.assignedProgram.phases?.length||0} fases · 👑 Admin</div>
                 </div>
                 <button onClick={()=>{
@@ -3354,7 +3395,7 @@ function AdminPanel({onLogout}){
             return(
               <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:`1px solid ${unread>0?"#E84A5F33":"#A78BFA22"}`,marginBottom:14}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>✉️ MENSAJES ({msgs.length}){unread>0&&<span style={{marginLeft:8,background:"#E84A5F",color:"#FFF",fontSize:8,padding:"1px 6px",borderRadius:10,fontWeight:900}}>{unread} NUEVO{unread>1?"S":""}</span>}</div>
+                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>✉️ MENSAJES ({msgs.length}){unread>0&&<span style={{marginLeft:8,background:"#E84A5F",color:"var(--rk-text)",fontSize:8,padding:"1px 6px",borderRadius:10,fontWeight:900}}>{unread} NUEVO{unread>1?"S":""}</span>}</div>
                 </div>
                 <div style={{maxHeight:220,overflowY:"auto",display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
                   {msgs.length===0&&<div style={{fontSize:11,color:"var(--rk-t1)",textAlign:"center",padding:"12px 0"}}>Sin mensajes aún</div>}
@@ -3366,7 +3407,7 @@ function AdminPanel({onLogout}){
                           background:isAdmin?"#A78BFA22":"var(--rk-bg4)",
                           border:`1px solid ${isAdmin?"#A78BFA44":"var(--rk-bg5)"}`}}>
                           {!isAdmin&&<div style={{fontSize:8,color:"#A78BFA",letterSpacing:1,marginBottom:3}}>{m.name||"Usuario"}</div>}
-                          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.4}}>{m.text}</div>
+                          <div style={{fontSize:12,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.4}}>{m.text}</div>
                           <div style={{fontSize:9,color:"var(--rk-t2)",marginTop:3,textAlign:"right"}}>{formatDate(m.date)}</div>
                         </div>
                       </div>
@@ -3377,7 +3418,7 @@ function AdminPanel({onLogout}){
                   <input value={adminMsgInput} onChange={e=>setAdminMsgInput(e.target.value)}
                     onKeyDown={e=>{if(e.key==="Enter")sendAdminMessage(selUser,adminMsgInput);}}
                     placeholder="Responder al usuario..."
-                    style={{flex:1,padding:"9px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    style={{flex:1,padding:"9px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                   <button onClick={()=>sendAdminMessage(selUser,adminMsgInput)}
                     style={{padding:"9px 14px",background:"#A78BFA",border:"none",borderRadius:9,color:"var(--rk-ink)",fontSize:13,fontWeight:700,cursor:"pointer"}}>➤</button>
                 </div>
@@ -3403,7 +3444,7 @@ function AdminPanel({onLogout}){
                     <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
                       <span style={{fontSize:22,flexShrink:0}}>{entry.icon}</span>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:12,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{entry.name}</div>
+                        <div style={{fontSize:12,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{entry.name}</div>
                         <div style={{fontSize:10,color:"var(--rk-t2)"}}>{formatDate(entry.date)}</div>
                       </div>
                       <div style={{fontSize:13,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>-{(entry.cost||0).toLocaleString()} 🪙</div>
@@ -3418,7 +3459,7 @@ function AdminPanel({onLogout}){
           <div style={{background:"#120808",borderRadius:12,padding:14,border:"1px solid #E84A5F33",marginBottom:16}}>
             <div style={{fontSize:9,color:"#E84A5F88",letterSpacing:3,marginBottom:12}}>⚠️ ZONA PELIGROSA</div>
             <button onClick={()=>setConfirmReset(selUser)} style={{width:"100%",padding:11,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>🔄 REINICIAR PROGRESO</button>
-            <button onClick={()=>setConfirmDel(selUser)} style={{width:"100%",padding:11,background:"#E84A5F33",border:"1px solid #E84A5F",borderRadius:8,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🗑️ ELIMINAR USUARIO</button>
+            <button onClick={()=>setConfirmDel(selUser)} style={{width:"100%",padding:11,background:"#E84A5F33",border:"1px solid #E84A5F",borderRadius:8,color:"var(--rk-text)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🗑️ ELIMINAR USUARIO</button>
           </div>
 
           <button onClick={saveEdit} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR CAMBIOS</button>
@@ -3429,11 +3470,11 @@ function AdminPanel({onLogout}){
           <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
             <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Eliminar usuario?</div>
-              <div style={{fontSize:12,color:"var(--rk-t6)",marginBottom:20}}>Se borrarán todos los datos de <strong style={{color:"#FFF"}}>{allUsers[confirmDel]?.name}</strong> permanentemente.</div>
+              <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Eliminar usuario?</div>
+              <div style={{fontSize:12,color:"var(--rk-t6)",marginBottom:20}}>Se borrarán todos los datos de <strong style={{color:"var(--rk-text)"}}>{allUsers[confirmDel]?.name}</strong> permanentemente.</div>
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setConfirmDel(null)} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t6)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
-                <button onClick={()=>{deleteUser(confirmDel);setSelUser(null);setEditData(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>ELIMINAR</button>
+                <button onClick={()=>{deleteUser(confirmDel);setSelUser(null);setEditData(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"var(--rk-text)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -3444,11 +3485,11 @@ function AdminPanel({onLogout}){
           <div onClick={()=>setConfirmReset(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
             <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Reiniciar progreso?</div>
-              <div style={{fontSize:12,color:"var(--rk-t6)",marginBottom:20}}>Se pondrá a cero el XP, monedas, ejercicios y logros de <strong style={{color:"#FFF"}}>{allUsers[confirmReset]?.name}</strong>. Esta acción no se puede deshacer.</div>
+              <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Reiniciar progreso?</div>
+              <div style={{fontSize:12,color:"var(--rk-t6)",marginBottom:20}}>Se pondrá a cero el XP, monedas, ejercicios y logros de <strong style={{color:"var(--rk-text)"}}>{allUsers[confirmReset]?.name}</strong>. Esta acción no se puede deshacer.</div>
               <div style={{display:"flex",gap:10}}>
                 <button onClick={()=>setConfirmReset(null)} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t6)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
-                <button onClick={()=>{resetProgress(confirmReset);setConfirmReset(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>REINICIAR</button>
+                <button onClick={()=>{resetProgress(confirmReset);setConfirmReset(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"var(--rk-text)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>REINICIAR</button>
               </div>
             </div>
           </div>
@@ -3524,7 +3565,7 @@ function AdminPanel({onLogout}){
       <div style={{background:"linear-gradient(180deg,#0D0D1F,var(--rk-bg))",padding:"16px 16px 14px",borderBottom:"1px solid #A78BFA33",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
         <div>
           <div style={{fontSize:9,color:"#A78BFA",letterSpacing:5}}>PANEL DE CONTROL</div>
-          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>ADMINISTRADOR</div>
+          <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1}}>ADMINISTRADOR</div>
         </div>
         <div style={{display:"flex",gap:8}}>
           {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
@@ -3551,7 +3592,7 @@ function AdminPanel({onLogout}){
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
                   <button onClick={()=>setShowRoutineBuilder(false)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#A78BFA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{editingRoutine?"EDITAR RUTINA":"NUEVA RUTINA"}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{editingRoutine?"EDITAR RUTINA":"NUEVA RUTINA"}</div>
                 </div>
 
                 {/* Name */}
@@ -3583,7 +3624,7 @@ function AdminPanel({onLogout}){
                     {sess.exercises.map((ex,ei)=>(
                       <div key={ei} style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,background:"var(--rk-bg)",borderRadius:8,padding:"6px 10px",border:ex.boss?"1px solid #E84A5F66":"1px solid transparent"}}>
                         <div style={{flex:1}}>
-                          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.name}</div>
+                          <div style={{fontSize:12,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.name}</div>
                           <div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.sets} · {ex.rest} descanso</div>
                         </div>
                         <button onClick={()=>{const s=[...rtSessions];s[si].exercises[ei]={...ex,boss:!ex.boss};setRtSessions(s);}}
@@ -3724,7 +3765,7 @@ function AdminPanel({onLogout}){
                 )}
 
                 <button onClick={saveRoutine} disabled={!rtName.trim()}
-                  style={{width:"100%",padding:14,background:rtName.trim()?`linear-gradient(135deg,${rtColor},${rtColor}99)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:rtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                  style={{width:"100%",padding:14,background:rtName.trim()?`linear-gradient(135deg,${rtColor},${rtColor}99)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:"var(--rk-text)",fontSize:14,fontWeight:700,cursor:rtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
                   💾 GUARDAR RUTINA
                 </button>
               </div>
@@ -3758,7 +3799,7 @@ function AdminPanel({onLogout}){
                             <div style={{display:"flex",alignItems:"center",gap:10}}>
                               <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0,boxShadow:`0 0 8px ${c}`}}/>
                               <div>
-                                <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                                <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
                                 <div style={{fontSize:10,color:"var(--rk-t3)"}}>{rt.sessions?.length||0} sesiones · {totalEx} ejercicios</div>
                               </div>
                             </div>
@@ -3790,7 +3831,7 @@ function AdminPanel({onLogout}){
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
                   <button onClick={()=>setShowDietBuilder(false)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#34D399",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{editingDiet?"EDITAR DIETA":"NUEVA DIETA"}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{editingDiet?"EDITAR DIETA":"NUEVA DIETA"}</div>
                 </div>
 
                 {/* Nombre y color */}
@@ -3884,7 +3925,7 @@ function AdminPanel({onLogout}){
                 </div>
 
                 <button onClick={saveDiet} disabled={!dtName.trim()}
-                  style={{width:"100%",padding:14,background:dtName.trim()?`linear-gradient(135deg,${dtColor},${dtColor}99)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:dtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                  style={{width:"100%",padding:14,background:dtName.trim()?`linear-gradient(135deg,${dtColor},${dtColor}99)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:"var(--rk-text)",fontSize:14,fontWeight:700,cursor:dtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
                   💾 GUARDAR DIETA
                 </button>
               </div>
@@ -3910,7 +3951,7 @@ function AdminPanel({onLogout}){
                             <div style={{display:"flex",alignItems:"center",gap:10}}>
                               <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0,boxShadow:`0 0 8px ${c}`}}/>
                               <div>
-                                <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
+                                <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
                                 <div style={{fontSize:10,color:"var(--rk-t3)"}}>{dt.goal&&`${dt.goal} · `}{dt.meals?.length||0} comidas{dt.calories&&` · ${dt.calories}`}</div>
                               </div>
                             </div>
@@ -3980,7 +4021,7 @@ function AdminPanel({onLogout}){
                     <div style={{width:32,height:32,borderRadius:8,border:`1.5px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",flexShrink:0}}>{ri.rank}</div>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <span style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
+                        <span style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
                         {(()=>{const cls=CLASSES.find(c=>c.id===(getUD(u.email)||defaultData()).playerClass);return cls?<span style={{fontSize:12,padding:"1px 6px",background:`${cls.color}22`,border:`1px solid ${cls.color}44`,borderRadius:6,color:cls.color,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{cls.icon} {cls.name}</span>:null;})()}
                       </div>
                       <div style={{fontSize:10,color:"var(--rk-t2)"}}>{u.email}</div>
@@ -4013,11 +4054,11 @@ function AdminPanel({onLogout}){
               <div style={{background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:12,padding:16,marginBottom:14}}>
                 <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:12}}>CREAR NUEVO USUARIO</div>
                 <input value={nuName} onChange={e=>setNuName(e.target.value)} placeholder="Nombre"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
                 <input value={nuEmail} onChange={e=>setNuEmail(e.target.value)} placeholder="Email" type="email"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
                 <input value={nuPass} onChange={e=>setNuPass(e.target.value)} placeholder="Contraseña (mín. 6 caracteres)" type="password"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:12,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:12,boxSizing:"border-box"}}/>
                 <label style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,cursor:"pointer"}}>
                   <input type="checkbox" checked={nuIsTest} onChange={e=>setNuIsTest(e.target.checked)}
                     style={{width:16,height:16,accentColor:"#A78BFA",cursor:"pointer"}}/>
@@ -4050,9 +4091,9 @@ function AdminPanel({onLogout}){
                       </div>
                       <div style={{flex:1}}>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <span style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
+                          <span style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
                           {(userMessages[u.email]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
-                            <span style={{background:"#E84A5F",color:"#FFF",fontSize:8,fontWeight:900,padding:"2px 6px",borderRadius:10,fontFamily:"'Rajdhani',sans-serif"}}>MSG</span>}
+                            <span style={{background:"#E84A5F",color:"var(--rk-text)",fontSize:8,fontWeight:900,padding:"2px 6px",borderRadius:10,fontFamily:"'Rajdhani',sans-serif"}}>MSG</span>}
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
                           <span style={{fontSize:10,color:"var(--rk-t3)"}}>{u.email}</span>
@@ -4146,13 +4187,13 @@ function AdminPanel({onLogout}){
         <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
           <div style={{background:"var(--rk-bg2)",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:420}}>
             <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:10}}>⚠️ RESTAURAR COPIA DE SEGURIDAD</div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:8}}>Archivo: <b style={{color:"#FFF"}}>{pendingRestore.filename}</b></div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:14}}>Fecha de la copia: <b style={{color:"#FFF"}}>{pendingRestore.exportedAt}</b></div>
+            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:8}}>Archivo: <b style={{color:"var(--rk-text)"}}>{pendingRestore.filename}</b></div>
+            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:14}}>Fecha de la copia: <b style={{color:"var(--rk-text)"}}>{pendingRestore.exportedAt}</b></div>
             <div style={{fontSize:12,color:"#F87171",lineHeight:1.6,marginBottom:16,background:"#F8717118",padding:10,borderRadius:8}}>
               Esto va a <b>sobrescribir todos los datos actuales</b> (usuarios, progreso, rutinas, guild raids...) con lo que había en el momento de esta copia. Cualquier cosa creada o cambiada después de esa fecha se perderá.
             </div>
             <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:8}}>Escribe <b style={{color:"#E84A5F"}}>RESTAURAR</b> para confirmar:</div>
-            <input value={restoreConfirmText} onChange={e=>setRestoreConfirmText(e.target.value)} style={{width:"100%",padding:"11px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}} placeholder="RESTAURAR"/>
+            <input value={restoreConfirmText} onChange={e=>setRestoreConfirmText(e.target.value)} style={{width:"100%",padding:"11px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}} placeholder="RESTAURAR"/>
             <div style={{display:"flex",gap:8}}>
               <button onClick={()=>{setPendingRestore(null);setRestoreConfirmText("");}} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
               <button onClick={doRestore} disabled={restoreConfirmText.trim().toUpperCase()!=="RESTAURAR"||restoring} style={{flex:1,padding:12,background:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"linear-gradient(135deg,#E84A5F,#B91C3C)":"var(--rk-border)",border:"none",borderRadius:10,color:"#FFF",fontSize:12,fontWeight:700,cursor:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>{restoring?"⏳ RESTAURANDO...":"SOBRESCRIBIR TODO"}</button>
@@ -4211,7 +4252,7 @@ function ClassSelectModal({current,onSelect}){
   return(
     <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.92)",backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
       <div style={{fontSize:9,letterSpacing:6,color:"var(--rk-t2)",marginBottom:6}}>ELIGE TU CLASE</div>
-      <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center"}}>¿Cuál es tu objetivo?</div>
+      <div style={{fontSize:22,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center"}}>¿Cuál es tu objetivo?</div>
       <div style={{fontSize:11,color:"var(--rk-t3)",marginBottom:16,textAlign:"center"}}>
         {isMobile()?"Toca para ver · Toca de nuevo para elegir":"Define tu camino en RankUp"}
       </div>
@@ -4351,7 +4392,7 @@ function ProfileAvatar({userEmail,riColor,clsIcon}){
           <div style={{display:"flex",gap:6,marginBottom:6}}>
             <input value={urlInput} onChange={e=>setUrlInput(e.target.value)}
               placeholder="https://..." onKeyDown={e=>e.key==="Enter"&&handleUrl()}
-              style={{flex:1,padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+              style={{flex:1,padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
             <button onClick={handleUrl} style={{padding:"8px 12px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer"}}>✓</button>
           </div>
           {error&&<div style={{fontSize:10,color:"#F87171",marginBottom:6}}>{error}</div>}
@@ -4405,11 +4446,11 @@ function ProfileFisico({userEmail}){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:8}}>
         <div style={{textAlign:"center"}}>
           <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:2}}>ALTURA</div>
-          <div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{h?`${h}cm`:"—"}</div>
+          <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)"}}>{h?`${h}cm`:"—"}</div>
         </div>
         <div style={{textAlign:"center"}}>
           <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:2}}>PESO</div>
-          <div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{w?`${w}kg`:"—"}</div>
+          <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)"}}>{w?`${w}kg`:"—"}</div>
         </div>
         <div style={{textAlign:"center"}}>
           <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:2}}>IMC</div>
@@ -4423,12 +4464,12 @@ function ProfileFisico({userEmail}){
             <div>
               <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2,marginBottom:4}}>ALTURA (cm)</div>
               <input value={newH} onChange={e=>setNewH(e.target.value)} placeholder={h?`${h}`:"170"} type="number"
-                style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
             </div>
             <div>
               <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2,marginBottom:4}}>PESO (kg)</div>
               <input value={newW} onChange={e=>setNewW(e.target.value)} placeholder={w?`${w}`:"70"} type="number" step="0.1"
-                style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
             </div>
           </div>
           {/* IMC preview */}
@@ -4686,6 +4727,7 @@ function RankUpApp({user,onLogout}){
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
+  const [betaTester,setBetaTester]=useState(saved.betaTester||false);
   const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
   const [exHistory,setExHistory]=useState(saved.exHistory||{});  // {exName: [{kg,date,session}]}
   const [exOverrides,setExOverrides]=useState(saved.exOverrides||{});  // {exKey: newExName} — program exercise swaps
@@ -4841,6 +4883,7 @@ function RankUpApp({user,onLogout}){
         if(recovered>0) setCoins(recovered);
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
+      if(fresh.betaTester) setBetaTester(fresh.betaTester);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
       if(fresh.exOverrides&&Object.keys(fresh.exOverrides).length>0) setExOverrides(fresh.exOverrides);
       // ── Load / Migrate exHistory ──
@@ -5006,6 +5049,7 @@ function RankUpApp({user,onLogout}){
       craftStats,
       customRoutines:routines,
       playerClass,
+      betaTester,
       assignedDiets,
       assignedProgram,
       exNotes,
@@ -5038,7 +5082,7 @@ function RankUpApp({user,onLogout}){
     const completedRoutines=routines.filter(rt=>
       (rt.sessions||[]).length>0 && (rt.sessions||[]).every((_,si)=>dc[`rt_${rt.id}_done_${si}`])
     ).length;
-    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids,
+    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids,isBetaTester:betaTester,
       lootTotal:lootStats.total||0,lootRarities:(lootStats.rarities||[]).length,lootTypes:(lootStats.types||[]).length,hasLegendaryLoot:(lootStats.rarities||[]).includes("legendario"),
       craftTotal:craftStats.total||0,craftSlots:(craftStats.slots||[]).length,hasMaestroCraft:(craftStats.tiers||[]).includes("maestro"),craftMaestroSlots:(craftStats.maestroSlots||[]).length};
     // Use functional setEarned to always read latest list — avoids stale closure bug
@@ -5059,7 +5103,7 @@ function RankUpApp({user,onLogout}){
       }
       return newEarned;
     });
-  },[checked,weights,pr,routines,coins,redeemed,dc,lootStats,craftStats]);
+  },[checked,weights,pr,routines,coins,redeemed,dc,lootStats,craftStats,betaTester]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
@@ -5635,7 +5679,7 @@ function RankUpApp({user,onLogout}){
               DERROTADO
             </div>
             <div style={{width:200,height:1,background:"linear-gradient(90deg,transparent,#E84A5F,transparent)",margin:"0 auto 16px"}}/>
-            <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:12}}>
+            <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:12}}>
               {raidDefeated.boss}
             </div>
             <div style={{fontSize:13,color:"var(--rk-t4)",fontStyle:"italic",marginBottom:32,fontFamily:"'Rajdhani',sans-serif"}}>
@@ -5668,7 +5712,7 @@ function RankUpApp({user,onLogout}){
 
             {/* Header */}
             <div style={{fontSize:9,color:"#A78BFA",letterSpacing:8,marginBottom:6,textShadow:"0 0 20px #A78BFA"}}>✦ MISIÓN COMPLETADA ✦</div>
-            <div style={{fontSize:26,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center",textShadow:"0 0 30px #A78BFA88"}}>{dungeonComplete.dayName}</div>
+            <div style={{fontSize:26,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center",textShadow:"0 0 30px #A78BFA88"}}>{dungeonComplete.dayName}</div>
             <div style={{fontSize:11,color:"#A78BFA",letterSpacing:3,marginBottom:24}}>⚔️ DUNGEON CONQUISTADO ⚔️</div>
 
             {/* Main reward card */}
@@ -5680,7 +5724,7 @@ function RankUpApp({user,onLogout}){
                 <div style={{textAlign:"center",marginBottom:16}}>
                   <div style={{fontSize:64,marginBottom:4,filter:"drop-shadow(0 0 20px #F59E0B)"}}>{comp.emoji}</div>
                   <div style={{fontSize:10,color:"#F59E0B",letterSpacing:4,marginBottom:4}}>{comp.title}</div>
-                  <div style={{fontSize:36,fontWeight:900,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{kg.toLocaleString()}<span style={{fontSize:16,color:"#A78BFA"}}> kg</span></div>
+                  <div style={{fontSize:36,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{kg.toLocaleString()}<span style={{fontSize:16,color:"#A78BFA"}}> kg</span></div>
                   <div style={{fontSize:12,color:"var(--rk-t6)",marginTop:4}}>Equivale a levantar <span style={{color:"#F59E0B",fontWeight:700}}>{comp.name}</span></div>
                 </div>
               ):(
@@ -5768,7 +5812,7 @@ function RankUpApp({user,onLogout}){
           <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:0,right:0,width:260,height:"100%",background:`${equippedTexture("armadura")?`${equippedTexture("armadura")},`:""}var(--rk-bg2)`,borderLeft:`1px solid ${equippedColor("armadura","#A78BFA")}33`,padding:28,display:"flex",flexDirection:"column",gap:14}}>
             <div style={{fontSize:9,letterSpacing:5,color:"var(--rk-t2)",marginBottom:4}}>PERFIL RANKUP</div>
             <ProfileAvatar userEmail={user.email} riColor={ri.color} clsIcon={cls?cls.icon:"🗡️"}/>
-            <div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{user.name}</div><div style={{fontSize:11,color:"var(--rk-t3)",marginTop:2}}>{user.email}</div></div>
+            <div><div style={{fontSize:20,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{user.name}</div><div style={{fontSize:11,color:"var(--rk-t3)",marginTop:2}}>{user.email}</div></div>
             {cls&&(
               <div style={{background:`${cls.color}18`,border:`1px solid ${cls.color}44`,borderRadius:10,padding:"10px 12px"}}>
                 <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>CLASE</div>
@@ -5855,7 +5899,7 @@ function RankUpApp({user,onLogout}){
                   </div>
             <div style={{textAlign:"left"}}>
               <div style={{fontSize:9,letterSpacing:3,color:"var(--rk-t2)"}}>RANKUP{cls?` · ${cls.name.toUpperCase()}`:""}</div>
-              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>{user.name}</div>
+              <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1}}>{user.name}</div>
               <div style={{fontSize:10,color:ri.color}}>Nivel {level} · {ri.title}</div>
             </div>
           </button>
@@ -5932,7 +5976,7 @@ function RankUpApp({user,onLogout}){
                     <>
                       <div style={{marginBottom:12,padding:18,borderRadius:14,position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${ph.color}14,var(--rk-bg2))`,border:`1px solid ${ph.color}44`}}>
                         <div style={{fontSize:9,letterSpacing:5,color:ph.color,marginBottom:4}}>📍 {ph.dungeonName.toUpperCase()}</div>
-                        <div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:3}}>{ph.name}: {ph.subtitle}</div>
+                        <div style={{fontSize:20,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:3}}>{ph.name}: {ph.subtitle}</div>
                         <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:14}}>{ph.weeks} · {ph.goal}</div>
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--rk-t3)",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"var(--rk-bg4)",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
@@ -6141,7 +6185,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                         const isChartOpen=openChart===key;
                         const exMuscles=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];
                         return(
-                          <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"var(--rk-bg3)",borderTop:"1px solid var(--rk-bg6)",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
+                          <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"var(--rk-bg3)":"var(--rk-bg3)",borderTop:"1px solid var(--rk-bg6)",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                             <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
                               <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name,ex.boss)}
                                 style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
@@ -6152,7 +6196,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                               </button>
                               <div style={{flex:1,minWidth:0}}>
                                 <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                                  <span style={{fontSize:14,fontWeight:700,color:isDone?"var(--rk-t2)":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
+                                  <span style={{fontSize:14,fontWeight:700,color:isDone?"var(--rk-t2)":"var(--rk-text)",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
                                   {ex.boss&&!isDone&&<span style={{fontSize:9,padding:"2px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1}}>BOSS</span>}
                                 </div>
                                 {ex.notes&&<div style={{fontSize:11,color:"var(--rk-t2)",marginTop:2}}>{ex.notes}</div>}
@@ -6177,7 +6221,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                               <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                 <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
                                   onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e,ex.name);}}
-                                  style={{width:66,padding:"7px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                  style={{width:66,padding:"7px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                                 <button onClick={e=>onLogWeight(key,e,ex.name)}
                                   style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"var(--rk-ink)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
                                 {exHistory[ex.name]?.length>0&&(
@@ -6242,19 +6286,19 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
         <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>setPendingAdd(null)}>
           <div onClick={e=>e.stopPropagation()} style={{width:"100%",background:"var(--rk-bg2)",borderRadius:"20px 20px 0 0",border:"1px solid var(--rk-border2)",padding:20}}>
             <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>⚔️ CONFIGURAR EJERCICIO</div>
-            <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>{pendingAdd.ex.name}</div>
+            <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>{pendingAdd.ex.name}</div>
             <div style={{display:"flex",gap:10,marginBottom:12}}>
               <div style={{flex:1}}>
                 <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>SERIES</div>
                 <input value={pendingSets} onChange={e=>setPendingSets(e.target.value)}
                   placeholder="ej: 4x10"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
               </div>
               <div style={{flex:1}}>
                 <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>DESCANSO</div>
                 <input value={pendingRest} onChange={e=>setPendingRest(e.target.value)}
                   placeholder="ej: 90s"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
               </div>
             </div>
             <div style={{display:"flex",gap:10}}>
@@ -6275,9 +6319,9 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
             {/* Modal header */}
             <div style={{padding:"16px 20px 12px",borderBottom:"1px solid var(--rk-bg4)"}}>
               <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>{isSwap?"🔄 INTERCAMBIAR EJERCICIO":"⚔️ AÑADIR EJERCICIO"}</div>
-              {isSwap&&<div style={{fontSize:11,color:"var(--rk-t2)",marginBottom:8}}>Actual: <span style={{color:"#FFF",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>}
+              {isSwap&&<div style={{fontSize:11,color:"var(--rk-t2)",marginBottom:8}}>Actual: <span style={{color:"var(--rk-text)",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>}
               <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar por nombre o músculo..."
-                style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
             </div>
             {/* Exercise list */}
             <div style={{overflowY:"auto",flex:1}}>
@@ -6422,7 +6466,7 @@ function RoutineBuilderModal({equipFilter=null,suggestedName="",template=null,on
         </div>
 
         <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nombre de la rutina (ej: Mi rutina de fuerza)"
-          style={{width:"100%",padding:"12px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}}/>
+          style={{width:"100%",padding:"12px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}}/>
 
         {days.map(d=>(
           <div key={d.id} style={{background:"var(--rk-bg)",border:"1px solid var(--rk-border2)",borderRadius:12,padding:12,marginBottom:12}}>
@@ -6444,7 +6488,7 @@ function RoutineBuilderModal({equipFilter=null,suggestedName="",template=null,on
             {addingDay===d.id?(
               <div style={{marginTop:8}}>
                 <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar ejercicio..."
-                  style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid #A78BFA44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid #A78BFA44",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
                 <div style={{maxHeight:180,overflowY:"auto"}}>
                   {pool.map(ex=>(
                     <button key={ex.id} onClick={()=>addExercise(d.id,ex)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",background:"none",border:"none",borderBottom:"1px solid var(--rk-divider)",color:"var(--rk-t9)",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
@@ -6602,7 +6646,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
               <button onClick={()=>onToggleDay(dk)} style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${ph.color}18,var(--rk-bg2))`:"var(--rk-bg3)",border:`1px solid ${isOpen?ph.color+"66":allDone?ph.color+"44":"var(--rk-border2)"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${ph.color}33`:"none"}}>
                 <div>
                   <div style={{fontSize:9,color:ph.color,letterSpacing:3,marginBottom:2}}>{allDone?"✅ DUNGEON COMPLETADO":`DUNGEON ${di+1}`}</div>
-                  <div style={{fontSize:14,fontWeight:700,color:allDone?ph.color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
+                  <div style={{fontSize:14,fontWeight:700,color:allDone?ph.color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
                 </div>
                 <div style={{textAlign:"right"}}>
                   <div style={{fontSize:12,color:ph.color,fontWeight:700}}>+{dayXpE}/{dayXpT} XP</div>
@@ -6628,14 +6672,14 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                     const maxKg=globalHist.length>0?Math.max(...globalHist.map(w=>w.kg)):(exW.length>0?Math.max(...exW.map(w=>w.kg)):null);
                     const isPR=maxKg!=null&&lastKg===maxKg;const isChartOpen=openChart===key;
                     return(
-                      <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"#0D0D19":"var(--rk-bg3)",borderTop:"1px solid var(--rk-bg6)",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
+                      <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"var(--rk-bg3)":"var(--rk-bg3)",borderTop:"1px solid var(--rk-bg6)",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                         <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
                           <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName,ex.boss)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"var(--rk-border)"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
                             {isDone?<span style={{color:"var(--rk-ink)",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"var(--rk-border)"}}>⚔</span>}
                           </button>
                           <div style={{flex:1,minWidth:0}}>
                             <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                              <span style={{fontSize:14,fontWeight:700,color:isDone?"var(--rk-t2)":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{exDisplayName}</span>
+                              <span style={{fontSize:14,fontWeight:700,color:isDone?"var(--rk-t2)":"var(--rk-text)",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{exDisplayName}</span>
                               {ex.boss&&!isDone&&<span style={{fontSize:9,padding:"2px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1}}>BOSS</span>}
                             </div>
                             {ex.notes&&<div style={{fontSize:11,color:"var(--rk-t2)",marginTop:2}}>{ex.notes}</div>}
@@ -6653,7 +6697,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                         </div>
                         <div style={{padding:"0 14px 12px 56px"}}>
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:66,padding:"7px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:66,padding:"7px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                             <button onClick={e=>onLogWeight(key,e,exDisplayName)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"var(--rk-ink)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
                           </div>
                           {exHistory[exDisplayName]?.length>0&&(
@@ -6694,9 +6738,9 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
             <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"var(--rk-bg2)",borderRadius:"20px 20px 0 0",border:"1px solid var(--rk-border2)",display:"flex",flexDirection:"column"}}>
               <div style={{padding:"16px 20px 12px",borderBottom:"1px solid var(--rk-bg4)"}}>
                 <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>🔄 INTERCAMBIAR EJERCICIO</div>
-                <div style={{fontSize:11,color:"var(--rk-t2)",marginBottom:8}}>Actual: <span style={{color:"#FFF",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>
+                <div style={{fontSize:11,color:"var(--rk-t2)",marginBottom:8}}>Actual: <span style={{color:"var(--rk-text)",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>
                 <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar por nombre o músculo..."
-                  style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
               </div>
               <div style={{overflowY:"auto",flex:1}}>
                 {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"var(--rk-t1)",fontSize:12}}>Sin resultados</div>}
@@ -6764,14 +6808,14 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             <div style={{fontSize:11,color:sessDone===sess.exercises.length&&sess.exercises.length>0?c:"var(--rk-t2)"}}>{sessDone}/{sess.exercises.length} ✓</div>
                           </button>
                           {isSessOpen&&(
-                            <div style={{background:"#0D0D19"}}>
+                            <div style={{background:"var(--rk-bg3)"}}>
                               {sess.exercises.map((ex,ei)=>(
-                                <div key={ei} style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start",borderTop:"1px solid var(--rk-bg6)",background:ex.done?`${c}10`:ei%2===0?"#0D0D19":"var(--rk-bg3)"}}>
+                                <div key={ei} style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start",borderTop:"1px solid var(--rk-bg6)",background:ex.done?`${c}10`:ei%2===0?"var(--rk-bg3)":"var(--rk-bg3)"}}>
                                   <div style={{width:32,height:32,borderRadius:8,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${ex.done?c:"var(--rk-border)"}`,background:ex.done?c:"transparent"}}>
                                     {ex.done?<span style={{color:"var(--rk-ink)",fontSize:15,fontWeight:900}}>✓</span>:<span style={{fontSize:12,color:"var(--rk-border)"}}>⚔</span>}
                                   </div>
                                   <div style={{flex:1}}>
-                                    <div style={{fontSize:14,fontWeight:700,color:ex.done?"var(--rk-t2)":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                                    <div style={{fontSize:14,fontWeight:700,color:ex.done?"var(--rk-t2)":"var(--rk-text)",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                                   </div>
                                   <div style={{textAlign:"right",flexShrink:0}}>
                                     <div style={{fontSize:13,color:c,fontWeight:700}}>{ex.sets}</div>
@@ -6862,7 +6906,7 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
       <div>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
           <button onClick={()=>setDbOpen(null)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#60A5FA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>Elige ejercicio para añadir</div>
+          <div style={{fontSize:12,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>Elige ejercicio para añadir</div>
         </div>
         <EjerciciosDB filter={dbFilter} setFilter={setDbFilter} onBack={()=>setDbOpen(null)}
           onPick={ex=>{addFromDB(rtId,sIdx,ex);setDbOpen(null);}}/>
@@ -6885,7 +6929,7 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
               style={{width:"100%",textAlign:"left",padding:"14px 16px",background:isOpen?`${ph.color}18`:"var(--rk-bg3)",border:`1px solid ${isOpen?ph.color:ph.color+"33"}`,borderRadius:isOpen?"12px 12px 0 0":12,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",boxShadow:isOpen?`0 0 20px ${ph.color}22`:"none"}}>
               <div>
                 <div style={{fontSize:9,color:ph.color,letterSpacing:3,marginBottom:2}}>📍 {ph.dungeonName?.toUpperCase()}</div>
-                <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{ph.name}: {ph.subtitle}</div>
+                <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{ph.name}: {ph.subtitle}</div>
                 <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:2}}>{ph.weeks} · {ph.training.length} sesiones</div>
               </div>
               <div style={{textAlign:"right"}}>
@@ -6930,7 +6974,7 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                                   {done&&<span style={{color:"var(--rk-ink)",fontSize:12,fontWeight:900}}>✓</span>}
                                 </div>
                                 <div style={{flex:1}}>
-                                  <div style={{fontSize:12,fontWeight:700,color:done?"var(--rk-t3)":"#FFF",textDecoration:done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                                  <div style={{fontSize:12,fontWeight:700,color:done?"var(--rk-t3)":"var(--rk-text)",textDecoration:done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                                   <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.sets} · {ex.rest}</div>
                                 </div>
                                 <div style={{fontSize:10,color:done?ph.color:"var(--rk-t2)",fontWeight:700}}>+{ex.xp} XP</div>
@@ -6961,7 +7005,7 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                   style={{width:"100%",textAlign:"left",padding:"14px 16px",background:isOpen?`${c}18`:"var(--rk-bg3)",border:`1px solid ${isOpen?c:c+"33"}`,borderRadius:isOpen?"12px 12px 0 0":12,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div>
                     <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>👑 ASIGNADA</div>
-                    <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                    <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
                     <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:2}}>{rt.sessions?.length||0} sesiones</div>
                   </div>
                   <div style={{fontSize:14,color:c}}>{isOpen?"▲":"▼"}</div>
@@ -6990,7 +7034,7 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                                     {ex.done&&<span style={{color:"var(--rk-ink)",fontSize:13,fontWeight:900}}>✓</span>}
                                   </div>
                                   <div style={{flex:1}}>
-                                    <div style={{fontSize:13,fontWeight:700,color:ex.done?"var(--rk-t3)":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                                    <div style={{fontSize:13,fontWeight:700,color:ex.done?"var(--rk-t3)":"var(--rk-text)",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                                     <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.sets} · {ex.rest}</div>
                                   </div>
                                   <div style={{fontSize:10,color:ex.done?c:"var(--rk-t2)",fontWeight:700}}>+{ex.xp||35} XP</div>
@@ -7000,10 +7044,10 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                                 <div style={{background:"var(--rk-bg2)",border:`1px solid ${c}33`,borderRadius:10,padding:12,marginTop:8}}>
                                   <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:8}}>AÑADIR EJERCICIO</div>
                                   <input value={newEx.name} onChange={e=>setNewEx(p=>({...p,name:e.target.value}))}
-                                    placeholder="Nombre del ejercicio..." style={{width:"100%",padding:"9px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
+                                    placeholder="Nombre del ejercicio..." style={{width:"100%",padding:"9px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
                                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
-                                    <input value={newEx.sets} onChange={e=>setNewEx(p=>({...p,sets:e.target.value}))} placeholder="3x10" style={{padding:"9px 10px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                                    <input value={newEx.rest} onChange={e=>setNewEx(p=>({...p,rest:e.target.value}))} placeholder="60s" style={{padding:"9px 10px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                    <input value={newEx.sets} onChange={e=>setNewEx(p=>({...p,sets:e.target.value}))} placeholder="3x10" style={{padding:"9px 10px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                    <input value={newEx.rest} onChange={e=>setNewEx(p=>({...p,rest:e.target.value}))} placeholder="60s" style={{padding:"9px 10px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                                   </div>
                                   <div style={{display:"flex",gap:8}}>
                                     <button onClick={()=>setDbOpen([rt.id,si])} style={{flex:1,padding:"9px 8px",background:"#60A5FA18",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📚 Base DB</button>
@@ -7048,7 +7092,7 @@ function EjerciciosDB({filter,setFilter,onBack,onPick=null}){
         <button onClick={onBack} style={{background:"none",border:"none",color:"#60A5FA",cursor:"pointer",fontSize:22,lineHeight:1}}>←</button>
         <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>BASE DE EJERCICIOS · {EXERCISE_DB.length}</div>
       </div>
-      <input placeholder="🔍 Buscar ejercicio..." value={filter.search} onChange={e=>setFilter(p=>({...p,search:e.target.value}))} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input placeholder="🔍 Buscar ejercicio..." value={filter.search} onChange={e=>setFilter(p=>({...p,search:e.target.value}))} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       <div style={{display:"flex",gap:5,marginBottom:8,overflowX:"auto",paddingBottom:4}}>
         {muscles.map(m=><button key={m} onClick={()=>setFilter(p=>({...p,muscle:m}))} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",whiteSpace:"nowrap",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:filter.muscle===m?"#60A5FA":"var(--rk-bg4)",color:filter.muscle===m?"var(--rk-ink)":"var(--rk-t3)"}}>{m==="todos"?"Todos":MUSCLE_DEFS[m]?.label||m}</button>)}
       </div>
@@ -7059,7 +7103,7 @@ function EjerciciosDB({filter,setFilter,onBack,onPick=null}){
       {filtered.map(ex=>(
         <div key={ex.id} style={{background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:10,padding:"12px 14px",marginBottom:8}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
-            <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
+            <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
             <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0,marginLeft:8}}>
               {onPick&&<button onClick={()=>onPick(ex)} style={{padding:"4px 10px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:7,color:"#34D399",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ AÑADIR</button>}
               <span style={{fontSize:9,padding:"2px 8px",borderRadius:20,background:`${lvlColor[ex.level]}22`,border:`1px solid ${lvlColor[ex.level]}44`,color:lvlColor[ex.level]}}>{ex.level}</span>
@@ -7107,13 +7151,13 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
         <button onClick={()=>setPicking(false)} style={{background:"none",border:"none",color:"#34D399",cursor:"pointer",fontSize:22,lineHeight:1}}>←</button>
         <div style={{fontSize:12,fontWeight:700,color:"#34D399",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>AÑADIR EJERCICIO</div>
       </div>
-      <input placeholder="🔍 Buscar..." value={exSearch} onChange={e=>setExSearch(e.target.value)} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input placeholder="🔍 Buscar..." value={exSearch} onChange={e=>setExSearch(e.target.value)} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       <div style={{display:"flex",gap:5,marginBottom:12,overflowX:"auto",paddingBottom:4}}>
         {["todos",...Object.keys(MUSCLE_DEFS)].map(m=><button key={m} onClick={()=>setExMuscle(m)} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",whiteSpace:"nowrap",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:exMuscle===m?"#34D399":"var(--rk-bg4)",color:exMuscle===m?"var(--rk-ink)":"var(--rk-t3)"}}>{m==="todos"?"Todos":MUSCLE_DEFS[m]?.label||m}</button>)}
       </div>
       {filtEx.map(ex=>(
         <button key={ex.id} onClick={()=>addEx(ex)} style={{width:"100%",textAlign:"left",background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:10,padding:"12px 14px",marginBottom:8,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div><div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.muscle.map(m=>MUSCLE_DEFS[m]?.label||m).join(", ")} · {ex.equip}</div></div>
+          <div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div><div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.muscle.map(m=>MUSCLE_DEFS[m]?.label||m).join(", ")} · {ex.equip}</div></div>
           <span style={{fontSize:11,color:"#34D399",fontWeight:700,flexShrink:0}}>+{ex.xpBase} XP</span>
         </button>
       ))}
@@ -7126,7 +7170,7 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
         <button onClick={onBack} style={{background:"none",border:"none",color:"#34D399",cursor:"pointer",fontSize:22,lineHeight:1}}>←</button>
         <div style={{fontSize:12,fontWeight:700,color:"#34D399",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>{routine?"EDITAR":"NUEVA"} RUTINA</div>
       </div>
-      <input placeholder="Nombre de la rutina" value={name} onChange={e=>setName(e.target.value)} style={{width:"100%",padding:"12px 14px",background:"var(--rk-bg2)",border:`1px solid ${color}44`,borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input placeholder="Nombre de la rutina" value={name} onChange={e=>setName(e.target.value)} style={{width:"100%",padding:"12px 14px",background:"var(--rk-bg2)",border:`1px solid ${color}44`,borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center"}}>
         <span style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2}}>COLOR</span>
         {COLORS.map(c=><button key={c} onClick={()=>setColor(c)} style={{width:24,height:24,borderRadius:"50%",background:c,border:`2px solid ${color===c?"#FFF":"transparent"}`,cursor:"pointer"}}/>)}
@@ -7142,14 +7186,14 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
           setActiveSess(sessions.length);
         }} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${color}44`,background:"transparent",cursor:"pointer",fontSize:11,color:color,fontFamily:"'Rajdhani',sans-serif"}}>+ SEMANA EN BLANCO</button>
       </div>
-      <input value={sess.day} onChange={e=>setSessions(p=>p.map((s,i)=>i===activeSess?{...s,day:e.target.value}:s))} style={{width:"100%",padding:"8px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input value={sess.day} onChange={e=>setSessions(p=>p.map((s,i)=>i===activeSess?{...s,day:e.target.value}:s))} style={{width:"100%",padding:"8px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       {sess.exercises.length===0
         ? <div style={{textAlign:"center",padding:24,color:"var(--rk-t1)",fontSize:12,border:"1px dashed var(--rk-border)",borderRadius:10,marginBottom:10}}>Sin ejercicios. Añade uno ↓</div>
         : sess.exercises.map((ex,ei)=>(
-          <div key={ei} style={{background:ex.boss?"#1A0808":ex.done?`${color}10`:"#0D0D19",border:`1px solid ${ex.boss?"#E84A5F55":color+"22"}`,borderRadius:10,padding:"10px 12px",marginBottom:8}}>
+          <div key={ei} style={{background:ex.boss?"#1A0808":ex.done?`${color}10`:"var(--rk-bg3)",border:`1px solid ${ex.boss?"#E84A5F55":color+"22"}`,borderRadius:10,padding:"10px 12px",marginBottom:8}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:13,fontWeight:700,color:ex.done?"var(--rk-t3)":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                <div style={{fontSize:13,fontWeight:700,color:ex.done?"var(--rk-t3)":"var(--rk-text)",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                 {ex.boss&&<span style={{fontSize:8,padding:"1px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1,marginTop:3,display:"inline-block"}}>💀 BOSS</span>}
               </div>
               <div style={{display:"flex",gap:6,flexShrink:0}}>
@@ -7159,8 +7203,8 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
               </div>
             </div>
             <div style={{display:"flex",gap:6}}>
-              <input value={ex.sets} onChange={e=>updateEx(activeSess,ei,"sets",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid var(--rk-border)",borderRadius:6,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Series"/>
-              <input value={ex.rest} onChange={e=>updateEx(activeSess,ei,"rest",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid var(--rk-border)",borderRadius:6,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Descanso"/>
+              <input value={ex.sets} onChange={e=>updateEx(activeSess,ei,"sets",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Series"/>
+              <input value={ex.rest} onChange={e=>updateEx(activeSess,ei,"rest",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Descanso"/>
               <span style={{fontSize:10,color:ex.boss?"#E84A5F":color,fontWeight:700,padding:"5px 6px",whiteSpace:"nowrap"}}>+{ex.xp}XP</span>
             </div>
           </div>
@@ -7229,7 +7273,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
               {raid.icon}
             </div>
             {/* Boss name */}
-            <div style={{fontSize:24,fontWeight:900,color:"#FFF",
+            <div style={{fontSize:24,fontWeight:900,color:"var(--rk-text)",
               fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6,
               textShadow:`0 0 20px ${c}88`}}>
               {raid.boss}
@@ -7276,7 +7320,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
               padding:"14px 16px",marginBottom:16,
               boxShadow:`inset 0 0 20px ${c}08`}}>
               <div style={{fontSize:8,color:c,letterSpacing:4,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TU MISIÓN</div>
-              <div style={{fontSize:20,fontWeight:900,color:"#FFF",
+              <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",
                 fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,lineHeight:1.3,marginBottom:raid.reps?12:0}}>
                 {raid.challenge}
               </div>
@@ -7289,7 +7333,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
                   <div style={{display:"flex",gap:8}}>
                     <input type="number" min="1" placeholder="ej: 10" value={contribInput} onChange={e=>setContribInput(e.target.value)}
                       onKeyDown={e=>{if(e.key==="Enter"){const n=parseInt(contribInput);if(n>0){onContribute(n);setContribInput("");}}}}
-                      style={{flex:1,padding:"10px 12px",background:"var(--rk-bg)",border:`1px solid ${c}44`,borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                      style={{flex:1,padding:"10px 12px",background:"var(--rk-bg)",border:`1px solid ${c}44`,borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                     <button onClick={()=>{const n=parseInt(contribInput);if(n>0){onContribute(n);setContribInput("");}}}
                       style={{padding:"10px 18px",background:`${c}22`,border:`1px solid ${c}66`,borderRadius:10,color:c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap"}}>
                       ➕ APORTAR
@@ -7372,7 +7416,7 @@ function RaidCompleteCard({raid,onClose}){
           <div style={{fontSize:8,letterSpacing:5,color:`${c}88`,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>━━ RAID DERROTADA ━━</div>
           <div style={{fontSize:68,marginBottom:8,filter:`drop-shadow(0 0 20px ${c})`,animation:"bossGlow 1.5s ease-in-out infinite"}}>{raid.icon}</div>
           <div style={{display:"inline-block",padding:"3px 12px",background:`${c}22`,border:`1px solid ${c}44`,borderRadius:20,fontSize:9,color:c,letterSpacing:3,marginBottom:10,fontFamily:"'Rajdhani',sans-serif"}}>{raid.rarity.toUpperCase()}</div>
-          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6}}>{raid.boss}</div>
+          <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6}}>{raid.boss}</div>
           <div style={{fontSize:11,color:"var(--rk-t3)",fontStyle:"italic",marginBottom:16,fontFamily:"'Rajdhani',sans-serif"}}>"{raid.challenge}"</div>
           <div style={{width:"70%",height:1,background:`linear-gradient(90deg,transparent,${c}66,transparent)`,margin:"0 auto 16px"}}/>
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
@@ -7440,7 +7484,7 @@ function PRCard({exName,kg,prevMax,xp,rank,onClose}){
           <div style={{fontSize:13,color:`${c}99`,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,marginBottom:6}}>
             {exName.toUpperCase()}
           </div>
-          <div style={{fontSize:72,fontWeight:900,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,
+          <div style={{fontSize:72,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,
             textShadow:`0 0 30px ${c}88`}}>
             {kg}
           </div>
@@ -7514,7 +7558,7 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
         {/* Header */}
         <div style={{padding:"20px 20px 12px",borderBottom:"1px solid var(--rk-bg4)",flexShrink:0}}>
           <div style={{fontSize:9,color:color,letterSpacing:3,marginBottom:4}}>📈 HISTÓRICO GLOBAL</div>
-          <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{exName}</div>
+          <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{exName}</div>
           <div style={{display:"flex",gap:10}}>
             {[{l:"SESIONES",v:sorted.length},{l:"RÉCORD",v:`${pr}kg`},{l:"ÚLTIMA",v:sorted.length>0?`${sorted[sorted.length-1].kg}kg`:"—"}].map(s=>(
               <div key={s.l} style={{flex:1,background:"var(--rk-bg)",borderRadius:8,padding:"8px 6px",textAlign:"center",border:`1px solid ${color}22`}}>
@@ -7675,7 +7719,7 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
             <>
               <img src={preview} style={{width:"100%",maxHeight:280,objectFit:"cover",borderRadius:10,marginBottom:10}}/>
               <textarea placeholder="Añade un comentario (opcional)..." value={caption} onChange={e=>setCaption(e.target.value)} rows={2}
-                style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",marginBottom:10,boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",marginBottom:10,boxSizing:"border-box"}}/>
             </>
           )}
           {error&&<div style={{fontSize:11,color:"#F87171",marginTop:8}}>{error}</div>}
@@ -7822,7 +7866,7 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
                 <div style={{display:"flex",gap:6,marginTop:8}}>
                   <input placeholder="Escribe un comentario..." value={commentInputs[postId]||""} onChange={e=>setCommentInputs(p=>({...p,[postId]:e.target.value}))}
                     onKeyDown={e=>{if(e.key==="Enter"&&commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}}
-                    style={{flex:1,padding:"8px 10px",background:"#0A0A0A",border:"1px solid #222",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    style={{flex:1,padding:"8px 10px",background:"#0A0A0A",border:"1px solid #222",borderRadius:8,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                   <button onClick={()=>{if(commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
                 </div>
               </div>
@@ -7953,7 +7997,7 @@ function DMsModal({user,onClose,initialTarget}){
         {view==="pick"&&(
           <div style={{overflowY:"auto",padding:"0 16px 16px",display:"flex",flexDirection:"column"}}>
             <input autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar Aventurero..."
-              style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
+              style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
             {allUsers===null&&<div style={{textAlign:"center",color:"var(--rk-t2)",fontSize:12,padding:"20px 0"}}>Cargando...</div>}
             {allUsers&&pickList.length===0&&<div style={{textAlign:"center",color:"var(--rk-t2)",fontSize:12,padding:"20px 0"}}>Sin resultados.</div>}
             {pickList.map(([k,u])=>(
@@ -7987,7 +8031,7 @@ function DMsModal({user,onClose,initialTarget}){
             <div style={{display:"flex",gap:8,padding:"10px 14px 16px"}}>
               <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Escribe un mensaje..."
                 onKeyDown={e=>{if(e.key==="Enter") send();}}
-                style={{flex:1,padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                style={{flex:1,padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
               <button onClick={send} style={{padding:"10px 16px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
             </div>
           </>
@@ -8217,7 +8261,7 @@ function MedidasSection({measurements={},onAdd,sex="M",userEmail}){
                 <div style={{display:"flex",alignItems:"center",gap:6}}>
                   <input type="number" inputMode="decimal" value={formValues[f.id]||""} onChange={e=>setFormValues(v=>({...v,[f.id]:e.target.value}))}
                     placeholder="–"
-                    style={{width:70,padding:"7px 8px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",textAlign:"right",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    style={{width:70,padding:"7px 8px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",textAlign:"right",fontFamily:"'Rajdhani',sans-serif"}}/>
                   <span style={{fontSize:10,color:"var(--rk-t3)",width:20}}>{f.unit}</span>
                 </div>
               </div>
@@ -8270,7 +8314,7 @@ function BuzonTab({messages,onSend,userName}){
                 border:isUser?"none":"1px solid var(--rk-border2)",
                 boxShadow:isUser?"0 0 12px #A78BFA44":"none"}}>
                 {!isUser&&<div style={{fontSize:9,color:"#A78BFA",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>🏋️ ENTRENADOR</div>}
-                <div style={{fontSize:13,color:"#FFF",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}>{m.text}</div>
+                <div style={{fontSize:13,color:"var(--rk-text)",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}>{m.text}</div>
                 <div style={{fontSize:9,color:isUser?"#C4B5FD":"var(--rk-t2)",marginTop:4,textAlign:"right"}}>{formatDate(m.date)}{isUser&&m.read?" ✓✓":isUser?" ✓":""}</div>
               </div>
             </div>
@@ -8283,7 +8327,7 @@ function BuzonTab({messages,onSend,userName}){
         <textarea value={input} onChange={e=>setInput(e.target.value)}
           onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
           placeholder="Escribe tu mensaje..."
-          style={{flex:1,padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:12,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",lineHeight:1.4}}
+          style={{flex:1,padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:12,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",lineHeight:1.4}}
           rows={2}/>
         <button onClick={handleSend} disabled={!input.trim()}
           style={{padding:"0 16px",background:input.trim()?"linear-gradient(135deg,#A78BFA,#7C3AED)":"var(--rk-bg4)",border:"none",borderRadius:12,color:input.trim()?"#FFF":"var(--rk-t2)",fontSize:18,cursor:input.trim()?"pointer":"not-allowed",flexShrink:0}}>
@@ -8405,7 +8449,7 @@ function CuerpoTab({mxp,sex="M",userEmail,bodyMeasurements={}}){
             <div style={{width:44,height:44,borderRadius:12,border:`2px solid ${somatotype.primary.color}`,display:"flex",alignItems:"center",justifyContent:"center",background:`${somatotype.primary.color}11`,boxShadow:`0 0 20px ${somatotype.primary.color}44`,flexShrink:0,fontSize:22}}>{somatotype.primary.icon}</div>
             <div>
               <div style={{fontSize:9,color:somatotype.primary.color,letterSpacing:4,marginBottom:3}}>SOMATOTIPO ESTIMADO</div>
-              <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>
+              <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>
                 {somatotype.primary.label}{somatotype.secondary?` · ${somatotype.secondary.label}`:""}
               </div>
             </div>
@@ -8425,7 +8469,7 @@ function CuerpoTab({mxp,sex="M",userEmail,bodyMeasurements={}}){
         <div style={{width:44,height:44,borderRadius:12,border:"2px solid #0AF5FF",display:"flex",alignItems:"center",justifyContent:"center",background:"#0AF5FF11",boxShadow:"0 0 20px #0AF5FF44",flexShrink:0,fontSize:22}}>🫀</div>
         <div>
           <div style={{fontSize:9,color:"#0AF5FF",letterSpacing:4,marginBottom:3}}>ESTADO FÍSICO GLOBAL</div>
-          <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{allXP} XP musculares</div>
+          <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{allXP} XP musculares</div>
           <div style={{fontSize:11,color:"#0AF5FF"}}>{activated} / {allMuscles.length} grupos activados</div>
         </div>
       </div>
@@ -8445,7 +8489,7 @@ function CuerpoTab({mxp,sex="M",userEmail,bodyMeasurements={}}){
               <div style={{position:"absolute",top:-10,right:-10,width:60,height:60,borderRadius:"50%",background:`${mr.color}08`,pointerEvents:"none"}}/>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
                 <div>
-                  <div style={{fontSize:11,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{def.label.toUpperCase()}</div>
+                  <div style={{fontSize:11,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{def.label.toUpperCase()}</div>
                   <div style={{fontSize:9,color:mr.color,marginTop:1}}>{mr.label}</div>
                 </div>
                 <div style={{width:30,height:30,borderRadius:8,border:`2px solid ${mr.color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:mr.color,fontFamily:"'Cinzel',serif",background:`${mr.color}22`,boxShadow:`0 0 12px ${mr.glow}`,flexShrink:0}}>
@@ -8582,7 +8626,7 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
               <div style={{background:"var(--rk-bg2)",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
                   <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:3,marginBottom:4}}>RESUMEN DE COMPRAS</div>
-                  <div style={{fontSize:13,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{redeemed.length} compras realizadas</div>
+                  <div style={{fontSize:13,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{redeemed.length} compras realizadas</div>
                 </div>
                 <div style={{textAlign:"right"}}>
                   <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>TOTAL GASTADO</div>
@@ -8594,7 +8638,7 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
                 <div key={i} style={{background:"#0A0A12",border:"1px solid var(--rk-bg4)",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:12}}>
                   <div style={{fontSize:28,flexShrink:0}}>{entry.icon}</div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:2}}>{entry.name}</div>
+                    <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:2}}>{entry.name}</div>
                     <div style={{fontSize:10,color:"var(--rk-t2)"}}>{formatDate(entry.date)}</div>
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
@@ -8645,7 +8689,7 @@ function AlimentosDB({onBack}){
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
             <div>
               <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>{CAT_LABELS[sel.cat]}</div>
-              <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:6}}>{sel.name}</div>
+              <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:6}}>{sel.name}</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {sel.goal.map(g=><span key={g} style={{fontSize:9,padding:"2px 8px",background:`${GOAL_COLORS[g]}18`,border:`1px solid ${GOAL_COLORS[g]}44`,borderRadius:20,color:GOAL_COLORS[g],letterSpacing:1}}>{GOAL_LABELS[g]}</span>)}
               </div>
@@ -8671,12 +8715,12 @@ function AlimentosDB({onBack}){
     <div>
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
         <button onClick={onBack} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#34D399",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>BASE DE ALIMENTOS</div>
+        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>BASE DE ALIMENTOS</div>
         <div style={{marginLeft:"auto",fontSize:10,color:"var(--rk-t2)"}}>{filtered.length} resultados</div>
       </div>
 
       {/* Search */}
-      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="🔍 Buscar alimento..." style={{width:"100%",padding:"11px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
+      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="🔍 Buscar alimento..." style={{width:"100%",padding:"11px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
 
       {/* Category filter */}
       <div style={{display:"flex",gap:6,marginBottom:8,overflowX:"auto",paddingBottom:2}}>
@@ -8710,7 +8754,7 @@ function AlimentosDB({onBack}){
                 onMouseLeave={e=>e.currentTarget.style.borderColor=c+"22"}>
                 <div style={{fontSize:22,flexShrink:0}}>{f.cat==="plato"?"🍽️":f.cat==="bebida"?"🥤":f.cat==="snack"?"🥜":"🍮"}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:3}}>{f.name}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:3}}>{f.name}</div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                     <span style={{fontSize:10,color:"#FBBF24",fontWeight:700}}>{f.kcal} kcal</span>
                     <span style={{fontSize:10,color:"#F87171"}}>P: {f.protein}g</span>
@@ -8768,7 +8812,7 @@ function NutricionTab({ph, assignedDiets=[]}){
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12,padding:16,background:"var(--rk-bg3)",borderRadius:12,border:`1px solid ${displayColor}33`}}>
         <div>
           <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>CALORÍAS</div>
-          <div style={{fontSize:12,color:"#FFF",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{activeDiet?activeDiet.calories||"—":ph.nutrition.calories}</div>
+          <div style={{fontSize:12,color:"var(--rk-text)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{activeDiet?activeDiet.calories||"—":ph.nutrition.calories}</div>
         </div>
         <div>
           <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>PROTEÍNA</div>
@@ -8787,7 +8831,7 @@ function NutricionTab({ph, assignedDiets=[]}){
         <div key={i} style={{display:"flex",gap:12,padding:14,marginBottom:8,background:"var(--rk-bg3)",borderRadius:10,border:"1px solid var(--rk-border2)",alignItems:"flex-start"}}>
           <div style={{minWidth:44,fontSize:12,color:displayColor,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{m.time}</div>
           <div>
-            <div style={{fontSize:13,fontWeight:700,color:"#FFF",marginBottom:3,fontFamily:"'Rajdhani',sans-serif"}}>{m.name}</div>
+            <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",marginBottom:3,fontFamily:"'Rajdhani',sans-serif"}}>{m.name}</div>
             <div style={{fontSize:11,color:"var(--rk-t4)",lineHeight:1.6}}>{activeDiet?m.desc:m.ex}</div>
           </div>
         </div>
@@ -8867,7 +8911,7 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
               const tier=ek?ek.split("_")[1]:null;
               const c=tier?TIER_INFO[tier].color:"var(--rk-t1)";
               return(
-                <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
+                <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center",minWidth:0}}>
                   <div style={{width:"100%",height:80,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"var(--rk-inset)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
                     {ek?<img src={equipImg(slot.id,tier)} alt={slot.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;}}/>:slot.icon}
                   </div>
@@ -8979,9 +9023,9 @@ function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines,rout
       <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>LOGROS</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,paddingBottom:20}}>
         {ACHIEVEMENTS.map(ach=>{const done=earnedAchs.includes(ach.id);return(
-          <div key={ach.id} style={{background:done?"#0F0F20":"var(--rk-inset)",border:`1px solid ${done?"#A78BFA66":"#1E1E2E"}`,borderRadius:12,padding:14,opacity:done?1:.5,boxShadow:done?"0 0 16px #A78BFA22":"none"}}>
+          <div key={ach.id} style={{background:done?"#A78BFA14":"var(--rk-inset)",border:`1px solid ${done?"#A78BFA66":"var(--rk-border2)"}`,borderRadius:12,padding:14,opacity:done?1:.5,boxShadow:done?"0 0 16px #A78BFA22":"none"}}>
             <div style={{fontSize:28,marginBottom:6}}>{ach.icon}</div>
-            <div style={{fontSize:12,fontWeight:700,color:done?"#FFF":"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:3}}>{ach.name}</div>
+            <div style={{fontSize:12,fontWeight:700,color:done?"var(--rk-text)":"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:3}}>{ach.name}</div>
             <div style={{fontSize:10,color:"var(--rk-t2)",lineHeight:1.4,marginBottom:6}}>{ach.desc}</div>
             <div style={{fontSize:11,color:done?"#A78BFA":"var(--rk-t1)",fontWeight:700}}>+{ach.xp} XP</div>
           </div>
