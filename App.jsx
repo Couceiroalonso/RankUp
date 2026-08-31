@@ -1235,7 +1235,9 @@ function LootToast({item,onDone}){
 }
 function GifModal({name,path,onClose}){
   const [loadError,setLoadError]=useState(false);
-  const url=`/exercises/${path.split("/").map(encodeURIComponent).join("/")}`;
+  // Los GIFs pesan demasiado para el límite de despliegue de Vercel (100MB en
+  // el plan gratuito) — se sirven directamente desde GitHub en su lugar.
+  const url=`https://raw.githubusercontent.com/Couceiroalonso/RankUp/main/public/Exercices/${path.split("/").map(encodeURIComponent).join("/")}`;
   return(
     <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:10001,background:"rgba(0,0,0,.92)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{maxWidth:420,width:"100%",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:16,overflow:"hidden"}}>
