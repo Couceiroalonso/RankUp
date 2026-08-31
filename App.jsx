@@ -131,7 +131,7 @@ const syncUsersFromFirebase = async () => {
 };
 // ─── CONSTANTS ───────────────────────────────────────────────────────────────
 const RANKS = [
-  { rank:"E", title:"Novato",  minLevel:1,  maxLevel:9,  color:"var(--rk-t5)", glow:"#6B7280" },
+  { rank:"E", title:"Novato",  minLevel:1,  maxLevel:9,  color:"#9CA3AF", glow:"#6B7280" },
   { rank:"D", title:"Iniciado", minLevel:10, maxLevel:19, color:"#60A5FA", glow:"#3B82F6" },
   { rank:"C", title:"Élite",         minLevel:20, maxLevel:29, color:"#34D399", glow:"#10B981" },
   { rank:"B", title:"Avanzado",      minLevel:30, maxLevel:39, color:"#FBBF24", glow:"#F59E0B" },
@@ -183,7 +183,7 @@ const getWeightComparison=kg=>kg>0?(WEIGHT_COMPARISONS.find(c=>kg>=c.min&&kg<c.m
 // Señor Oscuro) se reservan como recompensa exclusiva de derrotarlos de
 // verdad en la Guild Raid, no de sacarlos por sorteo antes de conocerlos.
 const RARITY_INFO={
-  comun:      {label:"Común",       color:"var(--rk-t5)"},
+  comun:      {label:"Común",       color:"#9CA3AF"},
   pocoComun:  {label:"Poco común",  color:"#34D399"},
   raro:       {label:"Raro",        color:"#60A5FA"},
   epico:      {label:"Épico",       color:"#A78BFA"},
@@ -255,7 +255,7 @@ const EQUIPMENT_SLOTS=[
   {id:"botas",    name:"Botas",    icon:"🥾"},
 ];
 const TIER_INFO={
-  basico:   {label:"Básico",   color:"var(--rk-t5)"},
+  basico:   {label:"Básico",   color:"#9CA3AF"},
   avanzado: {label:"Avanzado", color:"#60A5FA"},
   maestro:  {label:"Maestro",  color:"#F59E0B"},
 };
@@ -296,8 +296,8 @@ const EQUIPMENT_NAMES={
 };
 
 const MUSCLE_RANKS = [
-  { rank:"—", label:"Sin activar",  color:"var(--rk-border)", glow:"#2A2A4466", min:0    },
-  { rank:"E", label:"Novato",    color:"var(--rk-t5)", glow:"#6B728066", min:1    },
+  { rank:"—", label:"Sin activar",  color:"#2A2A44", glow:"#2A2A4466", min:0    },
+  { rank:"E", label:"Novato",    color:"#9CA3AF", glow:"#6B728066", min:1    },
   { rank:"D", label:"Regular",   color:"#60A5FA", glow:"#3B82F666", min:200  },
   { rank:"C", label:"Élite",           color:"#34D399", glow:"#10B98166", min:600  },
   { rank:"B", label:"Avanzado",        color:"#FBBF24", glow:"#F59E0B66", min:1200 },
@@ -384,266 +384,11 @@ const MUSCLE_DEFS = {
 
 // ─── EXERCISE DATABASE (80 exercises) ────────────────────────────────────────
 const EXERCISE_DB = [
-  {id:"e001",name:"Press Banca Plano",     muscle:["pecho"],           equip:"Barra",      level:"Principiante", xpBase:40, desc:"Movimiento básico de pecho en banco plano."},
-  {id:"e002",name:"Press Banca Inclinado", muscle:["pecho"],           equip:"Barra",      level:"Principiante", xpBase:42, desc:"Trabaja la parte superior del pecho."},
-  {id:"e003",name:"Press Inclinado Mancuernas",muscle:["pecho"],       equip:"Mancuernas", level:"Principiante", xpBase:40, desc:"Mayor rango que con barra."},
-  {id:"e004",name:"Aperturas con Mancuernas",  muscle:["pecho"],       equip:"Mancuernas", level:"Principiante", xpBase:35, desc:"Aislamiento de pecho en banco plano."},
-  {id:"e005",name:"Aperturas Inclinado",    muscle:["pecho"],           equip:"Mancuernas", level:"Principiante", xpBase:35, desc:"Parte alta del pecho."},
-  {id:"e006",name:"Flexiones",              muscle:["pecho","triceps"], equip:"Sin equipo", level:"Principiante", xpBase:30, desc:"Clásico sin equipo."},
-  {id:"e007",name:"Fondos en Paralelas",    muscle:["pecho","triceps"], equip:"Barras",     level:"Intermedio",   xpBase:40, desc:"Pecho inferior y tríceps."},
-  {id:"e008",name:"Crossover en Polea",     muscle:["pecho"],           equip:"Polea",      level:"Intermedio",   xpBase:35, desc:"Tensión constante en pecho."},
-  {id:"e009",name:"Press en Máquina",       muscle:["pecho"],           equip:"Máquina",    level:"Principiante", xpBase:35, desc:"Ideal para principiantes."},
-  {id:"e010",name:"Press Declinado",        muscle:["pecho"],           equip:"Barra",      level:"Intermedio",   xpBase:42, desc:"Pecho inferior con barra."},
-  {id:"e011",name:"Peso Muerto",            muscle:["espalda","piernas","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:70,desc:"Rey de los ejercicios. Alta demanda de agarre."},
-  {id:"e012",name:"Peso Muerto Rumano",     muscle:["piernas","espalda"],equip:"Barra",     level:"Principiante", xpBase:45, desc:"Foco en isquios y lumbar."},
-  {id:"e013",name:"Remo con Barra",         muscle:["espalda","antebrazos"],equip:"Barra",  level:"Intermedio",   xpBase:45, desc:"Básico de espalda. Alta demanda de antebrazos."},
-  {id:"e014",name:"Remo en T",              muscle:["espalda","antebrazos"],equip:"Máquina",level:"Intermedio",   xpBase:45, desc:"Centro de la espalda. Trabaja antebrazos."},
-  {id:"e015",name:"Remo con Mancuerna",     muscle:["espalda","antebrazos"],equip:"Mancuernas",level:"Principiante",xpBase:40,desc:"Unilateral, buen rango. Trabaja antebrazos."},
-  {id:"e016",name:"Dominadas",              muscle:["espalda","antebrazos"],equip:"Barra",  level:"Intermedio",   xpBase:55, desc:"El mejor ejercicio para el dorsal. Fuerte demanda de antebrazos."},
-  {id:"e017",name:"Dominadas Lastradas",    muscle:["espalda","antebrazos"],equip:"Barra",  level:"Avanzado",     xpBase:65, desc:"Dominadas con peso. Alta demanda de agarre."},
-  {id:"e018",name:"Jalones al Pecho",       muscle:["espalda","antebrazos"],equip:"Polea",  level:"Principiante", xpBase:40, desc:"Alternativa a dominadas. Trabaja antebrazos."},
-  {id:"e019",name:"Face Pull",              muscle:["espalda","hombros"],equip:"Polea",     level:"Principiante", xpBase:30, desc:"Salud de manguito rotador."},
-  {id:"e020",name:"Pull-over Mancuerna",    muscle:["espalda","pecho"],  equip:"Mancuernas",level:"Intermedio",   xpBase:38, desc:"Dorsal y pecho en estiramiento."},
-  {id:"e021",name:"Buenos Días",            muscle:["espalda","piernas"],equip:"Barra",     level:"Intermedio",   xpBase:50, desc:"Fortalece lumbar e isquios."},
-  {id:"e022",name:"Press Militar Barra",    muscle:["hombros"],          equip:"Barra",     level:"Intermedio",   xpBase:55, desc:"Básico de hombros."},
-  {id:"e023",name:"Press Militar Mancuernas",muscle:["hombros"],         equip:"Mancuernas",level:"Principiante", xpBase:45, desc:"Más rango y estabilización."},
-  {id:"e024",name:"Press Arnold",           muscle:["hombros"],          equip:"Mancuernas",level:"Intermedio",   xpBase:48, desc:"Giro de muñeca, más fibras."},
-  {id:"e025",name:"Elevaciones Laterales",  muscle:["hombros"],          equip:"Mancuernas",level:"Principiante", xpBase:30, desc:"Aislamiento deltoides lateral."},
-  {id:"e026",name:"Elevaciones Frontales",  muscle:["hombros"],          equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Deltoides anterior."},
-  {id:"e027",name:"Elevaciones Posteriores",muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante", xpBase:30, desc:"Deltoides posterior."},
-  {id:"e028",name:"Remo al Mentón",         muscle:["hombros","espalda"],equip:"Barra",     level:"Intermedio",   xpBase:38, desc:"Trapecio y deltoides lateral."},
-  {id:"e029",name:"Sentadilla con Barra",   muscle:["piernas","gluteos","gemelos"],equip:"Barra",level:"Intermedio",xpBase:55, desc:"La reina de los ejercicios de pierna. Activa gemelos."},
-  {id:"e030",name:"Sentadilla Búlgara",     muscle:["piernas","gluteos","gemelos"],equip:"Mancuernas",level:"Intermedio",xpBase:55, desc:"Unilateral, gran reto de equilibrio. Activa gemelos."},
-  {id:"e031",name:"Sentadilla Goblet",      muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Ideal para aprender la técnica."},
-  {id:"e032",name:"Front Squat",            muscle:["piernas","gluteos"],equip:"Barra",     level:"Avanzado",     xpBase:65, desc:"Mayor activación de cuádriceps."},
-  {id:"e033",name:"Hack Squat",             muscle:["piernas","gemelos"],equip:"Máquina",   level:"Intermedio",   xpBase:45, desc:"Cuádriceps sin carga lumbar. Activa gemelos."},
-  {id:"e034",name:"Prensa 45°",             muscle:["piernas","gemelos"],equip:"Máquina",   level:"Principiante", xpBase:40, desc:"Gran volumen de carga. Activa gemelos al empujar."},
-  {id:"e035",name:"Zancadas Caminando",     muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante", xpBase:38, desc:"Dinámicas, trabajan equilibrio."},
-  {id:"e036",name:"Extensión de Cuádriceps",muscle:["piernas"],          equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Aislamiento del cuádriceps."},
-  {id:"e037",name:"Curl Femoral Tumbado",   muscle:["piernas"],          equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Aislamiento de isquiotibiales."},
-  {id:"e038",name:"Elevación de Talones",   muscle:["gemelos"],         equip:"Máquina",   level:"Principiante", xpBase:25, desc:"Gemelos de pie. Aislamiento completo."},
-  {id:"e039",name:"Step-Up Mancuernas",     muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Funcional, gran activación glúteo."},
-  {id:"e040",name:"Hip Thrust con Barra",   muscle:["gluteos"],          equip:"Barra",     level:"Principiante", xpBase:50, desc:"El mejor ejercicio para glúteos."},
-  {id:"e041",name:"Hip Thrust Unilateral",  muscle:["gluteos"],          equip:"Barra",     level:"Intermedio",   xpBase:52, desc:"Mayor intensidad por lado."},
-  {id:"e042",name:"Patada de Glúteo Polea", muscle:["gluteos"],          equip:"Polea",     level:"Principiante", xpBase:30, desc:"Aislamiento con tensión constante."},
-  {id:"e043",name:"Abducción en Máquina",   muscle:["gluteos"],          equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Glúteo medio y mayor."},
-  {id:"e044",name:"Peso Muerto Sumo",       muscle:["gluteos","piernas"],equip:"Barra",     level:"Intermedio",   xpBase:55, desc:"Mayor activación de glúteos."},
-  {id:"e045",name:"Curl con Barra",         muscle:["biceps"],           equip:"Barra",     level:"Principiante", xpBase:35, desc:"Básico de bíceps."},
-  {id:"e046",name:"Curl con Mancuernas",    muscle:["biceps"],           equip:"Mancuernas",level:"Principiante", xpBase:32, desc:"Permite supinación completa."},
-  {id:"e047",name:"Curl Martillo",          muscle:["biceps","antebrazos"], equip:"Mancuernas",level:"Principiante", xpBase:32, desc:"Trabaja el braquioradial y antebrazos."},
-  {id:"e048",name:"Curl Inclinado",         muscle:["biceps"],           equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Mayor estiramiento del bíceps."},
-  {id:"e049",name:"Curl Concentrado",       muscle:["biceps"],           equip:"Mancuernas",level:"Principiante", xpBase:30, desc:"Máximo aislamiento."},
-  {id:"e050",name:"Curl Scott",             muscle:["biceps"],           equip:"Barra",     level:"Intermedio",   xpBase:38, desc:"Elimina el impulso del cuerpo."},
-  {id:"e051",name:"Press Francés",          muscle:["triceps"],          equip:"Barra",     level:"Intermedio",   xpBase:38, desc:"Gran ejercicio de masa para tríceps."},
-  {id:"e052",name:"Extensión Polea Alta",   muscle:["triceps"],          equip:"Polea",     level:"Principiante", xpBase:32, desc:"Buena congestión en tríceps."},
-  {id:"e053",name:"Extensión Polea Cuerda", muscle:["triceps"],          equip:"Polea",     level:"Principiante", xpBase:33, desc:"Separación al final del movimiento."},
-  {id:"e054",name:"Extensión sobre Cabeza", muscle:["triceps"],          equip:"Mancuernas",level:"Principiante", xpBase:33, desc:"Cabeza larga del tríceps."},
-  {id:"e055",name:"Fondos en Banco",        muscle:["triceps"],          equip:"Banco",     level:"Principiante", xpBase:28, desc:"Sin equipo, buen volumen."},
-  {id:"e056",name:"Press Cerrado",          muscle:["triceps","pecho"],  equip:"Barra",     level:"Intermedio",   xpBase:45, desc:"Compuesto, gran carga."},
-  {id:"e057",name:"Plancha",                muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Estabilidad del core completo."},
-  {id:"e058",name:"Plancha Lateral",        muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Oblicuos y estabilización."},
-  {id:"e059",name:"Crunch Abdominal",       muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:22, desc:"Básico de abdomen."},
-  {id:"e060",name:"Crunch en Polea",        muscle:["abdomen"],          equip:"Polea",     level:"Principiante", xpBase:28, desc:"Con carga añadida."},
-  {id:"e061",name:"Rueda Abdominal",        muscle:["abdomen"],          equip:"Rueda",     level:"Intermedio",   xpBase:40, desc:"Uno de los más efectivos para el core."},
-  {id:"e062",name:"Elevación de Piernas",   muscle:["abdomen"],          equip:"Sin equipo",level:"Intermedio",   xpBase:30, desc:"Abdomen bajo."},
-  {id:"e063",name:"Russian Twist",          muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Rotación para oblicuos."},
-  {id:"e064",name:"Dead Bug",               muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Control motor del core."},
-  {id:"e065",name:"HIIT en Cinta",          muscle:["cardio"],           equip:"Cinta",     level:"Intermedio",   xpBase:80, desc:"Intervalos de sprint en cinta."},
-  {id:"e066",name:"Bici Estática HIIT",     muscle:["cardio"],           equip:"Bicicleta", level:"Principiante", xpBase:70, desc:"Menos impacto articular."},
-  {id:"e067",name:"Remo Ergómetro",         muscle:["cardio","espalda"], equip:"Remo",      level:"Intermedio",   xpBase:75, desc:"Cardio que trabaja espalda y piernas."},
-  {id:"e068",name:"Burpees",                muscle:["cardio","gemelos"], equip:"Sin equipo",level:"Intermedio",   xpBase:60, desc:"Cardio metabólico. Activa gemelos."},
-  {id:"e069",name:"Salto a la Comba",       muscle:["cardio","gemelos"], equip:"Comba",     level:"Principiante", xpBase:55, desc:"Cardio clásico. Gemelos como motor principal."},
-  {id:"e070",name:"Cardio Zona 2",          muscle:["cardio"],           equip:"Cualquiera",level:"Principiante", xpBase:50, desc:"Baja intensidad, mejora base aeróbica."},
-  // NUEVOS
-  {id:"e071",name:"Peso Muerto Rumano",     muscle:["piernas","espalda"],equip:"Barra",     level:"Principiante", xpBase:48, desc:"Romanian Deadlift. Foco en isquiotibiales y lumbar con rodillas semiflexionadas."},
-  {id:"e072",name:"Sentadilla Hack",        muscle:["piernas"],          equip:"Máquina",   level:"Intermedio",   xpBase:47, desc:"Hack Squat en máquina. Gran activación de cuádriceps sin carga lumbar."},
-  {id:"e073",name:"Elevación de Pelvis",    muscle:["gluteos"],          equip:"Barra",     level:"Principiante", xpBase:50, desc:"Hip Thrust. El ejercicio más efectivo para activar el glúteo mayor."},
-  {id:"e074",name:"Remo Gironda",           muscle:["espalda"],          equip:"Polea",     level:"Intermedio",   xpBase:44, desc:"Remo en polea baja con agarre supino. Máximo recorrido y activación del dorsal."},
-  {id:"e075",name:"Pull-Over en Polea Alta",muscle:["espalda","pecho"],  equip:"Polea",     level:"Intermedio",   xpBase:40, desc:"Cable Pullover. Tensión constante en dorsal y serrato anterior."},
-  {id:"e076",name:"Aperturas Inclinadas",   muscle:["pecho"],            equip:"Mancuernas",level:"Principiante", xpBase:36, desc:"Aperturas en banco inclinado. Aislamiento de la parte superior del pecho."},
-  {id:"e077",name:"Curl Inverso con Barra", muscle:["antebrazos"],       equip:"Barra",     level:"Intermedio",   xpBase:32, desc:"Agarre prono. Trabaja extensores del antebrazo."},
-  {id:"e078",name:"Curl Martillo Cable",    muscle:["biceps","antebrazos"],equip:"Polea",   level:"Principiante", xpBase:33, desc:"Hammer Curl en polea. Tensión constante en bíceps y antebrazos."},
-  {id:"e079",name:"Rueda Abdominal",        muscle:["abdomen"],          equip:"Rueda",     level:"Intermedio",   xpBase:42, desc:"Ab Wheel. Uno de los ejercicios más exigentes para el core completo."},
-  {id:"e080",name:"Elevaciones de Piernas Colgado",muscle:["abdomen"],  equip:"Barra",     level:"Intermedio",   xpBase:38, desc:"Hanging Leg Raises. Abdomen bajo e iliopsoas con cuerpo en suspensión."},
-  // ── GEMELOS ──────────────────────────────────────────────────────────────────
-  {id:"e081",name:"Elevación Talones Sentado",   muscle:["gemelos"],      equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Gemelo sóleo. Músculo profundo del gemelo."},
-  {id:"e082",name:"Elevación Talones Una Pierna",muscle:["gemelos"],      equip:"Sin equipo",level:"Principiante", xpBase:26, desc:"Unilateral para mayor activación."},
-  {id:"e083",name:"Prensa con Gemelos",          muscle:["gemelos"],      equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Gemelos en prensa. Alta carga segura."},
-  {id:"e084",name:"Saltos a la Comba",           muscle:["gemelos","cardio"],equip:"Sin equipo",level:"Principiante",xpBase:32,desc:"Cardio y gemelos simultáneamente."},
-  {id:"e085",name:"Burpees",                     muscle:["cardio","piernas"],equip:"Sin equipo",level:"Intermedio", xpBase:38, desc:"Ejercicio total body cardiovascular."},
-  // ── ANTEBRAZOS ───────────────────────────────────────────────────────────────
-  {id:"e086",name:"Curl de Muñeca con Barra",    muscle:["antebrazos"],   equip:"Barra",     level:"Principiante", xpBase:25, desc:"Flexores del antebrazo. Movimiento de muñeca."},
-  {id:"e087",name:"Curl Muñeca Inverso",         muscle:["antebrazos"],   equip:"Barra",     level:"Principiante", xpBase:25, desc:"Extensores del antebrazo. Agarre prono."},
-  {id:"e088",name:"Agarre con Pinza",            muscle:["antebrazos"],   equip:"Disco",     level:"Principiante", xpBase:22, desc:"Fuerza de agarre con disco entre dedos."},
-  {id:"e089",name:"Farmer's Walk",               muscle:["antebrazos","hombros"],equip:"Mancuernas",level:"Principiante",xpBase:35,desc:"Caminar con carga. Fuerza de agarre funcional."},
-  {id:"e090",name:"Dead Hang",                   muscle:["antebrazos","espalda"],equip:"Barra",level:"Principiante",xpBase:30,desc:"Colgarse de la barra. Fuerza de agarre y descompresión."},
-
-  // ── PECHO EXTRA ──────────────────────────────────────────────────────────────
-  {id:"e091",name:"Press con Mancuernas Plano",  muscle:["pecho","triceps"],  equip:"Mancuernas",level:"Principiante", xpBase:42, desc:"Mayor rango de movimiento que con barra en banco plano."},
-  {id:"e092",name:"Press con Mancuernas Declinado",muscle:["pecho"],          equip:"Mancuernas",level:"Intermedio",   xpBase:40, desc:"Pecho inferior con más rango y estabilización."},
-  {id:"e093",name:"Aperturas en Máquina (Peck Deck)",muscle:["pecho"],        equip:"Máquina",   level:"Principiante", xpBase:32, desc:"Tensión constante en pecho. Ideal para congestión final."},
-  {id:"e094",name:"Cable Fly Bajo",              muscle:["pecho"],            equip:"Polea",     level:"Principiante", xpBase:34, desc:"Apertura en polea baja. Activa la parte superior del pecho."},
-  {id:"e095",name:"Flexiones Diamante",          muscle:["pecho","triceps"],  equip:"Sin equipo",level:"Intermedio",   xpBase:35, desc:"Manos juntas. Mayor activación de tríceps y pecho interno."},
-  {id:"e096",name:"Flexiones Inclinadas",        muscle:["pecho"],            equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Manos elevadas. Trabaja el pecho inferior sin equipo."},
-  {id:"e097",name:"Flexiones Declinadas",        muscle:["pecho","hombros"],  equip:"Sin equipo",level:"Principiante", xpBase:32, desc:"Pies elevados. Mayor activación de pecho superior y hombros."},
-  {id:"e098",name:"Press Banca con Agarre Neutro",muscle:["pecho","triceps"], equip:"Mancuernas",level:"Intermedio",   xpBase:43, desc:"Palmas enfrentadas. Menos estrés en muñecas y hombros."},
-
-  // ── ESPALDA EXTRA ────────────────────────────────────────────────────────────
-  {id:"e099",name:"Remo en Polea Baja",          muscle:["espalda","biceps"], equip:"Polea",     level:"Principiante", xpBase:42, desc:"Cable Row sentado. Tensión constante en dorsal y romboides."},
-  {id:"e100",name:"Remo en Máquina",             muscle:["espalda"],          equip:"Máquina",   level:"Principiante", xpBase:40, desc:"Remo en máquina. Seguro y efectivo para principiantes."},
-  {id:"e101",name:"Jalones con Agarre Neutro",   muscle:["espalda","biceps"], equip:"Polea",     level:"Principiante", xpBase:42, desc:"Agarre paralelo en jalón. Mayor activación del dorsal bajo."},
-  {id:"e102",name:"Jalones al Pecho Agarre Cerrado",muscle:["espalda"],       equip:"Polea",     level:"Principiante", xpBase:40, desc:"Jalón con agarre estrecho supino. Gran rango de recorrido."},
-  {id:"e103",name:"Encogimientos con Barra",     muscle:["espalda","hombros"],equip:"Barra",     level:"Principiante", xpBase:30, desc:"Shrugs. Trabaja el trapecio superior."},
-  {id:"e104",name:"Encogimientos con Mancuernas",muscle:["espalda","hombros"],equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Shrugs con mancuernas. Más rango que con barra."},
-  {id:"e105",name:"Hiperextensiones",            muscle:["espalda","gluteos"],equip:"Máquina",   level:"Principiante", xpBase:32, desc:"Back Extension. Lumbar y glúteos en banco romano."},
-  {id:"e106",name:"Superman",                    muscle:["espalda","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:20, desc:"Tumbado boca abajo. Fortalece la cadena posterior sin equipo."},
-  {id:"e107",name:"Remo con Barra Underhand",    muscle:["espalda","biceps"], equip:"Barra",     level:"Intermedio",   xpBase:47, desc:"Remo con agarre supino. Mayor activación de bíceps y dorsal bajo."},
-  {id:"e108",name:"Dominadas con Agarre Neutro", muscle:["espalda","biceps"], equip:"Barra",     level:"Intermedio",   xpBase:57, desc:"Chin-up neutro. Menos estrés en muñecas y hombros."},
-  {id:"e109",name:"Chin-Up",                     muscle:["espalda","biceps"], equip:"Barra",     level:"Intermedio",   xpBase:55, desc:"Dominadas con agarre supino. Mayor activación de bíceps."},
-
-  // ── HOMBROS EXTRA ────────────────────────────────────────────────────────────
-  {id:"e110",name:"Press Máquina Hombros",       muscle:["hombros"],          equip:"Máquina",   level:"Principiante", xpBase:40, desc:"Press en máquina. Ideal para aprender el patrón de empuje vertical."},
-  {id:"e111",name:"Elevaciones Laterales en Polea",muscle:["hombros"],        equip:"Polea",     level:"Principiante", xpBase:30, desc:"Tensión constante en deltoides lateral vs mancuernas."},
-  {id:"e112",name:"Press Z (Landmine Press)",    muscle:["hombros","pecho"],  equip:"Barra",     level:"Intermedio",   xpBase:48, desc:"Press en landmine. Plano de movimiento único, amigable con hombros."},
-  {id:"e113",name:"Lateral Raise Inclinado",     muscle:["hombros"],          equip:"Mancuernas",level:"Intermedio",   xpBase:32, desc:"Elevación lateral tumbado en banco inclinado. Máxima tensión en deltoides."},
-  {id:"e114",name:"Pájaros",                     muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Reverse Fly. Deltoides posterior e infraespinoso."},
-
-  // ── PIERNAS EXTRA ────────────────────────────────────────────────────────────
-  {id:"e115",name:"Sentadilla Sumo",             muscle:["piernas","gluteos"], equip:"Barra",    level:"Intermedio",   xpBase:55, desc:"Stance ancho. Mayor activación de aductores e isquiotibiales."},
-  {id:"e116",name:"Sentadilla Sissy",            muscle:["piernas"],           equip:"Sin equipo",level:"Avanzado",    xpBase:45, desc:"Sissy Squat. Aislamiento extremo del cuádriceps."},
-  {id:"e117",name:"Curl Femoral de Pie",         muscle:["piernas"],           equip:"Máquina",  level:"Principiante", xpBase:28, desc:"Isquiotibiales de pie en máquina. Posición más funcional."},
-  {id:"e118",name:"Zancadas con Barra",          muscle:["piernas","gluteos"], equip:"Barra",    level:"Intermedio",   xpBase:50, desc:"Lunges con barra. Mayor carga y demanda de estabilidad."},
-  {id:"e119",name:"Zancadas Estáticas",          muscle:["piernas","gluteos"], equip:"Mancuernas",level:"Principiante",xpBase:40, desc:"Split Squat. Posición fija para trabajar pierna por pierna."},
-  {id:"e120",name:"Leg Press Unilateral",        muscle:["piernas","gluteos"], equip:"Máquina",  level:"Intermedio",   xpBase:45, desc:"Prensa a una pierna. Corrección de desequilibrios musculares."},
-  {id:"e121",name:"Sentadilla en Cajón",         muscle:["piernas","gluteos"], equip:"Barra",    level:"Principiante", xpBase:48, desc:"Box Squat. Refuerza la fase excéntrica y mejora la profundidad."},
-  {id:"e122",name:"Good Morning",               muscle:["espalda","piernas"], equip:"Barra",    level:"Intermedio",   xpBase:50, desc:"Bisagra de cadera con barra. Isquiotibiales y lumbar bajo carga."},
-  {id:"e123",name:"Peso Muerto con Mancuernas", muscle:["piernas","espalda"], equip:"Mancuernas",level:"Principiante",xpBase:45, desc:"Deadlift con mancuernas. Ideal para aprender el patrón de bisagra."},
-  {id:"e124",name:"Abducción de Cadera con Goma",muscle:["gluteos"],          equip:"Goma",     level:"Principiante", xpBase:25, desc:"Glúteo medio con banda elástica. Activación y calentamiento."},
-  {id:"e125",name:"Elevación de Cadera Unilateral",muscle:["gluteos"],        equip:"Sin equipo",level:"Principiante",xpBase:30, desc:"Glute Bridge a una pierna. Activación de glúteo y core."},
-  {id:"e126",name:"Rumble Roller Hip Thrust",    muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:32, desc:"Hip Thrust en suelo sin equipo. Glúteo y femoral juntos."},
-
-  // ── BÍCEPS EXTRA ─────────────────────────────────────────────────────────────
-  {id:"e127",name:"Curl en Polea Baja",          muscle:["biceps"],           equip:"Polea",     level:"Principiante", xpBase:32, desc:"Tensión constante en bíceps desde la parte baja."},
-  {id:"e128",name:"Curl 21",                     muscle:["biceps"],           equip:"Barra",     level:"Intermedio",   xpBase:40, desc:"21 repeticiones parciales. Alta congestión y quema en bíceps."},
-  {id:"e129",name:"Curl Araña",                  muscle:["biceps"],           equip:"Banco",     level:"Intermedio",   xpBase:36, desc:"Spider Curl. Bíceps apoyados en banco inclinado, elimina el swing."},
-  {id:"e130",name:"Curl Zottman",                muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio", xpBase:35, desc:"Sube en supinación, baja en pronación. Trabaja toda la flexión del codo."},
-
-  // ── TRÍCEPS EXTRA ────────────────────────────────────────────────────────────
-  {id:"e131",name:"Press Francés con Mancuernas",muscle:["triceps"],          equip:"Mancuernas",level:"Intermedio",   xpBase:38, desc:"Skull Crusher con mancuernas. Más rango y control unilateral."},
-  {id:"e132",name:"Extensión Polea Cuerda Cabeza",muscle:["triceps"],         equip:"Polea",     level:"Principiante", xpBase:34, desc:"Extensión sobre cabeza en polea. Cabeza larga del tríceps."},
-  {id:"e133",name:"Fondos en Silla",             muscle:["triceps"],          equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Dips en silla. Tríceps y pecho inferior sin equipo."},
-  {id:"e134",name:"Kickback con Mancuerna",      muscle:["triceps"],          equip:"Mancuernas",level:"Principiante", xpBase:28, desc:"Extensión de tríceps hacia atrás. Aislamiento de cabeza larga."},
-  {id:"e135",name:"Kickback en Polea",           muscle:["triceps"],          equip:"Polea",     level:"Principiante", xpBase:29, desc:"Kickback con tensión constante de cable. Mejor que con mancuerna."},
-
-  // ── ABDOMEN EXTRA ────────────────────────────────────────────────────────────
-  {id:"e136",name:"Crunch Inverso",              muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Reverse Crunch. Abdomen bajo elevando caderas del suelo."},
-  {id:"e137",name:"Bicycle Crunch",              muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Rotación codo-rodilla. Recto y oblicuos juntos."},
-  {id:"e138",name:"Toe Touch",                   muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante", xpBase:22, desc:"Crunch con piernas en vertical. Abdomen superior."},
-  {id:"e139",name:"Mountain Climbers",           muscle:["abdomen","cardio"], equip:"Sin equipo",level:"Principiante", xpBase:35, desc:"Escalador. Core y cardio simultáneo. Ideal en circuitos."},
-  {id:"e140",name:"Hollow Body Hold",            muscle:["abdomen"],          equip:"Sin equipo",level:"Intermedio",   xpBase:30, desc:"Posición gimanástica. Core total bajo tensión isométrica."},
-  {id:"e141",name:"Dragon Flag",                 muscle:["abdomen"],          equip:"Banco",     level:"Avanzado",     xpBase:55, desc:"El ejercicio de core más difícil. Básico de la gimnasia."},
-  {id:"e142",name:"Pallof Press",                muscle:["abdomen"],          equip:"Polea",     level:"Principiante", xpBase:28, desc:"Anti-rotación en polea. Core estabilizador funcional."},
-  {id:"e143",name:"Crunch en Máquina",           muscle:["abdomen"],          equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Crunch con carga ajustable. Ideal para sobrecargar el abdomen."},
-
-  // ── CARDIO / FUNCIONAL EXTRA ─────────────────────────────────────────────────
-  {id:"e144",name:"Kettlebell Swing",            muscle:["cardio","gluteos","espalda"],equip:"Kettlebell",level:"Intermedio",xpBase:55,desc:"Swing de kettlebell. Explosión de cadera, cardio y cadena posterior."},
-  {id:"e145",name:"Box Jump",                    muscle:["piernas","cardio"], equip:"Sin equipo",level:"Intermedio",   xpBase:50, desc:"Salto al cajón. Potencia y explosividad de piernas."},
-  {id:"e146",name:"Jump Squat",                  muscle:["piernas","cardio"], equip:"Sin equipo",level:"Principiante", xpBase:40, desc:"Sentadilla con salto. Potencia y quema calórica alta."},
-  {id:"e147",name:"Thruster",                    muscle:["piernas","hombros","cardio"],equip:"Barra",level:"Avanzado",  xpBase:70, desc:"Sentadilla + Press Militar. Ejercicio total body de alta intensidad."},
-  {id:"e148",name:"Clean and Press",             muscle:["piernas","espalda","hombros"],equip:"Barra",level:"Avanzado", xpBase:75, desc:"Levantamiento olímpico simplificado. Explosión y fuerza completa."},
-  {id:"e149",name:"Battle Ropes",                muscle:["cardio","hombros"], equip:"Cuerdas",   level:"Intermedio",   xpBase:60, desc:"Ondas con cuerdas de batalla. Cardio y fuerza de hombros."},
-  {id:"e150",name:"Sled Push",                   muscle:["cardio","piernas"], equip:"Trineo",    level:"Intermedio",   xpBase:65, desc:"Empuje de trineo. Potencia de piernas y cardio metabólico."},
-  {id:"e151",name:"Farmer's Carry",              muscle:["antebrazos","hombros","cardio"],equip:"Mancuernas",level:"Principiante",xpBase:38,desc:"Marcha cargado. Fuerza de agarre, core y resistencia funcional."},
-  {id:"e152",name:"Wall Ball",                   muscle:["piernas","hombros","cardio"],equip:"Balón",level:"Principiante",xpBase:45,desc:"Lanzamiento de balón medicinal a pared. Potencia y cardio."},
-  {id:"e153",name:"Salto de Tijera (Jumping Jack)",muscle:["cardio"],         equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Cardio básico de calentamiento. Activa todo el cuerpo."},
-
-  // ── MOVILIDAD / STRETCHING ACTIVO ────────────────────────────────────────────
-  {id:"e154",name:"Hip Flexor Stretch",          muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:15, desc:"Estiramiento activo de flexor de cadera. Esencial post-entreno."},
-  {id:"e155",name:"Cat-Cow",                     muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Movilidad de columna. Ideal como calentamiento o cooldown."},
-  {id:"e156",name:"Pigeon Pose",                 muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:15, desc:"Apertura profunda de cadera. Libera tensión de glúteo y piriforme."},
-  {id:"e157",name:"Thoracic Rotation",           muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Rotación torácica. Movilidad de espalda alta, esencial en press."},
+  // ── Estiramiento / movilidad (conservados de la lista anterior, sin GIF) ──
   {id:"e158",name:"World's Greatest Stretch",    muscle:["piernas","espalda","hombros"],equip:"Sin equipo",level:"Principiante",xpBase:18,desc:"Estiramiento global. Cadera, torácica y hombros en un movimiento."},
-  {id:"e159",name:"Ankle Mobility Drill",        muscle:["gemelos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Movilidad de tobillo. Clave para profundidad en sentadilla."},
-
-  // ── MÁQUINAS ADICIONALES ─────────────────────────────────────────────────────
-  {id:"e160",name:"Aductores en Máquina",        muscle:["piernas"],          equip:"Máquina",   level:"Principiante", xpBase:25, desc:"Inner thigh machine. Trabaja aductores de la cadera."},
-  {id:"e161",name:"Hip Extension en Máquina",    muscle:["gluteos"],          equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Extensión de cadera en máquina. Activación directa del glúteo mayor."},
-  {id:"e162",name:"Chest Supported Row",         muscle:["espalda"],          equip:"Máquina",   level:"Principiante", xpBase:42, desc:"Remo con pecho apoyado. Sin trampa de inercia. Máximo aislamiento dorsal."},
-  {id:"e163",name:"Leg Curl Sentado",            muscle:["piernas"],          equip:"Máquina",   level:"Principiante", xpBase:30, desc:"Curl de isquios sentado. Diferente ángulo que tumbado, más efectivo."},
-  {id:"e164",name:"Pec Deck Inverso",            muscle:["hombros","espalda"],equip:"Máquina",   level:"Principiante", xpBase:28, desc:"Apertura inversa en máquina. Deltoides posterior y romboides."},
-  {id:"e165",name:"Smith Machine Sentadilla",    muscle:["piernas","gluteos"],equip:"Máquina",   level:"Principiante", xpBase:45, desc:"Sentadilla guiada en Smith. Segura para aprender el patrón."},
-  {id:"e166",name:"Smith Machine Press Banca",   muscle:["pecho","triceps"],  equip:"Máquina",   level:"Principiante", xpBase:42, desc:"Press de banca en Smith Machine. Control total del movimiento."},
-
-  // ── DEL LIBRO: PECTORAL ──────────────────────────────────────────────────────
-  {id:"e167",name:"Press Banca Declinado Mancuernas", muscle:["pecho"],       equip:"Mancuernas",level:"Intermedio",   xpBase:40, desc:"Pecho inferior con mancuernas. Más rango y rotación que con barra declinado."},
-  {id:"e168",name:"Pull-Over con Barra",          muscle:["pecho","espalda"], equip:"Barra",     level:"Intermedio",   xpBase:42, desc:"Pull-over con barra en banco. Estiramiento profundo de pecho y dorsal."},
-  {id:"e169",name:"Cruce de Poleas Alto",         muscle:["pecho"],           equip:"Polea",     level:"Principiante", xpBase:35, desc:"Cable crossover desde polea alta. Pecho inferior con tensión constante."},
-  {id:"e170",name:"Cruce de Poleas Bajo",         muscle:["pecho"],           equip:"Polea",     level:"Principiante", xpBase:35, desc:"Cable crossover desde polea baja. Activa la parte superior del pecho."},
-  {id:"e171",name:"Contractor Pectoral",          muscle:["pecho"],           equip:"Máquina",   level:"Principiante", xpBase:33, desc:"Pec-Deck. Aislamiento completo de pecho con movimiento de apertura y cierre."},
-
-  // ── DEL LIBRO: DORSAL ────────────────────────────────────────────────────────
-  {id:"e172",name:"Jalón Tras Nuca",              muscle:["espalda"],         equip:"Polea",     level:"Intermedio",   xpBase:42, desc:"Jalón llevando la barra detrás de la cabeza. Mayor activación del trapecio medio."},
-  {id:"e173",name:"Remo en Punta",                muscle:["espalda","antebrazos"],equip:"Barra", level:"Intermedio",   xpBase:46, desc:"T-Bar Row libre. Barra anclada en esquina, excelente para el grosor dorsal."},
-  {id:"e174",name:"Remo en Polea Alta",           muscle:["espalda","biceps"],equip:"Polea",     level:"Principiante", xpBase:40, desc:"Remo tirando desde polea alta. Trabaja dorsal y romboides con ángulo diferente."},
-  {id:"e175",name:"Jalón Sentado en Suelo",       muscle:["espalda","biceps"],equip:"Polea",     level:"Principiante", xpBase:40, desc:"Jalón en polea baja sentado en el suelo. Recorrido completo para el dorsal."},
-  {id:"e176",name:"Remo en Multipower",           muscle:["espalda"],         equip:"Máquina",   level:"Principiante", xpBase:44, desc:"Remo en Smith Machine. Guiado y seguro, ideal para trabajar la espalda media."},
-
-  // ── DEL LIBRO: HOMBROS ───────────────────────────────────────────────────────
-  {id:"e177",name:"Press Militar Tras Nuca",      muscle:["hombros","espalda"],equip:"Barra",    level:"Avanzado",     xpBase:52, desc:"Press detrás de la cabeza. Mayor activación del deltoides posterior y trapecio."},
-  {id:"e178",name:"Press Arnold Sentado",         muscle:["hombros"],         equip:"Mancuernas",level:"Intermedio",   xpBase:48, desc:"Press Arnold clásico sentado. Giro de supinación a pronación activa más fibras."},
-  {id:"e179",name:"Elevaciones Laterales Tumbado",muscle:["hombros"],         equip:"Mancuernas",level:"Principiante", xpBase:30, desc:"Abducción lateral tumbado en banco. Elimina el impulso y aísla el deltoides."},
-  {id:"e180",name:"Pájaros Sentado",              muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante",xpBase:28, desc:"Elevaciones posteriores sentado con tronco inclinado. Deltoides posterior y romboides."},
-  {id:"e181",name:"Remo al Cuello Mancuernas",   muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Upright row con mancuernas. Agarre más natural y menor estrés en muñecas que con barra."},
-  {id:"e182",name:"Pájaros en Polea",             muscle:["hombros","espalda"],equip:"Polea",    level:"Principiante", xpBase:30, desc:"Elevaciones posteriores en polea baja a una mano. Tensión constante en deltoides posterior."},
-  {id:"e183",name:"Press Militar en Multipower",  muscle:["hombros"],         equip:"Máquina",   level:"Principiante", xpBase:50, desc:"Press militar en Smith Machine. Movimiento guiado, bueno para aprender el patrón."},
   {id:"e184",name:"Rotaciones Externas Hombro",   muscle:["hombros","espalda"],equip:"Mancuernas",level:"Principiante",xpBase:20, desc:"Rotación externa tumbado. Ejercicio de salud para el manguito rotador."},
   {id:"e185",name:"Rotaciones Internas Hombro",   muscle:["hombros"],         equip:"Mancuernas",level:"Principiante", xpBase:20, desc:"Rotación interna tumbado. Fortalece el subescapular y protege el hombro."},
-
-  // ── DEL LIBRO: BÍCEPS ────────────────────────────────────────────────────────
-  {id:"e186",name:"Curl con Barra Z",             muscle:["biceps","antebrazos"],equip:"Barra",  level:"Principiante", xpBase:36, desc:"Curl con barra EZ. Posición de muñeca más natural que con barra recta."},
-  {id:"e187",name:"Curl Tumbado",                 muscle:["biceps"],           equip:"Barra",    level:"Intermedio",   xpBase:35, desc:"Curl con barra o mancuernas tumbado en banco. Elimina completamente el balanceo."},
-  {id:"e188",name:"Curl en Polea Alta",           muscle:["biceps"],           equip:"Polea",    level:"Intermedio",   xpBase:35, desc:"High cable curl a una mano. Tensión en la posición contraída del bíceps."},
-  {id:"e189",name:"Curl Scott con Mancuerna",     muscle:["biceps"],           equip:"Mancuernas",level:"Intermedio",  xpBase:38, desc:"Predicador unilateral con mancuerna. Mayor rango y control que con barra."},
-
-  // ── DEL LIBRO: TRÍCEPS ───────────────────────────────────────────────────────
-  {id:"e190",name:"Press Francés con Barra Z",    muscle:["triceps"],          equip:"Barra",    level:"Intermedio",   xpBase:40, desc:"Skull crusher con barra EZ. Menos estrés en muñecas que con barra recta."},
-  {id:"e191",name:"Extensión Polea Cuerda Alta",  muscle:["triceps"],          equip:"Polea",    level:"Principiante", xpBase:33, desc:"Push-down con cuerda. La separación final activa las tres cabezas del tríceps."},
-  {id:"e192",name:"Extensión Polea Invertida",    muscle:["triceps"],          equip:"Polea",    level:"Principiante", xpBase:30, desc:"Push-down con agarre supino. Mayor activación de la cabeza larga del tríceps."},
-  {id:"e193",name:"Press Francés en Polea",       muscle:["triceps"],          equip:"Polea",    level:"Intermedio",   xpBase:38, desc:"Lying triceps extension en polea baja. Tensión constante durante todo el movimiento."},
-  {id:"e194",name:"Patadas de Tríceps con Giro",  muscle:["triceps"],          equip:"Mancuernas",level:"Principiante",xpBase:29, desc:"Kickback con giro de muñeca. Activa la porción lateral del tríceps con supinación final."},
-
-  // ── DEL LIBRO: ANTEBRAZOS ────────────────────────────────────────────────────
-  {id:"e195",name:"Flexiones de Muñeca Sentado",  muscle:["antebrazos"],       equip:"Barra",    level:"Principiante", xpBase:24, desc:"Wrist curl con barra sentado. Flexores del antebrazo con apoyo en muslos."},
-  {id:"e196",name:"Enrollamiento de Cuerda",      muscle:["antebrazos"],       equip:"Barra",    level:"Principiante", xpBase:28, desc:"Wrist roller. Enrollar y desenrollar peso colgado de una barra. Fuerza de agarre total."},
-  {id:"e197",name:"Curl en Pronación",            muscle:["antebrazos","biceps"],equip:"Barra",  level:"Principiante", xpBase:30, desc:"Reverse curl con barra. Trabaja el braquiorradial y extensores del antebrazo."},
-
-  // ── DEL LIBRO: PIERNAS ───────────────────────────────────────────────────────
-  {id:"e198",name:"Sentadilla Hack con Barra",    muscle:["piernas"],          equip:"Barra",    level:"Avanzado",     xpBase:60, desc:"Hack squat con barra detrás. Clásico de la halterofilia, gran activación de cuádriceps."},
-  {id:"e199",name:"Escalón con Mancuernas",       muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante",xpBase:36, desc:"Step-up con mancuernas. Funcional, trabaja cada pierna por separado."},
-  {id:"e200",name:"Zancadas Laterales",           muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Principiante",xpBase:38, desc:"Lateral lunge. Aductores e isquiotibiales con movimiento en plano frontal."},
-  {id:"e201",name:"Peso Muerto sobre Escalón",    muscle:["piernas","espalda"],equip:"Barra",    level:"Avanzado",     xpBase:65, desc:"Deficit deadlift. Mayor rango de movimiento para isquios y glúteos."},
-  {id:"e202",name:"Elevación de Talones Burro",   muscle:["gemelos"],          equip:"Máquina",  level:"Principiante", xpBase:28, desc:"Donkey calf raise. Posición inclinada con mayor estiramiento del gastrocnemio."},
-  {id:"e203",name:"Patadas de Glúteo Tumbado",    muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante",xpBase:25, desc:"Donkey kick. Extensión de cadera tumbado en cuadrupedia. Glúteo mayor en aislamiento."},
-  {id:"e204",name:"Abducción de Cadera de Pie",   muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante",xpBase:22, desc:"Standing hip abduction. Elevación lateral de pierna de pie. Glúteo medio."},
-  {id:"e205",name:"Aducción de Cadera de Pie",    muscle:["piernas"],          equip:"Sin equipo",level:"Principiante",xpBase:22, desc:"Standing hip adduction. Cruce de pierna de pie. Aductores internos."},
-  {id:"e206",name:"Glúteos en Multipolea",        muscle:["gluteos"],          equip:"Polea",    level:"Principiante", xpBase:32, desc:"Cable kick-back. Extensión de cadera en polea baja de pie. Glúteo mayor."},
-  {id:"e207",name:"Extensiones de Cuádriceps Polea",muscle:["piernas"],        equip:"Polea",    level:"Principiante", xpBase:30, desc:"Leg extension en polea baja. Alternativa a la máquina con tensión dinámica."},
-
-  // ── DEL LIBRO: ABDOMEN Y LUMBAR ──────────────────────────────────────────────
-  {id:"e208",name:"Crunch Declinado",             muscle:["abdomen"],          equip:"Banco",    level:"Intermedio",   xpBase:30, desc:"Crunch en banco declinado. Mayor rango de movimiento para el recto abdominal."},
-  {id:"e209",name:"Elevación de Tronco Romana",   muscle:["abdomen"],          equip:"Máquina",  level:"Principiante", xpBase:28, desc:"Sit-up en silla romana. Trabajo completo del abdomen con anclaje de pies."},
-  {id:"e210",name:"Elevaciones de Piernas Colgado",muscle:["abdomen"],         equip:"Barra",    level:"Intermedio",   xpBase:40, desc:"Hanging leg raise. Abdomen bajo con el cuerpo suspendido en barra. Alta demanda de core."},
-  {id:"e211",name:"Rodillas al Pecho Colgado",    muscle:["abdomen"],          equip:"Barra",    level:"Principiante", xpBase:32, desc:"Hanging knee raise. Versión más accesible del colgado. Abdomen bajo e iliopsoas."},
-  {id:"e212",name:"Patada de Rana",               muscle:["abdomen"],          equip:"Sin equipo",level:"Principiante",xpBase:28, desc:"Frog kick / jack-knife. Combina elevación de tronco y piernas simultáneamente."},
-  {id:"e213",name:"Giros con Barra",              muscle:["abdomen"],          equip:"Barra",    level:"Principiante", xpBase:22, desc:"Twists con barra sobre los hombros. Rotación de tronco para oblicuos."},
-  {id:"e214",name:"Inclinaciones Laterales",      muscle:["abdomen"],          equip:"Mancuernas",level:"Principiante",xpBase:24, desc:"Side bend con mancuerna. Flexión lateral de tronco para oblicuo externo."},
-  {id:"e215",name:"Crunch en Polea Alta",         muscle:["abdomen"],          equip:"Polea",    level:"Principiante", xpBase:30, desc:"Cable crunch de rodillas. Alta activación del recto abdominal con carga ajustable."},
-  {id:"e216",name:"Extensiones de Tronco Lumbar", muscle:["espalda"],          equip:"Máquina",  level:"Principiante", xpBase:30, desc:"Back extension en máquina lumbar. Fortalece erector espinal y multífidos."},
-  {id:"e217",name:"Peso Muerto Buenos Días",      muscle:["espalda","piernas"],equip:"Barra",    level:"Intermedio",   xpBase:48, desc:"Good morning con barra. Bisagra de cadera con barra alta. Lumbar e isquiotibiales."},
-
-  // ── MOVILIDAD Y CALENTAMIENTO ─────────────────────────────────────────────────
   {id:"e218",name:"Sentadilla de Movilidad",      muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Squat to stand. Baja y mantén la posición para abrir cadera y movilizar tobillo."},
-  {id:"e219",name:"Apertura de Cadera en Suelo",  muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"90/90 hip stretch. Ambas rodillas a 90°. Movilidad interna y externa de cadera."},
   {id:"e220",name:"Rotacion de Cadera de Pie",    muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Hip circle de pie. Circulos con la cadera para lubricar la articulacion coxofemoral."},
   {id:"e221",name:"Estiramiento de Isquiotibiales",muscle:["piernas"],        equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Hamstring stretch. Tumbado o de pie, estiramiento activo de la cadena posterior."},
   {id:"e222",name:"Estiramiento de Cuadriceps",   muscle:["piernas"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Quad stretch de pie. Talon al gluteo. Esencial post-entreno de piernas."},
@@ -652,57 +397,332 @@ const EXERCISE_DB = [
   {id:"e225",name:"Estiramiento de Dorsal",       muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Lat stretch colgado o con apoyo. Alarga el dorsal ancho despues de jalones y remos."},
   {id:"e226",name:"Estiramiento de Triceps",      muscle:["triceps"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Triceps stretch sobre la cabeza. Brazo cruzado o una mano a la espalda."},
   {id:"e227",name:"Estiramiento de Hombro Cruzado",muscle:["hombros"],        equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Cross-body shoulder stretch. Brazo cruzado al pecho. Deltoides posterior y manguito."},
-  {id:"e228",name:"Cobra",                        muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Cobra pose. Extension lumbar en suelo. Movilidad y descompresion de columna."},
-  {id:"e229",name:"Child's Pose",                 muscle:["espalda","hombros"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Postura del nino. Elongacion completa de columna y hombros. Ideal al final de sesion."},
   {id:"e230",name:"Rotacion de Columna Tumbado",  muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:12, desc:"Spinal twist tumbado. Rodillas al pecho y giro lateral. Libera tension lumbar."},
   {id:"e231",name:"Movilidad de Muneca",          muscle:["antebrazos"],       equip:"Sin equipo",level:"Principiante", xpBase:8,  desc:"Circulos y extensiones de muneca. Clave antes de press y ejercicios de empuje."},
-  {id:"e232",name:"Apertura Toracica en Banco",   muscle:["espalda","pecho"],  equip:"Banco",     level:"Principiante", xpBase:12, desc:"Thoracic extension sobre banco. Zona dorsal apoyada, brazos abiertos. Mejora postura."},
-  {id:"e233",name:"Inchworm",                     muscle:["espalda","piernas","hombros"],equip:"Sin equipo",level:"Principiante",xpBase:18,desc:"Gusano. Caminar con las manos desde los pies. Movilidad global de cadena posterior."},
-  {id:"e234",name:"Leg Swing Frontal",            muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Pendulo frontal de pierna. Movilidad dinamica de cadera. Calentamiento pre-piernas."},
-  {id:"e235",name:"Leg Swing Lateral",            muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Pendulo lateral de pierna. Movilidad de abductores y aductores. Activa gluteo medio."},
-  {id:"e236",name:"Shoulder Pass-Through",        muscle:["hombros","espalda"],equip:"Barra",     level:"Principiante", xpBase:12, desc:"Palo detras de la espalda agarre ancho. Movilidad completa de hombro, previene lesiones."},
-  {id:"e237",name:"Foam Roller Espalda",          muscle:["espalda"],          equip:"Sin equipo",level:"Principiante", xpBase:10, desc:"Rodillo de espuma en columna. Libera tension toracica y mejora la extension de espalda."},
-  {id:"e238",name:"Puente de Glúteo",             muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante", xpBase:25, desc:"Glute Bridge. Tumbado bocarriba con rodillas flexionadas, eleva la cadera apretando el glúteo. El básico de activación, a dos piernas."},
-  {id:"e239",name:"Frog Pumps",                   muscle:["gluteos"],          equip:"Sin equipo",level:"Principiante", xpBase:24, desc:"Puente de glúteo con plantas de los pies unidas y rodillas abiertas. Máxima activación del glúteo, rango corto y controlado."},
-  {id:"e240",name:"V-Ups Contralateral",          muscle:["abdomen"],          equip:"Sin equipo",level:"Intermedio",   xpBase:35, desc:"Tumbado, eleva el brazo y la pierna contraria a la vez tocando mano con pie. Trabaja abdomen y oblicuos con rotación."},
-  {id:"e241",name:"Toques Frontales Alternativos en Plancha",muscle:["abdomen"],equip:"Sin equipo",level:"Intermedio",  xpBase:30, desc:"Shoulder taps. En posición de plancha, toca el hombro contrario con cada mano alternando. Exige estabilidad y evita rotación de cadera."},
-  {id:"e242",name:"Elevaciones de Piernas Tumbado con Fitball",muscle:["abdomen"],equip:"Fitball",level:"Intermedio",   xpBase:34, desc:"Tumbado bocarriba sujetando el fitball con los pies, eleva las piernas manteniendo el balón sujeto. Abdomen bajo con mayor exigencia de control."},
-  {id:"e243",name:"Abdomen Isométrico en Fitball",muscle:["abdomen"],          equip:"Fitball",   level:"Intermedio",   xpBase:32, desc:"Mantén una posición de plancha o equilibrio sobre el fitball sin moverte. Isometría pura, activa todo el core para estabilizar."},
-  {id:"e244",name:"Deadbugs con Fitball",         muscle:["abdomen"],          equip:"Fitball",   level:"Principiante", xpBase:28, desc:"Dead Bug sujetando el fitball entre manos y rodillas, extendiendo brazo y pierna contraria. El balón añade tensión y control extra."},
-  {id:"e245",name:"Press Alterno con Mancuernas", muscle:["pecho","triceps"],  equip:"Mancuernas",level:"Intermedio",   xpBase:44, desc:"Una mancuerna baja mientras la otra sube, alternando. Mayor demanda de estabilidad de core y trabajo unilateral que el press tradicional."},
-  {id:"e246",name:"Pistol Squat",                 muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Avanzado",     xpBase:55, desc:"Sentadilla a una pierna completa, con la otra extendida al frente. Fuerza, equilibrio y movilidad de tobillo al máximo nivel."},
-  {id:"e247",name:"Aperturas Declinado",           muscle:["pecho"],           equip:"Mancuernas",level:"Intermedio",   xpBase:38, desc:"Aperturas en banco declinado. Enfatiza la porción inferior del pectoral con un ángulo distinto a la versión plana o inclinada."},
-  {id:"e248",name:"Sentadilla Lateral (Cossack)",  muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",   xpBase:40, desc:"Cossack Squat. Desde de pie con piernas separadas, flexiona una rodilla llevando el peso hacia un lado manteniendo la otra pierna estirada. Movilidad de cadera y fuerza unilateral."},
-  {id:"e249",name:"Sentadilla (Peso Corporal)",    muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"Sentadilla básica sin peso añadido. La base de cualquier progresión de pierna."},
-  {id:"e250",name:"Flexiones de Rodillas",         muscle:["pecho","triceps"], equip:"Sin equipo",level:"Principiante", xpBase:22, desc:"Flexión de brazos apoyando las rodillas en el suelo. Variante más accesible de la flexión estándar."},
-  {id:"e251",name:"Perro de Caza",                 muscle:["espalda","abdomen"],equip:"Sin equipo",level:"Principiante", xpBase:18, desc:"Bird Dog. A cuatro patas, extiende brazo y pierna contrarios manteniendo la zona lumbar estable. Core y equilibrio."},
-  {id:"e252",name:"Zancada",                       muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante", xpBase:30, desc:"Zancada con el propio peso corporal, alternando piernas. Trabaja cuádriceps y glúteo con énfasis unilateral."},
-  {id:"e253",name:"Elevación de Gemelos de Pie",   muscle:["gemelos"],         equip:"Sin equipo",level:"Principiante", xpBase:20, desc:"De pie, sube los talones lo más alto posible sin ningún material. Aislamiento básico de gemelo."},
-  {id:"e254",name:"Remo Invertido",                muscle:["espalda","biceps"],equip:"Sin equipo",level:"Intermedio",   xpBase:35, desc:"Tumbado bajo una barra fija a la altura de la cadera, tira del pecho hacia la barra. Versión con el propio peso corporal del remo."},
-  {id:"e255",name:"Patadas Boca de Incendio",      muscle:["gluteos"],         equip:"Sin equipo",level:"Principiante", xpBase:24, desc:"Fire Hydrant. A cuatro patas, eleva una rodilla hacia el lateral manteniendo el ángulo de 90°. Glúteo medio."},
-  {id:"e256",name:"Elevación de Rodillas",         muscle:["piernas","cardio"],equip:"Sin equipo",level:"Principiante", xpBase:28, desc:"High Knees. Carrera en el sitio llevando las rodillas lo más alto posible. Cardio y activación de cuádriceps."},
-  {id:"e257",name:"Flexión en Pica",               muscle:["hombros","triceps"],equip:"Sin equipo",level:"Intermedio",  xpBase:35, desc:"Pike Push-up. En posición de V invertida, flexiona los codos llevando la cabeza hacia el suelo. Preparación para el press militar en pino."},
-  {id:"e258",name:"Curls Nórdicos de Isquiotibiales",muscle:["piernas"],       equip:"Sin equipo",level:"Avanzado",     xpBase:50, desc:"Nordic Curl. De rodillas con los tobillos anclados, baja el tronco controlando con los isquiotibiales. Uno de los ejercicios de isquios más exigentes que existen."},
-  {id:"e259",name:"Sentadilla Pistol Asistida",    muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",  xpBase:42, desc:"Sentadilla a una pierna apoyándote en una superficie o agarre para ayudar al equilibrio. Progresión hacia el Pistol Squat completo."},
-  {id:"e260",name:"Sentadilla Búlgara (Peso Corporal)",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Intermedio",xpBase:40, desc:"Sentadilla búlgara con el pie trasero elevado, sin peso añadido. Fuerza unilateral de pierna."},
-  {id:"e261",name:"Elevación Frontal (Suspensión)",muscle:["hombros"],        equip:"Sin equipo",level:"Intermedio",  xpBase:30, desc:"Con correas de suspensión (o toalla anclada), eleva el cuerpo inclinado hacia delante trabajando el hombro. Requiere un anclaje tipo TRX."},
-  {id:"e262",name:"Curl de Bíceps (Suspensión)",   muscle:["biceps"],          equip:"Sin equipo",level:"Intermedio",  xpBase:30, desc:"Curl de bíceps con correas de suspensión, inclinando el cuerpo hacia atrás. Requiere un anclaje tipo TRX."},
-  {id:"e263",name:"Elevación en Y (Prono)",        muscle:["espalda","hombros"],equip:"Sin equipo",level:"Principiante",xpBase:22, desc:"Tumbado boca abajo, eleva los brazos formando una Y por encima de la cabeza apretando la espalda alta. Trabaja el trapecio inferior y el manguito rotador, distinto al Superman."},
-  {id:"e264",name:"Press en el Suelo (Mancuerna)", muscle:["pecho","triceps"], equip:"Mancuernas",level:"Principiante", xpBase:35, desc:"Press de banca tumbado directamente en el suelo. El recorrido se acorta al tocar los codos con el suelo, protegiendo el hombro."},
-  {id:"e265",name:"Remo Inclinado (Mancuerna)",    muscle:["espalda","antebrazos"],equip:"Mancuernas",level:"Principiante",xpBase:42, desc:"Remo con dos mancuernas a la vez, tronco inclinado hacia delante. Versión con mancuernas del remo con barra."},
-  {id:"e266",name:"Elevación de Gemelos de Pie (Mancuerna)",muscle:["gemelos"],equip:"Mancuernas",level:"Principiante",xpBase:28, desc:"De pie sujetando una mancuerna, sube los talones lo más alto posible. Añade carga al gemelo respecto a la versión sin peso."},
-  {id:"e267",name:"Aperturas (Banda)",             muscle:["pecho"],           equip:"Goma",level:"Principiante",       xpBase:26, desc:"Aperturas de pecho con banda anclada detrás, simulando el movimiento de un cable cruzado."},
-  {id:"e268",name:"Elevación Laterales (Banda)",   muscle:["hombros"],         equip:"Goma",level:"Principiante",       xpBase:24, desc:"Elevación lateral de hombro pisando la banda o con ella anclada a un punto bajo."},
-  {id:"e269",name:"Jalón al Pecho (Banda)",        muscle:["espalda","biceps"],equip:"Goma",level:"Principiante",       xpBase:32, desc:"Banda anclada en alto (puerta o barra), tira hacia el pecho imitando un jalón en polea."},
-  {id:"e270",name:"Curl Martillo (Banda)",         muscle:["biceps","antebrazos"],equip:"Goma",level:"Principiante",    xpBase:24, desc:"Curl con agarre neutro pisando la banda, palmas enfrentadas todo el recorrido."},
-  {id:"e271",name:"Remo con Banda",                muscle:["espalda","biceps"],equip:"Goma",level:"Principiante",       xpBase:32, desc:"Banda anclada al frente, remo tirando hacia el abdomen con los codos pegados al cuerpo."},
-  {id:"e272",name:"Peso Muerto (Banda)",           muscle:["piernas","espalda"],equip:"Goma",level:"Principiante",      xpBase:30, desc:"Pisando la banda con ambos pies, patrón de bisagra de cadera igual que un peso muerto convencional."},
-  {id:"e273",name:"Sentadilla (Banda)",            muscle:["piernas","gluteos"],equip:"Goma",level:"Principiante",      xpBase:26, desc:"Sentadilla sujetando la banda a la altura del pecho o pisándola sobre los hombros para añadir resistencia."},
-  {id:"e274",name:"Caminata Lateral con Banda Elástica",muscle:["gluteos"],    equip:"Goma",level:"Principiante",       xpBase:22, desc:"Banda alrededor de los tobillos o rodillas, pasos laterales manteniendo tensión constante. Activación de glúteo medio."},
+  // ── Resto de ejercicios (pack de GIFs en español, con músculos secundarios) ──
+  {id:"g1",name:"Crab Twist toe touch",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crab Twist toe touch.gif"},
+  {id:"g2",name:"Crunch Frog",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Frog.gif"},
+  {id:"g3",name:"Crunch Horizontal en Silla Romana",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Horizontal en Silla Romana.gif"},
+  {id:"g4",name:"Crunch Inferior Cruzado Alterno",muscle:["abdomen"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior Cruzado Alterno.gif"},
+  {id:"g5",name:"Crunch Inferior Inclinado con piernas estiradas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior Inclinado con piernas estiradas.gif"},
+  {id:"g6",name:"Crunch Inferior con Rodillas Flexionadas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior con Rodillas Flexionadas.gif"},
+  {id:"g7",name:"Crunch Inferior con flexión y extensión",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior con flexión y extensión.gif"},
+  {id:"g8",name:"Crunch Inferior en círculos",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior en círculos.gif"},
+  {id:"g9",name:"Crunch Inferior sentado en banco",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior sentado en banco.gif"},
+  {id:"g10",name:"Crunch Inferior sentado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Inferior sentado.gif"},
+  {id:"g11",name:"Crunch Lateral Horizontal Alterno",muscle:["abdomen"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Lateral Horizontal Alterno.gif"},
+  {id:"g12",name:"Crunch Lateral Horizontal Concentrado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Lateral Horizontal Concentrado.gif"},
+  {id:"g13",name:"Crunch Lateral Inclinado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Lateral Inclinado.gif"},
+  {id:"g14",name:"Crunch Lateral con Barra",muscle:["abdomen"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de abdomen/core con barra. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Crunch Lateral con Barra.gif"},
+  {id:"g15",name:"Crunch Lateral con Mancuerna",muscle:["abdomen"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de abdomen/core con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Crunch Lateral con Mancuerna.gif"},
+  {id:"g16",name:"Crunch Lateral de pie en Polea Baja",muscle:["abdomen"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de abdomen/core con polea. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Crunch Lateral de pie en Polea Baja.gif"},
+  {id:"g17",name:"Crunch Lateral en soporte",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Lateral en soporte.gif"},
+  {id:"g18",name:"Crunch Superior Concentrado Elevado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior Concentrado Elevado.gif"},
+  {id:"g19",name:"Crunch Superior Cruzado Concentrado Elevado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior Cruzado Concentrado Elevado.gif"},
+  {id:"g20",name:"Crunch Superior Cruzado Concentrado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior Cruzado Concentrado.gif"},
+  {id:"g21",name:"Crunch Superior Cruzado Declinado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior Cruzado Declinado.gif"},
+  {id:"g22",name:"Crunch Superior Cruzado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior Cruzado.gif"},
+  {id:"g23",name:"Crunch Superior Declinado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior Declinado.gif"},
+  {id:"g24",name:"Crunch Superior de rodillas con Polea",muscle:["abdomen"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de abdomen/core con polea. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Crunch Superior de rodillas con Polea.gif"},
+  {id:"g25",name:"Crunch Superior en Fitball",muscle:["abdomen"],equip:"Fitball",level:"Intermedio",xpBase:22,desc:"Ejercicio de abdomen/core con fitball. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Crunch Superior en Fitball.gif"},
+  {id:"g26",name:"Crunch Superior",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Crunch Superior.gif"},
+  {id:"g27",name:"Dead Bugs",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Dead Bugs.gif"},
+  {id:"g28",name:"Drgon Flags",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Drgon Flags.gif"},
+  {id:"g29",name:"Elevación de Cadera con flexión de rodillas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de Cadera con flexión de rodillas.gif"},
+  {id:"g30",name:"Elevación de Cadera con piernas estiradas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de Cadera con piernas estiradas.gif"},
+  {id:"g31",name:"Elevación de Cadera con piernas flexionadas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de Cadera con piernas flexionadas.gif"},
+  {id:"g32",name:"Elevación de Piernas con torsión en soporte",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de Piernas con torsión en soporte.gif"},
+  {id:"g33",name:"Elevación de piernas alternas Colgado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de piernas alternas Colgado.gif"},
+  {id:"g34",name:"Elevación de piernas en Fitball",muscle:["abdomen"],equip:"Fitball",level:"Intermedio",xpBase:22,desc:"Ejercicio de abdomen/core con fitball. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Elevación de piernas en Fitball.gif"},
+  {id:"g35",name:"Elevación de piernas estiradas Colgado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de piernas estiradas Colgado.gif"},
+  {id:"g36",name:"Elevación de piernas estiradas en soporte",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de piernas estiradas en soporte.gif"},
+  {id:"g37",name:"Elevación de piernas flexionadas Colgado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de piernas flexionadas Colgado.gif"},
+  {id:"g38",name:"Elevación de piernas flexionadas en soporte",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de piernas flexionadas en soporte.gif"},
+  {id:"g39",name:"Elevación de piernas laterales Colgado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Elevación de piernas laterales Colgado.gif"},
+  {id:"g40",name:"Giros Superiores Sentado con peso",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Giros Superiores Sentado con peso.gif"},
+  {id:"g41",name:"Giros Superiores Sentado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Giros Superiores Sentado.gif"},
+  {id:"g42",name:"Giros de cintura de pie en Polea",muscle:["abdomen"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de abdomen/core con polea. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Giros de cintura de pie en Polea.gif"},
+  {id:"g43",name:"Giros de cintura sentado con Barra",muscle:["abdomen"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de abdomen/core con barra. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Giros de cintura sentado con Barra.gif"},
+  {id:"g44",name:"Giros sentado en Fitball",muscle:["abdomen"],equip:"Fitball",level:"Intermedio",xpBase:22,desc:"Ejercicio de abdomen/core con fitball. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Giros sentado en Fitball.gif"},
+  {id:"g45",name:"Half Wipers con piernas estiradas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Half Wipers con piernas estiradas.gif"},
+  {id:"g46",name:"Half Wipers con piernas flexionadas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Half Wipers con piernas flexionadas.gif"},
+  {id:"g47",name:"Hollow Hold",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Hollow Hold.gif"},
+  {id:"g48",name:"Inclinación diagonal en Polea",muscle:["abdomen"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de abdomen/core con polea. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Inclinación diagonal en Polea.gif"},
+  {id:"g49",name:"Janda Sit-up",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Janda Sit-up.gif"},
+  {id:"g50",name:"Marcha Horizontal Alterna con palmada",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Marcha Horizontal Alterna con palmada.gif"},
+  {id:"g51",name:"Marcha Horizontal Alterna",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Marcha Horizontal Alterna.gif"},
+  {id:"g52",name:"Mountain climbers",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Mountain climbers.gif"},
+  {id:"g53",name:"Plancha Lateral Inclinada",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Plancha Lateral Inclinada.gif"},
+  {id:"g54",name:"Plancha Lateral",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Plancha Lateral.gif"},
+  {id:"g55",name:"Plancha con rodillas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Plancha con rodillas.gif"},
+  {id:"g56",name:"Plancha invertida",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Plancha invertida.gif"},
+  {id:"g57",name:"Plancha",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Plancha.gif"},
+  {id:"g58",name:"Puente Lateral Declinado Aislada",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Puente Lateral Declinado Aislada.gif"},
+  {id:"g59",name:"Puente Lateral Declinado",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Puente Lateral Declinado.gif"},
+  {id:"g60",name:"Puente Lateral con Abducción de Cadera",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Puente Lateral con Abducción de Cadera.gif"},
+  {id:"g61",name:"Puente Lateral con Mancuerna",muscle:["abdomen"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de abdomen/core con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Puente Lateral con Mancuerna.gif"},
+  {id:"g62",name:"Puente Lateral",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Puente Lateral.gif"},
+  {id:"g63",name:"Pulse Up",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Pulse Up.gif"},
+  {id:"g64",name:"Sit Up en Fitball",muscle:["abdomen"],equip:"Fitball",level:"Intermedio",xpBase:22,desc:"Ejercicio de abdomen/core con fitball. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Sit Up en Fitball.gif"},
+  {id:"g65",name:"Standing Toe Touch",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Standing Toe Touch.gif"},
+  {id:"g66",name:"Twist Ruso con Mancuerna",muscle:["abdomen"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de abdomen/core con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/Twist Ruso con Mancuerna.gif"},
+  {id:"g67",name:"Twust Ruso",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Twust Ruso.gif"},
+  {id:"g68",name:"V-Ups con mancuerna",muscle:["abdomen"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de abdomen/core con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Abdomen/V-Ups con mancuerna.gif"},
+  {id:"g69",name:"Wheel Rollout de pie",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Wheel Rollout de pie.gif"},
+  {id:"g70",name:"Wheel Rollout de rodillas",muscle:["abdomen"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de abdomen/core sin material. Trabaja con el propio peso corporal.",gif:"Abdomen/Wheel Rollout de rodillas.gif"},
+  {id:"g71",name:"Curl Concentrado Neutro con Mancuerna",muscle:["antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de antebrazo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado Neutro con Mancuerna.gif"},
+  {id:"g72",name:"Curl Concentrado en Máquina",muscle:["antebrazos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de antebrazo con máquina. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Máquina.gif"},
+  {id:"g73",name:"Curl Concentrado en Pronación con Barra",muscle:["antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de antebrazo con barra. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Pronación con Barra.gif"},
+  {id:"g74",name:"Curl Concentrado en Pronación con Mancuerna",muscle:["antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de antebrazo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Pronación con Mancuerna.gif"},
+  {id:"g75",name:"Curl Concentrado en Pronación con Polea",muscle:["antebrazos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de antebrazo con polea. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Pronación con Polea.gif"},
+  {id:"g76",name:"Curl Concentrado en Supinación con Barra",muscle:["antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de antebrazo con barra. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Supinación con Barra.gif"},
+  {id:"g77",name:"Curl Concentrado en Supinación con Mancuerna",muscle:["antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de antebrazo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Supinación con Mancuerna.gif"},
+  {id:"g78",name:"Curl Concentrado en Supinación con Polea",muscle:["antebrazos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de antebrazo con polea. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Concentrado en Supinación con Polea.gif"},
+  {id:"g79",name:"Curl Inclinado con Barra",muscle:["antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de antebrazo con barra. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Inclinado con Barra.gif"},
+  {id:"g80",name:"Curl Vertical de Dedos con Barra",muscle:["antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de antebrazo con barra. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Vertical de Dedos con Barra.gif"},
+  {id:"g81",name:"Curl Vertical en Polea Baja",muscle:["antebrazos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de antebrazo con polea. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Vertical en Polea Baja.gif"},
+  {id:"g82",name:"Curl Vertical en Supinación con Barra",muscle:["antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de antebrazo con barra. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl Vertical en Supinación con Barra.gif"},
+  {id:"g83",name:"Curl a una mano en Polea Alta",muscle:["antebrazos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de antebrazo con polea. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Curl a una mano en Polea Alta.gif"},
+  {id:"g84",name:"Hand Grip",muscle:["antebrazos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de antebrazo sin material. Trabaja con el propio peso corporal.",gif:"Antebrazo/Hand Grip.gif"},
+  {id:"g85",name:"Rotación Concentrada con Mancuerna",muscle:["antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de antebrazo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Antebrazo/Rotación Concentrada con Mancuerna.gif"},
+  {id:"g86",name:"Wrist Roller",muscle:["antebrazos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de antebrazo sin material. Trabaja con el propio peso corporal.",gif:"Antebrazo/Wrist Roller.gif"},
+  {id:"g87",name:"Curl Concentrado Cerrado con Barra Z",muscle:["biceps","antebrazos"],equip:"Barra Z",level:"Intermedio",xpBase:36,desc:"Ejercicio de bíceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Concentrado Cerrado con Barra Z.gif"},
+  {id:"g88",name:"Curl Concentrado Cerrado con Barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Concentrado Cerrado con Barra.gif"},
+  {id:"g89",name:"Curl Concentrado Cerrado en Polea Baja",muscle:["biceps","antebrazos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de bíceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Concentrado Cerrado en Polea Baja.gif"},
+  {id:"g90",name:"Curl Horizontal en Supinación con Mancuernas",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Horizontal en Supinación con Mancuernas.gif"},
+  {id:"g91",name:"Curl Inclinado Alterno en Supinación con Mancuernas",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Inclinado Alterno en Supinación con Mancuernas.gif"},
+  {id:"g92",name:"Curl Inclinado Neutro Alterno con Mancuernas",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Inclinado Neutro Alterno con Mancuernas.gif"},
+  {id:"g93",name:"Curl Lateral con Mancuernas",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl Lateral con Mancuernas.gif"},
+  {id:"g94",name:"Curl araña barra Z",muscle:["biceps","antebrazos"],equip:"Barra Z",level:"Avanzado",xpBase:46,desc:"Ejercicio de bíceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl araña barra Z.gif"},
+  {id:"g95",name:"Curl araña con barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Avanzado",xpBase:48,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl araña con barra.gif"},
+  {id:"g96",name:"Curl araña con mancuerna",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl araña con mancuerna.gif"},
+  {id:"g97",name:"Curl con Mancuernas",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl con Mancuernas.gif"},
+  {id:"g98",name:"Curl en Banco Scott Neutro con Mancuerna",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Banco Scott Neutro con Mancuerna.gif"},
+  {id:"g99",name:"Curl en Banco Scott en Supinación con Mancuerna",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Banco Scott en Supinación con Mancuerna.gif"},
+  {id:"g100",name:"Curl en Martillo Alterno con Mancuernas",muscle:["biceps","antebrazos"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de bíceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Martillo Alterno con Mancuernas.gif"},
+  {id:"g101",name:"Curl en Martillo con Barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Martillo con Barra.gif"},
+  {id:"g102",name:"Curl en Pronación con Barra Z",muscle:["biceps","antebrazos"],equip:"Barra Z",level:"Intermedio",xpBase:36,desc:"Ejercicio de bíceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Pronación con Barra Z.gif"},
+  {id:"g103",name:"Curl en Pronación con Barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Pronación con Barra.gif"},
+  {id:"g104",name:"Curl en Pronación en banco Scott con Barra Z",muscle:["biceps","antebrazos"],equip:"Barra Z",level:"Intermedio",xpBase:36,desc:"Ejercicio de bíceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Pronación en banco Scott con Barra Z.gif"},
+  {id:"g105",name:"Curl en Pronación en banco Scott con Barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Pronación en banco Scott con Barra.gif"},
+  {id:"g106",name:"Curl en Supinación Cerrado Con Barra Z",muscle:["biceps","antebrazos"],equip:"Barra Z",level:"Intermedio",xpBase:36,desc:"Ejercicio de bíceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Supinación Cerrado Con Barra Z.gif"},
+  {id:"g107",name:"Curl en Supinación Cerrado con Barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Supinación Cerrado con Barra.gif"},
+  {id:"g108",name:"Curl en Supinación Cerrado en Polea Baja",muscle:["biceps","antebrazos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de bíceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Supinación Cerrado en Polea Baja.gif"},
+  {id:"g109",name:"Curl en Supinación Cerrado en banco Scott con Barra Z",muscle:["biceps","antebrazos"],equip:"Barra Z",level:"Intermedio",xpBase:36,desc:"Ejercicio de bíceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Supinación Cerrado en banco Scott con Barra Z.gif"},
+  {id:"g110",name:"Curl en Supinación en banco Scott con Barra",muscle:["biceps","antebrazos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de bíceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Bíceps/Curl en Supinación en banco Scott con Barra.gif"},
+  {id:"g111",name:"Curl zottman",muscle:["biceps","antebrazos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de bíceps sin material. Trabaja con el propio peso corporal.",gif:"Bíceps/Curl zottman.gif"},
+  {id:"g112",name:"15017",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/15017.gif"},
+  {id:"g113",name:"Bicicleta",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Bicicleta.gif"},
+  {id:"g114",name:"Burpee Jack",muscle:["cardio"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Burpee Jack.gif"},
+  {id:"g115",name:"Burpee",muscle:["cardio"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Burpee.gif"},
+  {id:"g116",name:"Carrera en cinta",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Carrera en cinta.gif"},
+  {id:"g117",name:"Elíptica",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Elíptica.gif"},
+  {id:"g118",name:"Jumping Jack",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Jumping Jack.gif"},
+  {id:"g119",name:"Kettlebell swing",muscle:["cardio"],equip:"Kettlebell",level:"Intermedio",xpBase:34,desc:"Ejercicio de sistema cardiovascular con kettlebell. Variante específica dentro de su familia de movimiento.",gif:"Cardio/Kettlebell swing.gif"},
+  {id:"g120",name:"Máquina de escaleras",muscle:["cardio"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de sistema cardiovascular con máquina. Variante específica dentro de su familia de movimiento.",gif:"Cardio/Máquina de escaleras.gif"},
+  {id:"g121",name:"Paso del oso",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Paso del oso.gif"},
+  {id:"g122",name:"Remo",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Remo.gif"},
+  {id:"g123",name:"Saltos de Patinador",muscle:["cardio"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/Saltos de Patinador.gif"},
+  {id:"g124",name:"stepper",muscle:["cardio"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de sistema cardiovascular sin material. Trabaja con el propio peso corporal.",gif:"Cardio/stepper.gif"},
+  {id:"g125",name:"Aperturas Traseras Neutras en Máquina",muscle:["espalda"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de espalda con máquina. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Aperturas Traseras Neutras en Máquina.gif"},
+  {id:"g126",name:"Buenos días",muscle:["espalda"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Buenos días.gif"},
+  {id:"g127",name:"Dominadas",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Dominadas.gif"},
+  {id:"g128",name:"Encogimientos con barra",muscle:["espalda"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de espalda con barra. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Encogimientos con barra.gif"},
+  {id:"g129",name:"Encogimientos con mancuernas",muscle:["espalda"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Encogimientos con mancuernas.gif"},
+  {id:"g130",name:"Hiperextensiones Inclinadas",muscle:["espalda"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Hiperextensiones Inclinadas.gif"},
+  {id:"g131",name:"Jalón al pecho agarre cerrado",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Jalón al pecho agarre cerrado.gif"},
+  {id:"g132",name:"Jalón al pecho supino",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Jalón al pecho supino.gif"},
+  {id:"g133",name:"Jalón al pecho",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Jalón al pecho.gif"},
+  {id:"g134",name:"Jalón trasnuca",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Jalón trasnuca.gif"},
+  {id:"g135",name:"Peso Muerto Rumano con Barra",muscle:["espalda"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de espalda con barra. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto Rumano con Barra.gif"},
+  {id:"g136",name:"Peso Muerto Rígido con Mancuernas",muscle:["espalda"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto Rígido con Mancuernas.gif"},
+  {id:"g137",name:"Peso Muerto Sumo con Barra",muscle:["espalda"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de espalda con barra. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto Sumo con Barra.gif"},
+  {id:"g138",name:"Peso Muerto a una pierna con Mancuernas",muscle:["espalda"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto a una pierna con Mancuernas.gif"},
+  {id:"g139",name:"Peso Muerto con Barra",muscle:["espalda"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de espalda con barra. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto con Barra.gif"},
+  {id:"g140",name:"Peso Muerto con Mancuernas",muscle:["espalda"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto con Mancuernas.gif"},
+  {id:"g141",name:"Peso Muerto en Polea",muscle:["espalda"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de espalda con polea. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Peso Muerto en Polea.gif"},
+  {id:"g142",name:"Pull over con mancuerna",muscle:["espalda"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Pull over con mancuerna.gif"},
+  {id:"g143",name:"Pull over en polea",muscle:["espalda"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de espalda con polea. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Pull over en polea.gif"},
+  {id:"g144",name:"Remo Horizontal en Pronación en Máquina",muscle:["espalda","biceps"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de espalda con máquina. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo Horizontal en Pronación en Máquina.gif"},
+  {id:"g145",name:"Remo Inclinado en Pronación con Mancuernas",muscle:["espalda","biceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo Inclinado en Pronación con Mancuernas.gif"},
+  {id:"g146",name:"Remo Superior con Cuerda en Polea",muscle:["espalda","biceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de espalda con polea. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo Superior con Cuerda en Polea.gif"},
+  {id:"g147",name:"Remo a una mano polea baja",muscle:["espalda","biceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de espalda con polea. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo a una mano polea baja.gif"},
+  {id:"g148",name:"Remo con barra agarre inverso",muscle:["espalda","biceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de espalda con barra. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo con barra agarre inverso.gif"},
+  {id:"g149",name:"Remo con mancuerna",muscle:["espalda","biceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de espalda con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo con mancuerna.gif"},
+  {id:"g150",name:"Remo en multipower",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Remo en multipower.gif"},
+  {id:"g151",name:"Remo en punta",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Remo en punta.gif"},
+  {id:"g152",name:"Remo gironda",muscle:["espalda","biceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de espalda sin material. Trabaja con el propio peso corporal.",gif:"Espalda/Remo gironda.gif"},
+  {id:"g153",name:"Remo inferior polea baja",muscle:["espalda","biceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de espalda con polea. Variante específica dentro de su familia de movimiento.",gif:"Espalda/Remo inferior polea baja.gif"},
+  {id:"g154",name:"Extensión de Gemelos de pie con Barra",muscle:["gemelos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de gemelo con barra. Variante específica dentro de su familia de movimiento.",gif:"Gemelos/Extensión de Gemelos de pie con Barra.gif"},
+  {id:"g155",name:"Extensión de Gemelos de pie con Mancuernas",muscle:["gemelos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de gemelo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Gemelos/Extensión de Gemelos de pie con Mancuernas.gif"},
+  {id:"g156",name:"Extensión de Gemelos en Prensa",muscle:["gemelos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de gemelo sin material. Trabaja con el propio peso corporal.",gif:"Gemelos/Extensión de Gemelos en Prensa.gif"},
+  {id:"g157",name:"Extensión de Gemelos sentado con Barra",muscle:["gemelos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de gemelo con barra. Variante específica dentro de su familia de movimiento.",gif:"Gemelos/Extensión de Gemelos sentado con Barra.gif"},
+  {id:"g158",name:"Extensión de Gemelos sentado con Mancuerna",muscle:["gemelos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de gemelo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Gemelos/Extensión de Gemelos sentado con Mancuerna.gif"},
+  {id:"g159",name:"Extensión de Gemelos sentado en Máquina",muscle:["gemelos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de gemelo con máquina. Variante específica dentro de su familia de movimiento.",gif:"Gemelos/Extensión de Gemelos sentado en Máquina.gif"},
+  {id:"g160",name:"Salto con Cuerda Alterno Alto",muscle:["gemelos"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de gemelo sin material. Trabaja con el propio peso corporal.",gif:"Gemelos/Salto con Cuerda Alterno Alto.gif"},
+  {id:"g161",name:"Salto con Cuerda Lateral",muscle:["gemelos"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de gemelo sin material. Trabaja con el propio peso corporal.",gif:"Gemelos/Salto con Cuerda Lateral.gif"},
+  {id:"g162",name:"alto con Cuerda",muscle:["gemelos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de gemelo sin material. Trabaja con el propio peso corporal.",gif:"Gemelos/alto con Cuerda.gif"},
+  {id:"g163",name:"Abducción de cadera sentado con banda",muscle:["gluteos"],equip:"Banda elástica",level:"Principiante",xpBase:16,desc:"Ejercicio de glúteo con banda elástica. Añade tensión progresiva y activación extra.",gif:"Glúteos/Abducción de cadera sentado con banda.gif"},
+  {id:"g164",name:"Boca de incendios",muscle:["gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de glúteo sin material. Trabaja con el propio peso corporal.",gif:"Glúteos/Boca de incendios.gif"},
+  {id:"g165",name:"Caminata con banda",muscle:["gluteos"],equip:"Banda elástica",level:"Principiante",xpBase:16,desc:"Ejercicio de glúteo con banda elástica. Añade tensión progresiva y activación extra.",gif:"Glúteos/Caminata con banda.gif"},
+  {id:"g166",name:"Extensión de Glúteos en Polea",muscle:["gluteos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de glúteo con polea. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Extensión de Glúteos en Polea.gif"},
+  {id:"g167",name:"Extensión de cadera arrodillado con banda",muscle:["gluteos"],equip:"Banda elástica",level:"Principiante",xpBase:16,desc:"Ejercicio de glúteo con banda elástica. Añade tensión progresiva y activación extra.",gif:"Glúteos/Extensión de cadera arrodillado con banda.gif"},
+  {id:"g168",name:"Frogpumps",muscle:["gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de glúteo sin material. Trabaja con el propio peso corporal.",gif:"Glúteos/Frogpumps.gif"},
+  {id:"g169",name:"Hip Thrust Declinado con Barra",muscle:["gluteos","espalda","piernas"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de glúteo con barra. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hip Thrust Declinado con Barra.gif"},
+  {id:"g170",name:"Hip Thrust Inclinado con Barra",muscle:["gluteos","espalda","piernas"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de glúteo con barra. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hip Thrust Inclinado con Barra.gif"},
+  {id:"g171",name:"Hip Thrust con Barra",muscle:["gluteos","espalda","piernas"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de glúteo con barra. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hip Thrust con Barra.gif"},
+  {id:"g172",name:"Hip Thrust con Mancuerna",muscle:["gluteos","espalda","piernas"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de glúteo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hip Thrust con Mancuerna.gif"},
+  {id:"g173",name:"Hip Thrust en Máquina",muscle:["gluteos","espalda","piernas"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de glúteo con máquina. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hip Thrust en Máquina.gif"},
+  {id:"g174",name:"Hip Thrust en máquina Smith",muscle:["gluteos","espalda","piernas"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de glúteo con máquina. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hip Thrust en máquina Smith.gif"},
+  {id:"g175",name:"Hip Thrust unilateral",muscle:["gluteos","espalda","piernas"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de glúteo sin material. Trabaja con el propio peso corporal.",gif:"Glúteos/Hip Thrust unilateral.gif"},
+  {id:"g176",name:"Hiperextensión inversa sobre fitball en banco",muscle:["gluteos","espalda","piernas"],equip:"Fitball",level:"Intermedio",xpBase:22,desc:"Ejercicio de glúteo con fitball. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Hiperextensión inversa sobre fitball en banco.gif"},
+  {id:"g177",name:"Patada de burro",muscle:["gluteos","piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de glúteo sin material. Trabaja con el propio peso corporal.",gif:"Glúteos/Patada de burro.gif"},
+  {id:"g178",name:"Patada de glúteo en polea",muscle:["gluteos","piernas"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de glúteo con polea. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Patada de glúteo en polea.gif"},
+  {id:"g179",name:"Plancha oso",muscle:["gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de glúteo sin material. Trabaja con el propio peso corporal.",gif:"Glúteos/Plancha oso.gif"},
+  {id:"g180",name:"Pull-Through en polea baja (",muscle:["gluteos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de glúteo con polea. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Pull-Through en polea baja (.gif"},
+  {id:"g181",name:"Subida al banco con mancuernas",muscle:["gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de glúteo con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Subida al banco con mancuernas.gif"},
+  {id:"g182",name:"Subida al banco lateral con barra",muscle:["gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de glúteo con barra. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/Subida al banco lateral con barra.gif"},
+  {id:"g183",name:"bird-dog",muscle:["gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de glúteo sin material. Trabaja con el propio peso corporal.",gif:"Glúteos/bird-dog.gif"},
+  {id:"g184",name:"rensa de pierna unilateral en máquina de dominadas asistidas",muscle:["gluteos"],equip:"Máquina",level:"Avanzado",xpBase:38,desc:"Ejercicio de glúteo con máquina. Variante específica dentro de su familia de movimiento.",gif:"Glúteos/rensa de pierna unilateral en máquina de dominadas asistidas.gif"},
+  {id:"g185",name:"Elevaciones Laterales Declinadas con Mancuernas",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevaciones Laterales Declinadas con Mancuernas.gif"},
+  {id:"g186",name:"Elevaciones frontales con barra",muscle:["hombros"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevaciones frontales con barra.gif"},
+  {id:"g187",name:"Elevaciones frontales con mancuernas",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevaciones frontales con mancuernas.gif"},
+  {id:"g188",name:"Elevaciones frontales declinadas con mancuernas",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevaciones frontales declinadas con mancuernas.gif"},
+  {id:"g189",name:"Elevaciones laterales con mancuernas",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevaciones laterales con mancuernas.gif"},
+  {id:"g190",name:"Elevaciones laterales con supinación",muscle:["hombros"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de hombro sin material. Trabaja con el propio peso corporal.",gif:"Hombro/Elevaciones laterales con supinación.gif"},
+  {id:"g191",name:"Elevaciones laterales en polea",muscle:["hombros"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de hombro con polea. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevaciones laterales en polea.gif"},
+  {id:"g192",name:"Elevación Lateral Inclinada Aislada con Mancuerna",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevación Lateral Inclinada Aislada con Mancuerna.gif"},
+  {id:"g193",name:"Elevación Trasera con Barra",muscle:["hombros"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Elevación Trasera con Barra.gif"},
+  {id:"g194",name:"Encogimientos Delanteros con Barra",muscle:["hombros"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Encogimientos Delanteros con Barra.gif"},
+  {id:"g195",name:"Encogimientos sentado con barra",muscle:["hombros"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Encogimientos sentado con barra.gif"},
+  {id:"g196",name:"Press Aislado en Punta",muscle:["hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de hombro sin material. Trabaja con el propio peso corporal.",gif:"Hombro/Press Aislado en Punta.gif"},
+  {id:"g197",name:"Press Arnold con Mancuernas",muscle:["hombros","triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Press Arnold con Mancuernas.gif"},
+  {id:"g198",name:"Press Militar Abierto con Barra",muscle:["hombros","triceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Press Militar Abierto con Barra.gif"},
+  {id:"g199",name:"Press Militar Cerrado con Barra",muscle:["hombros","triceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Press Militar Cerrado con Barra.gif"},
+  {id:"g200",name:"Press Militar con Barra",muscle:["hombros","triceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de hombro con barra. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Press Militar con Barra.gif"},
+  {id:"g201",name:"Press Militar con Mancuernas",muscle:["hombros","triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Press Militar con Mancuernas.gif"},
+  {id:"g202",name:"Press de hombro en máquina",muscle:["hombros","triceps"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de hombro con máquina. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Press de hombro en máquina.gif"},
+  {id:"g203",name:"Press militar en multipower",muscle:["hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de hombro sin material. Trabaja con el propio peso corporal.",gif:"Hombro/Press militar en multipower.gif"},
+  {id:"g204",name:"Press militar tras nuca",muscle:["hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de hombro sin material. Trabaja con el propio peso corporal.",gif:"Hombro/Press militar tras nuca.gif"},
+  {id:"g205",name:"Pájaros Aislados con Mancuerna",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Pájaros Aislados con Mancuerna.gif"},
+  {id:"g206",name:"Pájaros Aislados en Polea",muscle:["hombros"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de hombro con polea. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Pájaros Aislados en Polea.gif"},
+  {id:"g207",name:"Pájaros sentado con Mancuernas",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Pájaros sentado con Mancuernas.gif"},
+  {id:"g208",name:"Remo al mentón con Mancuernas",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Remo al mentón con Mancuernas.gif"},
+  {id:"g209",name:"Rotación Externa Concentrada con Mancuerna",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Rotación Externa Concentrada con Mancuerna.gif"},
+  {id:"g210",name:"Rotación Vertical Aislada con Mancuerna",muscle:["hombros"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de hombro con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Hombro/Rotación Vertical Aislada con Mancuerna.gif"},
+  {id:"g211",name:"Aperturas con mancuernas",muscle:["pecho"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de pecho con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Aperturas con mancuernas.gif"},
+  {id:"g212",name:"Aperturas declinado",muscle:["pecho"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Aperturas declinado.gif"},
+  {id:"g213",name:"Aperturas inclinado",muscle:["pecho"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Aperturas inclinado.gif"},
+  {id:"g214",name:"Contractor pectoral",muscle:["pecho"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Contractor pectoral.gif"},
+  {id:"g215",name:"Crossover en polea",muscle:["pecho"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de pecho con polea. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Crossover en polea.gif"},
+  {id:"g216",name:"Cruce de poleas alto",muscle:["pecho"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de pecho con polea. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Cruce de poleas alto.gif"},
+  {id:"g217",name:"Cruce de poleas bajo",muscle:["pecho"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de pecho con polea. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Cruce de poleas bajo.gif"},
+  {id:"g218",name:"Flexiones declinadas",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Flexiones declinadas.gif"},
+  {id:"g219",name:"Flexiones diamante",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Flexiones diamante.gif"},
+  {id:"g220",name:"Flexiones inclinadas",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Flexiones inclinadas.gif"},
+  {id:"g221",name:"Flexiones",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Flexiones.gif"},
+  {id:"g222",name:"Fondos en paralelas",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Fondos en paralelas.gif"},
+  {id:"g223",name:"Press alterno con mancuernas",muscle:["pecho","hombros","triceps"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de pecho con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Press alterno con mancuernas.gif"},
+  {id:"g224",name:"Press banca declinado",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Press banca declinado.gif"},
+  {id:"g225",name:"Press banca inclinado",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Press banca inclinado.gif"},
+  {id:"g226",name:"Press banca plano",muscle:["pecho","hombros","triceps"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de pecho sin material. Trabaja con el propio peso corporal.",gif:"Pecho/Press banca plano.gif"},
+  {id:"g227",name:"Press con mancuernas declinado",muscle:["pecho","hombros","triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de pecho con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Press con mancuernas declinado.gif"},
+  {id:"g228",name:"Press con mancuernas plano",muscle:["pecho","hombros","triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de pecho con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Press con mancuernas plano.gif"},
+  {id:"g229",name:"Press en máquina",muscle:["pecho","hombros","triceps"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de pecho con máquina. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Press en máquina.gif"},
+  {id:"g230",name:"Press inclinado con mancuernas",muscle:["pecho","hombros","triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de pecho con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Press inclinado con mancuernas.gif"},
+  {id:"g231",name:"Pullover con barra",muscle:["pecho"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de pecho con barra. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Pullover con barra.gif"},
+  {id:"g232",name:"Smith machine press banca",muscle:["pecho","hombros","triceps"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de pecho con máquina. Variante específica dentro de su familia de movimiento.",gif:"Pecho/Smith machine press banca.gif"},
+  {id:"g233",name:"Aductor Externo Aislado en Máquina",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Aductor Externo Aislado en Máquina.gif"},
+  {id:"g234",name:"Aductor Externo en Máquina",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Aductor Externo en Máquina.gif"},
+  {id:"g235",name:"Aductor Externo en Polea",muscle:["piernas","gluteos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de piernas con polea. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Aductor Externo en Polea.gif"},
+  {id:"g236",name:"Aductor Interno Aislado en Máquina",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Aductor Interno Aislado en Máquina.gif"},
+  {id:"g237",name:"Aductor Interno en Máquina",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Aductor Interno en Máquina.gif"},
+  {id:"g238",name:"Aductor Interno en Polea",muscle:["piernas","gluteos"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de piernas con polea. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Aductor Interno en Polea.gif"},
+  {id:"g239",name:"Air squat",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Air squat.gif"},
+  {id:"g240",name:"Cuarto de Sentadilla con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Cuarto de Sentadilla con Barra.gif"},
+  {id:"g241",name:"Cuarto de Sentadilla con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Cuarto de Sentadilla con Mancuernas.gif"},
+  {id:"g242",name:"Curl Femoral Estirado en Máquina",muscle:["piernas"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Curl Femoral Estirado en Máquina.gif"},
+  {id:"g243",name:"Curl Femoral Sentado en Máquina",muscle:["piernas"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Curl Femoral Sentado en Máquina.gif"},
+  {id:"g244",name:"Escalón con Mancuernas",muscle:["piernas"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Escalón con Mancuernas.gif"},
+  {id:"g245",name:"Extensión de Cuádriceps Aislada con Banda",muscle:["piernas"],equip:"Banda elástica",level:"Principiante",xpBase:16,desc:"Ejercicio de piernas con banda elástica. Añade tensión progresiva y activación extra.",gif:"Piernas/Extensión de Cuádriceps Aislada con Banda.gif"},
+  {id:"g246",name:"Extensión de Cuádriceps con Barra",muscle:["piernas"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Extensión de Cuádriceps con Barra.gif"},
+  {id:"g247",name:"Extensión de Cuádriceps en Máquina",muscle:["piernas"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Extensión de Cuádriceps en Máquina.gif"},
+  {id:"g248",name:"Farmer's walk",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Farmer's walk.gif"},
+  {id:"g249",name:"Hip Thrust Aislado con Barra",muscle:["piernas","espalda","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Hip Thrust Aislado con Barra.gif"},
+  {id:"g250",name:"Media Sentadilla con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Media Sentadilla con Barra.gif"},
+  {id:"g251",name:"Media Sentadilla con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Media Sentadilla con Mancuernas.gif"},
+  {id:"g252",name:"Peso Muerto Abierto con Mancuerna",muscle:["piernas","espalda","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Peso Muerto Abierto con Mancuerna.gif"},
+  {id:"g253",name:"Peso Muerto Asistido con Barra",muscle:["piernas","espalda","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Peso Muerto Asistido con Barra.gif"},
+  {id:"g254",name:"Peso Muerto Rumano con Mancuernas",muscle:["piernas","espalda","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Peso Muerto Rumano con Mancuernas.gif"},
+  {id:"g255",name:"Peso Muerto a una pierna con Barra",muscle:["piernas","espalda","gluteos"],equip:"Barra",level:"Avanzado",xpBase:48,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Peso Muerto a una pierna con Barra.gif"},
+  {id:"g256",name:"Peso Muerto en Punta",muscle:["piernas","espalda","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Peso Muerto en Punta.gif"},
+  {id:"g257",name:"Pisto Squat con caja",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Pisto Squat con caja.gif"},
+  {id:"g258",name:"Pistol squat",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Pistol squat.gif"},
+  {id:"g259",name:"Prensa Inclinada Cerrada",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Prensa Inclinada Cerrada.gif"},
+  {id:"g260",name:"Prensa Inclinada",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Prensa Inclinada.gif"},
+  {id:"g261",name:"Prensa unilateral",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Prensa unilateral.gif"},
+  {id:"g262",name:"Salto a caja",muscle:["piernas"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Salto a caja.gif"},
+  {id:"g263",name:"Sentadilla Bulgara con Mancuerna",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Bulgara con Mancuerna.gif"},
+  {id:"g264",name:"Sentadilla Bulgara con barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Bulgara con barra.gif"},
+  {id:"g265",name:"Sentadilla Cerrada Inclinada en Máquina (2)",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Cerrada Inclinada en Máquina (2).gif"},
+  {id:"g266",name:"Sentadilla Cerrada Inclinada en Máquina",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Cerrada Inclinada en Máquina.gif"},
+  {id:"g267",name:"Sentadilla Goblet",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Sentadilla Goblet.gif"},
+  {id:"g268",name:"Sentadilla Profunda con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Profunda con Barra.gif"},
+  {id:"g269",name:"Sentadilla Sissy",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Sentadilla Sissy.gif"},
+  {id:"g270",name:"Sentadilla Sumo Inclinada en Máquina",muscle:["piernas","gluteos"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Sumo Inclinada en Máquina.gif"},
+  {id:"g271",name:"Sentadilla Sumo con Mancuerna",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla Sumo con Mancuerna.gif"},
+  {id:"g272",name:"Sentadilla con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla con Barra.gif"},
+  {id:"g273",name:"Sentadilla con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla con Mancuernas.gif"},
+  {id:"g274",name:"Sentadilla en Pared con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Sentadilla en Pared con Mancuernas.gif"},
+  {id:"g275",name:"Sentadilla en Punta",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Sentadilla en Punta.gif"},
+  {id:"g276",name:"Wall Ball",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Wall Ball.gif"},
+  {id:"g277",name:"World's Greatest Stretch",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/World's Greatest Stretch.gif"},
+  {id:"g278",name:"Zancada Delantera con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Delantera con Mancuernas.gif"},
+  {id:"g279",name:"Zancada Lateral Cruzada con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Lateral Cruzada con Barra.gif"},
+  {id:"g280",name:"Zancada Lateral Cruzada con Mancuerna",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Lateral Cruzada con Mancuerna.gif"},
+  {id:"g281",name:"Zancada Lateral con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Lateral con Barra.gif"},
+  {id:"g282",name:"Zancada Lateral con Mancuerna",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Lateral con Mancuerna.gif"},
+  {id:"g283",name:"Zancada Trasera con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Trasera con Barra.gif"},
+  {id:"g284",name:"Zancada Trasera con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada Trasera con Mancuernas.gif"},
+  {id:"g285",name:"Zancada Trasera en Punta",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Zancada Trasera en Punta.gif"},
+  {id:"g286",name:"Zancada con Barra",muscle:["piernas","gluteos"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancada con Barra.gif"},
+  {id:"g287",name:"Zancada con salto",muscle:["piernas","gluteos"],equip:"Sin equipo",level:"Avanzado",xpBase:28,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/Zancada con salto.gif"},
+  {id:"g288",name:"Zancadas con salto con Mancuernas",muscle:["piernas","gluteos"],equip:"Mancuernas",level:"Avanzado",xpBase:42,desc:"Ejercicio de piernas con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Piernas/Zancadas con salto con Mancuernas.gif"},
+  {id:"g289",name:"clean-and-jerk-halterophilie",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/clean-and-jerk-halterophilie.gif"},
+  {id:"g290",name:"entadilla Sumo con Barra",muscle:["piernas"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de piernas con barra. Variante específica dentro de su familia de movimiento.",gif:"Piernas/entadilla Sumo con Barra.gif"},
+  {id:"g291",name:"muscle-clean",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/muscle-clean.gif"},
+  {id:"g292",name:"power-clean",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/power-clean.gif"},
+  {id:"g293",name:"push-jerk",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/push-jerk.gif"},
+  {id:"g294",name:"thruster",muscle:["piernas"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de piernas sin material. Trabaja con el propio peso corporal.",gif:"Piernas/thruster.gif"},
+  {id:"g295",name:"url Femoral Aislado en Máquina",muscle:["piernas"],equip:"Máquina",level:"Intermedio",xpBase:28,desc:"Ejercicio de piernas con máquina. Variante específica dentro de su familia de movimiento.",gif:"Piernas/url Femoral Aislado en Máquina.gif"},
+  {id:"g296",name:"Extensión Delante-Detrás con Mancuernas",muscle:["triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de tríceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Delante-Detrás con Mancuernas.gif"},
+  {id:"g297",name:"Extensión Frontal Aislada en Polea Alta",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Frontal Aislada en Polea Alta.gif"},
+  {id:"g298",name:"Extensión Horizontal en Martillo en Polea Alta",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Horizontal en Martillo en Polea Alta.gif"},
+  {id:"g299",name:"Extensión Lateral Aislada con Polea",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Lateral Aislada con Polea.gif"},
+  {id:"g300",name:"Extensión Vertical Aislada con Mancuerna",muscle:["triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de tríceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Vertical Aislada con Mancuerna.gif"},
+  {id:"g301",name:"Extensión Vertical Neutra en Polea Alta",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Vertical Neutra en Polea Alta.gif"},
+  {id:"g302",name:"Extensión Vertical con Mancuerna",muscle:["triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de tríceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Vertical con Mancuerna.gif"},
+  {id:"g303",name:"Extensión Vertical en Pronación en Polea Alta",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Vertical en Pronación en Polea Alta.gif"},
+  {id:"g304",name:"Extensión Vertical en Pronación en Polea Baja",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Vertical en Pronación en Polea Baja.gif"},
+  {id:"g305",name:"Extensión Vertical en Supinación en Polea Alta",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Extensión Vertical en Supinación en Polea Alta.gif"},
+  {id:"g306",name:"Fondos en banco",muscle:["triceps","hombros","pecho"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de tríceps sin material. Trabaja con el propio peso corporal.",gif:"Triceps/Fondos en banco.gif"},
+  {id:"g307",name:"Fondos entre bancos",muscle:["triceps","hombros","pecho"],equip:"Sin equipo",level:"Principiante",xpBase:14,desc:"Ejercicio de tríceps sin material. Trabaja con el propio peso corporal.",gif:"Triceps/Fondos entre bancos.gif"},
+  {id:"g308",name:"Patada de Triceps en Polea",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Patada de Triceps en Polea.gif"},
+  {id:"g309",name:"Patadas Traseras Alternas con Mancuernas",muscle:["triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de tríceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Patadas Traseras Alternas con Mancuernas.gif"},
+  {id:"g310",name:"Patadas de Triceps con Mancuernas",muscle:["triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de tríceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Patadas de Triceps con Mancuernas.gif"},
+  {id:"g311",name:"Press Cerrado en Supinación con Barra",muscle:["triceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de tríceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Cerrado en Supinación con Barra.gif"},
+  {id:"g312",name:"Press Francés Inclinado con Polea",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Francés Inclinado con Polea.gif"},
+  {id:"g313",name:"Press Francés con Barra Z",muscle:["triceps"],equip:"Barra Z",level:"Intermedio",xpBase:36,desc:"Ejercicio de tríceps con barra z. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Francés con Barra Z.gif"},
+  {id:"g314",name:"Press Francés con Barra",muscle:["triceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de tríceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Francés con Barra.gif"},
+  {id:"g315",name:"Press Francés con Mancuernas",muscle:["triceps"],equip:"Mancuernas",level:"Intermedio",xpBase:32,desc:"Ejercicio de tríceps con mancuernas. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Francés con Mancuernas.gif"},
+  {id:"g316",name:"Press Francés con Polea",muscle:["triceps"],equip:"Polea",level:"Intermedio",xpBase:30,desc:"Ejercicio de tríceps con polea. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Francés con Polea.gif"},
+  {id:"g317",name:"Press Francés tras nuca con Barra",muscle:["triceps"],equip:"Barra",level:"Intermedio",xpBase:38,desc:"Ejercicio de tríceps con barra. Variante específica dentro de su familia de movimiento.",gif:"Triceps/Press Francés tras nuca con Barra.gif"},
 ];
 
 
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
+const GIF_LOOKUP = Object.fromEntries(EXERCISE_DB.filter(e=>e.gif).map(e=>[e.name.toLowerCase().trim(), e.gif]));
+const exerciseGif = name => name ? GIF_LOOKUP[name.toLowerCase().trim()] : null;
 
 // ─── GENERADOR DE RUTINAS IA ──────────────────────────────────────────────────
 // Genera una rutina completa a partir de 4 parámetros usando solo EXERCISE_DB.
@@ -822,7 +842,7 @@ const DARK_LORDS = [
     phases:[
       {exercise:"Burpees",      total:400,  color:"#E84A5F"},
       {exercise:"Mountain Climbers", total:750, color:"#A78BFA"},
-      {exercise:"Flexiones",    total:500,  color:"var(--rk-bg4)"},
+      {exercise:"Flexiones",    total:500,  color:"#1A1A2E"},
     ],
     xp:1000, coins:500,
     achievement:{id:"dl_malachar_slain",icon:"👁️",name:"El Vacío Sellado",desc:"Malachar, el Vacío Negro ha caído",xp:500},
@@ -1000,9 +1020,6 @@ const RAID_RARITY_COLOR = {normal:"#60A5FA", épica:"#A78BFA", legendaria:"#F59E
 const RAID_TRIGGER_CHANCE = 0.12; // 20% on dungeon complete or app open
 
 const ACHIEVEMENTS = [
-  // ── ACCESO ESPECIAL ──────────────────────────────────────────────────────────
-  {id:"beater", icon:"🗡️", name:"Beater", desc:"Jugaste la beta antes que nadie. Ibas un paso por delante desde el día uno.", xp:250, check:s=>s.isBetaTester===true},
-
   // ── PRIMEROS PASOS ───────────────────────────────────────────────────────────
   {id:"first_exercise", icon:"⚔️", name:"Primera Sangre",     desc:"Completa tu primer ejercicio",          xp:50,   check:s=>s.totalDone>=1},
   {id:"first_day",      icon:"🗡️", name:"Superviviente",      desc:"Completa tu primer día entero",         xp:150,  check:s=>s.daysComplete>=1},
@@ -1164,65 +1181,14 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},bodyMeasurements:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null,betaTester:false});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
-
-  :root {
-    --rk-bg: #07070F;
-    --rk-bg2: #0D0D1A;
-    --rk-bg3: #0F0F1C;
-    --rk-bg4: #1A1A2E;
-    --rk-border2: #1E1E32;
-    --rk-border: #2A2A44;
-    --rk-divider: #161622;
-    --rk-bg5: #2A2A3E;
-    --rk-bg6: #1A1A2C;
-    --rk-label: #3A3A5E;
-    --rk-t1: #333;
-    --rk-t2: #444;
-    --rk-t3: #555;
-    --rk-t4: #666;
-    --rk-t5: #9CA3AF;
-    --rk-t6: #888;
-    --rk-t7: #AAA;
-    --rk-t8: #CCC;
-    --rk-t9: #DDD;
-    --rk-t10: #EEE;
-    --rk-ink: #07070F;
-    --rk-inset: #0A0A14;
-    --rk-text: #FFFFFF;
-  }
-  [data-theme="light"] {
-    --rk-ink: #07070F;
-    --rk-inset: #F7F6FC;
-    --rk-text: #1A1030;
-    --rk-bg: #F3F1FA;
-    --rk-bg2: #FFFFFF;
-    --rk-bg3: #FFFFFF;
-    --rk-bg4: #EEECF9;
-    --rk-border2: #E2DFF3;
-    --rk-border: #D9D6EE;
-    --rk-divider: #E8E6F5;
-    --rk-bg5: #F0EFF9;
-    --rk-bg6: #EFEDF8;
-    --rk-label: #9B96BD;
-    --rk-t1: #B5B1CC;
-    --rk-t2: #A19DBD;
-    --rk-t3: #8D89AD;
-    --rk-t4: #78749C;
-    --rk-t5: #6B6690;
-    --rk-t6: #625E88;
-    --rk-t7: #57527D;
-    --rk-t8: #433E68;
-    --rk-t9: #322D54;
-    --rk-t10: #201C3D;
-  }
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cinzel:wght@700;900&display=swap');
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:var(--rk-bg);overscroll-behavior:none}
-  ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--rk-border);border-radius:4px}
+  body{margin:0;background:#07070F;overscroll-behavior:none}
+  ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#2A2A44;border-radius:4px}
   input::-webkit-inner-spin-button{-webkit-appearance:none}
   @keyframes xpFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-65px) scale(1.4)}}
   @keyframes lvlPop{0%{opacity:0;transform:scale(.4)}70%{transform:scale(1.07)}100%{opacity:1;transform:scale(1)}}
@@ -1256,17 +1222,39 @@ function Particle({x,y,text,color,onDone}){
 }
 function AchToast({ach,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
-  return <div onClick={onDone} style={{position:"fixed",bottom:90,right:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #A78BFA",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #A78BFA44",animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:30}}>{ach.icon}</div><div><div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:2}}>LOGRO DESBLOQUEADO</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{ach.name}</div><div style={{fontSize:11,color:"#A78BFA",fontWeight:700,marginTop:3}}>+{ach.xp} XP</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",bottom:90,right:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #A78BFA",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #A78BFA44",animation:"toastR .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:30}}>{ach.icon}</div><div><div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:2}}>LOGRO DESBLOQUEADO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ach.name}</div><div style={{fontSize:11,color:"#A78BFA",fontWeight:700,marginTop:3}}>+{ach.xp} XP</div></div></div>;
 }
 function CoinToast({msg,coins,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
-  return <div onClick={onDone} style={{position:"fixed",bottom:90,left:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",bottom:90,left:14,zIndex:10000,background:"#0F0F1A",border:"1px solid #F59E0B",borderRadius:14,padding:"14px 16px",display:"flex",gap:12,alignItems:"center",boxShadow:"0 0 40px #F59E0B44",animation:"toastL .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:28}}>🪙</div><div><div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{msg}</div><div style={{fontSize:12,color:"#F59E0B",fontWeight:700,marginTop:3}}>+{coins} monedas</div></div></div>;
 }
 function LootToast({item,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=RARITY_INFO[item.rarity]?.color||"#A78BFA";
-  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
+  return <div onClick={onDone} style={{position:"fixed",top:14,left:"50%",zIndex:10000,background:"#0F0F1A",border:`1px solid ${c}`,borderRadius:14,padding:"12px 18px",display:"flex",gap:10,alignItems:"center",boxShadow:`0 0 40px ${c}44`,animation:"toastTop .4s ease-out forwards",maxWidth:290,cursor:"pointer"}}><div style={{fontSize:26}}>{item.icon}</div><div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>OBJETO OBTENIDO</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{item.name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{RARITY_INFO[item.rarity]?.label}</div></div></div>;
 }
+function GifModal({name,path,onClose}){
+  const [loadError,setLoadError]=useState(false);
+  const url=`/exercises/${path.split("/").map(encodeURIComponent).join("/")}`;
+  return(
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:10001,background:"rgba(0,0,0,.92)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+      <div onClick={e=>e.stopPropagation()} style={{maxWidth:420,width:"100%",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:16,overflow:"hidden"}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid #1E1E32"}}>
+          <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:"#888",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
+        </div>
+        <div style={{background:"#000",display:"flex",alignItems:"center",justifyContent:"center",minHeight:200}}>
+          {loadError?(
+            <div style={{padding:30,textAlign:"center",color:"#666",fontSize:12}}>No se pudo cargar el ejemplo.</div>
+          ):(
+            <img src={url} alt={name} onError={()=>setLoadError(true)} style={{width:"100%",maxHeight:"70vh",objectFit:"contain",display:"block"}}/>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CraftToast({name,slot,icon,tier,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=TIER_INFO[tier]?.color||"#F59E0B";
@@ -1274,7 +1262,7 @@ function CraftToast({name,slot,icon,tier,onDone}){
     <div style={{width:38,height:38,flexShrink:0,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,overflow:"hidden"}}>
       {slot?<img src={equipImg(slot,tier)} alt="" style={{width:"100%",height:"100%",objectFit:"contain"}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=icon;}}/>:icon}
     </div>
-    <div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div>
+    <div><div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>PIEZA FORJADA</div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div><div style={{fontSize:11,color:c,fontWeight:700,marginTop:2}}>{TIER_INFO[tier]?.label}</div></div>
   </div>;
 }
 
@@ -1283,16 +1271,16 @@ function Season1Popup({onClose}){
   return(
     <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
       background:"radial-gradient(ellipse at center,#1a0010 0%,#000000 80%)"}}>
-      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,var(--rk-bg) 100%)",
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #E84A5F",boxShadow:"0 0 80px #E84A5F44",overflow:"hidden"}}>
         {/* Header */}
         <div style={{background:"linear-gradient(135deg,#E84A5F33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
           <div style={{fontSize:9,letterSpacing:5,color:"#E84A5F88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
           <div style={{fontSize:11,letterSpacing:4,color:"#E84A5F",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TEMPORADA I</div>
-          <div style={{fontSize:26,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #E84A5F88"}}>
+          <div style={{fontSize:26,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #E84A5F88"}}>
             EL AUGE DE LOS<br/>SEÑORES OSCUROS
           </div>
-          <div style={{fontSize:12,color:"var(--rk-t6)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
+          <div style={{fontSize:12,color:"#888",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
             "Cinco sombras ancestrales despiertan de su letargo eterno. El reino tiembla ante su poder. Solo la fuerza de los jugadores puede salvar el mundo de su amenaza..."
           </div>
         </div>
@@ -1307,7 +1295,7 @@ function Season1Popup({onClose}){
         {/* Description */}
         <div style={{padding:"16px 24px 8px",textAlign:"center"}}>
           <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ GUILD RAIDS — NUEVO</div>
-          <div style={{fontSize:12,color:"var(--rk-t4)",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>
+          <div style={{fontSize:12,color:"#666",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>
             Une tus fuerzas con otros jugadores. Cada repetición es un golpe al enemigo. El destino del reino está en vuestras manos.
           </div>
           <button onClick={onClose}
@@ -1326,15 +1314,15 @@ function LootUpdatePopup({onClose}){
   return(
     <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
       background:"radial-gradient(ellipse at center,#1a0033 0%,#000000 80%)"}}>
-      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0718 0%,var(--rk-bg) 100%)",
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0718 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
         <div style={{background:"linear-gradient(135deg,#A78BFA33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
           <div style={{fontSize:9,letterSpacing:5,color:"#A78BFA88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
           <div style={{fontSize:11,letterSpacing:4,color:"#A78BFA",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🎒 NUEVA ACTUALIZACIÓN</div>
-          <div style={{fontSize:24,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #A78BFA88"}}>
+          <div style={{fontSize:24,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:12,textShadow:"0 0 20px #A78BFA88"}}>
             LAS BESTIAS<br/>EMPIEZAN A CAER
           </div>
-          <div style={{fontSize:12,color:"var(--rk-t6)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
+          <div style={{fontSize:12,color:"#888",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
             "Algo ha cambiado en el territorio de caza. Los monstruos que antes solo caían derrotados ahora dejan tras de sí fragmentos de su esencia. Los cazadores más atentos ya han empezado a recolectarlos..."
           </div>
         </div>
@@ -1345,7 +1333,7 @@ function LootUpdatePopup({onClose}){
         </div>
         <div style={{padding:"16px 24px 8px",textAlign:"center",overflowY:"auto"}}>
           <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>🎒 MATERIALES DE CAZA — NUEVO</div>
-          <div style={{fontSize:12,color:"var(--rk-t4)",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:6,textAlign:"left"}}>
+          <div style={{fontSize:12,color:"#666",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:6,textAlign:"left"}}>
             🗡️ Cada ejercicio completado es un golpe certero — y hay opción de que suelte un material al instante.<br/><br/>
             💀 Los ejercicios <b style={{color:"#E84A5F"}}>Boss</b> son presas mayores: mucha más probabilidad de botín, y de mejor calidad.<br/><br/>
             🏰 Al completar el dungeon entero, tallas un material <b style={{color:"#A78BFA"}}>garantizado</b> — con opción de que sea Épico o incluso Legendario.<br/><br/>
@@ -1387,20 +1375,20 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
   return(
     <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",
       background:"radial-gradient(ellipse at center,#1a0010 0%,#000000 85%)"}}>
-      <div style={{width:"100%",maxWidth:400,background:"linear-gradient(180deg,#0D0007 0%,var(--rk-bg) 100%)",
+      <div style={{width:"100%",maxWidth:400,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
         borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F44",maxHeight:"90vh",overflowY:"auto"}}>
 
         {/* Header */}
         <div style={{background:"linear-gradient(135deg,#E84A5F33,transparent)",padding:"20px 20px 14px",textAlign:"center"}}>
           <div style={{fontSize:8,letterSpacing:4,color:"#E84A5F88",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>☠️ GUILD RAID — SEÑOR OSCURO</div>
           <div style={{fontSize:52,marginBottom:6,filter:"drop-shadow(0 0 16px #E84A5F)",animation:"bossGlow 1.5s ease-in-out infinite"}}>{raid.icon}</div>
-          <div style={{fontSize:16,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:8}}>{raid.name}</div>
-          <div style={{fontSize:11,color:"var(--rk-t3)",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif"}}>{raid.lore}</div>
+          <div style={{fontSize:16,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:8}}>{raid.name}</div>
+          <div style={{fontSize:11,color:"#555",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif"}}>{raid.lore}</div>
         </div>
 
         {/* Countdown */}
-        <div style={{padding:"12px 20px",textAlign:"center",borderBottom:"1px solid var(--rk-bg4)"}}>
-          <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:3,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>TIEMPO RESTANTE</div>
+        <div style={{padding:"12px 20px",textAlign:"center",borderBottom:"1px solid #1A1A2E"}}>
+          <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>TIEMPO RESTANTE</div>
           <div style={{fontSize:24,fontWeight:900,color:remaining<3600000?"#E84A5F":"#FFF",fontFamily:"'Rajdhani',sans-serif",
             textShadow:remaining<3600000?"0 0 20px #E84A5F":undefined}}>
             {hours.toString().padStart(2,"0")}:{mins.toString().padStart(2,"0")}:{secs.toString().padStart(2,"0")}
@@ -1409,7 +1397,7 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
 
         {/* Phase bars */}
         <div style={{padding:"16px 20px"}}>
-          <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>BARRAS DE VIDA</div>
+          <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>BARRAS DE VIDA</div>
           {raid.phases.map((ph,i)=>{
             const prog=raid.progress[i]||0;
             const pct=Math.min(100,Math.round((prog/ph.total)*100));
@@ -1423,12 +1411,12 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
                     {isDone&&<span style={{fontSize:12}}>✅</span>}
                     {isActive&&<span style={{fontSize:10,animation:"bossGlow 1s infinite"}}>⚔️</span>}
                     {isLocked&&<span style={{fontSize:10}}>🔒</span>}
-                    <span style={{fontSize:12,fontWeight:700,color:isDone?"var(--rk-t2)":ph.color,fontFamily:"'Rajdhani',sans-serif",
+                    <span style={{fontSize:12,fontWeight:700,color:isDone?"#444":ph.color,fontFamily:"'Rajdhani',sans-serif",
                       textDecoration:isDone?"line-through":"none"}}>{ph.exercise}</span>
                   </div>
                   <span style={{fontSize:11,color:ph.color,fontFamily:"'Rajdhani',sans-serif"}}>{prog.toLocaleString()}/{ph.total.toLocaleString()}</span>
                 </div>
-                <div style={{height:12,background:"var(--rk-bg4)",borderRadius:6,overflow:"hidden",border:`1px solid ${ph.color}33`}}>
+                <div style={{height:12,background:"#1A1A2E",borderRadius:6,overflow:"hidden",border:`1px solid ${ph.color}33`}}>
                   <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,
                     borderRadius:6,transition:"width .5s ease",boxShadow:`0 0 8px ${ph.color}66`}}/>
                 </div>
@@ -1438,13 +1426,13 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
                     <input type="number" min="1" placeholder={`Reps de ${ph.exercise}`}
                       value={inputs[i]||""}
                       onChange={e=>setInputs(p=>({...p,[i]:e.target.value}))}
-                      style={{flex:1,padding:"8px 10px",background:"var(--rk-bg2)",border:`1px solid ${ph.color}44`,
-                        borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                      style={{flex:1,padding:"8px 10px",background:"#0D0D1A",border:`1px solid ${ph.color}44`,
+                        borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                     <button onClick={()=>{
                       const r=parseInt(inputs[i]);
                       if(r>0){onContribute(i,r);setInputs(p=>({...p,[i]:""}));}
                     }} style={{padding:"8px 14px",background:ph.color,border:"none",borderRadius:8,
-                      color:"var(--rk-ink)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                      color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                       +CONTRIBUIR
                     </button>
                   </div>
@@ -1456,13 +1444,13 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
 
         {/* User contribution */}
         <div style={{padding:"0 20px 16px"}}>
-          <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:"10px 14px",border:"1px solid #E84A5F22",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{background:"#0D0D1A",borderRadius:10,padding:"10px 14px",border:"1px solid #E84A5F22",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
             <div>
-              <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>TU CONTRIBUCIÓN</div>
-              <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{totalUserReps} reps</div>
+              <div style={{fontSize:9,color:"#555",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>TU CONTRIBUCIÓN</div>
+              <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{totalUserReps} reps</div>
             </div>
             <div style={{textAlign:"right"}}>
-              <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>MÍNIMO PARA RECOMPENSA</div>
+              <div style={{fontSize:9,color:"#555",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>MÍNIMO PARA RECOMPENSA</div>
               <div style={{fontSize:14,fontWeight:700,color:totalUserReps>=minReps?"#34D399":"#E84A5F",fontFamily:"'Rajdhani',sans-serif"}}>
                 {totalUserReps>=minReps?"✅ CLASIFICADO":`${minReps} reps`}
               </div>
@@ -1473,16 +1461,16 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
         {/* Rewards */}
         <div style={{padding:"0 20px 16px",display:"flex",gap:8}}>
           {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
-            <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:10,padding:"10px",textAlign:"center",border:`1px solid ${r.c}33`}}>
+            <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:10,padding:"10px",textAlign:"center",border:`1px solid ${r.c}33`}}>
               <div style={{fontSize:16,fontWeight:900,color:r.c,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
-              <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2}}>{r.l}</div>
+              <div style={{fontSize:8,color:"#444",letterSpacing:2}}>{r.l}</div>
             </div>
           ))}
         </div>
 
         <button onClick={onClose}
           style={{margin:"0 20px 20px",width:"calc(100% - 40px)",padding:"12px",background:"transparent",
-            border:"1px solid #E84A5F33",borderRadius:12,color:"var(--rk-t3)",cursor:"pointer",
+            border:"1px solid #E84A5F33",borderRadius:12,color:"#555",cursor:"pointer",
             fontFamily:"'Rajdhani',sans-serif",fontSize:11,letterSpacing:2}}>
           CERRAR · LA RAID SIGUE ACTIVA
         </button>
@@ -1503,24 +1491,24 @@ function GuildRaidCompleteCard({raid,onClose}){
   return(
     <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div style={{width:"100%",maxWidth:360}}>
-        <div ref={cardRef} style={{background:"linear-gradient(160deg,#1a0010 0%,var(--rk-bg) 100%)",
+        <div ref={cardRef} style={{background:"linear-gradient(160deg,#1a0010 0%,#07070F 100%)",
           borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F88",padding:"28px 24px",textAlign:"center"}}>
           <div style={{fontSize:8,letterSpacing:5,color:"#E84A5F88",marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>━━ SEÑOR OSCURO DERROTADO ━━</div>
           <div style={{fontSize:64,marginBottom:8,filter:"drop-shadow(0 0 20px #E84A5F)",animation:"bossGlow 1.5s infinite"}}>{raid.icon}</div>
-          <div style={{fontSize:18,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16}}>{raid.name}</div>
+          <div style={{fontSize:18,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16}}>{raid.name}</div>
           <div style={{width:"70%",height:1,background:"linear-gradient(90deg,transparent,#E84A5F66,transparent)",margin:"0 auto 16px"}}/>
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
             {[{l:"XP",v:`+${raid.xp}`,c:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,c:"#F59E0B"}].map(r=>(
-              <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.c}33`}}>
+              <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.c}33`}}>
                 <div style={{fontSize:18,fontWeight:900,color:r.c,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
-                <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2,marginTop:3}}>{r.l}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:2,marginTop:3}}>{r.l}</div>
               </div>
             ))}
           </div>
-          <div style={{fontSize:11,color:"var(--rk-t3)",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>
+          <div style={{fontSize:11,color:"#555",fontStyle:"italic",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>
             "El reino respira... por ahora."
           </div>
-          <div style={{fontSize:9,color:"var(--rk-t1)",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS · TEMPORADA I</div>
+          <div style={{fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS · TEMPORADA I</div>
         </div>
         <div style={{display:"flex",gap:8,marginTop:12}}>
           <button onClick={handleShare} disabled={sharing}
@@ -1552,24 +1540,24 @@ function Season1End({activeGuildRaid,onClose}){
   return(
     <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
       background:"radial-gradient(ellipse at center,#0a0010 0%,#000000 80%)"}}>
-      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,var(--rk-bg) 100%)",
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",padding:"32px 24px",textAlign:"center"}}>
         <div style={{fontSize:9,letterSpacing:5,color:"#A78BFA88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
         <div style={{fontSize:11,letterSpacing:4,color:"#A78BFA",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TEMPORADA I — CONCLUIDA</div>
-        <div style={{fontSize:22,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16,textShadow:"0 0 20px #A78BFA88"}}>
+        <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.3,marginBottom:16,textShadow:"0 0 20px #A78BFA88"}}>
           EL AUGE DE LOS<br/>SEÑORES OSCUROS
         </div>
-        <div style={{fontSize:12,color:"var(--rk-t4)",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",marginBottom:20,padding:"0 8px"}}>
+        <div style={{fontSize:12,color:"#666",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",marginBottom:20,padding:"0 8px"}}>
           "Los cinco han sido confrontados. El reino respira... por ahora. Las sombras se retiran hacia lo desconocido. Pero la oscuridad nunca duerme para siempre."
         </div>
-        <div style={{background:"var(--rk-inset)",borderRadius:12,padding:"16px",marginBottom:20,border:"1px solid #A78BFA22"}}>
-          <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>RESUMEN DE TEMPORADA</div>
+        <div style={{background:"#0A0A14",borderRadius:12,padding:"16px",marginBottom:20,border:"1px solid #A78BFA22"}}>
+          <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>RESUMEN DE TEMPORADA</div>
           {[
             {l:"SEÑORES DERROTADOS",v:`${defeated}/5`,c:"#34D399"},
             {l:"SEÑORES ESCAPADOS", v:`${escaped}/5`,c:"#E84A5F"},
           ].map(s=>(
             <div key={s.l} style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-              <span style={{fontSize:11,color:"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{s.l}</span>
+              <span style={{fontSize:11,color:"#555",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{s.l}</span>
               <span style={{fontSize:14,fontWeight:700,color:s.c,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</span>
             </div>
           ))}
@@ -1598,8 +1586,7 @@ const shareCard=async(ref,title,text,filename)=>{
       s.onload=res; s.onerror=rej; document.head.appendChild(s);
     });
   }
-  const bgColor=getComputedStyle(document.documentElement).getPropertyValue("--rk-bg").trim()||"#07070F";
-  const canvas=await window.html2canvas(ref,{backgroundColor:bgColor,scale:2,useCORS:true,logging:false});
+  const canvas=await window.html2canvas(ref,{backgroundColor:"#07070F",scale:2,useCORS:true,logging:false});
   return new Promise(resolve=>{
     canvas.toBlob(async blob=>{
       const file=new File([blob],`${filename}.png`,{type:"image/png"});
@@ -1631,20 +1618,20 @@ function LevelUpModal({level,onClose}){
     <div style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}>
       <div style={{width:"100%",maxWidth:320,padding:"0 20px"}}>
         {/* Card */}
-        <div ref={cardRef} style={{background:`linear-gradient(160deg,${ri.color}22 0%,#0A0A12 50%,var(--rk-bg) 100%)`,border:`2px solid ${ri.color}`,borderRadius:20,padding:"36px 32px",textAlign:"center",boxShadow:`0 0 80px ${ri.color}88`,animation:"lvlPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}>
+        <div ref={cardRef} style={{background:`linear-gradient(160deg,${ri.color}22 0%,#0A0A12 50%,#07070F 100%)`,border:`2px solid ${ri.color}`,borderRadius:20,padding:"36px 32px",textAlign:"center",boxShadow:`0 0 80px ${ri.color}88`,animation:"lvlPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}>
           <div style={{fontSize:9,letterSpacing:5,color:`${ri.color}88`,marginBottom:14,fontFamily:"'Rajdhani',sans-serif"}}>━━ SISTEMA RANKUP ━━</div>
           <div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><HelmIcon size={72} glow={ri.color}/></div>
           <div style={{fontSize:10,letterSpacing:5,color:ri.color,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>HAS SUBIDO DE NIVEL</div>
-          <div style={{fontSize:52,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1,textShadow:`0 0 30px ${ri.color}88`}}>NIVEL {level}</div>
+          <div style={{fontSize:52,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1,textShadow:`0 0 30px ${ri.color}88`}}>NIVEL {level}</div>
           <div style={{width:"60%",height:1,background:`linear-gradient(90deg,transparent,${ri.color}66,transparent)`,margin:"14px auto"}}/>
           <div style={{fontSize:16,color:ri.color,fontWeight:700,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>[{ri.rank}] {ri.title}</div>
-          <div style={{marginTop:16,fontSize:9,color:"var(--rk-t1)",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
+          <div style={{marginTop:16,fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
         </div>
         {/* Buttons */}
         <div style={{display:"flex",gap:8,marginTop:12}}>
           <button onClick={handleShare} disabled={sharing}
             style={{flex:2,padding:"13px",background:sharing?"#0A0A12":`linear-gradient(135deg,${ri.color},${ri.color}BB)`,
-              border:"none",borderRadius:12,color:sharing?ri.color:"var(--rk-ink)",fontSize:13,fontWeight:900,
+              border:"none",borderRadius:12,color:sharing?ri.color:"#07070F",fontSize:13,fontWeight:900,
               cursor:sharing?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
               boxShadow:sharing?"none":`0 0 20px ${ri.color}55`}}>
             {sharing?"GENERANDO...":"📸 COMPARTIR"}
@@ -1661,75 +1648,15 @@ function LevelUpModal({level,onClose}){
   );
 }
 function RedeemModal({reward,coins,onClose}){
-  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}><div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"var(--rk-t6)",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
+  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}><div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"#888",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
 }
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
-// ─── Cuestionario de onboarding (perfil de entrenamiento) ────────────────
-// Preguntas que rellena el Aventurero al registrarse. El resultado se
-// guarda en su perfil para que el entrenador tenga contexto real antes de
-// asignarle una rutina — no es solo decorativo.
-const ONBOARD_QUESTIONS=[
-  {id:"goal",title:"¿Cuál es tu objetivo?",type:"single",
-    options:["Ganar músculo","Perder peso","Verme mejor","Mantenerme en forma"]},
-  {id:"motivation",title:"¿Qué te motiva a entrenar?",type:"single",
-    options:["Salud","Perder peso","Estética","Aliviar estrés","Apoyo social","Disfrutar"]},
-  {id:"focusAreas",title:"Elige tus zonas de enfoque",type:"multi",
-    options:["Cuerpo completo","Pecho","Espalda","Brazos","Hombros","Abdomen","Piernas","Glúteos"]},
-  {id:"fitnessLevel",title:"¿Cuál es tu nivel actual?",type:"single",
-    options:[
-      {v:"Principiante",d:"Soy nuevo o he entrenado muy poco"},
-      {v:"Intermedio",d:"Ya llevo un tiempo entrenando"},
-      {v:"Avanzado",d:"Entreno con constancia desde hace tiempo"},
-    ]},
-  {id:"activityLevel",title:"¿Cuál es tu nivel de actividad diaria?",type:"single",
-    options:[
-      {v:"Sedentario",d:"Poco o ningún ejercicio"},
-      {v:"Ligeramente activo",d:"Ejercicio ligero 1-3 días/semana"},
-      {v:"Moderadamente activo",d:"Ejercicio moderado 4-6 días/semana"},
-      {v:"Muy activo",d:"Ejercicio intenso todos los días"},
-    ]},
-  {id:"healthIssues",title:"¿Alguna molestia o lesión?",type:"multi",
-    options:["Ninguna","Rodilla","Cadera","Espalda o hernia","Brazos y hombros","No puedo saltar"]},
-  {id:"equipmentAccess",title:"¿A qué material tienes acceso?",type:"multi",
-    options:["Sin material (peso corporal)","Gimnasio completo","Barra","Mancuernas","Kettlebells","Máquinas"]},
-];
-const FITNESS_LEVEL_IDX={"Principiante":0,"Intermedio":1,"Avanzado":2};
-const ACTIVITY_LEVEL_IDX={"Sedentario":0,"Ligeramente activo":1,"Moderadamente activo":2,"Muy activo":3};
-
-// Stats RPG a partir de las respuestas — un cálculo simple y transparente
-// pensado como motivación visual, no como ciencia del ejercicio real.
-const computeAriseStats=(a)=>{
-  const fl=FITNESS_LEVEL_IDX[a.fitnessLevel]??0;
-  const al=ACTIVITY_LEVEL_IDX[a.activityLevel]??0;
-  const noIssues=(a.healthIssues||[]).includes("Ninguna")||(a.healthIssues||[]).length===0;
-  const equipCount=(a.equipmentAccess||[]).length;
-  const freq=a.frequency||3;
-  const current={
-    strength:10+fl*3+Math.min(equipCount,3),
-    vitality:10+al*2+(noIssues?2:0),
-    agility:10+al*2+((a.focusAreas||[]).includes("Piernas")?2:0),
-    recovery:10+(noIssues?4:0)+Math.min(freq,4),
-  };
-  const boost=55+freq*4+fl*3;
-  const potential={
-    strength:Math.min(98,current.strength+boost),
-    vitality:Math.min(98,current.vitality+boost-5),
-    agility:Math.min(98,current.agility+boost-8),
-    recovery:Math.min(98,current.recovery+boost-3),
-  };
-  return{current,potential};
-};
-
 function LoginScreen({onLogin}){
   const [mode,setMode]=useState("login");
   const [step,setStep]=useState(1); // register step 1=creds, 2=profile
   const [email,setEmail]=useState(""), [password,setPassword]=useState(""), [name,setName]=useState("");
   const [sex,setSex]=useState(""), [birthdate,setBirthdate]=useState(""), [height,setHeight]=useState(""), [weight,setWeight]=useState("");
-  const [onboard,setOnboard]=useState({goal:null,motivation:null,focusAreas:[],fitnessLevel:null,activityLevel:null,healthIssues:[],equipmentAccess:[],frequency:3});
-  const [statsRevealed,setStatsRevealed]=useState(false);
-  const TOTAL_STEPS=2+ONBOARD_QUESTIONS.length+2; // creds+perfil físico + preguntas + frecuencia + stats
-  const toggleMulti=(field,val)=>setOnboard(o=>({...o,[field]:o[field].includes(val)?o[field].filter(x=>x!==val):[...o[field],val]}));
   const [error,setError]=useState(""), [shake,setShake]=useState(false), [showPw,setShowPw]=useState(false);
   const [resetSent,setResetSent]=useState(false);
   const err=msg=>{setError(msg);setShake(true);setTimeout(()=>setShake(false),600);};
@@ -1801,10 +1728,7 @@ function LoginScreen({onLogin}){
         if(u&&u.email) users[u.email]=u;
       });
     }
-    users[key]={...(users[key]||{}),name:name.trim(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0,
-      goal:onboard.goal,motivation:onboard.motivation,focusAreas:onboard.focusAreas,fitnessLevel:onboard.fitnessLevel,
-      activityLevel:onboard.activityLevel,healthIssues:onboard.healthIssues,equipmentAccess:onboard.equipmentAccess,frequency:onboard.frequency,
-      createdAt:(users[key]&&users[key].createdAt)||Date.now()};
+    users[key]={...(users[key]||{}),name:name.trim(),sex,birthdate,age,height:parseInt(height)||0,weight:parseFloat(weight)||0,createdAt:(users[key]&&users[key].createdAt)||Date.now()};
     // IMPORTANT: never blindly reset progress. If this email already has
     // real data in Firebase (e.g. an old account "reclaiming" itself after
     // the auth migration), keep it. Only brand-new accounts get zeroed data.
@@ -1819,19 +1743,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null,betaTester:false};
-    // Los primeros 20 Aventureros en registrarse desbloquean "Beater"
-    // automáticamente — contador atómico en Firebase, solo para cuentas nuevas
-    // y excluyendo al propio equipo (@rankup.fit).
-    if(!hasExisting&&!key.endsWith("@rankup.fit")){
-      try{
-        const count=(await fbGet("betaTesterCount").catch(()=>0))||0;
-        if(count<20){
-          initData.betaTester=true;
-          await fbSet("betaTesterCount",count+1).catch(()=>{});
-        }
-      }catch{}
-    }
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -1841,24 +1753,24 @@ function LoginScreen({onLogin}){
     setSession(key); onLogin(key,name.trim(),false);
   };
 
-  const inp={width:"100%",padding:"14px 16px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"};
+  const inp={width:"100%",padding:"14px 16px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"};
 
   return(
-    <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"var(--rk-bg)",padding:24}}>
+    <div style={{minHeight:"100dvh",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",background:"#07070F",padding:24}}>
       <style>{CSS}</style>
       <div style={{textAlign:"center",marginBottom:28}}>
         <div style={{marginBottom:12,display:"flex",justifyContent:"center"}}>
           <HelmIcon size={88} glow="#A78BFA"/>
         </div>
-        <div style={{fontSize:9,letterSpacing:6,color:"var(--rk-t2)",marginBottom:6}}> </div>
-        <div style={{fontSize:32,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1}}>RANKUP</div>
+        <div style={{fontSize:9,letterSpacing:6,color:"#444",marginBottom:6}}> </div>
+        <div style={{fontSize:32,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>RANKUP</div>
       </div>
 
-      <div className={shake?"shake":""} style={{width:"100%",maxWidth:360,background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:20,padding:28}}>
+      <div className={shake?"shake":""} style={{width:"100%",maxWidth:360,background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:20,padding:28}}>
         {/* Tabs */}
         <div style={{display:"flex",gap:8,marginBottom:24}}>
           {["login","register"].map(m=>(
-            <button key={m} onClick={()=>{setMode(m);setError("");setStep(1);}} style={{flex:1,padding:10,borderRadius:8,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,letterSpacing:2,background:mode===m?"#A78BFA22":"transparent",border:`1px solid ${mode===m?"#A78BFA":"var(--rk-border2)"}`,color:mode===m?"#A78BFA":"var(--rk-t3)"}}>
+            <button key={m} onClick={()=>{setMode(m);setError("");setStep(1);}} style={{flex:1,padding:10,borderRadius:8,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,letterSpacing:2,background:mode===m?"#A78BFA22":"transparent",border:`1px solid ${mode===m?"#A78BFA":"#1E1E32"}`,color:mode===m?"#A78BFA":"#555"}}>
               {m==="login"?"ENTRAR":"REGISTRO"}
             </button>
           ))}
@@ -1869,10 +1781,10 @@ function LoginScreen({onLogin}){
             <input style={inp} placeholder="📧 Email" type="email" value={email} onChange={e=>setEmail(e.target.value)}/>
             <div style={{position:"relative"}}>
               <input style={{...inp,paddingRight:48}} placeholder="🔒 Contraseña" type={showPw?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doLogin()}/>
-              <button onClick={()=>setShowPw(!showPw)} style={{position:"absolute",right:12,top:14,background:"none",border:"none",color:"var(--rk-t3)",cursor:"pointer",fontSize:16}}>{showPw?"🙈":"👁"}</button>
+              <button onClick={()=>setShowPw(!showPw)} style={{position:"absolute",right:12,top:14,background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:16}}>{showPw?"🙈":"👁"}</button>
             </div>
             <div style={{textAlign:"right",marginBottom:10,marginTop:-4}}>
-              <button onClick={doForgotPassword} style={{background:"none",border:"none",color:"var(--rk-t4)",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",textDecoration:"underline"}}>¿Olvidaste tu contraseña?</button>
+              <button onClick={doForgotPassword} style={{background:"none",border:"none",color:"#666",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",textDecoration:"underline"}}>¿Olvidaste tu contraseña?</button>
             </div>
             {resetSent&&<div style={{fontSize:12,color:"#34D399",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#34D39922",borderRadius:8}}>📧 Revisa tu correo para restablecerla</div>}
             {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
@@ -1887,7 +1799,7 @@ function LoginScreen({onLogin}){
             <input style={inp} placeholder="📧 Email" type="email" value={email} onChange={e=>setEmail(e.target.value)}/>
             <div style={{position:"relative"}}>
               <input style={{...inp,paddingRight:48}} placeholder="🔒 Contraseña (mín 6 caracteres)" type={showPw?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)}/>
-              <button onClick={()=>setShowPw(!showPw)} style={{position:"absolute",right:12,top:14,background:"none",border:"none",color:"var(--rk-t3)",cursor:"pointer",fontSize:16}}>{showPw?"🙈":"👁"}</button>
+              <button onClick={()=>setShowPw(!showPw)} style={{position:"absolute",right:12,top:14,background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:16}}>{showPw?"🙈":"👁"}</button>
             </div>
             {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
             <button onClick={goStep2} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,marginTop:4}}>SIGUIENTE →</button>
@@ -1903,10 +1815,10 @@ function LoginScreen({onLogin}){
 
             {/* Sex selector */}
             <div style={{marginBottom:12}}>
-              <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:8}}>SEXO</div>
+              <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:8}}>SEXO</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {[{v:"M",l:"♂ Masculino"},{v:"F",l:"♀ Femenino"}].map(s=>(
-                  <button key={s.v} onClick={()=>setSex(s.v)} style={{padding:"12px 8px",borderRadius:10,cursor:"pointer",background:sex===s.v?"#A78BFA22":"var(--rk-bg)",border:`1.5px solid ${sex===s.v?"#A78BFA":"var(--rk-border)"}`,color:sex===s.v?"#A78BFA":"var(--rk-t3)",fontSize:13,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",transition:"all .15s"}}>
+                  <button key={s.v} onClick={()=>setSex(s.v)} style={{padding:"12px 8px",borderRadius:10,cursor:"pointer",background:sex===s.v?"#A78BFA22":"#07070F",border:`1.5px solid ${sex===s.v?"#A78BFA":"#2A2A44"}`,color:sex===s.v?"#A78BFA":"#555",fontSize:13,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",transition:"all .15s"}}>
                     {s.l}
                   </button>
                 ))}
@@ -1915,7 +1827,7 @@ function LoginScreen({onLogin}){
 
             {/* Birthdate calendar */}
             <div style={{marginBottom:4}}>
-              <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:6}}>FECHA DE NACIMIENTO</div>
+              <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:6}}>FECHA DE NACIMIENTO</div>
               <input style={{...inp,marginBottom:4}} type="date" value={birthdate}
                 max={new Date(new Date().setFullYear(new Date().getFullYear()-10)).toISOString().split("T")[0]}
                 min={new Date(new Date().setFullYear(new Date().getFullYear()-80)).toISOString().split("T")[0]}
@@ -1926,11 +1838,11 @@ function LoginScreen({onLogin}){
             {/* Height & Weight */}
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:4}}>
               <div>
-                <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:6}}>ALTURA (cm)</div>
+                <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:6}}>ALTURA (cm)</div>
                 <input style={{...inp,marginBottom:0}} placeholder="170" type="number" value={height} onChange={e=>setHeight(e.target.value)}/>
               </div>
               <div>
-                <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:6}}>PESO (kg)</div>
+                <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:6}}>PESO (kg)</div>
                 <input style={{...inp,marginBottom:0}} placeholder="70.5" type="number" step="0.1" value={weight} onChange={e=>setWeight(e.target.value)}/>
               </div>
             </div>
@@ -1939,125 +1851,22 @@ function LoginScreen({onLogin}){
               const imcLabel=imc<18.5?"Bajo peso":imc<25?"Peso normal":imc<30?"Sobrepeso":"Obesidad";
               const imcColor=imc<18.5?"#60A5FA":imc<25?"#34D399":imc<30?"#FBBF24":"#F87171";
               return <div style={{padding:"8px 12px",background:`${imcColor}14`,border:`1px solid ${imcColor}33`,borderRadius:8,marginTop:6,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                <span style={{fontSize:10,color:"var(--rk-t3)"}}>IMC</span>
+                <span style={{fontSize:10,color:"#555"}}>IMC</span>
                 <span style={{fontSize:13,fontWeight:700,color:imcColor}}>{imc} — {imcLabel}</span>
               </div>;
             })()}
-            <div style={{fontSize:10,color:"var(--rk-t1)",marginBottom:14,marginTop:6}}>Altura y peso opcionales · Para calcular tu IMC</div>
+            <div style={{fontSize:10,color:"#333",marginBottom:14,marginTop:6}}>Altura y peso opcionales · Para calcular tu IMC</div>
 
             {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
-            <button onClick={()=>{
-              if(!sex) return err("Selecciona tu sexo");
-              if(!birthdate) return err("Selecciona tu fecha de nacimiento");
-              const age=calcAge(birthdate);
-              if(age<10||age>99) return err("Edad inválida");
-              setError(""); setStep(3);
-            }} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CONTINUAR →</button>
+            <button onClick={doRegister} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>🗡️ CREAR CUENTA</button>
           </>
         )}
 
-        {/* Preguntas del cuestionario de onboarding (steps 3..3+N-1) */}
-        {mode==="register"&&step>=3&&step<3+ONBOARD_QUESTIONS.length&&(()=>{
-          const q=ONBOARD_QUESTIONS[step-3];
-          const val=onboard[q.id];
-          const canContinue=q.type==="single"?!!val:true; // multi puede ir vacío (ninguna molestia, etc.)
-          return(
-            <>
-              <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-                <button onClick={()=>setStep(step-1)} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontSize:14,padding:0}}>←</button>
-                <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>PASO {step} DE {TOTAL_STEPS}</div>
-              </div>
-              <div style={{width:"100%",height:4,background:"var(--rk-bg4)",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
-                <div style={{width:`${(step/TOTAL_STEPS)*100}%`,height:"100%",background:"linear-gradient(90deg,#7C3AED,#A78BFA)",borderRadius:2,transition:"width .3s"}}/>
-              </div>
-              <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:18,textAlign:"center",lineHeight:1.3}}>{q.title}</div>
-              <div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:18}}>
-                {q.options.map(opt=>{
-                  const v=typeof opt==="string"?opt:opt.v;
-                  const d=typeof opt==="string"?null:opt.d;
-                  const selected=q.type==="single"?val===v:(val||[]).includes(v);
-                  return(
-                    <button key={v} onClick={()=>{
-                      if(q.type==="single") setOnboard(o=>({...o,[q.id]:v}));
-                      else toggleMulti(q.id,v);
-                    }} style={{padding:"14px 16px",borderRadius:10,cursor:"pointer",textAlign:"left",background:selected?"#A78BFA22":"var(--rk-bg)",border:`1.5px solid ${selected?"#A78BFA":"var(--rk-border)"}`,transition:"all .15s"}}>
-                      <div style={{fontSize:14,fontWeight:700,color:selected?"#A78BFA":"var(--rk-t9)",fontFamily:"'Rajdhani',sans-serif"}}>{v}</div>
-                      {d&&<div style={{fontSize:11,color:"var(--rk-t4)",marginTop:2}}>{d}</div>}
-                    </button>
-                  );
-                })}
-              </div>
-              <button onClick={()=>canContinue&&setStep(step+1)} disabled={!canContinue} style={{width:"100%",padding:14,background:canContinue?"linear-gradient(135deg,#A78BFA,#7C3AED)":"var(--rk-bg4)",border:"none",borderRadius:10,color:canContinue?"#FFF":"var(--rk-t3)",fontSize:15,fontWeight:700,cursor:canContinue?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CONTINUAR →</button>
-            </>
-          );
-        })()}
-
-        {/* Frecuencia semanal (step = 3+N) */}
-        {mode==="register"&&step===3+ONBOARD_QUESTIONS.length&&(
-          <>
-            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
-              <button onClick={()=>setStep(step-1)} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontSize:14,padding:0}}>←</button>
-              <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>PASO {step} DE {TOTAL_STEPS}</div>
-            </div>
-            <div style={{width:"100%",height:4,background:"var(--rk-bg4)",borderRadius:2,marginBottom:18,overflow:"hidden"}}>
-              <div style={{width:`${(step/TOTAL_STEPS)*100}%`,height:"100%",background:"linear-gradient(90deg,#7C3AED,#A78BFA)",borderRadius:2,transition:"width .3s"}}/>
-            </div>
-            <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:24,textAlign:"center"}}>¿Cuántas veces por semana quieres entrenar?</div>
-            <div style={{textAlign:"center",fontSize:56,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",marginBottom:6}}>{onboard.frequency}×</div>
-            <div style={{textAlign:"center",fontSize:12,color:"var(--rk-t4)",marginBottom:24}}>{onboard.frequency} entreno{onboard.frequency!==1?"s":""} a la semana</div>
-            <input type="range" min={1} max={7} value={onboard.frequency} onChange={e=>setOnboard(o=>({...o,frequency:parseInt(e.target.value)}))}
-              style={{width:"100%",marginBottom:8,accentColor:"#A78BFA"}}/>
-            <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--rk-t3)",marginBottom:24}}><span>Menos</span><span>Más</span></div>
-            <button onClick={()=>setStep(step+1)} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CONTINUAR →</button>
-          </>
-        )}
-
-        {/* Arise Stats — actuales y potenciales (últimos 2 pasos) */}
-        {mode==="register"&&step===4+ONBOARD_QUESTIONS.length&&(()=>{
-          const {current,potential}=computeAriseStats(onboard);
-          const stats=statsRevealed?potential:current;
-          const STAT_LABELS=[{k:"strength",l:"Fuerza"},{k:"vitality",l:"Vitalidad"},{k:"agility",l:"Agilidad"},{k:"recovery",l:"Recuperación"}];
-          return(
-            <>
-              <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",textAlign:"center",marginBottom:8}}>
-                {statsRevealed?"⚔️ Tu Potencial":"📊 Tus Stats Actuales"}
-              </div>
-              <div style={{fontSize:12,color:"var(--rk-t6)",textAlign:"center",marginBottom:20,lineHeight:1.6}}>
-                {statsRevealed
-                  ?"Esto es lo que podrías alcanzar en 3 meses completando tus misiones con constancia."
-                  :"Basado en tus respuestas, así empiezas tu aventura."}
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
-                {STAT_LABELS.map(s=>(
-                  <div key={s.k} style={{background:"var(--rk-bg2)",border:`1px solid ${statsRevealed?"#34D399":"#A78BFA"}33`,borderRadius:12,padding:14}}>
-                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-                      <span style={{fontSize:12,color:"var(--rk-t8)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{s.l}</span>
-                      <span style={{fontSize:15,fontWeight:900,color:statsRevealed?"#34D399":"#A78BFA",fontFamily:"'Cinzel',serif"}}>{stats[s.k]}</span>
-                    </div>
-                    <div style={{width:"100%",height:6,background:"var(--rk-bg4)",borderRadius:3,overflow:"hidden"}}>
-                      <div style={{width:`${stats[s.k]}%`,height:"100%",background:statsRevealed?"#34D399":"#A78BFA",borderRadius:3}}/>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {!statsRevealed?(
-                <button onClick={()=>setStatsRevealed(true)} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>MOSTRAR POTENCIAL</button>
-              ):(
-                <>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",textAlign:"center",marginBottom:14,lineHeight:1.6}}>Estos números son una proyección motivacional, no un cálculo científico — tu progreso real dependerá de tu constancia.</div>
-                  {error&&<div style={{fontSize:12,color:"#F87171",marginBottom:10,textAlign:"center",padding:"8px 12px",background:"#F8717122",borderRadius:8}}>{error}</div>}
-                  <button onClick={doRegister} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:15,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>🗡️ EMPEZAR AVENTURA</button>
-                </>
-              )}
-            </>
-          );
-        })()}
-
-        <div style={{textAlign:"center",marginTop:20,fontSize:11,color:"var(--rk-t2)"}}>
+        <div style={{textAlign:"center",marginTop:20,fontSize:11,color:"#444"}}>
           {mode==="login"?<span>¿Sin cuenta? <button onClick={()=>{setMode("register");setStep(1);setError("");}} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700}}>REGÍSTRATE</button></span>:<span>¿Ya tienes cuenta? <button onClick={()=>{setMode("login");setError("");}} style={{background:"none",border:"none",color:"#A78BFA",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700}}>ENTRA</button></span>}
         </div>
       </div>
-      <div style={{marginTop:20,fontSize:10,color:"var(--rk-border)",letterSpacing:3}}>DATOS GUARDADOS EN TU DISPOSITIVO</div>
+      <div style={{marginTop:20,fontSize:10,color:"#2A2A44",letterSpacing:3}}>DATOS GUARDADOS EN TU DISPOSITIVO</div>
     </div>
   );
 }
@@ -2368,7 +2177,7 @@ function MiniChart({data,color}){
     ctx.beginPath();data.forEach((d,i)=>{const x=(i/(data.length-1))*w,y=h-((d.kg-mn)/(mx-mn||1))*(h-10)-5;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
     data.forEach((d,i)=>{const x=(i/(data.length-1))*w,y=h-((d.kg-mn)/(mx-mn||1))*(h-10)-5;ctx.fillStyle=color;ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();});
   },[data,color]);
-  return <div style={{marginTop:12,padding:12,background:"#080810",borderRadius:10,border:`1px solid ${color}22`}}><div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:8}}>PROGRESIÓN DE PESO</div><canvas ref={ref} width={260} height={100} style={{width:"100%",height:80}}/></div>;
+  return <div style={{marginTop:12,padding:12,background:"#080810",borderRadius:10,border:`1px solid ${color}22`}}><div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:8}}>PROGRESIÓN DE PESO</div><canvas ref={ref} width={260} height={100} style={{width:"100%",height:80}}/></div>;
 }
 
 // ─── ADMIN PANEL ──────────────────────────────────────────────────────────────
@@ -2405,7 +2214,7 @@ function ProgramasTab({userList, flash}){
             flash("🗑️ Programa eliminado");
           };
 
-          const inp2={width:"100%",padding:"10px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
+          const inp2={width:"100%",padding:"10px 12px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
 
           if(view==="editDay"&&editProg&&editPhaseIdx!==null&&editDayIdx!==null){
             const phase=editProg.phases[editPhaseIdx];
@@ -2413,12 +2222,12 @@ function ProgramasTab({userList, flash}){
             return(
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-                  <button onClick={()=>setView("editPhase")} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:12,color:"var(--rk-text)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{day.day}</div>
+                  <button onClick={()=>setView("editPhase")} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+                  <div style={{fontSize:12,color:"#FFF",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{day.day}</div>
                 </div>
                 {/* Day name edit */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:12,border:"1px solid var(--rk-border)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6}}>NOMBRE DEL DÍA</div>
+                <div style={{background:"#0D0D1A",borderRadius:10,padding:12,border:"1px solid #2A2A44",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6}}>NOMBRE DEL DÍA</div>
                   <input style={inp2} value={day.day} onChange={e=>{
                     const p=JSON.parse(JSON.stringify(editProg));
                     p.phases[editPhaseIdx].training[editDayIdx].day=e.target.value;
@@ -2426,11 +2235,11 @@ function ProgramasTab({userList, flash}){
                   }}/>
                 </div>
                 {/* Exercises */}
-                <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:10}}>EJERCICIOS ({day.exercises.length})</div>
+                <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:10}}>EJERCICIOS ({day.exercises.length})</div>
                 {day.exercises.map((ex,ei)=>(
-                  <div key={ei} style={{background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:9,padding:12,marginBottom:8}}>
+                  <div key={ei} style={{background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:9,padding:12,marginBottom:8}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
-                      <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
+                      <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
                       <button onClick={()=>{
                         const p=JSON.parse(JSON.stringify(editProg));
                         p.phases[editPhaseIdx].training[editDayIdx].exercises.splice(ei,1);
@@ -2454,10 +2263,10 @@ function ProgramasTab({userList, flash}){
                   </div>
                 ))}
                 {/* Add exercise */}
-                <div style={{background:"var(--rk-bg2)",border:"1px solid #E8C54733",borderRadius:10,padding:12,marginTop:8,marginBottom:12}}>
+                <div style={{background:"#0D0D1A",border:"1px solid #E8C54733",borderRadius:10,padding:12,marginTop:8,marginBottom:12}}>
                   <div style={{fontSize:9,color:"#E8C547",letterSpacing:3,marginBottom:8}}>+ AÑADIR EJERCICIO</div>
                   {/* Exercise search from DB */}
-                  <select style={{...inp2,marginBottom:6,color:"var(--rk-t7)"}} onChange={e=>{
+                  <select style={{...inp2,marginBottom:6,color:"#AAA"}} onChange={e=>{
                     if(!e.target.value) return;
                     const ex=EXERCISE_DB.find(x=>x.name===e.target.value);
                     if(ex) setNewExRow(p=>({...p,name:ex.name,xp:ex.xpBase,muscle:ex.muscle}));
@@ -2477,7 +2286,7 @@ function ProgramasTab({userList, flash}){
                     <input style={{...inp2,marginBottom:0,fontSize:11}} placeholder="Descanso" value={newExRow.rest} onChange={e=>setNewExRow(p=>({...p,rest:e.target.value}))}/>
                     <input type="number" style={{...inp2,marginBottom:0,fontSize:11}} placeholder="XP" value={newExRow.xp} onChange={e=>setNewExRow(p=>({...p,xp:parseInt(e.target.value)||40}))}/>
                   </div>
-                  {newExRow.name&&<div style={{fontSize:10,color:"var(--rk-t3)",marginBottom:6}}>
+                  {newExRow.name&&<div style={{fontSize:10,color:"#555",marginBottom:6}}>
                     💪 {(newExRow.muscle||[]).map(m=>MUSCLE_DEFS[m]?.label||m).join(", ")||"Sin grupo asignado"}
                   </div>}
                   <button onClick={()=>{
@@ -2493,7 +2302,7 @@ function ProgramasTab({userList, flash}){
                   saveProgs(updated);
                   flash("✅ Día guardado");
                   setView("editPhase");
-                }} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#E8C547,#B8952A)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR DÍA</button>
+                }} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#E8C547,#B8952A)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR DÍA</button>
               </div>
             );
           }
@@ -2503,33 +2312,33 @@ function ProgramasTab({userList, flash}){
             return(
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-                  <button onClick={()=>setView("editProg")} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:12,color:"var(--rk-text)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{phase.name}: {phase.subtitle}</div>
+                  <button onClick={()=>setView("editProg")} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+                  <div style={{fontSize:12,color:"#FFF",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flex:1}}>{phase.name}: {phase.subtitle}</div>
                 </div>
-                <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:12,border:"1px solid var(--rk-border2)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:8}}>NOMBRE DE FASE</div>
+                <div style={{background:"#0D0D1A",borderRadius:10,padding:12,border:"1px solid #1E1E32",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:8}}>NOMBRE DE FASE</div>
                   <input style={inp2} value={phase.subtitle} onChange={e=>{const p=JSON.parse(JSON.stringify(editProg));p.phases[editPhaseIdx].subtitle=e.target.value;setEditProg(p);}}/>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6,marginTop:4}}>DUNGEON</div>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6,marginTop:4}}>DUNGEON</div>
                   <input style={inp2} value={phase.dungeonName} onChange={e=>{const p=JSON.parse(JSON.stringify(editProg));p.phases[editPhaseIdx].dungeonName=e.target.value;setEditProg(p);}}/>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6,marginTop:4}}>SEMANAS</div>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6,marginTop:4}}>SEMANAS</div>
                   <input style={inp2} value={phase.weeks} onChange={e=>{const p=JSON.parse(JSON.stringify(editProg));p.phases[editPhaseIdx].weeks=e.target.value;setEditProg(p);}}/>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6,marginTop:4}}>OBJETIVO</div>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6,marginTop:4}}>OBJETIVO</div>
                   <input style={inp2} value={phase.goal} onChange={e=>{const p=JSON.parse(JSON.stringify(editProg));p.phases[editPhaseIdx].goal=e.target.value;setEditProg(p);}}/>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6,marginTop:4}}>MANTRA</div>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6,marginTop:4}}>MANTRA</div>
                   <input style={inp2} value={phase.mantra} onChange={e=>{const p=JSON.parse(JSON.stringify(editProg));p.phases[editPhaseIdx].mantra=e.target.value;setEditProg(p);}}/>
                 </div>
-                <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:10}}>SESIONES ({phase.training.length})</div>
+                <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:10}}>SESIONES ({phase.training.length})</div>
                 {phase.training.map((day,di)=>{
                   const exCount=day.exercises.length;
                   return(
                     <div key={di} onClick={()=>{setEditDayIdx(di);setView("editDay");}}
-                      style={{background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:9,padding:"12px 14px",marginBottom:6,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      style={{background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:9,padding:"12px 14px",marginBottom:6,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
-                        <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:2}}>SESIÓN {di+1}</div>
-                        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
+                        <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:2}}>SESIÓN {di+1}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
                       </div>
                       <div style={{display:"flex",alignItems:"center",gap:8}}>
-                        <span style={{fontSize:10,color:"var(--rk-t3)"}}>{exCount} ejercicios</span>
+                        <span style={{fontSize:10,color:"#555"}}>{exCount} ejercicios</span>
                         <span style={{color:"#E8C547",fontSize:14}}>›</span>
                       </div>
                     </div>
@@ -2546,7 +2355,7 @@ function ProgramasTab({userList, flash}){
                   saveProgs(updated);
                   flash("✅ Fase guardada");
                   setView("editProg");
-                }} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#E8C547,#B8952A)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR FASE</button>
+                }} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#E8C547,#B8952A)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR FASE</button>
               </div>
             );
           }
@@ -2555,26 +2364,26 @@ function ProgramasTab({userList, flash}){
             return(
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-                  <button onClick={()=>{setView("list");setEditProg(null);}} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",flex:1}}>EDITANDO PROGRAMA</div>
+                  <button onClick={()=>{setView("list");setEditProg(null);}} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#E8C547",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",flex:1}}>EDITANDO PROGRAMA</div>
                 </div>
-                <div style={{background:"var(--rk-bg2)",borderRadius:10,padding:12,border:"1px solid var(--rk-border2)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6}}>NOMBRE DEL PROGRAMA</div>
+                <div style={{background:"#0D0D1A",borderRadius:10,padding:12,border:"1px solid #1E1E32",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6}}>NOMBRE DEL PROGRAMA</div>
                   <input style={inp2} value={editProg.name} onChange={e=>{setEditProg({...editProg,name:e.target.value});}}/>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:6,marginTop:4}}>DESCRIPCIÓN</div>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:6,marginTop:4}}>DESCRIPCIÓN</div>
                   <input style={inp2} value={editProg.desc||""} onChange={e=>{setEditProg({...editProg,desc:e.target.value});}}/>
                 </div>
-                <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:10}}>FASES ({editProg.phases.length})</div>
+                <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:10}}>FASES ({editProg.phases.length})</div>
                 {editProg.phases.map((ph,pi)=>{
                   const sessions=ph.training.length;
                   const exTotal=ph.training.reduce((a,d)=>a+d.exercises.length,0);
                   return(
                     <div key={pi} onClick={()=>{setEditPhaseIdx(pi);setView("editPhase");}}
-                      style={{background:"var(--rk-bg3)",border:`1px solid ${ph.color}33`,borderRadius:10,padding:14,marginBottom:8,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      style={{background:"#0F0F1C",border:`1px solid ${ph.color}33`,borderRadius:10,padding:14,marginBottom:8,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
                         <div style={{fontSize:9,color:ph.color,letterSpacing:3,marginBottom:2}}>{ph.name}</div>
-                        <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{ph.subtitle}</div>
-                        <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:2}}>{sessions} sesiones · {exTotal} ejercicios</div>
+                        <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ph.subtitle}</div>
+                        <div style={{fontSize:10,color:"#555",marginTop:2}}>{sessions} sesiones · {exTotal} ejercicios</div>
                       </div>
                       <span style={{color:ph.color,fontSize:18}}>›</span>
                     </div>
@@ -2586,7 +2395,7 @@ function ProgramasTab({userList, flash}){
                   flash("✅ Programa guardado");
                   setView("list");
                   setEditProg(null);
-                }} style={{width:"100%",padding:13,marginTop:8,background:"linear-gradient(135deg,#E8C547,#B8952A)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR PROGRAMA</button>
+                }} style={{width:"100%",padding:13,marginTop:8,background:"linear-gradient(135deg,#E8C547,#B8952A)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR PROGRAMA</button>
               </div>
             );
           }
@@ -2594,24 +2403,24 @@ function ProgramasTab({userList, flash}){
           // LIST view
           return(
             <div>
-              <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:14}}>PLANTILLAS DE PROGRAMA ({allPrograms.length})</div>
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>PLANTILLAS DE PROGRAMA ({allPrograms.length})</div>
               {allPrograms.map(tpl=>{
                 const isBuiltin=PROGRAM_TEMPLATES.some(t=>t.id===tpl.id);
                 const assignedTo=userList.filter(u=>{const d=getUserData(u.email)||defaultData();return d.assignedProgram?.id===tpl.id;});
                 const c=tpl.color||"#E8C547";
                 return(
-                  <div key={tpl.id} style={{background:"var(--rk-bg3)",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
+                  <div key={tpl.id} style={{background:"#0F0F1C",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
                     <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
                       <span style={{fontSize:22}}>{tpl.icon||"⚔️"}</span>
                       <div style={{flex:1}}>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{tpl.name}</div>
+                          <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{tpl.name}</div>
                           {isBuiltin&&<span style={{fontSize:9,padding:"2px 6px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA"}}>PLANTILLA</span>}
                         </div>
-                        <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:1}}>{tpl.phases?.length||0} fases · {tpl.phases?.reduce((a,p)=>a+p.training.length,0)||0} sesiones</div>
+                        <div style={{fontSize:10,color:"#555",marginTop:1}}>{tpl.phases?.length||0} fases · {tpl.phases?.reduce((a,p)=>a+p.training.length,0)||0} sesiones</div>
                       </div>
                     </div>
-                    <div style={{fontSize:11,color:"var(--rk-t3)",marginBottom:10}}>{tpl.desc}</div>
+                    <div style={{fontSize:11,color:"#555",marginBottom:10}}>{tpl.desc}</div>
                     <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:8}}>
                       <button onClick={()=>duplicateProgram(tpl)} style={{padding:"6px 12px",background:"#60A5FA18",border:"1px solid #60A5FA44",borderRadius:7,color:"#60A5FA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📋 DUPLICAR</button>
                       {!isBuiltin&&<button onClick={()=>{setEditProg(JSON.parse(JSON.stringify(tpl)));setView("editProg");}} style={{padding:"6px 12px",background:`${c}18`,border:`1px solid ${c}44`,borderRadius:7,color:c,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>✏️ EDITAR</button>}
@@ -2619,7 +2428,7 @@ function ProgramasTab({userList, flash}){
                     </div>
                     {assignedTo.length>0&&(
                       <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-                        <span style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2}}>ASIGNADO A:</span>
+                        <span style={{fontSize:9,color:"#444",letterSpacing:2}}>ASIGNADO A:</span>
                         {assignedTo.map(u=>(
                           <span key={u.email} style={{fontSize:10,padding:"2px 8px",background:`${c}18`,border:`1px solid ${c}33`,borderRadius:20,color:c}}>{u.name}</span>
                         ))}
@@ -2678,26 +2487,6 @@ function AdminPanel({onLogout}){
       setSeasonActiveState(s?.seasonActive!==false);
       setSeasonLoaded(true);
     }).catch(()=>setSeasonLoaded(true));
-  },[]);
-
-  // Migración única: si el contador de "Beater" no existe todavía, calcula
-  // quiénes de los ya registrados entran en los primeros 20 (por fecha de
-  // registro, excluyendo al equipo @rankup.fit) y les concede el logro.
-  useEffect(()=>{
-    (async()=>{
-      const existingCount=await fbGet("betaTesterCount").catch(()=>null);
-      if(existingCount!=null) return; // ya migrado antes, no repetir
-      const fbUsers=await fbGet("users").catch(()=>({}))||{};
-      const list=Object.values(fbUsers)
-        .filter(u=>u&&u.email&&!u.email.toLowerCase().endsWith("@rankup.fit"))
-        .sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
-      const first20=list.slice(0,20);
-      for(const u of first20){
-        const dataKey=u.email.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
-        await fbSet(`userData/${dataKey}/betaTester`,true).catch(()=>{});
-      }
-      await fbSet("betaTesterCount",Math.min(list.length,20)).catch(()=>{});
-    })();
   },[]);
 
   const [confirmSeasonStart,setConfirmSeasonStart]=useState(false);
@@ -3179,7 +2968,7 @@ function AdminPanel({onLogout}){
   const totalXpAll=userList.reduce((a,u)=>{const d=getUD(u.email)||defaultData();return a+(d.totalXp||0);},0);
   const totalCoinsAll=userList.reduce((a,u)=>{const d=getUD(u.email)||defaultData();return a+(d.coins||0);},0);
 
-  const inp={width:"100%",padding:"10px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
+  const inp={width:"100%",padding:"10px 12px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"};
 
   // User detail modal
   if(selUser&&editData){
@@ -3188,56 +2977,38 @@ function AdminPanel({onLogout}){
     const ri=getRank(level);
     const totalDone=Object.values(editData.checked||{}).filter(Boolean).length;
     return(
-      <div style={{minHeight:"100dvh",background:"var(--rk-bg)",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",padding:"0 0 40px"}}>
+      <div style={{minHeight:"100dvh",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",padding:"0 0 40px"}}>
         <style>{CSS}</style>
         {/* Header */}
-        <div style={{background:"linear-gradient(180deg,#0D0D1F,var(--rk-bg))",padding:"14px 16px",borderBottom:"1px solid #A78BFA33",display:"flex",alignItems:"center",gap:14,position:"sticky",top:0,zIndex:100}}>
-          <button onClick={()=>{setSelUser(null);setEditData(null);}} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#A78BFA",padding:"8px 14px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>← VOLVER</button>
+        <div style={{background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"14px 16px",borderBottom:"1px solid #A78BFA33",display:"flex",alignItems:"center",gap:14,position:"sticky",top:0,zIndex:100}}>
+          <button onClick={()=>{setSelUser(null);setEditData(null);}} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"8px 14px",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>← VOLVER</button>
           <div style={{width:80,height:80,borderRadius:18,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:28,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",boxShadow:`0 0 20px ${ri.color}44`}}>
             <AdminUserPhoto email={selUser} rank={ri.rank}/>
           </div>
           <div>
-            <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:2}}>EDITANDO JUGADOR</div>
+            <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:2}}>EDITANDO JUGADOR</div>
             <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <div style={{fontSize:17,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
+              <div style={{fontSize:17,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2}}>{uInfo?.name}</div>
               {(userMessages[selUser]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
-                <span style={{background:"#E84A5F",color:"var(--rk-text)",fontSize:9,fontWeight:900,padding:"2px 7px",borderRadius:20,fontFamily:"'Rajdhani',sans-serif"}}>NUEVO MENSAJE</span>}
+                <span style={{background:"#E84A5F",color:"#FFF",fontSize:9,fontWeight:900,padding:"2px 7px",borderRadius:20,fontFamily:"'Rajdhani',sans-serif"}}>NUEVO MENSAJE</span>}
             </div>
             <div style={{fontSize:10,color:ri.color,letterSpacing:1,marginTop:2}}>[{ri.rank}] {ri.title} · Lv.{level}</div>
           </div>
         </div>
         <div style={{padding:16}}>
-          {/* Perfil de entrenamiento (respuestas del cuestionario de registro) */}
-          {(uInfo?.goal||uInfo?.fitnessLevel)&&(
-            <div style={{background:"var(--rk-bg3)",border:"1px solid #38BDF844",borderRadius:12,padding:14,marginBottom:16}}>
-              <div style={{fontSize:9,color:"#38BDF8",letterSpacing:3,marginBottom:10}}>📋 PERFIL DE ENTRENAMIENTO</div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,fontSize:11}}>
-                {uInfo.goal&&<div><span style={{color:"var(--rk-t3)"}}>Objetivo: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.goal}</span></div>}
-                {uInfo.motivation&&<div><span style={{color:"var(--rk-t3)"}}>Motivación: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.motivation}</span></div>}
-                {uInfo.fitnessLevel&&<div><span style={{color:"var(--rk-t3)"}}>Nivel: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.fitnessLevel}</span></div>}
-                {uInfo.activityLevel&&<div><span style={{color:"var(--rk-t3)"}}>Actividad diaria: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.activityLevel}</span></div>}
-                {uInfo.frequency&&<div><span style={{color:"var(--rk-t3)"}}>Frecuencia deseada: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.frequency}x/semana</span></div>}
-                {uInfo.focusAreas?.length>0&&<div style={{gridColumn:"1 / -1"}}><span style={{color:"var(--rk-t3)"}}>Zonas de enfoque: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.focusAreas.join(", ")}</span></div>}
-                {uInfo.equipmentAccess?.length>0&&<div style={{gridColumn:"1 / -1"}}><span style={{color:"var(--rk-t3)"}}>Material disponible: </span><span style={{color:"var(--rk-t9)",fontWeight:700}}>{uInfo.equipmentAccess.join(", ")}</span></div>}
-                {uInfo.healthIssues?.length>0&&!uInfo.healthIssues.includes("Ninguna")&&
-                  <div style={{gridColumn:"1 / -1",color:"#F59E0B"}}>⚠️ Molestias/lesiones: <span style={{fontWeight:700}}>{uInfo.healthIssues.join(", ")}</span></div>}
-              </div>
-            </div>
-          )}
-
           {/* Quick stats */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:16}}>
             {[{l:"NIVEL",v:level,c:ri.color},{l:"XP",v:(editData.totalXp||0).toLocaleString(),c:ri.color},{l:"MONEDAS",v:editData.coins||0,c:"#F59E0B"},{l:"EJERCICIOS",v:totalDone,c:"#34D399"},{l:"LOGROS",v:(editData.earnedAchs||[]).length,c:"#A78BFA"},{l:"RUTINAS",v:(editData.customRoutines||[]).length,c:"#60A5FA"}].map(s=>(
-              <div key={s.l} style={{background:"var(--rk-bg3)",borderRadius:10,padding:12,border:`1px solid ${s.c}22`,textAlign:"center"}}>
+              <div key={s.l} style={{background:"#0F0F1C",borderRadius:10,padding:12,border:`1px solid ${s.c}22`,textAlign:"center"}}>
                 <div style={{fontSize:18,fontWeight:700,color:s.c,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
-                <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2}}>{s.l}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:2}}>{s.l}</div>
               </div>
             ))}
           </div>
 
           {/* Quick actions */}
-          <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:14}}>
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>ACCIONES RÁPIDAS</div>
+          <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:14}}>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>ACCIONES RÁPIDAS</div>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
               {[50,100,250,500].map(amt=>(
                 <button key={amt} onClick={()=>addXpAdmin(selUser,amt)} style={{padding:"9px 8px",background:"#A78BFA18",border:"1px solid #A78BFA33",borderRadius:8,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+{amt} XP</button>
@@ -3251,39 +3022,35 @@ function AdminPanel({onLogout}){
           </div>
 
           {/* Edit XP & Coins directly */}
-          <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:14}}>
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>EDITAR VALORES</div>
-            <button onClick={()=>setEditData({...editData,betaTester:!editData.betaTester})} style={{display:"flex",alignItems:"center",justifyContent:"space-between",width:"100%",padding:"10px 12px",marginBottom:14,background:editData.betaTester?"#A78BFA1A":"var(--rk-bg3)",border:`1px solid ${editData.betaTester?"#A78BFA":"var(--rk-border)"}`,borderRadius:10,cursor:"pointer"}}>
-              <span style={{fontSize:11,fontWeight:700,color:editData.betaTester?"#A78BFA":"var(--rk-t4)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>🗡️ BEATER (betatester)</span>
-              <span style={{fontSize:11,fontWeight:900,color:editData.betaTester?"#A78BFA":"var(--rk-t2)"}}>{editData.betaTester?"ACTIVADO":"OFF"}</span>
-            </button>
+          <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:14}}>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>EDITAR VALORES</div>
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>XP TOTAL</div>
+              <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>XP TOTAL</div>
               <input style={inp} type="number" value={editData.totalXp||0} onChange={e=>setEditData({...editData,totalXp:Math.max(0,parseInt(e.target.value)||0)})}/>
             </div>
             <div style={{marginBottom:10}}>
-              <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>MONEDAS</div>
+              <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>MONEDAS</div>
               <input style={inp} type="number" value={editData.coins||0} onChange={e=>setEditData({...editData,coins:Math.max(0,parseInt(e.target.value)||0)})}/>
             </div>
             <div>
-              <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>⚔️ RAIDS COMPLETADAS</div>
+              <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>⚔️ RAIDS COMPLETADAS</div>
               <input style={inp} type="number" value={editRaids} onChange={e=>setEditRaids(Math.max(0,parseInt(e.target.value)||0))}/>
             </div>
           </div>
 
           {/* Reset password */}
-          <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:14}}>
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:10}}>CONTRASEÑA</div>
-            <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:10,lineHeight:1.5}}>Por seguridad ya no puedes fijar la contraseña directamente. Envía un email para que {selUser} elija una nueva.</div>
+          <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:14}}>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:10}}>CONTRASEÑA</div>
+            <div style={{fontSize:11,color:"#666",marginBottom:10,lineHeight:1.5}}>Por seguridad ya no puedes fijar la contraseña directamente. Envía un email para que {selUser} elija una nueva.</div>
             <button onClick={()=>sendPasswordReset(selUser)} style={{width:"100%",padding:11,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📧 ENVIAR EMAIL DE RESTABLECIMIENTO</button>
           </div>
 
           {/* Historial de rutinas completadas */}
           {(editData.routineHistory||[]).length>0&&(
-            <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid #34D39944",marginBottom:14}}>
+            <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #34D39944",marginBottom:14}}>
               <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:10}}>📜 RUTINAS COMPLETADAS ({editData.routineHistory.length})</div>
               {[...editData.routineHistory].sort((a,b)=>b.completedAt-a.completedAt).map(h=>(
-                <div key={h.routineId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
+                <div key={h.routineId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:"1px solid #1A1A2E"}}>
                   <div style={{fontSize:12,fontWeight:700,color:"#E8E6FF"}}>🏅 {h.routineName}</div>
                   <div style={{fontSize:10,color:"#34D399"}} title={h.approx?"Fecha aproximada (rescatada, no exacta)":""}>{h.approx?"~":""}{new Date(h.completedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</div>
                 </div>
@@ -3292,22 +3059,22 @@ function AdminPanel({onLogout}){
           )}
 
           {/* Rutinas asignadas */}
-          <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid #60A5FA33",marginBottom:14}}>
+          <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #60A5FA33",marginBottom:14}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontSize:9,color:"#60A5FA",letterSpacing:3}}>RUTINAS ASIGNADAS ({(editData.customRoutines||[]).length})</div>
               <button onClick={()=>setAssignModal(selUser)} style={{padding:"5px 10px",background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:7,color:"#60A5FA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ ASIGNAR</button>
             </div>
             {(editData.customRoutines||[]).length===0
-              ? <div style={{fontSize:11,color:"var(--rk-t1)",textAlign:"center",padding:"12px 0"}}>Sin rutinas asignadas</div>
+              ? <div style={{fontSize:11,color:"#333",textAlign:"center",padding:"12px 0"}}>Sin rutinas asignadas</div>
               : (editData.customRoutines||[]).map(rt=>{
                   const c=rt.color||"#60A5FA";
                   const total=rt.sessions?.reduce((a,s)=>a+s.exercises.length,0)||0;
                   return(
-                    <div key={rt.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
+                    <div key={rt.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
                       <div style={{width:8,height:8,borderRadius:"50%",background:c,flexShrink:0}}/>
                       <div style={{flex:1}}>
-                        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
-                        <div style={{fontSize:10,color:"var(--rk-t2)"}}>{rt.sessions?.length||0} sesión(es) · {total} ejercicios{rt.assignedByAdmin?" · 👑 Admin":""}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                        <div style={{fontSize:10,color:"#444"}}>{rt.sessions?.length||0} sesión(es) · {total} ejercicios{rt.assignedByAdmin?" · 👑 Admin":""}</div>
                       </div>
                       <button onClick={()=>removeRoutineFromUser(selUser,rt.id)} style={{background:"none",border:"none",color:"#E84A5F",fontSize:14,cursor:"pointer",padding:4}}>✕</button>
                     </div>
@@ -3317,21 +3084,21 @@ function AdminPanel({onLogout}){
           </div>
 
           {/* Dietas asignadas */}
-          <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid #34D39933",marginBottom:14}}>
+          <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #34D39933",marginBottom:14}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
               <div style={{fontSize:9,color:"#34D399",letterSpacing:3}}>DIETAS ASIGNADAS ({(editData.assignedDiets||[]).length})</div>
               <button onClick={()=>setAssignDietModal(selUser)} style={{padding:"5px 10px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:7,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ ASIGNAR</button>
             </div>
             {(editData.assignedDiets||[]).length===0
-              ? <div style={{fontSize:11,color:"var(--rk-t1)",textAlign:"center",padding:"12px 0"}}>Sin dietas asignadas</div>
+              ? <div style={{fontSize:11,color:"#333",textAlign:"center",padding:"12px 0"}}>Sin dietas asignadas</div>
               : (editData.assignedDiets||[]).map(dt=>{
                   const c=dt.color||"#34D399";
                   return(
-                    <div key={dt.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
+                    <div key={dt.id} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
                       <div style={{width:8,height:8,borderRadius:"50%",background:c,flexShrink:0}}/>
                       <div style={{flex:1}}>
-                        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
-                        <div style={{fontSize:10,color:"var(--rk-t2)"}}>{dt.calories&&`${dt.calories} · `}{dt.meals?.length||0} comidas{dt.assignedByAdmin?" · 👑 Admin":""}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
+                        <div style={{fontSize:10,color:"#444"}}>{dt.calories&&`${dt.calories} · `}{dt.meals?.length||0} comidas{dt.assignedByAdmin?" · 👑 Admin":""}</div>
                       </div>
                       <button onClick={()=>removeDietFromUser(selUser,dt.id)} style={{background:"none",border:"none",color:"#E84A5F",fontSize:14,cursor:"pointer",padding:4}}>✕</button>
                     </div>
@@ -3341,13 +3108,13 @@ function AdminPanel({onLogout}){
           </div>
 
           {/* Programa asignado */}
-          <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid #E8C54733",marginBottom:14}}>
+          <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #E8C54733",marginBottom:14}}>
             <div style={{fontSize:9,color:"#E8C547",letterSpacing:3,marginBottom:12}}>⚔️ PROGRAMA ASIGNADO</div>
             {editData.assignedProgram?(
               <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
                 <div style={{flex:1}}>
-                  <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{editData.assignedProgram.name}</div>
-                  <div style={{fontSize:10,color:"var(--rk-t3)"}}>{editData.assignedProgram.phases?.length||0} fases · 👑 Admin</div>
+                  <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{editData.assignedProgram.name}</div>
+                  <div style={{fontSize:10,color:"#555"}}>{editData.assignedProgram.phases?.length||0} fases · 👑 Admin</div>
                 </div>
                 <button onClick={()=>{
                   const data=getUD(selUser)||defaultData();
@@ -3358,9 +3125,9 @@ function AdminPanel({onLogout}){
                 }} style={{background:"none",border:"none",color:"#E84A5F",fontSize:14,cursor:"pointer",padding:4}}>✕</button>
               </div>
             ):(
-              <div style={{fontSize:11,color:"var(--rk-t1)",marginBottom:10}}>Sin programa asignado</div>
+              <div style={{fontSize:11,color:"#333",marginBottom:10}}>Sin programa asignado</div>
             )}
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:2,marginBottom:8}}>PLANTILLAS DISPONIBLES</div>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:8}}>PLANTILLAS DISPONIBLES</div>
             {(()=>{
               const customProgs=()=>{try{return JSON.parse(localStorage.getItem("rku_admin_programs")||"[]");}catch{return[];}};
               const allProgs=[...PROGRAM_TEMPLATES,...customProgs()];
@@ -3374,11 +3141,11 @@ function AdminPanel({onLogout}){
                   saveUserData(selUser,data);
                   setEditData({...editData,assignedProgram:tpl});
                   flash(`✅ Programa "${tpl.name}" asignado`);
-                }} style={{width:"100%",padding:"10px 12px",background:isAssigned?"#E8C54722":"var(--rk-bg)",border:`1px solid ${isAssigned?"#E8C547":"var(--rk-border)"}`,borderRadius:9,cursor:isAssigned?"default":"pointer",display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
+                }} style={{width:"100%",padding:"10px 12px",background:isAssigned?"#E8C54722":"#07070F",border:`1px solid ${isAssigned?"#E8C547":"#2A2A44"}`,borderRadius:9,cursor:isAssigned?"default":"pointer",display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
                   <span style={{fontSize:20}}>{tpl.icon}</span>
                   <div style={{flex:1,textAlign:"left"}}>
                     <div style={{fontSize:13,fontWeight:700,color:isAssigned?"#E8C547":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{tpl.name}</div>
-                    <div style={{fontSize:10,color:"var(--rk-t3)"}}>{tpl.desc}</div>
+                    <div style={{fontSize:10,color:"#555"}}>{tpl.desc}</div>
                   </div>
                   {isAssigned&&<span style={{fontSize:10,color:"#E8C547"}}>✓ ASIGNADO</span>}
                 </button>
@@ -3393,22 +3160,22 @@ function AdminPanel({onLogout}){
             const unread=msgs.filter(m=>m.from==="user"&&!m.read).length;
             const formatDate=iso=>{if(!iso)return"";const d=new Date(iso);return`${d.getDate()}/${d.getMonth()+1} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;}
             return(
-              <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:`1px solid ${unread>0?"#E84A5F33":"#A78BFA22"}`,marginBottom:14}}>
+              <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:`1px solid ${unread>0?"#E84A5F33":"#A78BFA22"}`,marginBottom:14}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>✉️ MENSAJES ({msgs.length}){unread>0&&<span style={{marginLeft:8,background:"#E84A5F",color:"var(--rk-text)",fontSize:8,padding:"1px 6px",borderRadius:10,fontWeight:900}}>{unread} NUEVO{unread>1?"S":""}</span>}</div>
+                  <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>✉️ MENSAJES ({msgs.length}){unread>0&&<span style={{marginLeft:8,background:"#E84A5F",color:"#FFF",fontSize:8,padding:"1px 6px",borderRadius:10,fontWeight:900}}>{unread} NUEVO{unread>1?"S":""}</span>}</div>
                 </div>
                 <div style={{maxHeight:220,overflowY:"auto",display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
-                  {msgs.length===0&&<div style={{fontSize:11,color:"var(--rk-t1)",textAlign:"center",padding:"12px 0"}}>Sin mensajes aún</div>}
+                  {msgs.length===0&&<div style={{fontSize:11,color:"#333",textAlign:"center",padding:"12px 0"}}>Sin mensajes aún</div>}
                   {msgs.map((m,i)=>{
                     const isAdmin=m.from==="admin";
                     return(
                       <div key={m.id||i} style={{display:"flex",justifyContent:isAdmin?"flex-end":"flex-start"}}>
                         <div style={{maxWidth:"85%",padding:"8px 12px",borderRadius:isAdmin?"12px 12px 4px 12px":"12px 12px 12px 4px",
-                          background:isAdmin?"#A78BFA22":"var(--rk-bg4)",
-                          border:`1px solid ${isAdmin?"#A78BFA44":"var(--rk-bg5)"}`}}>
+                          background:isAdmin?"#A78BFA22":"#1A1A2E",
+                          border:`1px solid ${isAdmin?"#A78BFA44":"#2A2A3E"}`}}>
                           {!isAdmin&&<div style={{fontSize:8,color:"#A78BFA",letterSpacing:1,marginBottom:3}}>{m.name||"Usuario"}</div>}
-                          <div style={{fontSize:12,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.4}}>{m.text}</div>
-                          <div style={{fontSize:9,color:"var(--rk-t2)",marginTop:3,textAlign:"right"}}>{formatDate(m.date)}</div>
+                          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.4}}>{m.text}</div>
+                          <div style={{fontSize:9,color:"#444",marginTop:3,textAlign:"right"}}>{formatDate(m.date)}</div>
                         </div>
                       </div>
                     );
@@ -3418,9 +3185,9 @@ function AdminPanel({onLogout}){
                   <input value={adminMsgInput} onChange={e=>setAdminMsgInput(e.target.value)}
                     onKeyDown={e=>{if(e.key==="Enter")sendAdminMessage(selUser,adminMsgInput);}}
                     placeholder="Responder al usuario..."
-                    style={{flex:1,padding:"9px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    style={{flex:1,padding:"9px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                   <button onClick={()=>sendAdminMessage(selUser,adminMsgInput)}
-                    style={{padding:"9px 14px",background:"#A78BFA",border:"none",borderRadius:9,color:"var(--rk-ink)",fontSize:13,fontWeight:700,cursor:"pointer"}}>➤</button>
+                    style={{padding:"9px 14px",background:"#A78BFA",border:"none",borderRadius:9,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer"}}>➤</button>
                 </div>
               </div>
             );
@@ -3433,19 +3200,19 @@ function AdminPanel({onLogout}){
             const totalSpent=redObjs.reduce((a,e)=>a+(e.cost||0),0);
             const formatDate=iso=>{if(!iso)return"—";const d=new Date(iso);return`${d.getDate().toString().padStart(2,"0")}/${(d.getMonth()+1).toString().padStart(2,"0")}/${d.getFullYear()} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;};
             return(
-              <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid #F59E0B33",marginBottom:14}}>
+              <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #F59E0B33",marginBottom:14}}>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
                   <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3}}>📜 HISTORIAL DE COMPRAS ({redObjs.length})</div>
                   <div style={{fontSize:12,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{totalSpent.toLocaleString()} 🪙 gastadas</div>
                 </div>
                 {redObjs.length===0
-                  ?<div style={{fontSize:11,color:"var(--rk-t1)",textAlign:"center",padding:"12px 0"}}>Sin compras realizadas</div>
+                  ?<div style={{fontSize:11,color:"#333",textAlign:"center",padding:"12px 0"}}>Sin compras realizadas</div>
                   :[...redObjs].reverse().map((entry,i)=>(
-                    <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
+                    <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
                       <span style={{fontSize:22,flexShrink:0}}>{entry.icon}</span>
                       <div style={{flex:1,minWidth:0}}>
-                        <div style={{fontSize:12,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{entry.name}</div>
-                        <div style={{fontSize:10,color:"var(--rk-t2)"}}>{formatDate(entry.date)}</div>
+                        <div style={{fontSize:12,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{entry.name}</div>
+                        <div style={{fontSize:10,color:"#444"}}>{formatDate(entry.date)}</div>
                       </div>
                       <div style={{fontSize:13,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",flexShrink:0}}>-{(entry.cost||0).toLocaleString()} 🪙</div>
                     </div>
@@ -3459,7 +3226,7 @@ function AdminPanel({onLogout}){
           <div style={{background:"#120808",borderRadius:12,padding:14,border:"1px solid #E84A5F33",marginBottom:16}}>
             <div style={{fontSize:9,color:"#E84A5F88",letterSpacing:3,marginBottom:12}}>⚠️ ZONA PELIGROSA</div>
             <button onClick={()=>setConfirmReset(selUser)} style={{width:"100%",padding:11,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>🔄 REINICIAR PROGRESO</button>
-            <button onClick={()=>setConfirmDel(selUser)} style={{width:"100%",padding:11,background:"#E84A5F33",border:"1px solid #E84A5F",borderRadius:8,color:"var(--rk-text)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🗑️ ELIMINAR USUARIO</button>
+            <button onClick={()=>setConfirmDel(selUser)} style={{width:"100%",padding:11,background:"#E84A5F33",border:"1px solid #E84A5F",borderRadius:8,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🗑️ ELIMINAR USUARIO</button>
           </div>
 
           <button onClick={saveEdit} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR CAMBIOS</button>
@@ -3468,13 +3235,13 @@ function AdminPanel({onLogout}){
         {/* Confirm delete modal */}
         {confirmDel&&(
           <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-            <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
-              <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Eliminar usuario?</div>
-              <div style={{fontSize:12,color:"var(--rk-t6)",marginBottom:20}}>Se borrarán todos los datos de <strong style={{color:"var(--rk-text)"}}>{allUsers[confirmDel]?.name}</strong> permanentemente.</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Eliminar usuario?</div>
+              <div style={{fontSize:12,color:"#888",marginBottom:20}}>Se borrarán todos los datos de <strong style={{color:"#FFF"}}>{allUsers[confirmDel]?.name}</strong> permanentemente.</div>
               <div style={{display:"flex",gap:10}}>
-                <button onClick={()=>setConfirmDel(null)} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t6)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
-                <button onClick={()=>{deleteUser(confirmDel);setSelUser(null);setEditData(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"var(--rk-text)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>ELIMINAR</button>
+                <button onClick={()=>setConfirmDel(null)} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#888",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+                <button onClick={()=>{deleteUser(confirmDel);setSelUser(null);setEditData(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>ELIMINAR</button>
               </div>
             </div>
           </div>
@@ -3483,13 +3250,13 @@ function AdminPanel({onLogout}){
         {/* Confirm reset progress modal */}
         {confirmReset&&(
           <div onClick={()=>setConfirmReset(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
-            <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
-              <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Reiniciar progreso?</div>
-              <div style={{fontSize:12,color:"var(--rk-t6)",marginBottom:20}}>Se pondrá a cero el XP, monedas, ejercicios y logros de <strong style={{color:"var(--rk-text)"}}>{allUsers[confirmReset]?.name}</strong>. Esta acción no se puede deshacer.</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Reiniciar progreso?</div>
+              <div style={{fontSize:12,color:"#888",marginBottom:20}}>Se pondrá a cero el XP, monedas, ejercicios y logros de <strong style={{color:"#FFF"}}>{allUsers[confirmReset]?.name}</strong>. Esta acción no se puede deshacer.</div>
               <div style={{display:"flex",gap:10}}>
-                <button onClick={()=>setConfirmReset(null)} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t6)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
-                <button onClick={()=>{resetProgress(confirmReset);setConfirmReset(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"var(--rk-text)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>REINICIAR</button>
+                <button onClick={()=>setConfirmReset(null)} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#888",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+                <button onClick={()=>{resetProgress(confirmReset);setConfirmReset(null);}} style={{flex:1,padding:12,background:"#E84A5F",border:"none",borderRadius:8,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>REINICIAR</button>
               </div>
             </div>
           </div>
@@ -3499,23 +3266,23 @@ function AdminPanel({onLogout}){
         {/* Assign routine modal */}
         {assignModal&&(
           <div onClick={()=>setAssignModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-            <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"1px solid #60A5FA44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"70vh",overflowY:"auto"}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #60A5FA44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"70vh",overflowY:"auto"}}>
               <div style={{fontSize:9,color:"#60A5FA",letterSpacing:3,marginBottom:12}}>SELECCIONA RUTINA PARA ASIGNAR</div>
               {adminRoutines.length===0
-                ? <div style={{textAlign:"center",padding:"24px 0",color:"var(--rk-t2)",fontSize:12}}>No hay rutinas creadas aún.<br/>Ve a la pestaña 🛠️ Rutinas del admin.</div>
+                ? <div style={{textAlign:"center",padding:"24px 0",color:"#444",fontSize:12}}>No hay rutinas creadas aún.<br/>Ve a la pestaña 🛠️ Rutinas del admin.</div>
                 : adminRoutines.map(rt=>{
                     const c=rt.color||"#A78BFA";
                     const total=rt.sessions?.reduce((a,s)=>a+s.exercises.length,0)||0;
                     const alreadyHas=(editData.customRoutines||[]).find(r=>r.id===rt.id);
                     return(
                       <div key={rt.id} onClick={()=>!alreadyHas&&assignRoutineToUser(assignModal,rt)}
-                        style={{display:"flex",alignItems:"center",gap:12,padding:"12px 10px",borderRadius:10,marginBottom:8,background:alreadyHas?"var(--rk-bg4)":"var(--rk-bg3)",border:`1px solid ${alreadyHas?"var(--rk-border)":c+"44"}`,cursor:alreadyHas?"default":"pointer",opacity:alreadyHas?.6:1}}>
+                        style={{display:"flex",alignItems:"center",gap:12,padding:"12px 10px",borderRadius:10,marginBottom:8,background:alreadyHas?"#1A1A2E":"#0F0F1C",border:`1px solid ${alreadyHas?"#2A2A44":c+"44"}`,cursor:alreadyHas?"default":"pointer",opacity:alreadyHas?.6:1}}>
                         <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0}}/>
                         <div style={{flex:1}}>
-                          <div style={{fontSize:13,fontWeight:700,color:alreadyHas?"var(--rk-t3)":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
-                          <div style={{fontSize:10,color:"var(--rk-t2)"}}>{rt.sessions?.length||0} sesiones · {total} ejercicios</div>
+                          <div style={{fontSize:13,fontWeight:700,color:alreadyHas?"#555":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                          <div style={{fontSize:10,color:"#444"}}>{rt.sessions?.length||0} sesiones · {total} ejercicios</div>
                         </div>
-                        {alreadyHas?<span style={{fontSize:10,color:"var(--rk-t3)"}}>Ya asignada</span>:<span style={{fontSize:18,color:c}}>+</span>}
+                        {alreadyHas?<span style={{fontSize:10,color:"#555"}}>Ya asignada</span>:<span style={{fontSize:18,color:c}}>+</span>}
                       </div>
                     );
                   })
@@ -3527,22 +3294,22 @@ function AdminPanel({onLogout}){
         {/* Assign diet modal */}
         {assignDietModal&&(
           <div onClick={()=>setAssignDietModal(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-            <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"1px solid #34D39944",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"70vh",overflowY:"auto"}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #34D39944",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"70vh",overflowY:"auto"}}>
               <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:12}}>SELECCIONA DIETA PARA ASIGNAR</div>
               {adminDiets.length===0
-                ? <div style={{textAlign:"center",padding:"24px 0",color:"var(--rk-t2)",fontSize:12}}>No hay dietas creadas aún.<br/>Ve a la pestaña 🥗 Dietas del admin.</div>
+                ? <div style={{textAlign:"center",padding:"24px 0",color:"#444",fontSize:12}}>No hay dietas creadas aún.<br/>Ve a la pestaña 🥗 Dietas del admin.</div>
                 : adminDiets.map(dt=>{
                     const c=dt.color||"#34D399";
                     const alreadyHas=(editData.assignedDiets||[]).find(d=>d.id===dt.id);
                     return(
                       <div key={dt.id} onClick={()=>!alreadyHas&&assignDietToUser(assignDietModal,dt)}
-                        style={{display:"flex",alignItems:"center",gap:12,padding:"12px 10px",borderRadius:10,marginBottom:8,background:alreadyHas?"var(--rk-bg4)":"var(--rk-bg3)",border:`1px solid ${alreadyHas?"var(--rk-border)":c+"44"}`,cursor:alreadyHas?"default":"pointer",opacity:alreadyHas?.6:1}}>
+                        style={{display:"flex",alignItems:"center",gap:12,padding:"12px 10px",borderRadius:10,marginBottom:8,background:alreadyHas?"#1A1A2E":"#0F0F1C",border:`1px solid ${alreadyHas?"#2A2A44":c+"44"}`,cursor:alreadyHas?"default":"pointer",opacity:alreadyHas?.6:1}}>
                         <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0}}/>
                         <div style={{flex:1}}>
-                          <div style={{fontSize:13,fontWeight:700,color:alreadyHas?"var(--rk-t3)":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
-                          <div style={{fontSize:10,color:"var(--rk-t2)"}}>{dt.goal&&`${dt.goal} · `}{dt.calories&&`${dt.calories} · `}{dt.meals?.length||0} comidas</div>
+                          <div style={{fontSize:13,fontWeight:700,color:alreadyHas?"#555":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
+                          <div style={{fontSize:10,color:"#444"}}>{dt.goal&&`${dt.goal} · `}{dt.calories&&`${dt.calories} · `}{dt.meals?.length||0} comidas</div>
                         </div>
-                        {alreadyHas?<span style={{fontSize:10,color:"var(--rk-t3)"}}>Ya asignada</span>:<span style={{fontSize:18,color:c}}>+</span>}
+                        {alreadyHas?<span style={{fontSize:10,color:"#555"}}>Ya asignada</span>:<span style={{fontSize:18,color:c}}>+</span>}
                       </div>
                     );
                   })
@@ -3558,28 +3325,28 @@ function AdminPanel({onLogout}){
   }
 
   return(
-    <div style={{minHeight:"100dvh",background:"var(--rk-bg)",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",display:"flex",flexDirection:"column"}}>
+    <div style={{minHeight:"100dvh",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",display:"flex",flexDirection:"column"}}>
       <style>{CSS}</style>
 
       {/* Header */}
-      <div style={{background:"linear-gradient(180deg,#0D0D1F,var(--rk-bg))",padding:"16px 16px 14px",borderBottom:"1px solid #A78BFA33",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
+      <div style={{background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"16px 16px 14px",borderBottom:"1px solid #A78BFA33",display:"flex",justifyContent:"space-between",alignItems:"center",position:"sticky",top:0,zIndex:100}}>
         <div>
           <div style={{fontSize:9,color:"#A78BFA",letterSpacing:5}}>PANEL DE CONTROL</div>
-          <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1}}>ADMINISTRADOR</div>
+          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>ADMINISTRADOR</div>
         </div>
         <div style={{display:"flex",gap:8}}>
           {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
-          <button onClick={exportBackup} disabled={exporting} style={{background:"var(--rk-bg4)",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
+          <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
           <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
-          <button onClick={()=>restoreInputRef.current?.click()} style={{background:"var(--rk-bg4)",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
-          <button onClick={onLogout} style={{background:"var(--rk-bg4)",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>SALIR</button>
+          <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
+          <button onClick={onLogout} style={{background:"#1A1A2E",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>SALIR</button>
         </div>
       </div>
 
       {/* Tab bar */}
-      <div style={{display:"flex",gap:8,padding:"10px 16px",background:"var(--rk-inset)",borderBottom:"1px solid var(--rk-border2)"}}>
+      <div style={{display:"flex",gap:8,padding:"10px 16px",background:"#0A0A14",borderBottom:"1px solid #1E1E32"}}>
         {TABS_ADMIN.map(t=>(
-          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"9px 8px",borderRadius:8,cursor:"pointer",background:tab===t.id?"#A78BFA22":"transparent",border:`1px solid ${tab===t.id?"#A78BFA":"var(--rk-border2)"}`,color:tab===t.id?"#A78BFA":"var(--rk-t3)",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
+          <button key={t.id} onClick={()=>setTab(t.id)} style={{flex:1,padding:"9px 8px",borderRadius:8,cursor:"pointer",background:tab===t.id?"#A78BFA22":"transparent",border:`1px solid ${tab===t.id?"#A78BFA":"#1E1E32"}`,color:tab===t.id?"#A78BFA":"#555",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
             {t.l}
           </button>
         ))}
@@ -3591,19 +3358,19 @@ function AdminPanel({onLogout}){
             {showRoutineBuilder?(
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-                  <button onClick={()=>setShowRoutineBuilder(false)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#A78BFA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{editingRoutine?"EDITAR RUTINA":"NUEVA RUTINA"}</div>
+                  <button onClick={()=>setShowRoutineBuilder(false)} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{editingRoutine?"EDITAR RUTINA":"NUEVA RUTINA"}</div>
                 </div>
 
                 {/* Name */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:8}}>NOMBRE</div>
+                <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:8}}>NOMBRE</div>
                   <input style={inp} placeholder="Nombre de la rutina..." value={rtName} onChange={e=>setRtName(e.target.value)}/>
                 </div>
 
                 {/* Color */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:8}}>COLOR</div>
+                <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:8}}>COLOR</div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                     {COLORS.map(c=>(
                       <div key={c} onClick={()=>setRtColor(c)} style={{width:28,height:28,borderRadius:8,background:c,cursor:"pointer",border:rtColor===c?"3px solid #FFF":"2px solid transparent",boxShadow:rtColor===c?`0 0 10px ${c}`:"none"}}/>
@@ -3613,7 +3380,7 @@ function AdminPanel({onLogout}){
 
                 {/* Sessions */}
                 {rtSessions.map((sess,si)=>(
-                  <div key={si} style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:`1px solid ${rtColor}33`,marginBottom:12}}>
+                  <div key={si} style={{background:"#0D0D1A",borderRadius:12,padding:14,border:`1px solid ${rtColor}33`,marginBottom:12}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
                       <input value={sess.day} onChange={e=>{const s=[...rtSessions];s[si]={...s[si],day:e.target.value};setRtSessions(s);}}
                         style={{...inp,marginBottom:0,width:"auto",flex:1,marginRight:8,fontSize:12,fontWeight:700,color:rtColor,background:"transparent",border:"none",borderBottom:`1px solid ${rtColor}44`,borderRadius:0,padding:"4px 0"}}/>
@@ -3622,14 +3389,14 @@ function AdminPanel({onLogout}){
 
                     {/* Exercises in session */}
                     {sess.exercises.map((ex,ei)=>(
-                      <div key={ei} style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,background:"var(--rk-bg)",borderRadius:8,padding:"6px 10px",border:ex.boss?"1px solid #E84A5F66":"1px solid transparent"}}>
+                      <div key={ei} style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,background:"#07070F",borderRadius:8,padding:"6px 10px",border:ex.boss?"1px solid #E84A5F66":"1px solid transparent"}}>
                         <div style={{flex:1}}>
-                          <div style={{fontSize:12,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.name}</div>
-                          <div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.sets} · {ex.rest} descanso</div>
+                          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.name}</div>
+                          <div style={{fontSize:10,color:"#555"}}>{ex.sets} · {ex.rest} descanso</div>
                         </div>
                         <button onClick={()=>{const s=[...rtSessions];s[si].exercises[ei]={...ex,boss:!ex.boss};setRtSessions(s);}}
                           title={ex.boss?"Quitar Boss":"Marcar como Boss"}
-                          style={{background:ex.boss?"#E84A5F22":"none",border:ex.boss?"1px solid #E84A5F":"1px solid var(--rk-border)",borderRadius:6,color:ex.boss?"#E84A5F":"var(--rk-t2)",cursor:"pointer",fontSize:13,padding:"3px 7px"}}>💀</button>
+                          style={{background:ex.boss?"#E84A5F22":"none",border:ex.boss?"1px solid #E84A5F":"1px solid #2A2A44",borderRadius:6,color:ex.boss?"#E84A5F":"#444",cursor:"pointer",fontSize:13,padding:"3px 7px"}}>💀</button>
                         <button onClick={()=>{const s=[...rtSessions];s[si].exercises=s[si].exercises.filter((_,i)=>i!==ei);setRtSessions(s);}} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:13}}>✕</button>
                       </div>
                     ))}
@@ -3639,31 +3406,31 @@ function AdminPanel({onLogout}){
                       {/* DB search — texto libre, funciona bien en móvil (el <select> nativo no dejaba escribir para filtrar) */}
                       <div style={{position:"relative",marginBottom:6}}>
                         <input placeholder="🔍 Buscar en base de ejercicios..." value={rtDbSearch[si]||""} onChange={e=>setRtDbSearch(p=>({...p,[si]:e.target.value}))}
-                          style={{...inp,marginBottom:0,color:"var(--rk-t7)",fontSize:12}}/>
+                          style={{...inp,marginBottom:0,color:"#AAA",fontSize:12}}/>
                         {rtDbSearch[si]&&rtDbSearch[si].trim().length>0&&(()=>{
                           const q=rtDbSearch[si].trim().toLowerCase();
                           const matches=EXERCISE_DB.filter(x=>x.name.toLowerCase().includes(q));
                           return(
-                          <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,marginTop:4,maxHeight:260,overflowY:"auto",boxShadow:"0 8px 20px #00000088"}}>
+                          <div style={{position:"absolute",top:"100%",left:0,right:0,zIndex:20,background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,marginTop:4,maxHeight:260,overflowY:"auto",boxShadow:"0 8px 20px #00000088"}}>
                             {Object.keys(MUSCLE_DEFS).map(m=>{
                               const group=matches.filter(x=>x.muscle.includes(m));
                               if(group.length===0) return null;
                               return(
                                 <div key={m}>
-                                  <div style={{padding:"6px 12px 4px",fontSize:9,color:"var(--rk-t4)",letterSpacing:2,fontWeight:700,background:"var(--rk-bg)"}}>{MUSCLE_DEFS[m].label.toUpperCase()}</div>
+                                  <div style={{padding:"6px 12px 4px",fontSize:9,color:"#666",letterSpacing:2,fontWeight:700,background:"#07070F"}}>{MUSCLE_DEFS[m].label.toUpperCase()}</div>
                                   {group.map(ex=>(
                                     <button key={ex.id} onClick={()=>{
                                       setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
                                       setRtDbSearch(p=>({...p,[si]:""}));
-                                    }} style={{display:"block",width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid var(--rk-bg4)",color:"var(--rk-t9)",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                                      {ex.name} <span style={{color:"var(--rk-t4)",fontSize:10}}>({ex.xpBase}XP)</span>
+                                    }} style={{display:"block",width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid #1A1A2E",color:"#DDD",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                                      {ex.name} <span style={{color:"#666",fontSize:10}}>({ex.xpBase}XP)</span>
                                     </button>
                                   ))}
                                 </div>
                               );
                             })}
                             {matches.length===0&&(
-                              <div style={{padding:"10px 12px",color:"var(--rk-t3)",fontSize:11}}>Sin resultados</div>
+                              <div style={{padding:"10px 12px",color:"#555",fontSize:11}}>Sin resultados</div>
                             )}
                           </div>
                           );
@@ -3691,7 +3458,7 @@ function AdminPanel({onLogout}){
 
                 <div style={{display:"flex",gap:8,marginBottom:8}}>
                   <button onClick={()=>setRtSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[],week:p[p.length-1]?.week||1}])}
-                    style={{flex:1,padding:11,background:"var(--rk-bg2)",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                    style={{flex:1,padding:11,background:"#0D0D1A",border:`1px dashed ${rtColor}44`,borderRadius:10,color:rtColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                     + AÑADIR SESIÓN
                   </button>
                   <button onClick={()=>{
@@ -3765,14 +3532,14 @@ function AdminPanel({onLogout}){
                 )}
 
                 <button onClick={saveRoutine} disabled={!rtName.trim()}
-                  style={{width:"100%",padding:14,background:rtName.trim()?`linear-gradient(135deg,${rtColor},${rtColor}99)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:"var(--rk-text)",fontSize:14,fontWeight:700,cursor:rtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                  style={{width:"100%",padding:14,background:rtName.trim()?`linear-gradient(135deg,${rtColor},${rtColor}99)`:"#1A1A2E",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:rtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
                   💾 GUARDAR RUTINA
                 </button>
               </div>
             ):(
               <div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>RUTINAS DEL ADMIN ({adminRoutines.length})</div>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>RUTINAS DEL ADMIN ({adminRoutines.length})</div>
                   <div style={{display:"flex",gap:8}}>
                     <button onClick={repairRoutineWeeks} style={{padding:"8px 14px",background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔧 REPARAR SEMANAS</button>
                     <button onClick={()=>setShowAIGen(true)} style={{padding:"8px 14px",background:"#F59E0B22",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 IA</button>
@@ -3781,11 +3548,11 @@ function AdminPanel({onLogout}){
                 </div>
 
                 {adminRoutines.length===0
-                  ? <div style={{textAlign:"center",padding:"60px 20px",color:"var(--rk-t1)"}}>
+                  ? <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
                       <div style={{fontSize:40,marginBottom:12}}>🛠️</div>
-                      <div style={{fontSize:13,color:"var(--rk-t2)",marginBottom:16}}>Aún no hay rutinas.<br/>Crea una para asignarla a tus jugadores.</div>
+                      <div style={{fontSize:13,color:"#444",marginBottom:16}}>Aún no hay rutinas.<br/>Crea una para asignarla a tus jugadores.</div>
                       <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-                        <button onClick={()=>setShowAIGen(true)} style={{padding:"12px 24px",background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 GENERAR CON IA</button>
+                        <button onClick={()=>setShowAIGen(true)} style={{padding:"12px 24px",background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 GENERAR CON IA</button>
                         <button onClick={openNewRoutine} style={{padding:"12px 24px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CREAR PRIMERA RUTINA</button>
                       </div>
                     </div>
@@ -3794,13 +3561,13 @@ function AdminPanel({onLogout}){
                       const totalEx=rt.sessions?.reduce((a,s)=>a+s.exercises.length,0)||0;
                       const assignedTo=userList.filter(u=>{const d=getUD(u.email)||defaultData();return (d.customRoutines||[]).find(r=>r.id===rt.id);});
                       return(
-                        <div key={rt.id} style={{background:"var(--rk-bg3)",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
+                        <div key={rt.id} style={{background:"#0F0F1C",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
                             <div style={{display:"flex",alignItems:"center",gap:10}}>
                               <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0,boxShadow:`0 0 8px ${c}`}}/>
                               <div>
-                                <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
-                                <div style={{fontSize:10,color:"var(--rk-t3)"}}>{rt.sessions?.length||0} sesiones · {totalEx} ejercicios</div>
+                                <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                                <div style={{fontSize:10,color:"#555"}}>{rt.sessions?.length||0} sesiones · {totalEx} ejercicios</div>
                               </div>
                             </div>
                             <div style={{display:"flex",gap:6}}>
@@ -3810,7 +3577,7 @@ function AdminPanel({onLogout}){
                           </div>
                           {assignedTo.length>0&&(
                             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:4}}>
-                              <span style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2}}>ASIGNADA A:</span>
+                              <span style={{fontSize:9,color:"#444",letterSpacing:2}}>ASIGNADA A:</span>
                               {assignedTo.map(u=>(
                                 <span key={u.email} style={{fontSize:10,padding:"2px 8px",background:`${c}18`,border:`1px solid ${c}33`,borderRadius:20,color:c}}>{u.name}</span>
                               ))}
@@ -3830,15 +3597,15 @@ function AdminPanel({onLogout}){
             {showDietBuilder?(
               <div>
                 <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-                  <button onClick={()=>setShowDietBuilder(false)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#34D399",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{editingDiet?"EDITAR DIETA":"NUEVA DIETA"}</div>
+                  <button onClick={()=>setShowDietBuilder(false)} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#34D399",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{editingDiet?"EDITAR DIETA":"NUEVA DIETA"}</div>
                 </div>
 
                 {/* Nombre y color */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:8}}>NOMBRE DE LA DIETA</div>
+                <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:8}}>NOMBRE DE LA DIETA</div>
                   <input style={inp} placeholder="Ej: Volumen limpio, Déficit verano..." value={dtName} onChange={e=>setDtName(e.target.value)}/>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:8,marginTop:4}}>COLOR</div>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:8,marginTop:4}}>COLOR</div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                     {COLORS.map(c=>(
                       <div key={c} onClick={()=>setDtColor(c)} style={{width:26,height:26,borderRadius:7,background:c,cursor:"pointer",border:dtColor===c?"3px solid #FFF":"2px solid transparent",boxShadow:dtColor===c?`0 0 10px ${c}`:"none"}}/>
@@ -3847,29 +3614,29 @@ function AdminPanel({onLogout}){
                 </div>
 
                 {/* Info nutricional */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:10}}>INFO NUTRICIONAL</div>
+                <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:10}}>INFO NUTRICIONAL</div>
                   <div style={{marginBottom:8}}>
-                    <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>OBJETIVO</div>
+                    <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>OBJETIVO</div>
                     <input style={{...inp,marginBottom:0}} placeholder="Ej: Pérdida de grasa · Déficit 400 kcal" value={dtGoal} onChange={e=>setDtGoal(e.target.value)}/>
                   </div>
                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginTop:8}}>
                     <div>
-                      <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>CALORÍAS</div>
+                      <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>CALORÍAS</div>
                       <input style={{...inp,marginBottom:0}} placeholder="Ej: 2000 kcal" value={dtCalories} onChange={e=>setDtCalories(e.target.value)}/>
                     </div>
                     <div>
-                      <div style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>PROTEÍNA</div>
+                      <div style={{fontSize:10,color:"#555",letterSpacing:2,marginBottom:4}}>PROTEÍNA</div>
                       <input style={{...inp,marginBottom:0}} placeholder="Ej: 2g/kg" value={dtProtein} onChange={e=>setDtProtein(e.target.value)}/>
                     </div>
                   </div>
                 </div>
 
                 {/* Comidas */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:`1px solid ${dtColor}33`,marginBottom:12}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>COMIDAS DEL DÍA</div>
+                <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:`1px solid ${dtColor}33`,marginBottom:12}}>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>COMIDAS DEL DÍA</div>
                   {dtMeals.map((m,i)=>(
-                    <div key={i} style={{background:"var(--rk-bg)",borderRadius:10,padding:10,marginBottom:8,border:"1px solid var(--rk-bg4)"}}>
+                    <div key={i} style={{background:"#07070F",borderRadius:10,padding:10,marginBottom:8,border:"1px solid #1A1A2E"}}>
                       <div style={{display:"grid",gridTemplateColumns:"80px 1fr auto",gap:6,marginBottom:6}}>
                         <input value={m.time} onChange={e=>{const ms=[...dtMeals];ms[i]={...ms[i],time:e.target.value};setDtMeals(ms);}}
                           style={{...inp,marginBottom:0,fontSize:12,textAlign:"center"}} placeholder="08:00"/>
@@ -3880,7 +3647,7 @@ function AdminPanel({onLogout}){
                       <textarea value={m.desc} onChange={e=>{const ms=[...dtMeals];ms[i]={...ms[i],desc:e.target.value};setDtMeals(ms);}}
                         style={{...inp,marginBottom:4,fontSize:11,resize:"vertical",minHeight:52,lineHeight:1.5}} placeholder="Descripción: 150g pollo · Arroz integral · Ensalada..."/>
                       {/* Food DB picker */}
-                      <select style={{...inp,marginBottom:0,color:"var(--rk-t7)",fontSize:10}} onChange={e=>{
+                      <select style={{...inp,marginBottom:0,color:"#AAA",fontSize:10}} onChange={e=>{
                         if(!e.target.value) return;
                         const food=FOOD_DB.find(f=>f.name===e.target.value);
                         if(food){
@@ -3909,8 +3676,8 @@ function AdminPanel({onLogout}){
                 </div>
 
                 {/* Tips */}
-                <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)",marginBottom:14}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:10}}>REGLAS / CONSEJOS</div>
+                <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32",marginBottom:14}}>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:10}}>REGLAS / CONSEJOS</div>
                   {dtTips.map((t,i)=>(
                     <div key={i} style={{display:"flex",gap:6,marginBottom:6}}>
                       <input value={t} onChange={e=>{const ts=[...dtTips];ts[i]=e.target.value;setDtTips(ts);}}
@@ -3919,40 +3686,40 @@ function AdminPanel({onLogout}){
                     </div>
                   ))}
                   <button onClick={()=>setDtTips(p=>[...p,""])}
-                    style={{padding:"7px 12px",background:"transparent",border:"1px dashed var(--rk-border)",borderRadius:7,color:"var(--rk-t3)",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                    style={{padding:"7px 12px",background:"transparent",border:"1px dashed #2A2A44",borderRadius:7,color:"#555",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                     + AÑADIR CONSEJO
                   </button>
                 </div>
 
                 <button onClick={saveDiet} disabled={!dtName.trim()}
-                  style={{width:"100%",padding:14,background:dtName.trim()?`linear-gradient(135deg,${dtColor},${dtColor}99)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:"var(--rk-text)",fontSize:14,fontWeight:700,cursor:dtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+                  style={{width:"100%",padding:14,background:dtName.trim()?`linear-gradient(135deg,${dtColor},${dtColor}99)`:"#1A1A2E",border:"none",borderRadius:10,color:"#FFF",fontSize:14,fontWeight:700,cursor:dtName.trim()?"pointer":"default",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
                   💾 GUARDAR DIETA
                 </button>
               </div>
             ):(
               <div>
                 <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-                  <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>DIETAS DEL ADMIN ({adminDiets.length})</div>
+                  <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>DIETAS DEL ADMIN ({adminDiets.length})</div>
                   <button onClick={openNewDiet} style={{padding:"8px 14px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA</button>
                 </div>
 
                 {adminDiets.length===0
-                  ? <div style={{textAlign:"center",padding:"60px 20px",color:"var(--rk-t1)"}}>
+                  ? <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
                       <div style={{fontSize:40,marginBottom:12}}>🥗</div>
-                      <div style={{fontSize:13,color:"var(--rk-t2)",marginBottom:16}}>Aún no hay dietas.<br/>Crea una para asignarla a tus jugadores.</div>
+                      <div style={{fontSize:13,color:"#444",marginBottom:16}}>Aún no hay dietas.<br/>Crea una para asignarla a tus jugadores.</div>
                       <button onClick={openNewDiet} style={{padding:"12px 24px",background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:10,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CREAR PRIMERA DIETA</button>
                     </div>
                   : adminDiets.map(dt=>{
                       const c=dt.color||"#34D399";
                       const assignedTo=userList.filter(u=>{const d=getUD(u.email)||defaultData();return (d.assignedDiets||[]).find(x=>x.id===dt.id);});
                       return(
-                        <div key={dt.id} style={{background:"var(--rk-bg3)",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
+                        <div key={dt.id} style={{background:"#0F0F1C",border:`1px solid ${c}33`,borderRadius:12,padding:14,marginBottom:10}}>
                           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
                             <div style={{display:"flex",alignItems:"center",gap:10}}>
                               <div style={{width:10,height:10,borderRadius:"50%",background:c,flexShrink:0,boxShadow:`0 0 8px ${c}`}}/>
                               <div>
-                                <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
-                                <div style={{fontSize:10,color:"var(--rk-t3)"}}>{dt.goal&&`${dt.goal} · `}{dt.meals?.length||0} comidas{dt.calories&&` · ${dt.calories}`}</div>
+                                <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{dt.name}</div>
+                                <div style={{fontSize:10,color:"#555"}}>{dt.goal&&`${dt.goal} · `}{dt.meals?.length||0} comidas{dt.calories&&` · ${dt.calories}`}</div>
                               </div>
                             </div>
                             <div style={{display:"flex",gap:6}}>
@@ -3963,7 +3730,7 @@ function AdminPanel({onLogout}){
                           {dt.protein&&<div style={{fontSize:10,color:c,opacity:.7,marginBottom:4}}>🥩 Proteína: {dt.protein}</div>}
                           {assignedTo.length>0&&(
                             <div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
-                              <span style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2}}>ASIGNADA A:</span>
+                              <span style={{fontSize:9,color:"#444",letterSpacing:2}}>ASIGNADA A:</span>
                               {assignedTo.map(u=>(
                                 <span key={u.email} style={{fontSize:10,padding:"2px 8px",background:`${c}18`,border:`1px solid ${c}33`,borderRadius:20,color:c}}>{u.name}</span>
                               ))}
@@ -3982,7 +3749,7 @@ function AdminPanel({onLogout}){
 
         {tab==="stats"&&(
           <div>
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:14}}>ESTADÍSTICAS GLOBALES</div>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>ESTADÍSTICAS GLOBALES</div>
             {/* Maintenance button */}
             <button onClick={()=>{
               const users=getUsers();
@@ -3998,37 +3765,37 @@ function AdminPanel({onLogout}){
                 saveUserData(email,d);
               });
               flash('🧹 Datos huérfanos eliminados');
-            }} style={{width:'100%',padding:10,background:'var(--rk-bg4)',border:'1px solid var(--rk-t2)',borderRadius:9,color:'var(--rk-t6)',fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:"'Rajdhani',sans-serif",marginBottom:14}}>
+            }} style={{width:'100%',padding:10,background:'#1A1A2E',border:'1px solid #444',borderRadius:9,color:'#888',fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:"'Rajdhani',sans-serif",marginBottom:14}}>
               🧹 LIMPIAR DATOS HUÉRFANOS
             </button>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
               {[{icon:"👥",l:"USUARIOS",v:totalUsers,c:"#A78BFA"},{icon:"⚡",l:"XP TOTAL",v:totalXpAll.toLocaleString(),c:"#E8C547"},{icon:"🪙",l:"MONEDAS",v:totalCoinsAll.toLocaleString(),c:"#F59E0B"},{icon:"📅",l:"REGISTRADOS",v:totalUsers,c:"#34D399"}].map(s=>(
-                <div key={s.l} style={{background:"var(--rk-bg3)",borderRadius:12,padding:16,border:`1px solid ${s.c}22`,textAlign:"center"}}>
+                <div key={s.l} style={{background:"#0F0F1C",borderRadius:12,padding:16,border:`1px solid ${s.c}22`,textAlign:"center"}}>
                   <div style={{fontSize:28,marginBottom:4}}>{s.icon}</div>
                   <div style={{fontSize:22,fontWeight:700,color:s.c,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
-                  <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2}}>{s.l}</div>
+                  <div style={{fontSize:9,color:"#444",letterSpacing:2}}>{s.l}</div>
                 </div>
               ))}
             </div>
-            <div style={{background:"var(--rk-bg2)",borderRadius:12,padding:14,border:"1px solid var(--rk-border2)"}}>
-              <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>RANKING RANKUP</div>
+            <div style={{background:"#0D0D1A",borderRadius:12,padding:14,border:"1px solid #1E1E32"}}>
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>RANKING RANKUP</div>
               {[...userList].sort((a,b)=>{const da=getUD(a.email)||defaultData();const db=getUD(b.email)||defaultData();return (db.totalXp||0)-(da.totalXp||0);}).map((u,i)=>{
                 const d=getUD(u.email)||defaultData();
                 const lv=getLevel(d.totalXp||0);const ri=getRank(lv);
                 return(
-                  <div key={u.email} onClick={()=>openUser(u.email)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:"1px solid var(--rk-bg4)",cursor:"pointer"}}>
-                    <div style={{fontSize:14,fontWeight:700,color:"var(--rk-t1)",width:20,textAlign:"center",fontFamily:"'Rajdhani',sans-serif"}}>#{i+1}</div>
+                  <div key={u.email} onClick={()=>openUser(u.email)} style={{display:"flex",alignItems:"center",gap:10,padding:"10px 0",borderBottom:"1px solid #1A1A2E",cursor:"pointer"}}>
+                    <div style={{fontSize:14,fontWeight:700,color:"#333",width:20,textAlign:"center",fontFamily:"'Rajdhani',sans-serif"}}>#{i+1}</div>
                     <div style={{width:32,height:32,borderRadius:8,border:`1.5px solid ${ri.color}`,background:`${ri.color}22`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",flexShrink:0}}>{ri.rank}</div>
                     <div style={{flex:1}}>
                       <div style={{display:"flex",alignItems:"center",gap:6}}>
-                        <span style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
+                        <span style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
                         {(()=>{const cls=CLASSES.find(c=>c.id===(getUD(u.email)||defaultData()).playerClass);return cls?<span style={{fontSize:12,padding:"1px 6px",background:`${cls.color}22`,border:`1px solid ${cls.color}44`,borderRadius:6,color:cls.color,fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{cls.icon} {cls.name}</span>:null;})()}
                       </div>
-                      <div style={{fontSize:10,color:"var(--rk-t2)"}}>{u.email}</div>
+                      <div style={{fontSize:10,color:"#444"}}>{u.email}</div>
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontSize:12,color:ri.color,fontWeight:700}}>Lv {lv}</div>
-                      <div style={{fontSize:10,color:"var(--rk-t2)"}}>{(d.totalXp||0).toLocaleString()} XP</div>
+                      <div style={{fontSize:10,color:"#444"}}>{(d.totalXp||0).toLocaleString()} XP</div>
                     </div>
                   </div>
                 );
@@ -4044,25 +3811,25 @@ function AdminPanel({onLogout}){
         {tab==="usuarios"&&(
           <div>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-              <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>USUARIOS REGISTRADOS ({totalUsers})</div>
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>USUARIOS REGISTRADOS ({totalUsers})</div>
               <button onClick={()=>setShowNewUserForm(v=>!v)}
                 style={{padding:"7px 14px",background:"#A78BFA22",border:"1px solid #A78BFA55",borderRadius:9,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
                 {showNewUserForm?"✕ CANCELAR":"+ NUEVO USUARIO"}
               </button>
             </div>
             {showNewUserForm&&(
-              <div style={{background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:12,padding:16,marginBottom:14}}>
+              <div style={{background:"#0D0D1A",border:"1px solid #A78BFA33",borderRadius:12,padding:16,marginBottom:14}}>
                 <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:12}}>CREAR NUEVO USUARIO</div>
                 <input value={nuName} onChange={e=>setNuName(e.target.value)} placeholder="Nombre"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
                 <input value={nuEmail} onChange={e=>setNuEmail(e.target.value)} placeholder="Email" type="email"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:8,boxSizing:"border-box"}}/>
                 <input value={nuPass} onChange={e=>setNuPass(e.target.value)} placeholder="Contraseña (mín. 6 caracteres)" type="password"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:12,boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:12,boxSizing:"border-box"}}/>
                 <label style={{display:"flex",alignItems:"center",gap:8,marginBottom:12,cursor:"pointer"}}>
                   <input type="checkbox" checked={nuIsTest} onChange={e=>setNuIsTest(e.target.checked)}
                     style={{width:16,height:16,accentColor:"#A78BFA",cursor:"pointer"}}/>
-                  <span style={{fontSize:11,color:"var(--rk-t4)",fontFamily:"'Rajdhani',sans-serif"}}>Usuario de pruebas (no aparece en rankings ni stats)</span>
+                  <span style={{fontSize:11,color:"#666",fontFamily:"'Rajdhani',sans-serif"}}>Usuario de pruebas (no aparece en rankings ni stats)</span>
                 </label>
                 <button onClick={createNewUser}
                   style={{width:"100%",padding:"12px",background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:9,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
@@ -4071,9 +3838,9 @@ function AdminPanel({onLogout}){
               </div>
             )}
             {userList.length===0?(
-              <div style={{textAlign:"center",padding:"60px 20px",color:"var(--rk-t1)"}}>
+              <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
                 <div style={{fontSize:40,marginBottom:12}}>👥</div>
-                <div style={{fontSize:14,color:"var(--rk-t2)"}}>Sin usuarios registrados aún</div>
+                <div style={{fontSize:14,color:"#444"}}>Sin usuarios registrados aún</div>
               </div>
             ):(
               userList.sort((a,b)=>b.createdAt-a.createdAt).map(u=>{
@@ -4082,7 +3849,7 @@ function AdminPanel({onLogout}){
                 const totalDone=Object.values(d.checked||{}).filter(Boolean).length;
                 const date=u.createdAt?new Date(u.createdAt).toLocaleDateString("es-ES",{day:"2-digit",month:"short"}):"—";
                 return(
-                  <div key={u.email} onClick={()=>openUser(u.email)} style={{background:"var(--rk-bg3)",border:`1px solid ${ri.color}22`,borderRadius:12,padding:14,marginBottom:10,cursor:"pointer",transition:"border-color .2s"}}
+                  <div key={u.email} onClick={()=>openUser(u.email)} style={{background:"#0F0F1C",border:`1px solid ${ri.color}22`,borderRadius:12,padding:14,marginBottom:10,cursor:"pointer",transition:"border-color .2s"}}
                     onMouseEnter={e=>e.currentTarget.style.borderColor=ri.color+"66"}
                     onMouseLeave={e=>e.currentTarget.style.borderColor=ri.color+"22"}>
                     <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:8}}>
@@ -4091,22 +3858,22 @@ function AdminPanel({onLogout}){
                       </div>
                       <div style={{flex:1}}>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <span style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
+                          <span style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{u.name}</span>
                           {(userMessages[u.email]||[]).filter(m=>m.from==="user"&&!m.read).length>0&&
-                            <span style={{background:"#E84A5F",color:"var(--rk-text)",fontSize:8,fontWeight:900,padding:"2px 6px",borderRadius:10,fontFamily:"'Rajdhani',sans-serif"}}>MSG</span>}
+                            <span style={{background:"#E84A5F",color:"#FFF",fontSize:8,fontWeight:900,padding:"2px 6px",borderRadius:10,fontFamily:"'Rajdhani',sans-serif"}}>MSG</span>}
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:6}}>
-                          <span style={{fontSize:10,color:"var(--rk-t3)"}}>{u.email}</span>
+                          <span style={{fontSize:10,color:"#555"}}>{u.email}</span>
                           {u.isTest&&<span style={{fontSize:8,padding:"1px 6px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>TEST</span>}
                         </div>
                       </div>
-                      <div style={{fontSize:10,color:"var(--rk-t1)"}}>{date}</div>
+                      <div style={{fontSize:10,color:"#333"}}>{date}</div>
                     </div>
                     <div style={{display:"flex",gap:10}}>
                       {[{l:"Lv",v:lv,c:ri.color},{l:"XP",v:(d.totalXp||0).toLocaleString(),c:ri.color},{l:"🪙",v:d.coins||0,c:"#F59E0B"},{l:"Ejercicios",v:totalDone,c:"#34D399"}].map(s=>(
-                        <div key={s.l} style={{flex:1,textAlign:"center",background:"var(--rk-bg)",borderRadius:8,padding:"6px 4px",border:"1px solid var(--rk-bg4)"}}>
+                        <div key={s.l} style={{flex:1,textAlign:"center",background:"#07070F",borderRadius:8,padding:"6px 4px",border:"1px solid #1A1A2E"}}>
                           <div style={{fontSize:13,fontWeight:700,color:s.c,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
-                          <div style={{fontSize:9,color:"var(--rk-t2)"}}>{s.l}</div>
+                          <div style={{fontSize:9,color:"#444"}}>{s.l}</div>
                         </div>
                       ))}
                     </div>
@@ -4115,10 +3882,10 @@ function AdminPanel({onLogout}){
                         <span style={{fontSize:14}}>{cls.icon}</span>
                         <div>
                           <span style={{fontSize:11,fontWeight:700,color:cls.color,fontFamily:"'Rajdhani',sans-serif"}}>{cls.name}</span>
-                          <span style={{fontSize:10,color:"var(--rk-t3)",marginLeft:6}}>{cls.bonus}</span>
+                          <span style={{fontSize:10,color:"#555",marginLeft:6}}>{cls.bonus}</span>
                         </div>
                       </div>
-                    ):(<div style={{marginTop:8,padding:"5px 10px",background:"var(--rk-bg4)",borderRadius:8,fontSize:10,color:"var(--rk-t1)"}}>Sin clase elegida</div>);})()}
+                    ):(<div style={{marginTop:8,padding:"5px 10px",background:"#1A1A2E",borderRadius:8,fontSize:10,color:"#333"}}>Sin clase elegida</div>);})()}
                   </div>
                 );
               })
@@ -4130,39 +3897,39 @@ function AdminPanel({onLogout}){
       {/* AI Routine Generator modal */}
       {showAIGen&&(
         <div onClick={()=>setShowAIGen(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
-          <div onClick={e=>e.stopPropagation()} style={{background:"var(--rk-bg2)",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
             <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:4}}>🔮 GENERADOR DE RUTINAS IA</div>
-            <div style={{fontSize:11,color:"var(--rk-t3)",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
+            <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
 
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
             <div style={{display:"flex",gap:6,marginBottom:14}}>
               {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"]].map(([v,l])=>(
-                <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"var(--rk-bg4)",color:aiParams.objetivo===v?"var(--rk-ink)":"var(--rk-t3)"}}>{l}</button>
+                <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
               ))}
             </div>
 
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:2,marginBottom:6}}>DÍAS POR SEMANA</div>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>DÍAS POR SEMANA</div>
             <div style={{display:"flex",gap:6,marginBottom:14}}>
               {[1,2,3,4,5,6].map(d=>(
-                <button key={d} onClick={()=>setAiParams(p=>({...p,dias:d}))} style={{flex:1,padding:"9px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.dias===d?"#F59E0B":"var(--rk-bg4)",color:aiParams.dias===d?"var(--rk-ink)":"var(--rk-t3)"}}>{d}</button>
+                <button key={d} onClick={()=>setAiParams(p=>({...p,dias:d}))} style={{flex:1,padding:"9px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.dias===d?"#F59E0B":"#1A1A2E",color:aiParams.dias===d?"#07070F":"#555"}}>{d}</button>
               ))}
             </div>
 
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:2,marginBottom:6}}>SEXO</div>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>SEXO</div>
             <div style={{display:"flex",gap:6,marginBottom:14}}>
               {[["hombre","Hombre"],["mujer","Mujer"],["otro","Prefiero no decir"]].map(([v,l])=>(
-                <button key={v} onClick={()=>setAiParams(p=>({...p,sexo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.sexo===v?"#F59E0B":"var(--rk-bg4)",color:aiParams.sexo===v?"var(--rk-ink)":"var(--rk-t3)"}}>{l}</button>
+                <button key={v} onClick={()=>setAiParams(p=>({...p,sexo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.sexo===v?"#F59E0B":"#1A1A2E",color:aiParams.sexo===v?"#07070F":"#555"}}>{l}</button>
               ))}
             </div>
 
-            <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:2,marginBottom:6}}>NIVEL</div>
+            <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>NIVEL</div>
             <div style={{display:"flex",gap:6,marginBottom:18}}>
               {["Principiante","Intermedio","Avanzado"].map(v=>(
-                <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"var(--rk-bg4)",color:aiParams.nivel===v?"var(--rk-ink)":"var(--rk-t3)"}}>{v}</button>
+                <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"#1A1A2E",color:aiParams.nivel===v?"#07070F":"#555"}}>{v}</button>
               ))}
             </div>
 
-            <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"var(--rk-ink)",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
               🔮 GENERAR RUTINA
             </button>
           </div>
@@ -4172,12 +3939,12 @@ function AdminPanel({onLogout}){
       {/* Season restart choice modal */}
       {confirmSeasonStart&&(
         <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-          <div style={{background:"var(--rk-bg2)",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
+          <div style={{background:"#0D0D1A",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
             <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:14}}>⚔️ REACTIVAR TEMPORADA 1</div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde cero (ningún Señor Oscuro habrá aparecido todavía) o que continúe justo donde se quedó cuando la pausaste?</div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde cero (ningún Señor Oscuro habrá aparecido todavía) o que continúe justo donde se quedó cuando la pausaste?</div>
             <button onClick={startSeasonFresh} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#E84A5F,#B91C3C)",border:"none",borderRadius:10,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>🔄 EMPEZAR DE CERO</button>
             <button onClick={resumeSeason} style={{width:"100%",padding:13,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>▶️ CONTINUAR DONDE ESTABA</button>
-            <button onClick={()=>setConfirmSeasonStart(false)} style={{width:"100%",padding:11,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+            <button onClick={()=>setConfirmSeasonStart(false)} style={{width:"100%",padding:11,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
           </div>
         </div>
       )}
@@ -4185,18 +3952,18 @@ function AdminPanel({onLogout}){
       {/* Restore backup confirmation modal */}
       {pendingRestore&&(
         <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-          <div style={{background:"var(--rk-bg2)",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:420}}>
+          <div style={{background:"#0D0D1A",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:420}}>
             <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:10}}>⚠️ RESTAURAR COPIA DE SEGURIDAD</div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:8}}>Archivo: <b style={{color:"var(--rk-text)"}}>{pendingRestore.filename}</b></div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",lineHeight:1.6,marginBottom:14}}>Fecha de la copia: <b style={{color:"var(--rk-text)"}}>{pendingRestore.exportedAt}</b></div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:8}}>Archivo: <b style={{color:"#FFF"}}>{pendingRestore.filename}</b></div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:14}}>Fecha de la copia: <b style={{color:"#FFF"}}>{pendingRestore.exportedAt}</b></div>
             <div style={{fontSize:12,color:"#F87171",lineHeight:1.6,marginBottom:16,background:"#F8717118",padding:10,borderRadius:8}}>
               Esto va a <b>sobrescribir todos los datos actuales</b> (usuarios, progreso, rutinas, guild raids...) con lo que había en el momento de esta copia. Cualquier cosa creada o cambiada después de esa fecha se perderá.
             </div>
-            <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:8}}>Escribe <b style={{color:"#E84A5F"}}>RESTAURAR</b> para confirmar:</div>
-            <input value={restoreConfirmText} onChange={e=>setRestoreConfirmText(e.target.value)} style={{width:"100%",padding:"11px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}} placeholder="RESTAURAR"/>
+            <div style={{fontSize:11,color:"#666",marginBottom:8}}>Escribe <b style={{color:"#E84A5F"}}>RESTAURAR</b> para confirmar:</div>
+            <input value={restoreConfirmText} onChange={e=>setRestoreConfirmText(e.target.value)} style={{width:"100%",padding:"11px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}} placeholder="RESTAURAR"/>
             <div style={{display:"flex",gap:8}}>
-              <button onClick={()=>{setPendingRestore(null);setRestoreConfirmText("");}} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
-              <button onClick={doRestore} disabled={restoreConfirmText.trim().toUpperCase()!=="RESTAURAR"||restoring} style={{flex:1,padding:12,background:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"linear-gradient(135deg,#E84A5F,#B91C3C)":"var(--rk-border)",border:"none",borderRadius:10,color:"#FFF",fontSize:12,fontWeight:700,cursor:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>{restoring?"⏳ RESTAURANDO...":"SOBRESCRIBIR TODO"}</button>
+              <button onClick={()=>{setPendingRestore(null);setRestoreConfirmText("");}} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+              <button onClick={doRestore} disabled={restoreConfirmText.trim().toUpperCase()!=="RESTAURAR"||restoring} style={{flex:1,padding:12,background:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"linear-gradient(135deg,#E84A5F,#B91C3C)":"#2A2A44",border:"none",borderRadius:10,color:"#FFF",fontSize:12,fontWeight:700,cursor:restoreConfirmText.trim().toUpperCase()==="RESTAURAR"?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>{restoring?"⏳ RESTAURANDO...":"SOBRESCRIBIR TODO"}</button>
             </div>
           </div>
         </div>
@@ -4217,9 +3984,6 @@ export default function App(){
     isAdminSession?{email:ADMIN_EMAIL,name:"Administrador",isAdmin:true}:
     (s&&users[s.email]?{email:s.email,name:users[s.email].name,isAdmin:false}:null)
   );
-  useEffect(()=>{
-    document.documentElement.setAttribute("data-theme",localStorage.getItem("rku_theme")||"dark");
-  },[]);
   if(!user) return <LoginScreen onLogin={(email,name,isAdmin)=>setUser({email,name,isAdmin})}/>;
   if(user.isAdmin) return <AdminPanel onLogout={()=>{fbLogout();clearSession();setUser(null);}}/>;
   return <RankUpApp user={user} onLogout={()=>{fbLogout();clearSession();setUser(null);}}/>;
@@ -4251,9 +4015,9 @@ function ClassSelectModal({current,onSelect}){
 
   return(
     <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.92)",backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
-      <div style={{fontSize:9,letterSpacing:6,color:"var(--rk-t2)",marginBottom:6}}>ELIGE TU CLASE</div>
-      <div style={{fontSize:22,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center"}}>¿Cuál es tu objetivo?</div>
-      <div style={{fontSize:11,color:"var(--rk-t3)",marginBottom:16,textAlign:"center"}}>
+      <div style={{fontSize:9,letterSpacing:6,color:"#444",marginBottom:6}}>ELIGE TU CLASE</div>
+      <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center"}}>¿Cuál es tu objetivo?</div>
+      <div style={{fontSize:11,color:"#555",marginBottom:16,textAlign:"center"}}>
         {isMobile()?"Toca para ver · Toca de nuevo para elegir":"Define tu camino en RankUp"}
       </div>
 
@@ -4263,14 +4027,14 @@ function ClassSelectModal({current,onSelect}){
           <span style={{fontSize:28}}>{cls.icon}</span>
           <div>
             <div style={{fontSize:16,fontWeight:700,color:cls.color,fontFamily:"'Cinzel',serif"}}>{cls.name}</div>
-            <div style={{fontSize:10,color:"var(--rk-t6)"}}>{cls.goal}</div>
+            <div style={{fontSize:10,color:"#888"}}>{cls.goal}</div>
           </div>
         </div>
-        <div style={{fontSize:11,color:"var(--rk-t7)",lineHeight:1.5,marginBottom:6}}>{cls.desc}</div>
+        <div style={{fontSize:11,color:"#AAA",lineHeight:1.5,marginBottom:6}}>{cls.desc}</div>
         <div style={{fontSize:10,color:cls.color,background:`${cls.color}18`,borderRadius:6,padding:"4px 8px",display:"inline-block"}}>🎯 {cls.bonus}</div>
         {previewing&&previewing!==current&&(
           <button onClick={()=>{onSelect(previewing);setPreviewing(null);}}
-            style={{width:"100%",marginTop:10,padding:"10px 0",background:`${cls.color}`,border:"none",borderRadius:9,color:"var(--rk-ink)",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
+            style={{width:"100%",marginTop:10,padding:"10px 0",background:`${cls.color}`,border:"none",borderRadius:9,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
             ✓ ELEGIR {cls.name.toUpperCase()}
           </button>
         )}
@@ -4287,9 +4051,9 @@ function ClassSelectModal({current,onSelect}){
                 onMouseEnter={()=>!isMobile()&&setHovered(c.id)}
                 onMouseLeave={()=>!isMobile()&&setHovered(null)}
                 onClick={()=>handleTap(c.id)}
-                style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"var(--rk-bg2)",border:`1.5px solid ${isSelected||isPreviewing?c.color:"var(--rk-border2)"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
+                style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected||isPreviewing?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
                 <span style={{fontSize:22}}>{c.icon}</span>
-                <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
+                <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
                 {isPreviewing&&<div style={{fontSize:8,color:c.color,letterSpacing:1}}>👆 TOCA</div>}
               </button>
             );
@@ -4304,16 +4068,16 @@ function ClassSelectModal({current,onSelect}){
                 onMouseEnter={()=>!isMobile()&&setHovered(c.id)}
                 onMouseLeave={()=>!isMobile()&&setHovered(null)}
                 onClick={()=>handleTap(c.id)}
-                style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"var(--rk-bg2)",border:`1.5px solid ${isSelected||isPreviewing?c.color:"var(--rk-border2)"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
+                style={{padding:"12px 6px",borderRadius:10,cursor:"pointer",background:isSelected||isPreviewing?`${c.color}22`:"#0D0D1A",border:`1.5px solid ${isSelected||isPreviewing?c.color:"#1E1E32"}`,display:"flex",flexDirection:"column",alignItems:"center",gap:4,transition:"all .15s",boxShadow:isSelected||isPreviewing?`0 0 14px ${c.color}44`:"none"}}>
                 <span style={{fontSize:22}}>{c.icon}</span>
-                <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
+                <div style={{fontSize:10,fontWeight:700,color:isSelected||isPreviewing?c.color:"#888",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{c.name.toUpperCase()}</div>
                 {isPreviewing&&<div style={{fontSize:8,color:c.color,letterSpacing:1}}>👆 TOCA</div>}
               </button>
             );
           })}
         </div>
       </div>
-      <div style={{fontSize:10,color:"var(--rk-t1)",textAlign:"center"}}>Puedes cambiarla más tarde desde tu perfil</div>
+      <div style={{fontSize:10,color:"#333",textAlign:"center"}}>Puedes cambiarla más tarde desde tu perfil</div>
     </div>
   );
 }
@@ -4378,8 +4142,8 @@ function ProfileAvatar({userEmail,riColor,clsIcon}){
 
       {/* Edit panel */}
       {showEdit&&(
-        <div style={{width:"100%",background:"var(--rk-bg)",border:`1px solid ${riColor}33`,borderRadius:12,padding:12}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:10}}>CAMBIAR FOTO</div>
+        <div style={{width:"100%",background:"#07070F",border:`1px solid ${riColor}33`,borderRadius:12,padding:12}}>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:10}}>CAMBIAR FOTO</div>
 
           {/* Option 1: file from device */}
           <button onClick={()=>fileRef.current?.click()} style={{width:"100%",padding:"10px 0",background:`${riColor}18`,border:`1px solid ${riColor}44`,borderRadius:9,color:riColor,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>
@@ -4388,18 +4152,18 @@ function ProfileAvatar({userEmail,riColor,clsIcon}){
           <input ref={fileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleFile}/>
 
           {/* Option 2: URL */}
-          <div style={{fontSize:9,color:"var(--rk-t1)",letterSpacing:2,marginBottom:6}}>O PEGAR URL DE IMAGEN</div>
+          <div style={{fontSize:9,color:"#333",letterSpacing:2,marginBottom:6}}>O PEGAR URL DE IMAGEN</div>
           <div style={{display:"flex",gap:6,marginBottom:6}}>
             <input value={urlInput} onChange={e=>setUrlInput(e.target.value)}
               placeholder="https://..." onKeyDown={e=>e.key==="Enter"&&handleUrl()}
-              style={{flex:1,padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+              style={{flex:1,padding:"8px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
             <button onClick={handleUrl} style={{padding:"8px 12px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer"}}>✓</button>
           </div>
           {error&&<div style={{fontSize:10,color:"#F87171",marginBottom:6}}>{error}</div>}
 
           <div style={{display:"flex",gap:6,marginTop:4}}>
             {photo&&<button onClick={removePhoto} style={{flex:1,padding:"8px 0",background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:8,color:"#E84A5F",fontSize:11,fontWeight:700,cursor:"pointer"}}>🗑 ELIMINAR</button>}
-            <button onClick={()=>{setShowEdit(false);setError("");}} style={{flex:1,padding:"8px 0",background:"transparent",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t3)",fontSize:11,cursor:"pointer"}}>CANCELAR</button>
+            <button onClick={()=>{setShowEdit(false);setError("");}} style={{flex:1,padding:"8px 0",background:"transparent",border:"1px solid #2A2A44",borderRadius:8,color:"#555",fontSize:11,cursor:"pointer"}}>CANCELAR</button>
           </div>
         </div>
       )}
@@ -4417,7 +4181,7 @@ function ProfileFisico({userEmail}){
   const w=userData.weight||0;
   const imc=h>0&&w>0?Math.round((w/(h/100)**2)*10)/10:0;
   const imcLabel=imc===0?"—":imc<18.5?"Bajo peso":imc<25?"Peso normal":imc<30?"Sobrepeso":"Obesidad";
-  const imcColor=imc===0?"var(--rk-t2)":imc<18.5?"#60A5FA":imc<25?"#34D399":imc<30?"#FBBF24":"#F87171";
+  const imcColor=imc===0?"#444":imc<18.5?"#60A5FA":imc<25?"#34D399":imc<30?"#FBBF24":"#F87171";
 
   const update=async()=>{
     const wVal=parseFloat(newW)||w;
@@ -4436,40 +4200,40 @@ function ProfileFisico({userEmail}){
   };
 
   return(
-    <div style={{background:"var(--rk-bg)",border:"1px solid var(--rk-bg4)",borderRadius:10,padding:12}}>
+    <div style={{background:"#07070F",border:"1px solid #1A1A2E",borderRadius:10,padding:12}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-        <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3}}>FÍSICO</div>
-        <button onClick={()=>setShowInput(!showInput)} style={{fontSize:10,color:"var(--rk-t3)",background:"transparent",border:"none",cursor:"pointer",padding:0}}>
+        <div style={{fontSize:9,color:"#444",letterSpacing:3}}>FÍSICO</div>
+        <button onClick={()=>setShowInput(!showInput)} style={{fontSize:10,color:"#555",background:"transparent",border:"none",cursor:"pointer",padding:0}}>
           {showInput?"✕ cerrar":"✏️ editar"}
         </button>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6,marginBottom:8}}>
         <div style={{textAlign:"center"}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:2}}>ALTURA</div>
-          <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)"}}>{h?`${h}cm`:"—"}</div>
+          <div style={{fontSize:9,color:"#444",marginBottom:2}}>ALTURA</div>
+          <div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{h?`${h}cm`:"—"}</div>
         </div>
         <div style={{textAlign:"center"}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:2}}>PESO</div>
-          <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)"}}>{w?`${w}kg`:"—"}</div>
+          <div style={{fontSize:9,color:"#444",marginBottom:2}}>PESO</div>
+          <div style={{fontSize:13,fontWeight:700,color:"#FFF"}}>{w?`${w}kg`:"—"}</div>
         </div>
         <div style={{textAlign:"center"}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:2}}>IMC</div>
+          <div style={{fontSize:9,color:"#444",marginBottom:2}}>IMC</div>
           <div style={{fontSize:13,fontWeight:700,color:imcColor}}>{imc||"—"}</div>
         </div>
       </div>
       {imc>0&&<div style={{fontSize:9,color:imcColor,textAlign:"center",marginBottom:8,padding:"4px 0",background:`${imcColor}14`,borderRadius:6}}>{imcLabel}</div>}
       {showInput&&(
-        <div style={{borderTop:"1px solid var(--rk-bg4)",paddingTop:10,marginTop:4}}>
+        <div style={{borderTop:"1px solid #1A1A2E",paddingTop:10,marginTop:4}}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
             <div>
-              <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2,marginBottom:4}}>ALTURA (cm)</div>
+              <div style={{fontSize:9,color:"#444",letterSpacing:2,marginBottom:4}}>ALTURA (cm)</div>
               <input value={newH} onChange={e=>setNewH(e.target.value)} placeholder={h?`${h}`:"170"} type="number"
-                style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"8px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
             </div>
             <div>
-              <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2,marginBottom:4}}>PESO (kg)</div>
+              <div style={{fontSize:9,color:"#444",letterSpacing:2,marginBottom:4}}>PESO (kg)</div>
               <input value={newW} onChange={e=>setNewW(e.target.value)} placeholder={w?`${w}`:"70"} type="number" step="0.1"
-                style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"8px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
             </div>
           </div>
           {/* IMC preview */}
@@ -4571,9 +4335,9 @@ function RankingTab({currentEmail, currentName}){
           {cats.slice(0,3).map(c=>(
             <button key={c.id} onClick={()=>setCat(c.id)}
               style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
-                background:cat===c.id?"#F59E0B22":"var(--rk-bg2)",
-                border:`1px solid ${cat===c.id?"#F59E0B":"var(--rk-border2)"}`,
-                color:cat===c.id?"#F59E0B":"var(--rk-t3)"}}>
+                background:cat===c.id?"#F59E0B22":"#0D0D1A",
+                border:`1px solid ${cat===c.id?"#F59E0B":"#1E1E32"}`,
+                color:cat===c.id?"#F59E0B":"#555"}}>
               {c.label}
             </button>
           ))}
@@ -4582,9 +4346,9 @@ function RankingTab({currentEmail, currentName}){
           {cats.slice(3).map(c=>(
             <button key={c.id} onClick={()=>setCat(c.id)}
               style={{padding:"10px 8px",borderRadius:10,cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
-                background:cat===c.id?"#F59E0B22":"var(--rk-bg2)",
-                border:`1px solid ${cat===c.id?"#F59E0B":"var(--rk-border2)"}`,
-                color:cat===c.id?"#F59E0B":"var(--rk-t3)"}}>
+                background:cat===c.id?"#F59E0B22":"#0D0D1A",
+                border:`1px solid ${cat===c.id?"#F59E0B":"#1E1E32"}`,
+                color:cat===c.id?"#F59E0B":"#555"}}>
               {c.label}
             </button>
           ))}
@@ -4592,7 +4356,7 @@ function RankingTab({currentEmail, currentName}){
       </div>
 
       {loading?(
-        <div style={{textAlign:"center",padding:40,color:"var(--rk-t3)"}}>
+        <div style={{textAlign:"center",padding:40,color:"#555"}}>
           <div style={{fontSize:24,marginBottom:8}}>⏳</div>
           <div style={{fontSize:12}}>Cargando ranking...</div>
         </div>
@@ -4600,19 +4364,19 @@ function RankingTab({currentEmail, currentName}){
         <div>
           {sorted.map((p,i)=>{
             const isMe=p.email===currentEmail;
-            const ri=getRank(p.level)||{color:"var(--rk-t5)",rank:"E",title:"Novato"};
+            const ri=getRank(p.level)||{color:"#9CA3AF",rank:"E",title:"Novato"};
             const cls=CLASSES.find(c=>c.id===p.playerClass);
             const val=cats.find(c=>c.id===cat)?.val(p);
             return(
               <div key={p.email} style={{
                 display:"flex",alignItems:"center",gap:12,padding:"12px 14px",
                 marginBottom:8,borderRadius:12,
-                background:isMe?"#F59E0B14":"var(--rk-bg2)",
-                border:`1px solid ${isMe?"#F59E0B66":i<3?"#F59E0B22":"var(--rk-border2)"}`,
+                background:isMe?"#F59E0B14":"#0D0D1A",
+                border:`1px solid ${isMe?"#F59E0B66":i<3?"#F59E0B22":"#1E1E32"}`,
                 boxShadow:isMe?"0 0 16px #F59E0B22":i===0?"0 0 12px #F59E0B11":"none"
               }}>
                 {/* Position */}
-                <div style={{width:28,textAlign:"center",fontSize:i<3?20:14,fontWeight:700,color:i<3?"#F59E0B":"var(--rk-t2)",fontFamily:"'Cinzel',serif",flexShrink:0}}>
+                <div style={{width:28,textAlign:"center",fontSize:i<3?20:14,fontWeight:700,color:i<3?"#F59E0B":"#444",fontFamily:"'Cinzel',serif",flexShrink:0}}>
                   {i<3?medals[i]:i+1}
                 </div>
                 {/* Avatar */}
@@ -4625,19 +4389,19 @@ function RankingTab({currentEmail, currentName}){
                     <span style={{fontSize:14,fontWeight:700,color:isMe?"#F59E0B":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{p.name}</span>
                     {isMe&&<span style={{fontSize:9,color:"#F59E0B",background:"#F59E0B22",padding:"1px 6px",borderRadius:10,letterSpacing:1}}>TÚ</span>}
                   </div>
-                  <div style={{fontSize:10,color:"var(--rk-t3)"}}>Lv.{p.level} · [{ri.rank}] {ri.title}{cls?` · ${cls.icon} ${cls.name}`:""}</div>
+                  <div style={{fontSize:10,color:"#555"}}>Lv.{p.level} · [{ri.rank}] {ri.title}{cls?` · ${cls.icon} ${cls.name}`:""}</div>
                 </div>
                 {/* Value */}
-                <div style={{fontSize:14,fontWeight:700,color:i===0?"#F59E0B":i===1?"var(--rk-t5)":i===2?"#CD7F32":ri.color,fontFamily:"'Rajdhani',sans-serif",textAlign:"right",flexShrink:0}}>
+                <div style={{fontSize:14,fontWeight:700,color:i===0?"#F59E0B":i===1?"#9CA3AF":i===2?"#CD7F32":ri.color,fontFamily:"'Rajdhani',sans-serif",textAlign:"right",flexShrink:0}}>
                   {val}
                 </div>
               </div>
             );
           })}
           {sorted.length===0&&(
-            <div style={{textAlign:"center",padding:40,color:"var(--rk-t1)"}}>
+            <div style={{textAlign:"center",padding:40,color:"#333"}}>
               <div style={{fontSize:32,marginBottom:8}}>🏅</div>
-              <div style={{fontSize:14,color:"var(--rk-t2)"}}>Aún no hay jugadores en el ranking</div>
+              <div style={{fontSize:14,color:"#444"}}>Aún no hay jugadores en el ranking</div>
             </div>
           )}
         </div>
@@ -4660,7 +4424,6 @@ function RankUpApp({user,onLogout}){
   const [routineHistory,setRoutineHistory]=useState(saved.routineHistory||[]);
   const [inventory,setInventory]=useState(saved.inventory||{});
   const [equipment,setEquipment]=useState(saved.equipment||{});
-  const [bodyMeasurements,setBodyMeasurements]=useState(saved.bodyMeasurements||{});
   const [equipped,setEquipped]=useState(saved.equipped||{}); // {slotId: "slot_tier"|null}
   const toggleEquip=useCallback((slot,ek)=>{
     setEquipped(p=>({...p,[slot]:p[slot]===ek?null:ek}));
@@ -4690,6 +4453,11 @@ function RankUpApp({user,onLogout}){
     return null;
   },[equipped]);
   const [craftToast,setCraftToast]=useState(null);
+  const [gifModal,setGifModal]=useState(null); // {name,path}|null
+  const showGif=useCallback((exName)=>{
+    const path=exerciseGif(exName);
+    if(path) setGifModal({name:exName,path});
+  },[]);
   const [lootToast,setLootToast]=useState(null);
   const [lootStats,setLootStats]=useState(saved.lootStats||{total:0,rarities:[],types:[]});
   const [craftStats,setCraftStats]=useState(saved.craftStats||{total:0,slots:[],tiers:[],maestroSlots:[]});
@@ -4727,7 +4495,6 @@ function RankUpApp({user,onLogout}){
   const [assignedDiets,setAssignedDiets]=useState(saved.assignedDiets||[]);
   const [assignedProgram,setAssignedProgram]=useState(saved.assignedProgram||null);
   const [playerClass,setPlayerClass]=useState(saved.playerClass||null);
-  const [betaTester,setBetaTester]=useState(saved.betaTester||false);
   const [exNotes,setExNotes]=useState(saved.exNotes||{});  // {key: "texto"}
   const [exHistory,setExHistory]=useState(saved.exHistory||{});  // {exName: [{kg,date,session}]}
   const [exOverrides,setExOverrides]=useState(saved.exOverrides||{});  // {exKey: newExName} — program exercise swaps
@@ -4758,31 +4525,6 @@ function RankUpApp({user,onLogout}){
   const [achToast,setAchToast]=useState(null);
   const [coinToast,setCoinToast]=useState(null);
   const [showProfile,setShowProfile]=useState(false);
-  const [showBuzon,setShowBuzon]=useState(false);
-  const [theme,setTheme]=useState(()=>localStorage.getItem("rku_theme")||"dark");
-  useEffect(()=>{
-    document.documentElement.setAttribute("data-theme",theme);
-    localStorage.setItem("rku_theme",theme);
-  },[theme]);
-  const toggleTheme=()=>setTheme(t=>t==="light"?"dark":"light");
-  const [showDMs,setShowDMs]=useState(false);
-  const [dmInitialTarget,setDmInitialTarget]=useState(null);
-  const [profileTarget,setProfileTarget]=useState(null);
-  const [hasUnreadDMs,setHasUnreadDMs]=useState(false);
-  const checkUnreadDMs=useCallback(()=>{
-    const myKey=user.email.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
-    fbGet(`dmIndex/${myKey}`).then(d=>{
-      setHasUnreadDMs(!!d&&Object.values(d).some(t=>t?.unread));
-    }).catch(()=>{});
-  },[user]);
-  useEffect(()=>{checkUnreadDMs();},[checkUnreadDMs]);
-  const [perfilSection,setPerfilSection]=useState(null);
-  const [showBuilder,setShowBuilder]=useState(null); // null | {equipFilter,suggestedName}
-  const [showExplorar,setShowExplorar]=useState(false);
-  const saveNewRoutine=useCallback(routine=>{
-    setRoutines(prev=>[...prev,routine]);
-    setShowBuilder(null);
-  },[]);
   const prevLvl=useRef(getLevel(totalXp));
   const ph=PHASES[activePhase];
   const level=getLevel(totalXp),xpInLvl=getXpInLevel(totalXp),xpNext=getXpForNextLevel(totalXp),ri=getRank(level);
@@ -4811,8 +4553,6 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
       const freshEquipment=fresh.equipment||{};
       if(Object.keys(freshEquipment).length>0) setEquipment(freshEquipment);
-      const freshMeasurements=fresh.bodyMeasurements||{};
-      if(Object.keys(freshMeasurements).length>0) setBodyMeasurements(freshMeasurements);
       const freshEquipped=fresh.equipped||{};
       if(Object.keys(freshEquipped).length>0) setEquipped(freshEquipped);
       if(fresh.lootStats&&fresh.lootStats.total>0) setLootStats({total:0,rarities:[],types:[],...fresh.lootStats});
@@ -4883,7 +4623,6 @@ function RankUpApp({user,onLogout}){
         if(recovered>0) setCoins(recovered);
       }
       if(fresh.playerClass) setPlayerClass(fresh.playerClass);
-      if(fresh.betaTester) setBetaTester(fresh.betaTester);
       if(fresh.exNotes&&Object.keys(fresh.exNotes).length>0) setExNotes(fresh.exNotes);
       if(fresh.exOverrides&&Object.keys(fresh.exOverrides).length>0) setExOverrides(fresh.exOverrides);
       // ── Load / Migrate exHistory ──
@@ -4938,10 +4677,7 @@ function RankUpApp({user,onLogout}){
       }).catch(()=>{});
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Migrate old ex.done system → checked keys
-      // IMPORTANTE: antes esto filtraba SOLO rt.assignedByAdmin===true, así que
-      // cualquier rutina creada por el propio usuario desaparecía al recargar.
-      // Ahora se conservan ambas: asignadas por admin Y creadas por el usuario.
-      const cleanRoutines=(fresh.customRoutines||[]);
+      const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
       if(cleanRoutines.length>0){
         const migratedChecked={...(fresh.checked||{})};
         let needsMigration=false;
@@ -5043,13 +4779,11 @@ function RankUpApp({user,onLogout}){
       routineHistory: safeRoutineHistory,
       inventory: safeInventory,
       equipment: safeEquipment,
-      bodyMeasurements,
       equipped,
       lootStats,
       craftStats,
       customRoutines:routines,
       playerClass,
-      betaTester,
       assignedDiets,
       assignedProgram,
       exNotes,
@@ -5059,7 +4793,7 @@ function RankUpApp({user,onLogout}){
       season1Seen:"T1",
       lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,bodyMeasurements,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5082,7 +4816,7 @@ function RankUpApp({user,onLogout}){
     const completedRoutines=routines.filter(rt=>
       (rt.sessions||[]).length>0 && (rt.sessions||[]).every((_,si)=>dc[`rt_${rt.id}_done_${si}`])
     ).length;
-    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids,isBetaTester:betaTester,
+    const stats={totalDone:td,totalWeightLogs:twl,daysComplete:dc2,prCount:prc,phase1Complete:p1,phase2Complete:p2,phase3Complete:p3,customRoutines:completedRoutines,totalCoinsEarned,raidsComplete,legendaryRaids,
       lootTotal:lootStats.total||0,lootRarities:(lootStats.rarities||[]).length,lootTypes:(lootStats.types||[]).length,hasLegendaryLoot:(lootStats.rarities||[]).includes("legendario"),
       craftTotal:craftStats.total||0,craftSlots:(craftStats.slots||[]).length,hasMaestroCraft:(craftStats.tiers||[]).includes("maestro"),craftMaestroSlots:(craftStats.maestroSlots||[]).length};
     // Use functional setEarned to always read latest list — avoids stale closure bug
@@ -5103,7 +4837,7 @@ function RankUpApp({user,onLogout}){
       }
       return newEarned;
     });
-  },[checked,weights,pr,routines,coins,redeemed,dc,lootStats,craftStats,betaTester]);
+  },[checked,weights,pr,routines,coins,redeemed,dc,lootStats,craftStats]);
 
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
@@ -5299,52 +5033,9 @@ function RankUpApp({user,onLogout}){
     return unsubscribe;
   },[]);
 
-  // Fotos de perfil para el Muro Social. IMPORTANTE: las reglas de Firebase solo
-  // permiten leer "photos/$key" (clave por usuario), NO el nodo "photos" completo
-  // de golpe — por eso un fbListen("photos",...) global se queda siempre vacío
-  // (permiso denegado en silencio). Aquí se pide cada foto individualmente, por
-  // cada autor de post/comentario que vaya apareciendo, que sí está permitido.
-  const [allProfilePhotos,setAllProfilePhotos]=useState({});
-  const fetchedPhotoKeysRef=useRef(new Set());
-  useEffect(()=>{
-    const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
-    const emailsSeen=new Set();
-    Object.values(socialPosts).forEach(post=>{
-      if(post?.email) emailsSeen.add(post.email);
-      Object.values(post?.comments||{}).forEach(c=>{if(c?.email) emailsSeen.add(c.email);});
-    });
-    emailsSeen.forEach(email=>{
-      const key=keyOf(email);
-      if(fetchedPhotoKeysRef.current.has(key)) return;
-      fetchedPhotoKeysRef.current.add(key);
-      fbGet(`photos/${key}`).then(url=>{
-        if(url) setAllProfilePhotos(p=>({...p,[key]:url}));
-      }).catch(()=>{});
-    });
-  },[socialPosts]);
-
   const addSocialPost=useCallback(async(photoData,caption)=>{
     const id=genSocialId("post");
     const post={email:user.email.toLowerCase().trim(),name:user.name,photo:photoData,caption:(caption||"").trim(),createdAt:Date.now()};
-    setSocialPosts(p=>({...p,[id]:post}));
-    await fbSet(`socialPosts/${id}`,post).catch(()=>{});
-  },[user]);
-
-  const shareWorkoutPost=useCallback(async(details,photo)=>{
-    const id=genSocialId("post");
-    const post={
-      type:"workout",
-      email:user.email.toLowerCase().trim(),
-      name:user.name,
-      dayName:details.dayName,
-      totalKg:details.totalKg,
-      exerciseCount:details.exercises,
-      exerciseDetails:details.exerciseDetails||[],
-      coins:details.coins,
-      bossDone:details.bossDone||0,
-      photo:photo||null,
-      createdAt:Date.now(),
-    };
     setSocialPosts(p=>({...p,[id]:post}));
     await fbSet(`socialPosts/${id}`,post).catch(()=>{});
   },[user]);
@@ -5387,22 +5078,6 @@ function RankUpApp({user,onLogout}){
     await fbSet(`socialPosts/${postId}/likes/${key}`,isLiked?null:true).catch(()=>{});
   },[socialUserKey,socialPosts]);
 
-  const toggleSocialCommentLike=useCallback(async(postId,commentId)=>{
-    const key=socialUserKey;
-    setSocialPosts(p=>{
-      const post={...p[postId]};
-      const comments={...(post.comments||{})};
-      const c={...(comments[commentId]||{})};
-      const likes={...(c.likes||{})};
-      if(likes[key]) delete likes[key]; else likes[key]=true;
-      comments[commentId]={...c,likes};
-      post.comments=comments;
-      return {...p,[postId]:post};
-    });
-    const isLiked=!!socialPosts[postId]?.comments?.[commentId]?.likes?.[key];
-    await fbSet(`socialPosts/${postId}/comments/${commentId}/likes/${key}`,isLiked?null:true).catch(()=>{});
-  },[socialUserKey,socialPosts]);
-
   const sendMessage=useCallback(async(text)=>{
     if(!text.trim()) return;
     const msgKey=user.email.replace(/\./g,"_").replace(/@/g,"_at_");
@@ -5426,17 +5101,7 @@ function RankUpApp({user,onLogout}){
 
   const unreadFromAdmin=messages.filter(m=>m.from==="admin"&&!m.read).length;
 
-  const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins, exerciseDetails}
-  const [workoutShared,setWorkoutShared]=useState(false);
-  const [shareCardPhoto,setShareCardPhoto]=useState(null);
-  const shareCardFileRef=useRef();
-  const shareCardCameraRef=useRef();
-  const handleShareCardPhoto=async(e)=>{
-    const file=e.target.files?.[0];
-    if(!file) return;
-    try{ setShareCardPhoto(await compressImage(file)); }catch{}
-    e.target.value="";
-  };
+  const [dungeonComplete,setDungeonComplete]=useState(null); // {dayName, totalKg, exercises, coins}
 
   const toggleEx=useCallback((key,xp,phaseId,dayIdx,evt,exName,isBoss)=>{
     const was=!!checked[key];const nc={...checked,[key]:!was};setChecked(nc);
@@ -5457,17 +5122,16 @@ function RankUpApp({user,onLogout}){
             const bossDone=day.exercises.filter((ex,ei)=>ex.boss&&nc[exKey(phaseId,dayIdx,ei)]).length;
             const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
             addCoins(dungeonCoins,"¡Dungeon completado!");
-            const exDetails=day.exercises.map((ex,ei)=>{
+            const sessKg=day.exercises.reduce((sum,ex,ei)=>{
               const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
-              return {name:ex.name,kg:Math.round(wArr.reduce((s,w)=>s+(w.kg||0),0)),boss:!!ex.boss};
-            });
-            const sessKg=exDetails.reduce((sum,e)=>sum+e.kg,0);
+              return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+            },0);
             setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
             addLoot(rollLoot("dungeon"));
-            setTimeout(()=>{setWorkoutShared(false);setShareCardPhoto(null);setDungeonComplete({
+            setTimeout(()=>setDungeonComplete({
               dayName:day.day, totalKg:Math.round(sessKg),
-              exercises:day.exercises.length, coins:dungeonCoins, bossDone, exerciseDetails:exDetails
-            });},400);
+              exercises:day.exercises.length, coins:dungeonCoins, bossDone
+            }),400);
             // Roll for raid after dungeon complete (pass current state to avoid overwriting an active raid)
             setTimeout(()=>triggerRaidCheck(activeRaid),2500);
             const newDC={...prevDC,[ck]:true};
@@ -5506,17 +5170,16 @@ function RankUpApp({user,onLogout}){
                 const bossDone=sess.exercises.filter((ex,ei)=>ex.boss&&nc[`rt_${rt.id}_${si}_${ei}`]).length;
                 const dungeonCoins=COIN_DUNGEON+bossDone*COIN_BOSS_EX;
                 addCoins(dungeonCoins,"¡Dungeon completado!");
-                const exDetails=sess.exercises.map((ex,ei)=>{
+                const sessKg=sess.exercises.reduce((sum,ex,ei)=>{
                   const wArr=weights[`rt_${rt.id}_${si}_${ei}`]||[];
-                  return {name:ex.name,kg:Math.round(wArr.reduce((s,w)=>s+(w.kg||0),0)),boss:!!ex.boss};
-                });
-                const sessKg=exDetails.reduce((sum,e)=>sum+e.kg,0);
+                  return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+                },0);
                 setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
                 addLoot(rollLoot("dungeon"));
-                setTimeout(()=>{setWorkoutShared(false);setShareCardPhoto(null);setDungeonComplete({
+                setTimeout(()=>setDungeonComplete({
                   dayName:sess.day, totalKg:Math.round(sessKg),
-                  exercises:sess.exercises.length, coins:dungeonCoins, bossDone, exerciseDetails:exDetails
-                });},400);
+                  exercises:sess.exercises.length, coins:dungeonCoins, bossDone
+                }),400);
                 setTimeout(()=>triggerRaidCheck(activeRaid),2500);
                 const newDC={...prevDC,[ck]:true};
                 // Whole-WEEK reward — only for routines built with the week
@@ -5631,10 +5294,10 @@ function RankUpApp({user,onLogout}){
   const phXpT=ph.training.reduce((a,d)=>a+d.exercises.reduce((b,ex)=>b+ex.xp,0),0);
   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
   const xpPct=level>=MAX_LEVEL?100:Math.min((xpInLvl/xpNext)*100,100);
-  const TABS=[{id:"social",l:"🏠"},{id:"misiones",l:"⚔️"},{id:"ranking",l:"🏅"},{id:"perfil",l:"👤"}];
+  const TABS=[{id:"misiones",l:"⚔️"},{id:"nutricion",l:"🍖"},{id:"cuerpo",l:"🫀"},{id:"tienda",l:"🪙"},{id:"inventario",l:"🎒"},{id:"social",l:"📸"},{id:"logros",l:"🏆"},{id:"ranking",l:"🏅"},{id:"buzon",l:"✉️"}];
 
   return(
-    <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"var(--rk-bg)",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
+    <div style={{height:"100dvh",display:"flex",flexDirection:"column",background:"#07070F",color:"#E8E6FF",fontFamily:"'Rajdhani','Segoe UI',sans-serif",overflow:"hidden"}}>
       <style>{CSS}</style>
       {particles.map(p=><Particle key={p.id} x={p.x} y={p.y} text={p.text} color={p.color} onDone={()=>setParticles(prev=>prev.filter(x=>x.id!==p.id))}/>)}
       {lvlModal&&<LevelUpModal level={lvlModal} onClose={()=>setLvlModal(null)}/>}
@@ -5679,10 +5342,10 @@ function RankUpApp({user,onLogout}){
               DERROTADO
             </div>
             <div style={{width:200,height:1,background:"linear-gradient(90deg,transparent,#E84A5F,transparent)",margin:"0 auto 16px"}}/>
-            <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:12}}>
+            <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:12}}>
               {raidDefeated.boss}
             </div>
-            <div style={{fontSize:13,color:"var(--rk-t4)",fontStyle:"italic",marginBottom:32,fontFamily:"'Rajdhani',sans-serif"}}>
+            <div style={{fontSize:13,color:"#666",fontStyle:"italic",marginBottom:32,fontFamily:"'Rajdhani',sans-serif"}}>
               "Ha consumido tu alma."
             </div>
             <button onClick={()=>setRaidDefeated(null)}
@@ -5712,7 +5375,7 @@ function RankUpApp({user,onLogout}){
 
             {/* Header */}
             <div style={{fontSize:9,color:"#A78BFA",letterSpacing:8,marginBottom:6,textShadow:"0 0 20px #A78BFA"}}>✦ MISIÓN COMPLETADA ✦</div>
-            <div style={{fontSize:26,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center",textShadow:"0 0 30px #A78BFA88"}}>{dungeonComplete.dayName}</div>
+            <div style={{fontSize:26,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center",textShadow:"0 0 30px #A78BFA88"}}>{dungeonComplete.dayName}</div>
             <div style={{fontSize:11,color:"#A78BFA",letterSpacing:3,marginBottom:24}}>⚔️ DUNGEON CONQUISTADO ⚔️</div>
 
             {/* Main reward card */}
@@ -5724,13 +5387,13 @@ function RankUpApp({user,onLogout}){
                 <div style={{textAlign:"center",marginBottom:16}}>
                   <div style={{fontSize:64,marginBottom:4,filter:"drop-shadow(0 0 20px #F59E0B)"}}>{comp.emoji}</div>
                   <div style={{fontSize:10,color:"#F59E0B",letterSpacing:4,marginBottom:4}}>{comp.title}</div>
-                  <div style={{fontSize:36,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{kg.toLocaleString()}<span style={{fontSize:16,color:"#A78BFA"}}> kg</span></div>
-                  <div style={{fontSize:12,color:"var(--rk-t6)",marginTop:4}}>Equivale a levantar <span style={{color:"#F59E0B",fontWeight:700}}>{comp.name}</span></div>
+                  <div style={{fontSize:36,fontWeight:900,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{kg.toLocaleString()}<span style={{fontSize:16,color:"#A78BFA"}}> kg</span></div>
+                  <div style={{fontSize:12,color:"#888",marginTop:4}}>Equivale a levantar <span style={{color:"#F59E0B",fontWeight:700}}>{comp.name}</span></div>
                 </div>
               ):(
                 <div style={{textAlign:"center",marginBottom:16}}>
                   <div style={{fontSize:48,marginBottom:8}}>⚔️</div>
-                  <div style={{fontSize:14,color:"var(--rk-t7)"}}>¡Registra tus pesos para ver</div>
+                  <div style={{fontSize:14,color:"#AAA"}}>¡Registra tus pesos para ver</div>
                   <div style={{fontSize:14,color:"#A78BFA",fontWeight:700}}>cuánto levantas!</div>
                 </div>
               )}
@@ -5743,12 +5406,12 @@ function RankUpApp({user,onLogout}){
                 <div style={{textAlign:"center",background:"#F59E0B0D",borderRadius:10,padding:"10px 6px",border:"1px solid #F59E0B22"}}>
                   <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:2}}>EJERCICIOS</div>
                   <div style={{fontSize:24,fontWeight:900,color:"#F59E0B",fontFamily:"'Cinzel',serif"}}>{dungeonComplete.exercises}</div>
-                  <div style={{fontSize:9,color:"var(--rk-t3)"}}>completados</div>
+                  <div style={{fontSize:9,color:"#555"}}>completados</div>
                 </div>
                 <div style={{textAlign:"center",background:"#34D3990D",borderRadius:10,padding:"10px 6px",border:"1px solid #34D39922"}}>
                   <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:2}}>RECOMPENSA</div>
                   <div style={{fontSize:24,fontWeight:900,color:"#34D399",fontFamily:"'Cinzel',serif"}}>+{dungeonComplete.coins}</div>
-                  <div style={{fontSize:9,color:"var(--rk-t3)"}}>🪙 monedas</div>
+                  <div style={{fontSize:9,color:"#555"}}>🪙 monedas</div>
                 </div>
               </div>
             </div>
@@ -5759,43 +5422,18 @@ function RankUpApp({user,onLogout}){
                 <span style={{fontSize:20}}>💀</span>
                 <div>
                   <div style={{fontSize:11,color:"#F59E0B",fontWeight:700,letterSpacing:2}}>JEFE DERROTADO</div>
-                  <div style={{fontSize:10,color:"var(--rk-t6)"}}>{dungeonComplete.bossDone} boss{dungeonComplete.bossDone>1?"es":""} eliminado{dungeonComplete.bossDone>1?"s":""}</div>
+                  <div style={{fontSize:10,color:"#888"}}>{dungeonComplete.bossDone} boss{dungeonComplete.bossDone>1?"es":""} eliminado{dungeonComplete.bossDone>1?"s":""}</div>
                 </div>
                 <span style={{fontSize:20}}>💀</span>
               </div>
             )}
-
-            {/* Foto opcional + Share button */}
-            {!workoutShared&&(
-              shareCardPhoto?(
-                <div style={{position:"relative",marginBottom:10}}>
-                  <img src={shareCardPhoto} style={{width:120,height:120,objectFit:"cover",borderRadius:12,border:"1px solid #A78BFA55"}}/>
-                  <button onClick={()=>setShareCardPhoto(null)} style={{position:"absolute",top:-8,right:-8,width:24,height:24,borderRadius:"50%",background:"var(--rk-bg2)",border:"1px solid #E84A5F55",color:"#E84A5F",fontSize:12,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>✕</button>
-                </div>
-              ):(
-                <div style={{display:"flex",gap:8,marginBottom:10}}>
-                  <button onClick={()=>shareCardCameraRef.current?.click()} style={{padding:"9px 16px",background:"none",border:"1px dashed var(--rk-t2)",borderRadius:10,color:"var(--rk-t6)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                    📷 Hacer foto
-                  </button>
-                  <button onClick={()=>shareCardFileRef.current?.click()} style={{padding:"9px 16px",background:"none",border:"1px dashed var(--rk-t2)",borderRadius:10,color:"var(--rk-t6)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                    🖼️ Galería
-                  </button>
-                </div>
-              )
-            )}
-            <input ref={shareCardCameraRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={handleShareCardPhoto}/>
-            <input ref={shareCardFileRef} type="file" accept="image/*" style={{display:"none"}} onChange={handleShareCardPhoto}/>
-            <button onClick={()=>{if(!workoutShared){shareWorkoutPost(dungeonComplete,shareCardPhoto);setWorkoutShared(true);}}} disabled={workoutShared}
-              style={{padding:"13px 40px",marginBottom:12,background:workoutShared?"var(--rk-bg2)":"#A78BFA18",border:`1px solid ${workoutShared?"#34D39955":"#A78BFA55"}`,borderRadius:12,color:workoutShared?"#34D399":"#A78BFA",fontSize:13,fontWeight:700,cursor:workoutShared?"default":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
-              {workoutShared?"✓ Compartido en el Muro":"📸 Compartir en el Muro"}
-            </button>
 
             {/* Continue button */}
             <button onClick={()=>setDungeonComplete(null)}
               style={{padding:"16px 48px",background:"linear-gradient(135deg,#7C3AED,#A78BFA,#7C3AED)",border:"none",borderRadius:14,color:"#FFF",fontSize:16,fontWeight:900,cursor:"pointer",fontFamily:"'Cinzel',serif",letterSpacing:3,boxShadow:"0 0 30px #A78BFA66",backgroundSize:"200%"}}>
               ⚔ CONTINUAR ⚔
             </button>
-            <div style={{fontSize:10,color:"var(--rk-t1)",marginTop:10,letterSpacing:2}}>TU LEYENDA CRECE</div>
+            <div style={{fontSize:10,color:"#333",marginTop:10,letterSpacing:2}}>TU LEYENDA CRECE</div>
           </div>
         );
       })()}
@@ -5805,92 +5443,46 @@ function RankUpApp({user,onLogout}){
       {coinToast&&<CoinToast msg={coinToast.msg} coins={coinToast.coins} onDone={()=>setCoinToast(null)}/>}
       {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
       {craftToast&&<CraftToast name={craftToast.name} slot={craftToast.slot} icon={craftToast.icon} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
+      {gifModal&&<GifModal name={gifModal.name} path={gifModal.path} onClose={()=>setGifModal(null)}/>}
 
       {/* Profile drawer */}
       {showProfile&&(
         <div onClick={()=>setShowProfile(false)} style={{position:"fixed",inset:0,zIndex:9990,background:"rgba(0,0,0,.75)",backdropFilter:"blur(6px)"}}>
-          <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:0,right:0,width:260,height:"100%",background:`${equippedTexture("armadura")?`${equippedTexture("armadura")},`:""}var(--rk-bg2)`,borderLeft:`1px solid ${equippedColor("armadura","#A78BFA")}33`,padding:28,display:"flex",flexDirection:"column",gap:14}}>
-            <div style={{fontSize:9,letterSpacing:5,color:"var(--rk-t2)",marginBottom:4}}>PERFIL RANKUP</div>
+          <div onClick={e=>e.stopPropagation()} style={{position:"absolute",top:0,right:0,width:260,height:"100%",background:`${equippedTexture("armadura")?`${equippedTexture("armadura")},`:""}#0D0D1A`,borderLeft:`1px solid ${equippedColor("armadura","#A78BFA")}33`,padding:28,display:"flex",flexDirection:"column",gap:14}}>
+            <div style={{fontSize:9,letterSpacing:5,color:"#444",marginBottom:4}}>PERFIL RANKUP</div>
             <ProfileAvatar userEmail={user.email} riColor={ri.color} clsIcon={cls?cls.icon:"🗡️"}/>
-            <div><div style={{fontSize:20,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{user.name}</div><div style={{fontSize:11,color:"var(--rk-t3)",marginTop:2}}>{user.email}</div></div>
+            <div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{user.name}</div><div style={{fontSize:11,color:"#555",marginTop:2}}>{user.email}</div></div>
             {cls&&(
               <div style={{background:`${cls.color}18`,border:`1px solid ${cls.color}44`,borderRadius:10,padding:"10px 12px"}}>
-                <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>CLASE</div>
+                <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:4}}>CLASE</div>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <span style={{fontSize:20}}>{cls.icon}</span>
                   <div>
                     <div style={{fontSize:14,fontWeight:700,color:cls.color,fontFamily:"'Cinzel',serif"}}>{cls.name}</div>
-                    <div style={{fontSize:10,color:"var(--rk-t4)"}}>{cls.goal}</div>
+                    <div style={{fontSize:10,color:"#666"}}>{cls.goal}</div>
                   </div>
                 </div>
                 <div style={{fontSize:10,color:cls.color,marginTop:6,opacity:.8}}>🎯 {cls.bonus}</div>
               </div>
             )}
             {[{l:"Nivel",v:level},{l:"Rango",v:`[${ri.rank}] ${ri.title}`},{l:"XP Total",v:totalXp.toLocaleString()},{l:"Monedas",v:`🪙 ${coins}`}].map(s=>(
-              <div key={s.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
-                <span style={{fontSize:12,color:"var(--rk-t3)"}}>{s.l}</span>
+              <div key={s.l} style={{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
+                <span style={{fontSize:12,color:"#555"}}>{s.l}</span>
                 <span style={{fontSize:12,color:ri.color,fontWeight:700}}>{s.v}</span>
               </div>
             ))}
 
             {/* IMC + Weight update */}
             <ProfileFisico userEmail={user.email}/>
-            <button onClick={toggleTheme} style={{width:"100%",padding:10,marginBottom:10,background:"var(--rk-bg2)",border:"1px solid #38BDF844",borderRadius:10,color:"#38BDF8",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-              {theme==="light"?"🌙 MODO OSCURO":"☀️ MODO CLARO"}
-            </button>
-            <button onClick={()=>{setShowProfile(false);setShowClassModal(true);}} style={{width:"100%",padding:10,background:"var(--rk-bg2)",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>⚔️ CAMBIAR CLASE</button>
+            <button onClick={()=>{setShowProfile(false);setShowClassModal(true);}} style={{width:"100%",padding:10,background:"#0D0D1A",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>⚔️ CAMBIAR CLASE</button>
             <div style={{flex:1}}/>
-            <button onClick={onLogout} style={{width:"100%",padding:12,background:"var(--rk-bg4)",border:"1px solid #E84A5F44",borderRadius:10,color:"#E84A5F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CERRAR SESIÓN</button>
+            <button onClick={onLogout} style={{width:"100%",padding:12,background:"#1A1A2E",border:"1px solid #E84A5F44",borderRadius:10,color:"#E84A5F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>CERRAR SESIÓN</button>
           </div>
         </div>
-      )}
-
-      {/* Buzón modal */}
-      {showBuzon&&(
-        <div onClick={()=>setShowBuzon(false)} style={{position:"fixed",inset:0,zIndex:9990,background:"rgba(0,0,0,.75)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
-          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"85vh",overflowY:"auto",background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-              <div style={{fontSize:9,letterSpacing:5,color:"var(--rk-t2)"}}>✉️ BUZÓN</div>
-              <button onClick={()=>setShowBuzon(false)} style={{background:"none",border:"none",color:"var(--rk-t4)",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
-            </div>
-            <BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>
-          </div>
-        </div>
-      )}
-
-      {/* Mensajes directos entre Aventureros */}
-      {showDMs&&<DMsModal user={user} initialTarget={dmInitialTarget} onClose={()=>{setShowDMs(false);setDmInitialTarget(null);checkUnreadDMs();}}/>}
-
-      {/* Mini-perfil al tocar a un Aventurero en el Muro */}
-      {profileTarget&&(
-        <MiniProfileModal
-          target={profileTarget}
-          onClose={()=>setProfileTarget(null)}
-          onMessage={()=>{setDmInitialTarget(profileTarget);setProfileTarget(null);setShowDMs(true);}}
-        />
-      )}
-
-      {/* Explorar (plantillas por categoría) */}
-      {showExplorar&&(
-        <ExplorarModal
-          onClose={()=>setShowExplorar(false)}
-          onPick={({equipFilter,suggestedName,template})=>{setShowExplorar(false);setShowBuilder({equipFilter,suggestedName,template});}}
-        />
-      )}
-
-      {/* Constructor de rutina propia */}
-      {showBuilder&&(
-        <RoutineBuilderModal
-          equipFilter={showBuilder.equipFilter}
-          suggestedName={showBuilder.suggestedName}
-          template={showBuilder.template}
-          onClose={()=>setShowBuilder(null)}
-          onSave={saveNewRoutine}
-        />
       )}
 
       {/* HEADER */}
-      <div style={{flexShrink:0,background:"linear-gradient(180deg,#0D0D1F,var(--rk-bg))",padding:"14px 16px 12px",position:"relative",overflow:"hidden",borderBottom:`1px solid ${ri.color}44`}}>
+      <div style={{flexShrink:0,background:"linear-gradient(180deg,#0D0D1F,#07070F)",padding:"14px 16px 12px",position:"relative",overflow:"hidden",borderBottom:`1px solid ${ri.color}44`}}>
         <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none",opacity:.025}}><div style={{width:"100%",height:2,background:"#FFF",animation:"scanline 4s linear infinite"}}/></div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
           <button onClick={()=>setShowProfile(true)} style={{display:"flex",alignItems:"center",gap:10,background:"none",border:"none",cursor:"pointer",padding:0}}>
@@ -5898,14 +5490,14 @@ function RankUpApp({user,onLogout}){
                     {(()=>{const p=localStorage.getItem(`rku_photo_${user.email}`);return p?<img src={p} style={{width:"100%",height:"100%",objectFit:"cover",borderRadius:6}}/>:ri.rank;})()}
                   </div>
             <div style={{textAlign:"left"}}>
-              <div style={{fontSize:9,letterSpacing:3,color:"var(--rk-t2)"}}>RANKUP{cls?` · ${cls.name.toUpperCase()}`:""}</div>
-              <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1}}>{user.name}</div>
+              <div style={{fontSize:9,letterSpacing:3,color:"#444"}}>RANKUP{cls?` · ${cls.name.toUpperCase()}`:""}</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1}}>{user.name}</div>
               <div style={{fontSize:10,color:ri.color}}>Nivel {level} · {ri.title}</div>
             </div>
           </button>
           <div style={{textAlign:"right",display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4}}>
             <div style={{fontSize:20,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{totalXp.toLocaleString()} XP</div>
-            <div style={{fontSize:10,color:"var(--rk-t3)"}}>{level>=MAX_LEVEL?"¡NIVEL MÁXIMO!":`${xpInLvl}/${xpNext} → lv.${level+1}`}</div>
+            <div style={{fontSize:10,color:"#555"}}>{level>=MAX_LEVEL?"¡NIVEL MÁXIMO!":`${xpInLvl}/${xpNext} → lv.${level+1}`}</div>
             <div style={{display:"flex",gap:6}}>
               {seasonActive&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
                 <button onClick={()=>setGuildRaidModal(true)}
@@ -5919,20 +5511,12 @@ function RankUpApp({user,onLogout}){
                   <span>{activeRaid.raid.icon}</span><span>RAID</span>
                 </button>
               )}
-              <button onClick={()=>{setTab("perfil");setPerfilSection("tienda");}} style={{fontSize:14,fontWeight:700,color:equippedColor("anillo","#F59E0B"),background:`${equippedTexture("anillo")?`${equippedTexture("anillo")},`:""}${equippedColor("anillo","#F59E0B")}18`,border:`1px solid ${equippedColor("anillo","#F59E0B")}44`,borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
-              <button onClick={()=>{setShowBuzon(true);markMessagesRead();}} title="Buzón" style={{position:"relative",fontSize:13,background:"#A78BFA18",border:"1px solid #A78BFA44",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#A78BFA",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
-                ✉️
-                {unreadFromAdmin>0&&<span style={{position:"absolute",top:-2,right:-2,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
-              </button>
-              <button onClick={()=>setShowDMs(true)} title="Mensajes" style={{position:"relative",fontSize:13,background:"#34D39918",border:"1px solid #34D39944",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#34D399",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>
-                💬
-                {hasUnreadDMs&&<span style={{position:"absolute",top:-2,right:-2,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
-              </button>
+              <button onClick={()=>setTab("tienda")} style={{fontSize:14,fontWeight:700,color:equippedColor("anillo","#F59E0B"),background:`${equippedTexture("anillo")?`${equippedTexture("anillo")},`:""}${equippedColor("anillo","#F59E0B")}18`,border:`1px solid ${equippedColor("anillo","#F59E0B")}44`,borderRadius:20,padding:"3px 12px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🪙 {coins.toLocaleString()}</button>
               <button onClick={onLogout} title="Cerrar sesión" style={{fontSize:13,background:"#E84A5F18",border:"1px solid #E84A5F44",borderRadius:20,padding:"3px 10px",cursor:"pointer",color:"#E84A5F",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>✕</button>
             </div>
           </div>
         </div>
-        <div style={{height:6,background:"var(--rk-bg4)",borderRadius:3,overflow:"hidden"}}>
+        <div style={{height:6,background:"#1A1A2E",borderRadius:3,overflow:"hidden"}}>
           <div style={{height:"100%",width:`${xpPct}%`,background:`${equippedTexture("arma")?`${equippedTexture("arma")},`:""}linear-gradient(90deg,${equippedColor("arma",ri.color)}88,${equippedColor("arma",ri.color)})`,borderRadius:3,transition:"width .8s ease",boxShadow:`0 0 10px ${equippedColor("arma",ri.color)}`}}/>
         </div>
       </div>
@@ -5940,29 +5524,25 @@ function RankUpApp({user,onLogout}){
       {/* SCROLL AREA */}
       <div style={{flex:1,overflowY:"auto",WebkitOverflowScrolling:"touch",padding:"0 14px 20px"}}>
         {/* Tabs */}
-        <div style={{display:"flex",gap:5,paddingTop:12,paddingBottom:equippedTexture("botas")?8:0,borderBottom:equipped.botas?`2px solid ${equippedColor("botas","var(--rk-border2)")}66`:"none",background:equippedTexture("botas")||"none",borderRadius:equipped.botas?"8px 8px 0 0":0}}>
+        <div style={{display:"flex",gap:5,paddingTop:12,paddingBottom:equippedTexture("botas")?8:0,borderBottom:equipped.botas?`2px solid ${equippedColor("botas","#1E1E32")}66`:"none",background:equippedTexture("botas")||"none",borderRadius:equipped.botas?"8px 8px 0 0":0}}>
           {TABS.map(t=>(
-            <button key={t.id} onClick={()=>setTab(t.id)} style={{position:"relative",flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"var(--rk-border2)"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"var(--rk-t3)"}}>
+            <button key={t.id} onClick={()=>{setTab(t.id);if(t.id==="buzon")markMessagesRead();}} style={{position:"relative",flex:1,padding:"10px 2px",borderRadius:8,cursor:"pointer",fontSize:15,background:tab===t.id?(t.id==="tienda"?"#F59E0B18":`${ph.color}18`):"transparent",border:`1px solid ${tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#1E1E32"}`,color:tab===t.id?(t.id==="tienda"?"#F59E0B":ph.color):"#555"}}>
               {t.l}
+              {t.id==="buzon"&&unreadFromAdmin>0&&<span style={{position:"absolute",top:4,right:4,width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
             </button>
           ))}
         </div>
         {/* Content */}
         <div key={tab+activePhase} className="fade-up" style={{marginTop:12,paddingBottom:10}}>
           {tab==="misiones"&&(
-            <>
-              <div style={{display:"flex",gap:8,marginBottom:14}}>
-                <button onClick={()=>setShowBuilder({equipFilter:null,suggestedName:""})} style={{flex:1,padding:"9px 8px",background:"#A78BFA18",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ NUEVA RUTINA</button>
-                <button onClick={()=>setShowExplorar(true)} style={{flex:1,padding:"9px 8px",background:"#34D39918",border:"1px solid #34D39944",borderRadius:10,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🧭 EXPLORAR</button>
-              </div>
-            {assignedProgram?(
+            assignedProgram?(
               <>
                 {/* Phase selector */}
                 <div style={{display:"flex",gap:8,marginBottom:12}}>
                   {assignedProgram.phases.map((p,i)=>(
-                    <button key={i} onClick={()=>{setActivePhase(i);setOpenDay(null);}} style={{flex:1,padding:"10px 4px",borderRadius:10,cursor:"pointer",background:activePhase===i?`${p.color}18`:"var(--rk-bg2)",border:`1px solid ${activePhase===i?p.color:"var(--rk-border2)"}`,boxShadow:activePhase===i?`0 0 20px ${p.color}44`:"none"}}>
-                      <div style={{fontSize:9,color:activePhase===i?p.color:"var(--rk-t2)",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>{p.name}</div>
-                      <div style={{fontSize:11,color:activePhase===i?"#FFF":"var(--rk-t3)",fontWeight:600}}>{p.subtitle}</div>
+                    <button key={i} onClick={()=>{setActivePhase(i);setOpenDay(null);}} style={{flex:1,padding:"10px 4px",borderRadius:10,cursor:"pointer",background:activePhase===i?`${p.color}18`:"#0D0D1A",border:`1px solid ${activePhase===i?p.color:"#1E1E32"}`,boxShadow:activePhase===i?`0 0 20px ${p.color}44`:"none"}}>
+                      <div style={{fontSize:9,color:activePhase===i?p.color:"#444",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>{p.name}</div>
+                      <div style={{fontSize:11,color:activePhase===i?"#FFF":"#555",fontWeight:600}}>{p.subtitle}</div>
                     </button>
                   ))}
                 </div>
@@ -5974,14 +5554,14 @@ function RankUpApp({user,onLogout}){
                   const phXpE=ph.training.reduce((a,d,di)=>a+d.exercises.reduce((b,ex,ei)=>b+(checked[exKey(ph.id,di,ei)]?ex.xp:0),0),0);
                   return(
                     <>
-                      <div style={{marginBottom:12,padding:18,borderRadius:14,position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${ph.color}14,var(--rk-bg2))`,border:`1px solid ${ph.color}44`}}>
+                      <div style={{marginBottom:12,padding:18,borderRadius:14,position:"relative",overflow:"hidden",background:`linear-gradient(135deg,${ph.color}14,#0D0D1A)`,border:`1px solid ${ph.color}44`}}>
                         <div style={{fontSize:9,letterSpacing:5,color:ph.color,marginBottom:4}}>📍 {ph.dungeonName.toUpperCase()}</div>
-                        <div style={{fontSize:20,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",marginBottom:3}}>{ph.name}: {ph.subtitle}</div>
-                        <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:14}}>{ph.weeks} · {ph.goal}</div>
-                        <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"var(--rk-t3)",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
-                        <div style={{height:8,background:"var(--rk-bg4)",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
+                        <div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:3}}>{ph.name}: {ph.subtitle}</div>
+                        <div style={{fontSize:11,color:"#666",marginBottom:14}}>{ph.weeks} · {ph.goal}</div>
+                        <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
+                        <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))} sessionKg={sessionKg}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))} sessionKg={sessionKg} onShowGif={showGif}/>
                     </>
                   );
                 })()}
@@ -6005,57 +5585,60 @@ function RankUpApp({user,onLogout}){
                   onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))}
                   exHistory={exHistory}
                   sessionKg={sessionKg}
+                  onShowGif={showGif}
                 />
               ):(
-              <div style={{textAlign:"center",padding:"80px 20px",color:"var(--rk-t1)"}}>
+              <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
                 <div style={{fontSize:52,marginBottom:16}}>⚔️</div>
-                <div style={{fontSize:18,fontWeight:700,color:"var(--rk-t2)",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin programa asignado</div>
-                <div style={{fontSize:13,color:"var(--rk-t1)",lineHeight:1.7}}>Tu entrenador aún no te ha asignado un programa.<br/>Mientras tanto, crea tu propia rutina arriba ☝️</div>
+                <div style={{fontSize:18,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin programa asignado</div>
+                <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado un programa.<br/>Pronto tendrás tus misiones esperándote.</div>
               </div>
               )
-            )}
-            </>
-          )}
-          {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
-          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} profilePhotos={allProfilePhotos} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike} onToggleCommentLike={toggleSocialCommentLike} onProfileClick={setProfileTarget}/>}
-          {tab==="perfil"&&(
-            perfilSection===null?(
-              <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
-                {[
-                  {id:"cuerpo",icon:"🫀",label:"Cuerpo",color:"#E84A5F"},
-                  {id:"medidas",icon:"📏",label:"Medidas",color:"#38BDF8"},
-                  {id:"tienda",icon:"🪙",label:"Tienda",color:"#F59E0B"},
-                  {id:"inventario",icon:"🎒",label:"Inventario",color:"#A78BFA"},
-                  {id:"logros",icon:"🏆",label:"Logros",color:"#34D399"},
-                ].map(s=>(
-                  <button key={s.id} onClick={()=>setPerfilSection(s.id)} style={{padding:"14px 4px",background:`${s.color}12`,border:`1px solid ${s.color}44`,borderRadius:12,display:"flex",flexDirection:"column",alignItems:"center",gap:6,cursor:"pointer"}}>
-                    <span style={{fontSize:22}}>{s.icon}</span>
-                    <span style={{fontSize:8,fontWeight:700,color:s.color,fontFamily:"'Rajdhani',sans-serif",letterSpacing:0.5,textAlign:"center",lineHeight:1.2}}>{s.label.toUpperCase()}</span>
-                  </button>
-                ))}
-              </div>
-            ):(
-              <>
-                <button onClick={()=>setPerfilSection(null)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:14,padding:0}}>← VOLVER</button>
-                {perfilSection==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex} userEmail={user.email} bodyMeasurements={bodyMeasurements}/>}
-                {perfilSection==="medidas"&&<MedidasSection measurements={bodyMeasurements} onAdd={setBodyMeasurements} sex={userSex} userEmail={user.email}/>}
-                {perfilSection==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
-                {perfilSection==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
-                {perfilSection==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
-              </>
             )
           )}
+          {tab==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
+          {tab==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
+          {tab==="nutricion"&&(
+            <>
+              {assignedProgram?(
+                <>
+                  <div style={{display:"flex",gap:8,marginBottom:12}}>
+                    {assignedProgram.phases.map((p,i)=>(
+                      <button key={i} onClick={()=>setActivePhase(i)} style={{flex:1,padding:"10px 4px",borderRadius:10,cursor:"pointer",background:activePhase===i?`${p.color}18`:"#0D0D1A",border:`1px solid ${activePhase===i?p.color:"#1E1E32"}`,boxShadow:activePhase===i?`0 0 20px ${p.color}44`:"none"}}>
+                        <div style={{fontSize:9,color:activePhase===i?p.color:"#444",letterSpacing:2,fontFamily:"'Rajdhani',sans-serif"}}>{p.name}</div>
+                        <div style={{fontSize:11,color:activePhase===i?"#FFF":"#555",fontWeight:600}}>{p.subtitle}</div>
+                      </button>
+                    ))}
+                  </div>
+                  <NutricionTab ph={assignedProgram.phases[activePhase]||assignedProgram.phases[0]} assignedDiets={assignedDiets}/>
+                </>
+              ):assignedDiets.length>0?(
+                <NutricionTab ph={PHASES[0]} assignedDiets={assignedDiets}/>
+              ):(
+                <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
+                  <div style={{fontSize:52,marginBottom:16}}>🍖</div>
+                  <div style={{fontSize:18,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin dieta asignada</div>
+                  <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado una dieta.<br/>Pronto tendrás tu plan nutricional personalizado.</div>
+                </div>
+              )}
+            </>
+          )}
+          {tab==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
+          {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
+          {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
+          {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike}/>}
+          {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
         </div>
       </div>
-      <div style={{flexShrink:0,background:"var(--rk-bg)",padding:"8px 16px 12px",borderTop:`1px solid ${ri.color}33`,textAlign:"center"}}>
-        <div style={{fontSize:9,color:"var(--rk-border)",letterSpacing:4}}>SISTEMA RANKUP · FITNESS · {ri.rank}-RANGO</div>
+      <div style={{flexShrink:0,background:"#07070F",padding:"8px 16px 12px",borderTop:`1px solid ${ri.color}33`,textAlign:"center"}}>
+        <div style={{fontSize:9,color:"#2A2A44",letterSpacing:4}}>SISTEMA RANKUP · FITNESS · {ri.rank}-RANGO</div>
       </div>
     </div>
   );
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={},sessionKg={}}){
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={},sessionKg={},onShowGif}){
   const [rtHistoryModal,setRtHistoryModal]=useState(null);
   const [showArchivedRt,setShowArchivedRt]=useState(false);
   const [openSess,setOpenSess]=useState(null);
@@ -6149,8 +5732,8 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                 <div key={si} style={{marginBottom:10}}>
                   <button onClick={()=>setOpenSess(isOpen?null:sk)}
                     style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",
-                      background:isOpen?`linear-gradient(135deg,${c}18,var(--rk-bg2))`:"var(--rk-bg3)",
-                      border:`1px solid ${isOpen?c+"66":allDone?c+"44":"var(--rk-border2)"}`,
+                      background:isOpen?`linear-gradient(135deg,${c}18,#0D0D1A)`:"#0F0F1C",
+                      border:`1px solid ${isOpen?c+"66":allDone?c+"44":"#1E1E32"}`,
                       borderRadius:isOpen?"12px 12px 0 0":12,
                       boxShadow:allDone?`0 0 16px ${c}33`:"none"}}>
                     <div>
@@ -6160,7 +5743,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontSize:12,color:c,fontWeight:700}}>+{sessXpDone}/{sessXpTotal} XP</div>
-                      <div style={{fontSize:11,color:allDone?c:"var(--rk-t2)"}}>{sessDone}/{sessTotal} ✓</div>
+                      <div style={{fontSize:11,color:allDone?c:"#444"}}>{sessDone}/{sessTotal} ✓</div>
                       {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
                       {allDone&&sessionKg[`rt_${rt.id}_done_${si}`]>0&&(()=>{
                         const skg=sessionKg[`rt_${rt.id}_done_${si}`];
@@ -6185,45 +5768,46 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                         const isChartOpen=openChart===key;
                         const exMuscles=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];
                         return(
-                          <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"var(--rk-bg3)":"var(--rk-bg3)",borderTop:"1px solid var(--rk-bg6)",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
+                          <div key={ei} style={{background:isDone?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                             <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
                               <button onClick={e=>onToggleEx(key,ex.xp||35,null,null,e,ex.name,ex.boss)}
                                 style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",
-                                  border:`2px solid ${isDone?c:ex.boss?"#E84A5F":"var(--rk-border)"}`,
+                                  border:`2px solid ${isDone?c:ex.boss?"#E84A5F":"#2A2A44"}`,
                                   background:isDone?c:"transparent",
                                   boxShadow:isDone?`0 0 12px ${c}`:"none",transition:"all .2s"}}>
-                                {isDone?<span style={{color:"var(--rk-ink)",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"var(--rk-border)"}}>⚔</span>}
+                                {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                               </button>
                               <div style={{flex:1,minWidth:0}}>
                                 <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                                  <span style={{fontSize:14,fontWeight:700,color:isDone?"var(--rk-t2)":"var(--rk-text)",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
+                                  <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
                                   {ex.boss&&!isDone&&<span style={{fontSize:9,padding:"2px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1}}>BOSS</span>}
+                                  {onShowGif&&exerciseGif(ex.name)&&<button onClick={()=>onShowGif(ex.name)} title="Ver ejemplo" style={{background:"none",border:"1px solid #2A2A44",borderRadius:20,color:"#A78BFA",cursor:"pointer",fontSize:9,padding:"2px 8px",fontWeight:700}}>▶️ Ver</button>}
                                 </div>
-                                {ex.notes&&<div style={{fontSize:11,color:"var(--rk-t2)",marginTop:2}}>{ex.notes}</div>}
+                                {ex.notes&&<div style={{fontSize:11,color:"#444",marginTop:2}}>{ex.notes}</div>}
                                 {/* Muscle tags */}
                                 <div style={{display:"flex",gap:4,marginTop:4,flexWrap:"wrap"}}>
-                                  {exMuscles.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"var(--rk-bg4)",border:"1px solid var(--rk-bg5)",borderRadius:10,color:"var(--rk-t3)",letterSpacing:1}}>{m.toUpperCase()}</span>)}
+                                  {exMuscles.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"#1A1A2E",border:"1px solid #2A2A3E",borderRadius:10,color:"#555",letterSpacing:1}}>{m.toUpperCase()}</span>)}
                                 </div>
                               </div>
                               <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
                                 <div style={{textAlign:"right"}}>
                                   <div style={{fontSize:13,color:c,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
-                                  <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.rest}</div>
+                                  <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                                   <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
                                   {lastKg!=null&&<div style={{fontSize:10,color:c,fontWeight:700}}>{lastKg}kg</div>}
                                 </div>
                                 {/* Swap button */}
                                 {!isDone&&<button onClick={()=>{setSwapModal({rtId:rt.id,si,ei,exName:ex.name,muscles:exMuscles});setSearchQ("");}}
-                                  style={{fontSize:9,padding:"3px 8px",background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-t4)",cursor:"pointer",letterSpacing:1,fontFamily:"'Rajdhani',sans-serif"}}>🔄 CAMBIAR</button>}
+                                  style={{fontSize:9,padding:"3px 8px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:6,color:"#666",cursor:"pointer",letterSpacing:1,fontFamily:"'Rajdhani',sans-serif"}}>🔄 CAMBIAR</button>}
                               </div>
                             </div>
                             <div style={{padding:"0 14px 12px 56px"}}>
                               <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                                 <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
                                   onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e,ex.name);}}
-                                  style={{width:66,padding:"7px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                  style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                                 <button onClick={e=>onLogWeight(key,e,ex.name)}
-                                  style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"var(--rk-ink)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
+                                  style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
                                 {exHistory[ex.name]?.length>0&&(
                                   <button onClick={()=>setRtHistoryModal({exName:ex.name,history:exHistory[ex.name],color:c})}
                                     style={{marginTop:6,width:"100%",padding:"8px",background:`${c}11`,border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
@@ -6233,7 +5817,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                               </div>
                               {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                               {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=>(
-                                <span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"var(--rk-bg4)",border:`1px solid ${c}22`,borderRadius:20,color:"var(--rk-t4)",display:"flex",alignItems:"center",gap:4}}>
+                                <span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}>
                                   <span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}
                                   <button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,ex.name)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button>
                                 </span>
@@ -6244,7 +5828,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                 placeholder="📝 Anotaciones personales..."
                                 value={exNotes[key]||""}
                                 onChange={e=>onNote&&onNote(key,e.target.value)}
-                                style={{width:"100%",marginTop:8,padding:"8px 10px",background:"var(--rk-inset)",border:"1px solid var(--rk-bg5)",borderRadius:8,color:"var(--rk-t7)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
+                                style={{width:"100%",marginTop:8,padding:"8px 10px",background:"#0A0A14",border:"1px solid #2A2A3E",borderRadius:8,color:"#AAA",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
                                 rows={2}/>
                             </div>
                           </div>
@@ -6252,7 +5836,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                       })}
                       {/* Add exercise button */}
                       <button onClick={()=>{setAddModal({rtId:rt.id,si});setSearchQ("");}}
-                        style={{width:"100%",padding:"12px",background:"transparent",border:"none",borderTop:"1px solid var(--rk-bg6)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:"var(--rk-label)"}}>
+                        style={{width:"100%",padding:"12px",background:"transparent",border:"none",borderTop:"1px solid #1A1A2C",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",gap:8,color:"#3A3A5E"}}>
                         <span style={{fontSize:16,color:c}}>＋</span>
                         <span style={{fontSize:11,letterSpacing:2,fontFamily:"'Rajdhani',sans-serif",color:c}}>AÑADIR EJERCICIO</span>
                       </button>
@@ -6266,12 +5850,12 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
         };
         return(<>
           {activeRoutines.length===0&&archivedRoutines.length===0&&(
-            <div style={{textAlign:"center",padding:"40px 20px",color:"var(--rk-t1)",fontSize:12}}>Sin rutinas asignadas.</div>
+            <div style={{textAlign:"center",padding:"40px 20px",color:"#333",fontSize:12}}>Sin rutinas asignadas.</div>
           )}
           {activeRoutines.map(renderRoutine)}
           {archivedRoutines.length>0&&(
             <div style={{marginTop:10}}>
-              <button onClick={()=>setShowArchivedRt(p=>!p)} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg3)",border:"1px dashed var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <button onClick={()=>setShowArchivedRt(p=>!p)} style={{width:"100%",padding:"10px 14px",background:"#0F0F1C",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span>📦 RUTINAS COMPLETADAS ({archivedRoutines.length})</span>
                 <span>{showArchivedRt?"▲":"▼"}</span>
               </button>
@@ -6284,26 +5868,26 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
       {/* ── PENDING ADD CONFIG MODAL ── */}
       {pendingAdd&&(
         <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>setPendingAdd(null)}>
-          <div onClick={e=>e.stopPropagation()} style={{width:"100%",background:"var(--rk-bg2)",borderRadius:"20px 20px 0 0",border:"1px solid var(--rk-border2)",padding:20}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",padding:20}}>
             <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>⚔️ CONFIGURAR EJERCICIO</div>
-            <div style={{fontSize:16,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>{pendingAdd.ex.name}</div>
+            <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>{pendingAdd.ex.name}</div>
             <div style={{display:"flex",gap:10,marginBottom:12}}>
               <div style={{flex:1}}>
-                <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>SERIES</div>
+                <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>SERIES</div>
                 <input value={pendingSets} onChange={e=>setPendingSets(e.target.value)}
                   placeholder="ej: 4x10"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
               </div>
               <div style={{flex:1}}>
-                <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>DESCANSO</div>
+                <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>DESCANSO</div>
                 <input value={pendingRest} onChange={e=>setPendingRest(e.target.value)}
                   placeholder="ej: 90s"
-                  style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:9,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:9,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
               </div>
             </div>
             <div style={{display:"flex",gap:10}}>
               <button onClick={()=>setPendingAdd(null)}
-                style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
+                style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
               <button onClick={confirmAddEx}
                 style={{flex:2,padding:12,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:10,color:"#FFF",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:13,fontWeight:700,letterSpacing:2}}>✓ AÑADIR</button>
             </div>
@@ -6315,30 +5899,30 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
       {/* ── ADD / SWAP MODAL ── */}
       {modalCtx&&(
         <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>{setAddModal(null);setSwapModal(null);setSearchQ("");}}>
-          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"var(--rk-bg2)",borderRadius:"20px 20px 0 0",border:"1px solid var(--rk-border2)",display:"flex",flexDirection:"column"}}>
+          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",display:"flex",flexDirection:"column"}}>
             {/* Modal header */}
-            <div style={{padding:"16px 20px 12px",borderBottom:"1px solid var(--rk-bg4)"}}>
+            <div style={{padding:"16px 20px 12px",borderBottom:"1px solid #1A1A2E"}}>
               <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>{isSwap?"🔄 INTERCAMBIAR EJERCICIO":"⚔️ AÑADIR EJERCICIO"}</div>
-              {isSwap&&<div style={{fontSize:11,color:"var(--rk-t2)",marginBottom:8}}>Actual: <span style={{color:"var(--rk-text)",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>}
+              {isSwap&&<div style={{fontSize:11,color:"#444",marginBottom:8}}>Actual: <span style={{color:"#FFF",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>}
               <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar por nombre o músculo..."
-                style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"10px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
             </div>
             {/* Exercise list */}
             <div style={{overflowY:"auto",flex:1}}>
-              {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"var(--rk-t1)",fontSize:12}}>Sin resultados</div>}
+              {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"#333",fontSize:12}}>Sin resultados</div>}
               {filteredExs.map(ex=>{
                 const isCurrent=isSwap&&ex.name===swapModal?.exName;
                 return(
                   <button key={ex.id} disabled={isCurrent} onClick={()=>isSwap?handleSwapEx(swapModal.rtId,swapModal.si,swapModal.ei,ex):handleAddEx(addModal.rtId,addModal.si,ex)}
-                    style={{width:"100%",textAlign:"left",padding:"12px 20px",background:isCurrent?"var(--rk-bg4)":"transparent",border:"none",borderBottom:"1px solid var(--rk-bg6)",cursor:isCurrent?"default":"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                    style={{width:"100%",textAlign:"left",padding:"12px 20px",background:isCurrent?"#1A1A2E":"transparent",border:"none",borderBottom:"1px solid #1A1A2C",cursor:isCurrent?"default":"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                     <div>
-                      <div style={{fontSize:13,fontWeight:700,color:isCurrent?"var(--rk-t2)":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}{isCurrent&&" (actual)"}</div>
+                      <div style={{fontSize:13,fontWeight:700,color:isCurrent?"#444":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}{isCurrent&&" (actual)"}</div>
                       <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
-                        {ex.muscle.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"var(--rk-bg4)",border:"1px solid var(--rk-bg5)",borderRadius:10,color:"var(--rk-t4)",letterSpacing:1}}>{m.toUpperCase()}</span>)}
+                        {ex.muscle.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"#1A1A2E",border:"1px solid #2A2A3E",borderRadius:10,color:"#666",letterSpacing:1}}>{m.toUpperCase()}</span>)}
                       </div>
                     </div>
                     <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
-                      <div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.level}</div>
+                      <div style={{fontSize:10,color:"#555"}}>{ex.level}</div>
                       <div style={{fontSize:11,color:"#A78BFA",fontWeight:700}}>+{ex.xpBase} XP</div>
                     </div>
                   </button>
@@ -6346,7 +5930,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
               })}
             </div>
             <button onClick={()=>{setAddModal(null);setSwapModal(null);setSearchQ("");}}
-              style={{margin:"12px 20px",padding:"12px",background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
+              style={{margin:"12px 20px",padding:"12px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
           </div>
         </div>
       )}
@@ -6354,270 +5938,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-// ─── Constructor de rutinas propias ──────────────────────────────────────
-const EQUIP_OPTIONS=["Mancuernas","Barra","Banco","Goma","Kettlebell","Fitball","Disco","Comba","Rueda","Máquina","Polea","Trineo","Remo","Bicicleta","Cinta","Cuerdas","Balón"];
-const BUILDER_COLORS=["#60A5FA","#A78BFA","#34D399","#F59E0B","#E84A5F","#38BDF8","#FB923C"];
-
-// Plantillas de rutina reales, hechas con ejercicios que ya existen en EXERCISE_DB.
-// requiredEquip: para las de "casa", qué material necesitas tener seleccionado
-// (además de "Sin equipo", que siempre está disponible).
-const tplEx=(name,sets,rest,xp)=>({name,sets,rest,xp,boss:false});
-const ROUTINE_TEMPLATES={
-  gimnasio:[
-    {id:"tpl_ppl",name:"Push Pull Legs",level:"Principiante",days:[
-      {day:"Empuje",exercises:[tplEx("Press Banca Plano","5x4-15","90s",40),tplEx("Press Militar Mancuernas","3x12-15","75s",45),tplEx("Aperturas en Máquina (Peck Deck)","3x15-20","60s",32),tplEx("Elevaciones Laterales","3x15-20","45s",30),tplEx("Extensión Polea Cuerda","3x15-20","45s",33)]},
-      {day:"Tirón",exercises:[tplEx("Jalones al Pecho","3x10-12","60s",40),tplEx("Remo en Polea Baja","3x12-15","60s",42),tplEx("Encogimientos con Mancuernas","3x12-15","45s",28),tplEx("Curl Martillo","3x12-15","45s",32),tplEx("Face Pull","3x15-20","45s",30)]},
-      {day:"Piernas",exercises:[tplEx("Prensa 45°","5x5-12","90s",40),tplEx("Curl Femoral Tumbado","3x12-15","60s",30),tplEx("Extensión de Cuádriceps","3x12-15","60s",30),tplEx("Elevación de Talones","3x15-20","45s",25)]},
-    ]},
-    {id:"tpl_fullbody_gym",name:"Full Body Gimnasio",level:"Intermedio",days:[
-      {day:"Cuerpo Entero 1",exercises:[tplEx("Sentadilla con Barra","6x5-15","90s",55),tplEx("Press Inclinado Mancuernas","4x10-12","75s",40),tplEx("Curl Femoral Tumbado","4x12-15","60s",30),tplEx("Jalones al Pecho","3x12-15","60s",40),tplEx("Extensión Polea Cuerda","3x12-15","45s",33)]},
-      {day:"Cuerpo Entero 2",exercises:[tplEx("Remo con Barra","6x5-15","90s",45),tplEx("Prensa 45°","4x10-12","75s",40),tplEx("Press en Máquina","4x10-12","75s",35),tplEx("Curl con Barra Z","3x12-15","45s",36),tplEx("Elevación de Talones","3x15-20","45s",25)]},
-      {day:"Cuerpo Entero 3",exercises:[tplEx("Press Militar Mancuernas","5x10-12","75s",45),tplEx("Hip Extension en Máquina","5x10-12","75s",30),tplEx("Encogimientos con Mancuernas","4x10-12","45s",28),tplEx("Extensión de Cuádriceps","3x12-15","60s",30),tplEx("Crossover en Polea","3x15-20","45s",35),tplEx("Face Pull","3x15-20","45s",30)]},
-    ]},
-    {id:"tpl_ppl_intermedio",name:"Push Pull Legs (Intermedio)",level:"Intermedio",days:[
-      {day:"Empuje",exercises:[tplEx("Press Banca Plano","6x5-15","90s",40),tplEx("Press Inclinado Mancuernas","4x10-12","75s",40),tplEx("Press Máquina Hombros","4x10-12","75s",40),tplEx("Crossover en Polea","4x12-15","60s",35),tplEx("Elevaciones Laterales","3x12-15","45s",30),tplEx("Extensión Polea Cuerda","3x12-15","45s",33)]},
-      {day:"Tirón",exercises:[tplEx("Remo con Barra","6x5-15","90s",45),tplEx("Remo en Multipower","4x10-12","75s",44),tplEx("Jalones al Pecho","4x10-12","60s",40),tplEx("Encogimientos con Mancuernas","4x10-12","45s",28),tplEx("Curl con Barra","4x12-15","45s",35),tplEx("Face Pull","3x15-20","45s",30)]},
-      {day:"Piernas",exercises:[tplEx("Sentadilla con Barra","6x5-15","90s",55),tplEx("Prensa 45°","4x10-12","75s",40),tplEx("Hiperextensiones","4x10-12","60s",32),tplEx("Curl Femoral Tumbado","4x12-15","60s",30),tplEx("Extensión de Cuádriceps","3x12-15","60s",30),tplEx("Elevación de Talones","3x15-20","45s",25)]},
-    ]},
-  ],
-  peso:[
-    {id:"tpl_fullbody_peso",name:"Full Body Sin Material",level:"Principiante",days:[
-      {day:"Empuje + Core",exercises:[tplEx("Flexiones","4x12","60s",30),tplEx("Fondos en Silla","3x12","45s",28),tplEx("Plancha","3x30s","45s",25),tplEx("Mountain Climbers","3x20","45s",35)]},
-      {day:"Tirón + Piernas",exercises:[tplEx("Superman","3x15","30s",20),tplEx("Puente de Glúteo","3x15","30s",25),tplEx("Jump Squat","4x12","45s",40),tplEx("Sentadilla Lateral (Cossack)","3x10","45s",40)]},
-      {day:"Full Body + Cardio",exercises:[tplEx("Flexiones Declinadas","3x12","60s",32),tplEx("Crunch Abdominal","3x15","30s",22),tplEx("Elevación de Piernas","3x12","45s",30),tplEx("Burpees","3x10","60s",38)]},
-    ]},
-    {id:"tpl_hiit_peso",name:"HIIT Sin Material",level:"Intermedio",days:[
-      {day:"Circuito Único",exercises:[tplEx("Jump Squat","4x15","30s",40),tplEx("Burpees","4x10","45s",38),tplEx("Mountain Climbers","4x20","30s",35),tplEx("Flexiones Diamante","3x10","45s",35),tplEx("Plancha","3x40s","30s",25),tplEx("Salto de Tijera (Jumping Jack)","4x20","20s",25)]},
-    ]},
-    {id:"tpl_fullbody_hevy_peso",name:"Cuerpo Entero Sin Equipamiento",level:"Principiante",days:[
-      {day:"Cuerpo Entero 1",exercises:[tplEx("Sentadilla (Peso Corporal)","3x15","45s",28),tplEx("Flexiones de Rodillas","3x12","45s",22),tplEx("Superman","3x15","30s",20),tplEx("Puente de Glúteo","3x15","30s",25),tplEx("Mountain Climbers","3x20","30s",35)]},
-      {day:"Cuerpo Entero 2",exercises:[tplEx("Zancada","3x12","45s",30),tplEx("Perro de Caza","3x12","30s",18),tplEx("Elevación de Gemelos de Pie","3x20","30s",20),tplEx("Plancha","3x30s","30s",25),tplEx("Salto de Tijera (Jumping Jack)","3x20","20s",25)]},
-      {day:"Cuerpo Entero 3",exercises:[tplEx("Remo Invertido","3x10","45s",35),tplEx("Sentadilla (Peso Corporal)","3x15","45s",28),tplEx("Flexiones Inclinadas","3x12","45s",28),tplEx("Patadas Boca de Incendio","3x12","30s",24),tplEx("Elevación de Rodillas","3x20","30s",28)]},
-    ]},
-    {id:"tpl_ppl_peso",name:"Push Pull Legs Sin Equipo (Intermedio)",level:"Intermedio",days:[
-      {day:"Empuje",exercises:[tplEx("Flexiones Declinadas","5x12","60s",32),tplEx("Flexión en Pica","5x10","60s",35),tplEx("Flexiones Diamante","5x10","60s",35),tplEx("Fondos en Banco","5x12","45s",28),tplEx("Elevación Frontal (Suspensión)","4x12","45s",30)]},
-      {day:"Tirón",exercises:[tplEx("Remo Invertido","5x10","60s",35),tplEx("Elevación en Y (Prono)","4x15","45s",22),tplEx("Superman","4x15","30s",20),tplEx("Curl de Bíceps (Suspensión)","4x12","45s",30)]},
-      {day:"Piernas",exercises:[tplEx("Sentadilla Búlgara (Peso Corporal)","5x12","60s",40),tplEx("Curls Nórdicos de Isquiotibiales","5x8","60s",50),tplEx("Sentadilla Pistol Asistida","4x10","60s",42),tplEx("Elevación de Cadera Unilateral","4x15","45s",30),tplEx("Elevación de Gemelos de Pie","4x20","30s",20)]},
-    ]},
-  ],
-  casa:[
-    {id:"tpl_fullbody_mancuernas",name:"Push Pull Legs con Mancuernas",level:"Principiante",requiredEquip:["Mancuernas"],days:[
-      {day:"Empuje",exercises:[tplEx("Press en el Suelo (Mancuerna)","4x10-12","75s",35),tplEx("Press Militar Mancuernas","3x12-15","75s",45),tplEx("Flexiones de Rodillas","3x12","45s",22),tplEx("Elevaciones Laterales","3x15-20","45s",30)]},
-      {day:"Tirón",exercises:[tplEx("Remo Inclinado (Mancuerna)","4x10-12","75s",42),tplEx("Remo con Mancuerna","3x10-12","60s",40),tplEx("Encogimientos con Mancuernas","3x12-15","45s",28),tplEx("Pájaros","3x15-20","45s",28)]},
-      {day:"Piernas",exercises:[tplEx("Sentadilla Búlgara","3x12","75s",55),tplEx("Peso Muerto con Mancuernas","3x10-12","90s",45),tplEx("Sentadilla Goblet","3x12-15","75s",35),tplEx("Elevación de Gemelos de Pie (Mancuerna)","3x15-20","45s",28)]},
-    ]},
-    {id:"tpl_banda_casa",name:"Push Pull Legs con Banda",level:"Principiante",requiredEquip:["Goma"],days:[
-      {day:"Empuje",exercises:[tplEx("Flexión en Pica","3x10","60s",35),tplEx("Flexiones","3x12","60s",30),tplEx("Aperturas (Banda)","2x15-25","45s",26),tplEx("Fondos en Banco","2x12","45s",28),tplEx("Elevación Laterales (Banda)","2x15-25","45s",24)]},
-      {day:"Tirón",exercises:[tplEx("Remo Invertido","3x10","60s",35),tplEx("Jalón al Pecho (Banda)","2x15-25","45s",32),tplEx("Curl Martillo (Banda)","2x15-25","45s",24),tplEx("Remo con Banda","3x12","45s",32)]},
-      {day:"Piernas",exercises:[tplEx("Sentadilla Búlgara (Peso Corporal)","3x12-15","75s",40),tplEx("Peso Muerto (Banda)","3x8-10","75s",30),tplEx("Sentadilla (Banda)","2x12-15","60s",26),tplEx("Caminata Lateral con Banda Elástica","2x15","30s",22),tplEx("Elevación de Cadera Unilateral","2x12","30s",30)]},
-    ]},
-  ],
-};
-
-function RoutineBuilderModal({equipFilter=null,suggestedName="",template=null,onSave,onClose}){
-  const [name,setName]=useState(template?template.name:suggestedName);
-  const [days,setDays]=useState(()=>
-    template
-      ?template.days.map((d,i)=>({id:i+1,name:d.day,exercises:d.exercises.map(e=>({...e}))}))
-      :[{id:1,name:"Día 1",exercises:[]}]
-  );
-  const [addingDay,setAddingDay]=useState(null); // day id currently picking an exercise for
-  const [searchQ,setSearchQ]=useState("");
-
-  const pool=(()=>{
-    let p=EXERCISE_DB;
-    if(equipFilter&&equipFilter.length>0) p=p.filter(e=>equipFilter.includes(e.equip)||e.equip==="Sin equipo");
-    const q=searchQ.toLowerCase().trim();
-    if(q) p=p.filter(e=>e.name.toLowerCase().includes(q)||e.muscle.some(m=>m.toLowerCase().includes(q)));
-    return p.slice(0,40);
-  })();
-
-  const addDay=()=>setDays(d=>[...d,{id:Date.now(),name:`Día ${d.length+1}`,exercises:[]}]);
-  const removeDay=id=>setDays(d=>d.filter(x=>x.id!==id));
-  const renameDay=(id,val)=>setDays(d=>d.map(x=>x.id===id?{...x,name:val}:x));
-  const addExercise=(dayId,ex)=>{
-    setDays(d=>d.map(x=>x.id===dayId?{...x,exercises:[...x.exercises,{name:ex.name,sets:"3x10",rest:"60s",xp:ex.xpBase||35,boss:false}]}:x));
-    setAddingDay(null); setSearchQ("");
-  };
-  const removeExercise=(dayId,ei)=>setDays(d=>d.map(x=>x.id===dayId?{...x,exercises:x.exercises.filter((_,i)=>i!==ei)}:x));
-  const updateExercise=(dayId,ei,field,val)=>setDays(d=>d.map(x=>x.id===dayId?{...x,exercises:x.exercises.map((e,i)=>i===ei?{...e,[field]:val}:e)}:x));
-
-  const totalEx=days.reduce((a,d)=>a+d.exercises.length,0);
-  const canSave=name.trim().length>0&&totalEx>0;
-
-  const save=()=>{
-    if(!canSave) return;
-    const routine={
-      id:`custom_${Date.now()}_${Math.random().toString(36).slice(2,8)}`,
-      name:name.trim(),
-      color:BUILDER_COLORS[Math.floor(Math.random()*BUILDER_COLORS.length)],
-      assignedByAdmin:false,
-      sessions:days.map(d=>({day:d.name||"Día",exercises:d.exercises})),
-    };
-    onSave(routine);
-  };
-
-  return(
-    <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.85)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"flex-start",padding:"20px 12px",overflowY:"auto"}}>
-      <div style={{width:"100%",maxWidth:480,background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box",marginBottom:20}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontSize:9,letterSpacing:5,color:"var(--rk-t2)"}}>⚔️ NUEVA RUTINA</div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:"var(--rk-t4)",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
-        </div>
-
-        <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nombre de la rutina (ej: Mi rutina de fuerza)"
-          style={{width:"100%",padding:"12px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:16,boxSizing:"border-box"}}/>
-
-        {days.map(d=>(
-          <div key={d.id} style={{background:"var(--rk-bg)",border:"1px solid var(--rk-border2)",borderRadius:12,padding:12,marginBottom:12}}>
-            <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:10}}>
-              <input value={d.name} onChange={e=>renameDay(d.id,e.target.value)}
-                style={{flex:1,padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t10)",fontSize:12,fontWeight:700,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-              {days.length>1&&<button onClick={()=>removeDay(d.id)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:13}}>🗑️</button>}
-            </div>
-
-            {d.exercises.map((ex,ei)=>(
-              <div key={ei} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 0",borderTop:"1px solid var(--rk-divider)"}}>
-                <span style={{flex:1,fontSize:11,color:"var(--rk-t8)"}}>{ex.name}</span>
-                <input value={ex.sets} onChange={e=>updateExercise(d.id,ei,"sets",e.target.value)} style={{width:48,padding:"4px 6px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:6,color:"#A78BFA",fontSize:10,textAlign:"center",outline:"none"}}/>
-                <input value={ex.rest} onChange={e=>updateExercise(d.id,ei,"rest",e.target.value)} style={{width:44,padding:"4px 6px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-t4)",fontSize:10,textAlign:"center",outline:"none"}}/>
-                <button onClick={()=>removeExercise(d.id,ei)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:11}}>✕</button>
-              </div>
-            ))}
-
-            {addingDay===d.id?(
-              <div style={{marginTop:8}}>
-                <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar ejercicio..."
-                  style={{width:"100%",padding:"8px 10px",background:"var(--rk-bg2)",border:"1px solid #A78BFA44",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
-                <div style={{maxHeight:180,overflowY:"auto"}}>
-                  {pool.map(ex=>(
-                    <button key={ex.id} onClick={()=>addExercise(d.id,ex)} style={{display:"block",width:"100%",textAlign:"left",padding:"7px 10px",background:"none",border:"none",borderBottom:"1px solid var(--rk-divider)",color:"var(--rk-t9)",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                      {ex.name} <span style={{color:"var(--rk-t2)",fontSize:9}}>· {ex.equip}</span>
-                    </button>
-                  ))}
-                  {pool.length===0&&<div style={{fontSize:11,color:"var(--rk-t2)",padding:"8px 0"}}>Sin resultados{equipFilter?" con tu equipo seleccionado":""}.</div>}
-                </div>
-                <button onClick={()=>{setAddingDay(null);setSearchQ("");}} style={{marginTop:6,background:"none",border:"none",color:"var(--rk-t3)",fontSize:10,cursor:"pointer"}}>Cancelar búsqueda</button>
-              </div>
-            ):(
-              <button onClick={()=>setAddingDay(d.id)} style={{width:"100%",padding:"8px",marginTop:4,background:"#A78BFA12",border:"1px dashed #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ AÑADIR EJERCICIO</button>
-            )}
-          </div>
-        ))}
-
-        <button onClick={addDay} style={{width:"100%",padding:10,background:"var(--rk-bg2)",border:"1px dashed var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:16}}>+ AÑADIR DÍA</button>
-
-        <button onClick={save} disabled={!canSave} style={{width:"100%",padding:14,background:canSave?"linear-gradient(135deg,#7C3AED,#A78BFA)":"var(--rk-bg4)",border:"none",borderRadius:12,color:canSave?"#FFF":"var(--rk-t3)",fontSize:13,fontWeight:900,cursor:canSave?"pointer":"default",fontFamily:"'Cinzel',serif",letterSpacing:2}}>
-          ⚔ GUARDAR RUTINA ⚔
-        </button>
-        {!canSave&&<div style={{fontSize:10,color:"var(--rk-t2)",textAlign:"center",marginTop:8}}>Ponle nombre y añade al menos un ejercicio</div>}
-      </div>
-    </div>
-  );
-}
-
-// ─── Explorar: plantillas por categoría ──────────────────────────────────
-function ExplorarModal({onPick,onClose}){
-  const [step,setStep]=useState("categorias"); // "categorias" | "equipo" | "plantillas"
-  const [selectedEquip,setSelectedEquip]=useState([]);
-  const [catId,setCatId]=useState(null);
-  const [equipFilter,setEquipFilter]=useState(null);
-
-  const toggleEquip=item=>setSelectedEquip(s=>s.includes(item)?s.filter(x=>x!==item):[...s,item]);
-
-  const CATS=[
-    {id:"casa",icon:"🏠",label:"En casa",desc:"Elige el material que tienes"},
-    {id:"gimnasio",icon:"🏢",label:"Gimnasio",desc:"Acceso a máquinas y peso libre"},
-    {id:"peso",icon:"🧘",label:"Con tu peso",desc:"Sin ningún material"},
-  ];
-  const CAT_SUGGESTED_NAME={casa:"Rutina en casa",gimnasio:"Rutina de Gimnasio",peso:"Rutina con tu peso"};
-
-  const pickCategory=cat=>{
-    if(cat.id==="casa"){ setCatId("casa"); setStep("equipo"); return; }
-    setCatId(cat.id);
-    setEquipFilter(cat.id==="peso"?["Sin equipo"]:null);
-    setStep("plantillas");
-  };
-
-  const confirmEquipo=()=>{
-    setEquipFilter([...selectedEquip,"Sin equipo"]);
-    setStep("plantillas");
-  };
-
-  const templates=(()=>{
-    const all=ROUTINE_TEMPLATES[catId]||[];
-    if(catId!=="casa") return all;
-    return all.filter(t=>!t.requiredEquip||t.requiredEquip.every(r=>selectedEquip.includes(r)));
-  })();
-
-  return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.85)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"85vh",overflowY:"auto",background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontSize:9,letterSpacing:5,color:"var(--rk-t2)"}}>🧭 EXPLORAR</div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:"var(--rk-t4)",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
-        </div>
-
-        {step==="categorias"&&(
-          <div style={{display:"flex",flexDirection:"column",gap:10}}>
-            {CATS.map(c=>(
-              <button key={c.id} onClick={()=>pickCategory(c)} style={{display:"flex",alignItems:"center",gap:14,padding:"16px 14px",background:"#A78BFA0D",border:"1px solid #A78BFA33",borderRadius:12,cursor:"pointer",textAlign:"left"}}>
-                <span style={{fontSize:28}}>{c.icon}</span>
-                <div>
-                  <div style={{fontSize:14,fontWeight:700,color:"var(--rk-t10)",fontFamily:"'Rajdhani',sans-serif"}}>{c.label}</div>
-                  <div style={{fontSize:11,color:"var(--rk-t4)"}}>{c.desc}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {step==="equipo"&&(
-          <div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",marginBottom:12}}>¿Qué material tienes en casa? Selecciona todo lo que tengas disponible.</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:18}}>
-              {EQUIP_OPTIONS.map(item=>{
-                const sel=selectedEquip.includes(item);
-                return(
-                  <button key={item} onClick={()=>toggleEquip(item)} style={{padding:"7px 12px",borderRadius:20,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",background:sel?"#A78BFA22":"var(--rk-bg2)",border:`1px solid ${sel?"#A78BFA":"var(--rk-border)"}`,color:sel?"#A78BFA":"var(--rk-t4)"}}>
-                    {sel?"✓ ":""}{item}
-                  </button>
-                );
-              })}
-            </div>
-            <div style={{display:"flex",gap:8}}>
-              <button onClick={()=>setStep("categorias")} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>← ATRÁS</button>
-              <button onClick={confirmEquipo} style={{flex:2,padding:12,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:10,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                {selectedEquip.length>0?`CONTINUAR CON ${selectedEquip.length} ✓`:"CONTINUAR SIN MATERIAL"}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {step==="plantillas"&&(
-          <div>
-            <div style={{fontSize:12,color:"var(--rk-t7)",marginBottom:12}}>Elige una plantilla para empezar (podrás editarla antes de guardar), o arranca en blanco.</div>
-            <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:14}}>
-              {templates.map(t=>(
-                <button key={t.id} onClick={()=>onPick({equipFilter,suggestedName:t.name,template:t})} style={{textAlign:"left",padding:"14px",background:"#34D39912",border:"1px solid #34D39944",borderRadius:12,cursor:"pointer"}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"#34D399",fontFamily:"'Rajdhani',sans-serif"}}>{t.name}</div>
-                  <div style={{fontSize:10,color:"var(--rk-t4)",marginTop:2}}>{t.level} · {t.days.length} día{t.days.length!==1?"s":""} · {t.days.reduce((a,d)=>a+d.exercises.length,0)} ejercicios</div>
-                </button>
-              ))}
-              {templates.length===0&&<div style={{fontSize:11,color:"var(--rk-t2)",padding:"6px 0"}}>No hay plantillas con ese material todavía — arranca en blanco.</div>}
-            </div>
-            <div style={{display:"flex",gap:8}}>
-              <button onClick={()=>setStep(catId==="casa"?"equipo":"categorias")} style={{flex:1,padding:12,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>← ATRÁS</button>
-              <button onClick={()=>onPick({equipFilter,suggestedName:CAT_SUGGESTED_NAME[catId]||"",template:null})} style={{flex:2,padding:12,background:"var(--rk-bg2)",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ EMPEZAR EN BLANCO</button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx,sessionKg={}}){
+function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx,sessionKg={},onShowGif}){
   const [historyModal,setHistoryModal]=useState(null);
   const [swapModal,setSwapModal]=useState(null); // {key, exName, muscles}
   const [searchQ,setSearchQ]=useState("");
@@ -6626,7 +5947,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
   let lastWeek=null;
   return(
     <div>
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:14}}>LISTA DE MISIONES · {ph.training.length} SESIONES · 4 SEMANAS</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>LISTA DE MISIONES · {ph.training.length} SESIONES · 4 SEMANAS</div>
       {ph.training.map((day,di)=>{
         const weekSep=day.week!==lastWeek?(lastWeek=day.week,day.week):null;
         const dayDone=day.exercises.filter((_,ei)=>checked[exKey(ph.id,di,ei)]).length;
@@ -6638,19 +5959,19 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
           <div key={dk}>
             {weekSep!==null&&(
               <div style={{display:"flex",alignItems:"center",gap:10,margin:`${di===0?"0":"16px"} 0 8px`}}>
-                <div style={{padding:"3px 12px",borderRadius:20,fontSize:9,fontWeight:700,letterSpacing:3,fontFamily:"'Rajdhani',sans-serif",background:allDone?`${ph.color}22`:"var(--rk-bg4)",border:`1px solid ${allDone?ph.color+"55":"var(--rk-border)"}`,color:allDone?ph.color:"var(--rk-t3)"}}>SEMANA {day.week}{allDone?" ✓":""}</div>
+                <div style={{padding:"3px 12px",borderRadius:20,fontSize:9,fontWeight:700,letterSpacing:3,fontFamily:"'Rajdhani',sans-serif",background:allDone?`${ph.color}22`:"#1A1A2E",border:`1px solid ${allDone?ph.color+"55":"#2A2A44"}`,color:allDone?ph.color:"#555"}}>SEMANA {day.week}{allDone?" ✓":""}</div>
                 <div style={{flex:1,height:1,background:`linear-gradient(90deg,${ph.color}33,transparent)`}}/>
               </div>
             )}
             <div style={{marginBottom:10}}>
-              <button onClick={()=>onToggleDay(dk)} style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${ph.color}18,var(--rk-bg2))`:"var(--rk-bg3)",border:`1px solid ${isOpen?ph.color+"66":allDone?ph.color+"44":"var(--rk-border2)"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${ph.color}33`:"none"}}>
+              <button onClick={()=>onToggleDay(dk)} style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${ph.color}18,#0D0D1A)`:"#0F0F1C",border:`1px solid ${isOpen?ph.color+"66":allDone?ph.color+"44":"#1E1E32"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${ph.color}33`:"none"}}>
                 <div>
                   <div style={{fontSize:9,color:ph.color,letterSpacing:3,marginBottom:2}}>{allDone?"✅ DUNGEON COMPLETADO":`DUNGEON ${di+1}`}</div>
-                  <div style={{fontSize:14,fontWeight:700,color:allDone?ph.color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
+                  <div style={{fontSize:14,fontWeight:700,color:allDone?ph.color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
                 </div>
                 <div style={{textAlign:"right"}}>
                   <div style={{fontSize:12,color:ph.color,fontWeight:700}}>+{dayXpE}/{dayXpT} XP</div>
-                  <div style={{fontSize:11,color:allDone?ph.color:"var(--rk-t2)"}}>{dayDone}/{day.exercises.length} ✓</div>
+                  <div style={{fontSize:11,color:allDone?ph.color:"#444"}}>{dayDone}/{day.exercises.length} ✓</div>
                   {allDone&&<div style={{fontSize:10,color:"#F59E0B",fontWeight:700}}>🪙 +{COIN_DUNGEON}</div>}
                   {allDone&&sessionKg[`${ph.id}_${di}`]>0&&(()=>{
                     const skg=sessionKg[`${ph.id}_${di}`];
@@ -6672,33 +5993,34 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                     const maxKg=globalHist.length>0?Math.max(...globalHist.map(w=>w.kg)):(exW.length>0?Math.max(...exW.map(w=>w.kg)):null);
                     const isPR=maxKg!=null&&lastKg===maxKg;const isChartOpen=openChart===key;
                     return(
-                      <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"var(--rk-bg3)":"var(--rk-bg3)",borderTop:"1px solid var(--rk-bg6)",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
+                      <div key={ei} style={{background:isDone?`${ph.color}10`:ei%2===0?"#0D0D19":"#0F0F1C",borderTop:"1px solid #1A1A2C",animation:ex.boss&&!isDone?"bossGlow 2s ease-in-out infinite":"none"}}>
                         <div style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start"}}>
-                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName,ex.boss)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"var(--rk-border)"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
-                            {isDone?<span style={{color:"var(--rk-ink)",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"var(--rk-border)"}}>⚔</span>}
+                          <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName,ex.boss)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
+                            {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                           </button>
                           <div style={{flex:1,minWidth:0}}>
                             <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
-                              <span style={{fontSize:14,fontWeight:700,color:isDone?"var(--rk-t2)":"var(--rk-text)",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{exDisplayName}</span>
+                              <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{exDisplayName}</span>
                               {ex.boss&&!isDone&&<span style={{fontSize:9,padding:"2px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1}}>BOSS</span>}
+                              {onShowGif&&exerciseGif(exDisplayName)&&<button onClick={()=>onShowGif(exDisplayName)} title="Ver ejemplo" style={{background:"none",border:"1px solid #2A2A44",borderRadius:20,color:"#A78BFA",cursor:"pointer",fontSize:9,padding:"2px 8px",fontWeight:700}}>▶️ Ver</button>}
                             </div>
-                            {ex.notes&&<div style={{fontSize:11,color:"var(--rk-t2)",marginTop:2}}>{ex.notes}</div>}
+                            {ex.notes&&<div style={{fontSize:11,color:"#444",marginTop:2}}>{ex.notes}</div>}
                           </div>
                           <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
                             <div style={{textAlign:"right"}}>
                               <div style={{fontSize:13,color:ph.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{ex.sets}</div>
-                              <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.rest}</div>
+                              <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                               <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp} XP</div>
                               {lastKg!=null&&<div style={{fontSize:10,color:ph.color,fontWeight:700}}>{lastKg}kg</div>}
                             </div>
                             {!isDone&&<button onClick={()=>{setSwapModal({key,exName:exDisplayName,muscles:exMuscles});setSearchQ("");}}
-                              style={{fontSize:9,padding:"3px 8px",background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-t4)",cursor:"pointer",letterSpacing:1,fontFamily:"'Rajdhani',sans-serif"}}>🔄 CAMBIAR</button>}
+                              style={{fontSize:9,padding:"3px 8px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:6,color:"#666",cursor:"pointer",letterSpacing:1,fontFamily:"'Rajdhani',sans-serif"}}>🔄 CAMBIAR</button>}
                           </div>
                         </div>
                         <div style={{padding:"0 14px 12px 56px"}}>
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
-                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:66,padding:"7px 10px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                            <button onClick={e=>onLogWeight(key,e,exDisplayName)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"var(--rk-ink)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
+                            <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                            <button onClick={e=>onLogWeight(key,e,exDisplayName)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
                           </div>
                           {exHistory[exDisplayName]?.length>0&&(
                             <button onClick={()=>setHistoryModal({exName:exDisplayName,history:exHistory[exDisplayName],color:ph.color})}
@@ -6707,13 +6029,13 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             </button>
                           )}
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
-                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"var(--rk-bg4)",border:`1px solid ${ph.color}22`,borderRadius:20,color:"var(--rk-t4)",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,exDisplayName)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
+                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,exDisplayName)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                           {/* User notes */}
                           <textarea
                             placeholder="📝 Anotaciones personales..."
                             value={exNotes[key]||""}
                             onChange={e=>onNote&&onNote(key,e.target.value)}
-                            style={{width:"100%",marginTop:8,padding:"8px 10px",background:"var(--rk-inset)",border:"1px solid var(--rk-bg5)",borderRadius:8,color:"var(--rk-t7)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
+                            style={{width:"100%",marginTop:8,padding:"8px 10px",background:"#0A0A14",border:"1px solid #2A2A3E",borderRadius:8,color:"#AAA",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",minHeight:36,lineHeight:1.4,boxSizing:"border-box"}}
                             rows={2}/>
                         </div>
                       </div>
@@ -6735,28 +6057,28 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
         const filteredExs=pool.slice(0,40);
         return(
           <div style={{position:"fixed",inset:0,background:"#000000CC",zIndex:200,display:"flex",alignItems:"flex-end"}} onClick={()=>{setSwapModal(null);setSearchQ("");}}>
-            <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"var(--rk-bg2)",borderRadius:"20px 20px 0 0",border:"1px solid var(--rk-border2)",display:"flex",flexDirection:"column"}}>
-              <div style={{padding:"16px 20px 12px",borderBottom:"1px solid var(--rk-bg4)"}}>
+            <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"75vh",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",display:"flex",flexDirection:"column"}}>
+              <div style={{padding:"16px 20px 12px",borderBottom:"1px solid #1A1A2E"}}>
                 <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:4}}>🔄 INTERCAMBIAR EJERCICIO</div>
-                <div style={{fontSize:11,color:"var(--rk-t2)",marginBottom:8}}>Actual: <span style={{color:"var(--rk-text)",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>
+                <div style={{fontSize:11,color:"#444",marginBottom:8}}>Actual: <span style={{color:"#FFF",fontWeight:700}}>{swapModal.exName}</span> · Mostrando mismo grupo muscular</div>
                 <input autoFocus value={searchQ} onChange={e=>setSearchQ(e.target.value)} placeholder="Buscar por nombre o músculo..."
-                  style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+                  style={{width:"100%",padding:"10px 14px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
               </div>
               <div style={{overflowY:"auto",flex:1}}>
-                {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"var(--rk-t1)",fontSize:12}}>Sin resultados</div>}
+                {filteredExs.length===0&&<div style={{padding:"30px",textAlign:"center",color:"#333",fontSize:12}}>Sin resultados</div>}
                 {filteredExs.map(ex=>{
                   const isCurrent=ex.name===swapModal.exName;
                   return(
                     <button key={ex.id} disabled={isCurrent} onClick={()=>{onSwapEx&&onSwapEx(swapModal.key,ex.name);setSwapModal(null);setSearchQ("");}}
-                      style={{width:"100%",textAlign:"left",padding:"12px 20px",background:isCurrent?"var(--rk-bg4)":"transparent",border:"none",borderBottom:"1px solid var(--rk-bg6)",cursor:isCurrent?"default":"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                      style={{width:"100%",textAlign:"left",padding:"12px 20px",background:isCurrent?"#1A1A2E":"transparent",border:"none",borderBottom:"1px solid #1A1A2C",cursor:isCurrent?"default":"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                       <div>
-                        <div style={{fontSize:13,fontWeight:700,color:isCurrent?"var(--rk-t2)":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}{isCurrent&&" (actual)"}</div>
+                        <div style={{fontSize:13,fontWeight:700,color:isCurrent?"#444":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}{isCurrent&&" (actual)"}</div>
                         <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
-                          {ex.muscle.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"var(--rk-bg4)",border:"1px solid var(--rk-bg5)",borderRadius:10,color:"var(--rk-t4)",letterSpacing:1}}>{m.toUpperCase()}</span>)}
+                          {ex.muscle.map(m=><span key={m} style={{fontSize:8,padding:"1px 6px",background:"#1A1A2E",border:"1px solid #2A2A3E",borderRadius:10,color:"#666",letterSpacing:1}}>{m.toUpperCase()}</span>)}
                         </div>
                       </div>
                       <div style={{textAlign:"right",flexShrink:0,marginLeft:12}}>
-                        <div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.level}</div>
+                        <div style={{fontSize:10,color:"#555"}}>{ex.level}</div>
                         <div style={{fontSize:11,color:"#A78BFA",fontWeight:700}}>+{ex.xpBase} XP</div>
                       </div>
                     </button>
@@ -6764,18 +6086,18 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                 })}
               </div>
               <button onClick={()=>{setSwapModal(null);setSearchQ("");}}
-                style={{margin:"12px 20px",padding:"12px",background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
+                style={{margin:"12px 20px",padding:"12px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2}}>CANCELAR</button>
             </div>
           </div>
         );
       })()}
-      {extraRoutines.length>0&&(
+      {extraRoutines.filter(rt=>rt.assignedByAdmin===true).length>0&&(
         <div style={{marginTop:20}}>
           <div style={{display:"flex",alignItems:"center",gap:10,margin:"0 0 8px"}}>
             <div style={{padding:"3px 12px",borderRadius:20,fontSize:9,fontWeight:700,letterSpacing:3,fontFamily:"'Rajdhani',sans-serif",background:"#A78BFA22",border:"1px solid #A78BFA55",color:"#A78BFA"}}>👑 RUTINAS ADICIONALES</div>
             <div style={{flex:1,height:1,background:"linear-gradient(90deg,#A78BFA33,transparent)"}}/>
           </div>
-          {extraRoutines.map(rt=>{
+          {extraRoutines.filter(rt=>rt.assignedByAdmin===true).map(rt=>{
             const c=rt.color||"#A78BFA";
             const totalEx=rt.sessions?.reduce((a,s)=>a+s.exercises.length,0)||0;
             const doneEx=rt.sessions?.reduce((a,s)=>a+s.exercises.filter(e=>e.done).length,0)||0;
@@ -6784,14 +6106,14 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
             return(
               <div key={rt.id} style={{marginBottom:10}}>
                 <button onClick={()=>setOpenRt(isOpen?null:rt.id)}
-                  style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${c}18,var(--rk-bg2))`:"var(--rk-bg3)",border:`1px solid ${isOpen?c+"66":allDone?c+"44":"var(--rk-border2)"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${c}33`:"none"}}>
+                  style={{width:"100%",textAlign:"left",padding:"14px 16px",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",color:"#E8E6FF",background:isOpen?`linear-gradient(135deg,${c}18,#0D0D1A)`:"#0F0F1C",border:`1px solid ${isOpen?c+"66":allDone?c+"44":"#1E1E32"}`,borderRadius:isOpen?"12px 12px 0 0":12,boxShadow:allDone?`0 0 16px ${c}33`:"none"}}>
                   <div>
                     <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>{allDone?"✅ RUTINA COMPLETADA":"👑 RUTINA ASIGNADA"}</div>
                     <div style={{fontSize:14,fontWeight:700,color:allDone?c:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
                   </div>
                   <div style={{textAlign:"right"}}>
                     <div style={{fontSize:12,color:c,fontWeight:700}}>+{doneEx}/{totalEx} XP</div>
-                    <div style={{fontSize:11,color:allDone?c:"var(--rk-t2)"}}>{doneEx}/{totalEx} ✓</div>
+                    <div style={{fontSize:11,color:allDone?c:"#444"}}>{doneEx}/{totalEx} ✓</div>
                   </div>
                 </button>
                 {isOpen&&(
@@ -6801,25 +6123,25 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                       const isSessOpen=openRtSess===sk;
                       const sessDone=sess.exercises.filter(e=>e.done).length;
                       return(
-                        <div key={si} style={{borderBottom:"1px solid var(--rk-bg4)"}}>
+                        <div key={si} style={{borderBottom:"1px solid #1A1A2E"}}>
                           <button onClick={()=>setOpenRtSess(isSessOpen?null:sk)}
                             style={{width:"100%",textAlign:"left",padding:"12px 16px",background:isSessOpen?`${c}0D`:"transparent",border:"none",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                            <div style={{fontSize:13,fontWeight:700,color:isSessOpen?c:"var(--rk-t7)",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
-                            <div style={{fontSize:11,color:sessDone===sess.exercises.length&&sess.exercises.length>0?c:"var(--rk-t2)"}}>{sessDone}/{sess.exercises.length} ✓</div>
+                            <div style={{fontSize:13,fontWeight:700,color:isSessOpen?c:"#AAA",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
+                            <div style={{fontSize:11,color:sessDone===sess.exercises.length&&sess.exercises.length>0?c:"#444"}}>{sessDone}/{sess.exercises.length} ✓</div>
                           </button>
                           {isSessOpen&&(
-                            <div style={{background:"var(--rk-bg3)"}}>
+                            <div style={{background:"#0D0D19"}}>
                               {sess.exercises.map((ex,ei)=>(
-                                <div key={ei} style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start",borderTop:"1px solid var(--rk-bg6)",background:ex.done?`${c}10`:ei%2===0?"var(--rk-bg3)":"var(--rk-bg3)"}}>
-                                  <div style={{width:32,height:32,borderRadius:8,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${ex.done?c:"var(--rk-border)"}`,background:ex.done?c:"transparent"}}>
-                                    {ex.done?<span style={{color:"var(--rk-ink)",fontSize:15,fontWeight:900}}>✓</span>:<span style={{fontSize:12,color:"var(--rk-border)"}}>⚔</span>}
+                                <div key={ei} style={{padding:"12px 14px",display:"flex",gap:10,alignItems:"flex-start",borderTop:"1px solid #1A1A2C",background:ex.done?`${c}10`:ei%2===0?"#0D0D19":"#0F0F1C"}}>
+                                  <div style={{width:32,height:32,borderRadius:8,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${ex.done?c:"#2A2A44"}`,background:ex.done?c:"transparent"}}>
+                                    {ex.done?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                                   </div>
                                   <div style={{flex:1}}>
-                                    <div style={{fontSize:14,fontWeight:700,color:ex.done?"var(--rk-t2)":"var(--rk-text)",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                                    <div style={{fontSize:14,fontWeight:700,color:ex.done?"#444":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                                   </div>
                                   <div style={{textAlign:"right",flexShrink:0}}>
                                     <div style={{fontSize:13,color:c,fontWeight:700}}>{ex.sets}</div>
-                                    <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.rest}</div>
+                                    <div style={{fontSize:10,color:"#444"}}>{ex.rest}</div>
                                     <div style={{fontSize:11,color:"#5A5A7A",fontWeight:700}}>+{ex.xp||35} XP</div>
                                   </div>
                                 </div>
@@ -6837,8 +6159,8 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
         </div>
       )}
       <div style={{marginTop:20,padding:18,borderRadius:12,textAlign:"center",background:`linear-gradient(135deg,${ph.color}10,transparent)`,border:`1px solid ${ph.color}33`}}>
-        <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:4,marginBottom:10}}>MANTRA RANKUP</div>
-        <p style={{fontSize:14,color:"var(--rk-t7)",fontStyle:"italic",margin:0,lineHeight:1.6}}>"{ph.mantra}"</p>
+        <div style={{fontSize:9,color:"#444",letterSpacing:4,marginBottom:10}}>MANTRA RANKUP</div>
+        <p style={{fontSize:14,color:"#AAA",fontStyle:"italic",margin:0,lineHeight:1.6}}>"{ph.mantra}"</p>
       </div>
     </div>
   );
@@ -6905,8 +6227,8 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
     return(
       <div>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-          <button onClick={()=>setDbOpen(null)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#60A5FA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-          <div style={{fontSize:12,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>Elige ejercicio para añadir</div>
+          <button onClick={()=>setDbOpen(null)} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#60A5FA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+          <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>Elige ejercicio para añadir</div>
         </div>
         <EjerciciosDB filter={dbFilter} setFilter={setDbFilter} onBack={()=>setDbOpen(null)}
           onPick={ex=>{addFromDB(rtId,sIdx,ex);setDbOpen(null);}}/>
@@ -6916,7 +6238,7 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
 
   return(
     <div>
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:14}}>MI PROGRAMA DE ENTRENAMIENTO</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>MI PROGRAMA DE ENTRENAMIENTO</div>
 
       {/* FASES DEL PROGRAMA */}
       {phases.map(ph=>{
@@ -6926,20 +6248,20 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
         return(
           <div key={ph.id} style={{marginBottom:10}}>
             <button onClick={()=>setOpenRt(isOpen?null:ph.id)}
-              style={{width:"100%",textAlign:"left",padding:"14px 16px",background:isOpen?`${ph.color}18`:"var(--rk-bg3)",border:`1px solid ${isOpen?ph.color:ph.color+"33"}`,borderRadius:isOpen?"12px 12px 0 0":12,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",boxShadow:isOpen?`0 0 20px ${ph.color}22`:"none"}}>
+              style={{width:"100%",textAlign:"left",padding:"14px 16px",background:isOpen?`${ph.color}18`:"#0F0F1C",border:`1px solid ${isOpen?ph.color:ph.color+"33"}`,borderRadius:isOpen?"12px 12px 0 0":12,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center",boxShadow:isOpen?`0 0 20px ${ph.color}22`:"none"}}>
               <div>
                 <div style={{fontSize:9,color:ph.color,letterSpacing:3,marginBottom:2}}>📍 {ph.dungeonName?.toUpperCase()}</div>
-                <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>{ph.name}: {ph.subtitle}</div>
-                <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:2}}>{ph.weeks} · {ph.training.length} sesiones</div>
+                <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{ph.name}: {ph.subtitle}</div>
+                <div style={{fontSize:10,color:"#555",marginTop:2}}>{ph.weeks} · {ph.training.length} sesiones</div>
               </div>
               <div style={{textAlign:"right"}}>
                 <div style={{fontSize:13,fontWeight:700,color:ph.color}}>{doneEx}/{totalEx}</div>
-                <div style={{fontSize:9,color:"var(--rk-t2)",marginBottom:4}}>completados</div>
+                <div style={{fontSize:9,color:"#444",marginBottom:4}}>completados</div>
                 <div style={{fontSize:14,color:ph.color}}>{isOpen?"▲":"▼"}</div>
               </div>
             </button>
             {!isOpen&&(
-              <div style={{height:3,background:"var(--rk-bg4)",borderRadius:"0 0 12px 12px",overflow:"hidden"}}>
+              <div style={{height:3,background:"#1A1A2E",borderRadius:"0 0 12px 12px",overflow:"hidden"}}>
                 <div style={{height:"100%",width:`${totalEx>0?(doneEx/totalEx)*100:0}%`,background:ph.color,transition:"width .6s ease",boxShadow:`0 0 6px ${ph.color}`}}/>
               </div>
             )}
@@ -6951,16 +6273,16 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                   const dayDone=day.exercises.filter((_,ei)=>checked[exKey(ph.id,di,ei)]).length;
                   const allDone=dayDone===day.exercises.length;
                   return(
-                    <div key={di} style={{borderBottom:"1px solid var(--rk-bg4)"}}>
+                    <div key={di} style={{borderBottom:"1px solid #1A1A2E"}}>
                       <button onClick={()=>setOpenDay(isDayOpen?null:dk)}
                         style={{width:"100%",textAlign:"left",padding:"11px 16px",background:isDayOpen?`${ph.color}0D`:"transparent",border:"none",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                         <div>
-                          <div style={{fontSize:9,color:allDone?ph.color:"var(--rk-t2)",letterSpacing:2,marginBottom:1}}>{allDone?"✅ COMPLETADO":`SESIÓN ${di+1}`}</div>
-                          <div style={{fontSize:13,fontWeight:700,color:allDone?"var(--rk-t3)":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
+                          <div style={{fontSize:9,color:allDone?ph.color:"#444",letterSpacing:2,marginBottom:1}}>{allDone?"✅ COMPLETADO":`SESIÓN ${di+1}`}</div>
+                          <div style={{fontSize:13,fontWeight:700,color:allDone?"#555":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{day.day}</div>
                         </div>
                         <div style={{display:"flex",alignItems:"center",gap:8}}>
-                          <span style={{fontSize:10,color:allDone?ph.color:"var(--rk-t3)"}}>{dayDone}/{day.exercises.length} ✓</span>
-                          <span style={{fontSize:12,color:"var(--rk-t2)"}}>{isDayOpen?"▲":"▼"}</span>
+                          <span style={{fontSize:10,color:allDone?ph.color:"#555"}}>{dayDone}/{day.exercises.length} ✓</span>
+                          <span style={{fontSize:12,color:"#444"}}>{isDayOpen?"▲":"▼"}</span>
                         </div>
                       </button>
                       {isDayOpen&&(
@@ -6969,15 +6291,15 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                             const k=exKey(ph.id,di,ei);
                             const done=!!checked[k];
                             return(
-                              <div key={ei} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",marginBottom:5,borderRadius:9,background:done?`${ph.color}12`:"var(--rk-bg)",border:`1px solid ${done?ph.color+"55":"var(--rk-bg4)"}`}}>
-                                <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${done?ph.color:"var(--rk-border)"}`,background:done?ph.color:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                                  {done&&<span style={{color:"var(--rk-ink)",fontSize:12,fontWeight:900}}>✓</span>}
+                              <div key={ei} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",marginBottom:5,borderRadius:9,background:done?`${ph.color}12`:"#07070F",border:`1px solid ${done?ph.color+"55":"#1A1A2E"}`}}>
+                                <div style={{width:22,height:22,borderRadius:6,border:`2px solid ${done?ph.color:"#2A2A44"}`,background:done?ph.color:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                                  {done&&<span style={{color:"#07070F",fontSize:12,fontWeight:900}}>✓</span>}
                                 </div>
                                 <div style={{flex:1}}>
-                                  <div style={{fontSize:12,fontWeight:700,color:done?"var(--rk-t3)":"var(--rk-text)",textDecoration:done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
-                                  <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.sets} · {ex.rest}</div>
+                                  <div style={{fontSize:12,fontWeight:700,color:done?"#555":"#FFF",textDecoration:done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                                  <div style={{fontSize:10,color:"#444"}}>{ex.sets} · {ex.rest}</div>
                                 </div>
-                                <div style={{fontSize:10,color:done?ph.color:"var(--rk-t2)",fontWeight:700}}>+{ex.xp} XP</div>
+                                <div style={{fontSize:10,color:done?ph.color:"#444",fontWeight:700}}>+{ex.xp} XP</div>
                               </div>
                             );
                           })}
@@ -7002,11 +6324,11 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
             return(
               <div key={rt.id} style={{marginBottom:10}}>
                 <button onClick={()=>setOpenSess(isOpen?null:`${rt.id}-open`)}
-                  style={{width:"100%",textAlign:"left",padding:"14px 16px",background:isOpen?`${c}18`:"var(--rk-bg3)",border:`1px solid ${isOpen?c:c+"33"}`,borderRadius:isOpen?"12px 12px 0 0":12,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                  style={{width:"100%",textAlign:"left",padding:"14px 16px",background:isOpen?`${c}18`:"#0F0F1C",border:`1px solid ${isOpen?c:c+"33"}`,borderRadius:isOpen?"12px 12px 0 0":12,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                   <div>
                     <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:2}}>👑 ASIGNADA</div>
-                    <div style={{fontSize:15,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
-                    <div style={{fontSize:10,color:"var(--rk-t3)",marginTop:2}}>{rt.sessions?.length||0} sesiones</div>
+                    <div style={{fontSize:15,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{rt.name}</div>
+                    <div style={{fontSize:10,color:"#555",marginTop:2}}>{rt.sessions?.length||0} sesiones</div>
                   </div>
                   <div style={{fontSize:14,color:c}}>{isOpen?"▲":"▼"}</div>
                 </button>
@@ -7016,43 +6338,43 @@ function RutinasTab({routines,setRoutines,addXp,phases=[],checked={},exKey=()=>"
                       const sk=`${rt.id}-${si}`;
                       const sessOpen=addingTo===sk||openDay===sk;
                       return(
-                        <div key={si} style={{borderBottom:"1px solid var(--rk-bg4)"}}>
+                        <div key={si} style={{borderBottom:"1px solid #1A1A2E"}}>
                           <button onClick={()=>setOpenDay(sessOpen?null:sk)}
                             style={{width:"100%",textAlign:"left",padding:"11px 16px",background:sessOpen?`${c}0D`:"transparent",border:"none",cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-                            <div style={{fontSize:12,fontWeight:700,color:sessOpen?c:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
+                            <div style={{fontSize:12,fontWeight:700,color:sessOpen?c:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{sess.day}</div>
                             <div style={{display:"flex",alignItems:"center",gap:8}}>
-                              <span style={{fontSize:10,color:"var(--rk-t3)"}}>{sess.exercises.filter(e=>e.done).length}/{sess.exercises.length} ✓</span>
-                              <span style={{fontSize:12,color:"var(--rk-t2)"}}>{sessOpen?"▲":"▼"}</span>
+                              <span style={{fontSize:10,color:"#555"}}>{sess.exercises.filter(e=>e.done).length}/{sess.exercises.length} ✓</span>
+                              <span style={{fontSize:12,color:"#444"}}>{sessOpen?"▲":"▼"}</span>
                             </div>
                           </button>
                           {sessOpen&&(
                             <div style={{padding:"0 12px 12px"}}>
                               {sess.exercises.map((ex,ei)=>(
                                 <div key={ei} onClick={()=>toggleEx(rt.id,si,ei)}
-                                  style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",marginBottom:6,borderRadius:9,background:ex.done?`${c}12`:"var(--rk-bg)",border:`1px solid ${ex.done?c+"55":"var(--rk-bg4)"}`,cursor:"pointer"}}>
-                                  <div style={{width:26,height:26,borderRadius:7,border:`2px solid ${ex.done?c:"var(--rk-border)"}`,background:ex.done?c:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                                    {ex.done&&<span style={{color:"var(--rk-ink)",fontSize:13,fontWeight:900}}>✓</span>}
+                                  style={{display:"flex",alignItems:"center",gap:10,padding:"10px 12px",marginBottom:6,borderRadius:9,background:ex.done?`${c}12`:"#07070F",border:`1px solid ${ex.done?c+"55":"#1A1A2E"}`,cursor:"pointer"}}>
+                                  <div style={{width:26,height:26,borderRadius:7,border:`2px solid ${ex.done?c:"#2A2A44"}`,background:ex.done?c:"transparent",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                                    {ex.done&&<span style={{color:"#07070F",fontSize:13,fontWeight:900}}>✓</span>}
                                   </div>
                                   <div style={{flex:1}}>
-                                    <div style={{fontSize:13,fontWeight:700,color:ex.done?"var(--rk-t3)":"var(--rk-text)",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
-                                    <div style={{fontSize:10,color:"var(--rk-t2)"}}>{ex.sets} · {ex.rest}</div>
+                                    <div style={{fontSize:13,fontWeight:700,color:ex.done?"#555":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                                    <div style={{fontSize:10,color:"#444"}}>{ex.sets} · {ex.rest}</div>
                                   </div>
-                                  <div style={{fontSize:10,color:ex.done?c:"var(--rk-t2)",fontWeight:700}}>+{ex.xp||35} XP</div>
+                                  <div style={{fontSize:10,color:ex.done?c:"#444",fontWeight:700}}>+{ex.xp||35} XP</div>
                                 </div>
                               ))}
                               {addingTo===sk?(
-                                <div style={{background:"var(--rk-bg2)",border:`1px solid ${c}33`,borderRadius:10,padding:12,marginTop:8}}>
+                                <div style={{background:"#0D0D1A",border:`1px solid ${c}33`,borderRadius:10,padding:12,marginTop:8}}>
                                   <div style={{fontSize:9,color:c,letterSpacing:3,marginBottom:8}}>AÑADIR EJERCICIO</div>
                                   <input value={newEx.name} onChange={e=>setNewEx(p=>({...p,name:e.target.value}))}
-                                    placeholder="Nombre del ejercicio..." style={{width:"100%",padding:"9px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
+                                    placeholder="Nombre del ejercicio..." style={{width:"100%",padding:"9px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:6,boxSizing:"border-box"}}/>
                                   <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:6,marginBottom:8}}>
-                                    <input value={newEx.sets} onChange={e=>setNewEx(p=>({...p,sets:e.target.value}))} placeholder="3x10" style={{padding:"9px 10px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-                                    <input value={newEx.rest} onChange={e=>setNewEx(p=>({...p,rest:e.target.value}))} placeholder="60s" style={{padding:"9px 10px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                    <input value={newEx.sets} onChange={e=>setNewEx(p=>({...p,sets:e.target.value}))} placeholder="3x10" style={{padding:"9px 10px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                    <input value={newEx.rest} onChange={e=>setNewEx(p=>({...p,rest:e.target.value}))} placeholder="60s" style={{padding:"9px 10px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                                   </div>
                                   <div style={{display:"flex",gap:8}}>
                                     <button onClick={()=>setDbOpen([rt.id,si])} style={{flex:1,padding:"9px 8px",background:"#60A5FA18",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📚 Base DB</button>
                                     <button onClick={()=>addExToSession(rt.id,si)} style={{flex:1,padding:"9px 8px",background:`${c}22`,border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>✚ AÑADIR</button>
-                                    <button onClick={()=>setAddingTo(null)} style={{padding:"9px 10px",background:"transparent",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t3)",fontSize:11,cursor:"pointer"}}>✕</button>
+                                    <button onClick={()=>setAddingTo(null)} style={{padding:"9px 10px",background:"transparent",border:"1px solid #2A2A44",borderRadius:8,color:"#555",fontSize:11,cursor:"pointer"}}>✕</button>
                                   </div>
                                 </div>
                               ):(
@@ -7090,30 +6412,30 @@ function EjerciciosDB({filter,setFilter,onBack,onPick=null}){
     <div>
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
         <button onClick={onBack} style={{background:"none",border:"none",color:"#60A5FA",cursor:"pointer",fontSize:22,lineHeight:1}}>←</button>
-        <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>BASE DE EJERCICIOS · {EXERCISE_DB.length}</div>
+        <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>BASE DE EJERCICIOS · {EXERCISE_DB.length}</div>
       </div>
-      <input placeholder="🔍 Buscar ejercicio..." value={filter.search} onChange={e=>setFilter(p=>({...p,search:e.target.value}))} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input placeholder="🔍 Buscar ejercicio..." value={filter.search} onChange={e=>setFilter(p=>({...p,search:e.target.value}))} style={{width:"100%",padding:"10px 14px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       <div style={{display:"flex",gap:5,marginBottom:8,overflowX:"auto",paddingBottom:4}}>
-        {muscles.map(m=><button key={m} onClick={()=>setFilter(p=>({...p,muscle:m}))} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",whiteSpace:"nowrap",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:filter.muscle===m?"#60A5FA":"var(--rk-bg4)",color:filter.muscle===m?"var(--rk-ink)":"var(--rk-t3)"}}>{m==="todos"?"Todos":MUSCLE_DEFS[m]?.label||m}</button>)}
+        {muscles.map(m=><button key={m} onClick={()=>setFilter(p=>({...p,muscle:m}))} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",whiteSpace:"nowrap",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:filter.muscle===m?"#60A5FA":"#1A1A2E",color:filter.muscle===m?"#07070F":"#555"}}>{m==="todos"?"Todos":MUSCLE_DEFS[m]?.label||m}</button>)}
       </div>
       <div style={{display:"flex",gap:5,marginBottom:12}}>
-        {levels.map(l=><button key={l} onClick={()=>setFilter(p=>({...p,level:l}))} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:filter.level===l?(l==="todos"?"#60A5FA":lvlColor[l]):"var(--rk-bg4)",color:filter.level===l?"var(--rk-ink)":"var(--rk-t3)"}}>{l==="todos"?"Todos":l}</button>)}
+        {levels.map(l=><button key={l} onClick={()=>setFilter(p=>({...p,level:l}))} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:filter.level===l?(l==="todos"?"#60A5FA":lvlColor[l]):"#1A1A2E",color:filter.level===l?"#07070F":"#555"}}>{l==="todos"?"Todos":l}</button>)}
       </div>
-      <div style={{fontSize:10,color:"var(--rk-t2)",marginBottom:10}}>{filtered.length} resultados</div>
+      <div style={{fontSize:10,color:"#444",marginBottom:10}}>{filtered.length} resultados</div>
       {filtered.map(ex=>(
-        <div key={ex.id} style={{background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+        <div key={ex.id} style={{background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:10,padding:"12px 14px",marginBottom:8}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:4}}>
-            <div style={{fontSize:14,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
+            <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",flex:1}}>{ex.name}</div>
             <div style={{display:"flex",gap:6,alignItems:"center",flexShrink:0,marginLeft:8}}>
               {onPick&&<button onClick={()=>onPick(ex)} style={{padding:"4px 10px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:7,color:"#34D399",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ AÑADIR</button>}
               <span style={{fontSize:9,padding:"2px 8px",borderRadius:20,background:`${lvlColor[ex.level]}22`,border:`1px solid ${lvlColor[ex.level]}44`,color:lvlColor[ex.level]}}>{ex.level}</span>
             </div>
           </div>
-          <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:6}}>{ex.desc}</div>
+          <div style={{fontSize:11,color:"#666",marginBottom:6}}>{ex.desc}</div>
           <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-            {ex.muscle.map(m=><span key={m} style={{fontSize:9,padding:"2px 8px",background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:20,color:"var(--rk-t6)"}}>{MUSCLE_DEFS[m]?.label||m}</span>)}
-            <span style={{fontSize:9,padding:"2px 8px",background:"var(--rk-bg4)",borderRadius:20,color:"var(--rk-t3)"}}>📦 {ex.equip}</span>
-            <span style={{fontSize:9,padding:"2px 8px",background:"var(--rk-bg4)",borderRadius:20,color:"#F59E0B",fontWeight:700}}>+{ex.xpBase} XP</span>
+            {ex.muscle.map(m=><span key={m} style={{fontSize:9,padding:"2px 8px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:20,color:"#888"}}>{MUSCLE_DEFS[m]?.label||m}</span>)}
+            <span style={{fontSize:9,padding:"2px 8px",background:"#1A1A2E",borderRadius:20,color:"#555"}}>📦 {ex.equip}</span>
+            <span style={{fontSize:9,padding:"2px 8px",background:"#1A1A2E",borderRadius:20,color:"#F59E0B",fontWeight:700}}>+{ex.xpBase} XP</span>
           </div>
         </div>
       ))}
@@ -7151,13 +6473,13 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
         <button onClick={()=>setPicking(false)} style={{background:"none",border:"none",color:"#34D399",cursor:"pointer",fontSize:22,lineHeight:1}}>←</button>
         <div style={{fontSize:12,fontWeight:700,color:"#34D399",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>AÑADIR EJERCICIO</div>
       </div>
-      <input placeholder="🔍 Buscar..." value={exSearch} onChange={e=>setExSearch(e.target.value)} style={{width:"100%",padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input placeholder="🔍 Buscar..." value={exSearch} onChange={e=>setExSearch(e.target.value)} style={{width:"100%",padding:"10px 14px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       <div style={{display:"flex",gap:5,marginBottom:12,overflowX:"auto",paddingBottom:4}}>
-        {["todos",...Object.keys(MUSCLE_DEFS)].map(m=><button key={m} onClick={()=>setExMuscle(m)} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",whiteSpace:"nowrap",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:exMuscle===m?"#34D399":"var(--rk-bg4)",color:exMuscle===m?"var(--rk-ink)":"var(--rk-t3)"}}>{m==="todos"?"Todos":MUSCLE_DEFS[m]?.label||m}</button>)}
+        {["todos",...Object.keys(MUSCLE_DEFS)].map(m=><button key={m} onClick={()=>setExMuscle(m)} style={{padding:"4px 10px",borderRadius:20,border:"none",cursor:"pointer",whiteSpace:"nowrap",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:exMuscle===m?"#34D399":"#1A1A2E",color:exMuscle===m?"#07070F":"#555"}}>{m==="todos"?"Todos":MUSCLE_DEFS[m]?.label||m}</button>)}
       </div>
       {filtEx.map(ex=>(
-        <button key={ex.id} onClick={()=>addEx(ex)} style={{width:"100%",textAlign:"left",background:"var(--rk-bg3)",border:"1px solid var(--rk-border2)",borderRadius:10,padding:"12px 14px",marginBottom:8,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-          <div><div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div><div style={{fontSize:10,color:"var(--rk-t3)"}}>{ex.muscle.map(m=>MUSCLE_DEFS[m]?.label||m).join(", ")} · {ex.equip}</div></div>
+        <button key={ex.id} onClick={()=>addEx(ex)} style={{width:"100%",textAlign:"left",background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:10,padding:"12px 14px",marginBottom:8,cursor:"pointer",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div><div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div><div style={{fontSize:10,color:"#555"}}>{ex.muscle.map(m=>MUSCLE_DEFS[m]?.label||m).join(", ")} · {ex.equip}</div></div>
           <span style={{fontSize:11,color:"#34D399",fontWeight:700,flexShrink:0}}>+{ex.xpBase} XP</span>
         </button>
       ))}
@@ -7170,14 +6492,14 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
         <button onClick={onBack} style={{background:"none",border:"none",color:"#34D399",cursor:"pointer",fontSize:22,lineHeight:1}}>←</button>
         <div style={{fontSize:12,fontWeight:700,color:"#34D399",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>{routine?"EDITAR":"NUEVA"} RUTINA</div>
       </div>
-      <input placeholder="Nombre de la rutina" value={name} onChange={e=>setName(e.target.value)} style={{width:"100%",padding:"12px 14px",background:"var(--rk-bg2)",border:`1px solid ${color}44`,borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input placeholder="Nombre de la rutina" value={name} onChange={e=>setName(e.target.value)} style={{width:"100%",padding:"12px 14px",background:"#0D0D1A",border:`1px solid ${color}44`,borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       <div style={{display:"flex",gap:8,marginBottom:14,alignItems:"center"}}>
-        <span style={{fontSize:10,color:"var(--rk-t3)",letterSpacing:2}}>COLOR</span>
+        <span style={{fontSize:10,color:"#555",letterSpacing:2}}>COLOR</span>
         {COLORS.map(c=><button key={c} onClick={()=>setColor(c)} style={{width:24,height:24,borderRadius:"50%",background:c,border:`2px solid ${color===c?"#FFF":"transparent"}`,cursor:"pointer"}}/>)}
       </div>
       <div style={{display:"flex",gap:6,marginBottom:12,flexWrap:"wrap"}}>
         {sessions.map((s,i)=>(
-          <button key={i} onClick={()=>setActiveSess(i)} style={{padding:"6px 12px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:activeSess===i?color:"var(--rk-bg4)",color:activeSess===i?"var(--rk-ink)":"var(--rk-t3)"}}>{s.day}</button>
+          <button key={i} onClick={()=>setActiveSess(i)} style={{padding:"6px 12px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:activeSess===i?color:"#1A1A2E",color:activeSess===i?"#07070F":"#555"}}>{s.day}</button>
         ))}
         <button onClick={()=>{setSessions(p=>[...p,{day:`Día ${p.length+1}`,exercises:[]}]);setActiveSess(sessions.length);}} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${color}44`,background:"transparent",cursor:"pointer",fontSize:11,color:color,fontFamily:"'Rajdhani',sans-serif"}}>+ DÍA</button>
         <button onClick={()=>{
@@ -7186,32 +6508,32 @@ function RoutineBuilder({routine,onSave,onBack,addXp}){
           setActiveSess(sessions.length);
         }} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${color}44`,background:"transparent",cursor:"pointer",fontSize:11,color:color,fontFamily:"'Rajdhani',sans-serif"}}>+ SEMANA EN BLANCO</button>
       </div>
-      <input value={sess.day} onChange={e=>setSessions(p=>p.map((s,i)=>i===activeSess?{...s,day:e.target.value}:s))} style={{width:"100%",padding:"8px 12px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
+      <input value={sess.day} onChange={e=>setSessions(p=>p.map((s,i)=>i===activeSess?{...s,day:e.target.value}:s))} style={{width:"100%",padding:"8px 12px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}/>
       {sess.exercises.length===0
-        ? <div style={{textAlign:"center",padding:24,color:"var(--rk-t1)",fontSize:12,border:"1px dashed var(--rk-border)",borderRadius:10,marginBottom:10}}>Sin ejercicios. Añade uno ↓</div>
+        ? <div style={{textAlign:"center",padding:24,color:"#333",fontSize:12,border:"1px dashed #2A2A44",borderRadius:10,marginBottom:10}}>Sin ejercicios. Añade uno ↓</div>
         : sess.exercises.map((ex,ei)=>(
-          <div key={ei} style={{background:ex.boss?"#1A0808":ex.done?`${color}10`:"var(--rk-bg3)",border:`1px solid ${ex.boss?"#E84A5F55":color+"22"}`,borderRadius:10,padding:"10px 12px",marginBottom:8}}>
+          <div key={ei} style={{background:ex.boss?"#1A0808":ex.done?`${color}10`:"#0D0D19",border:`1px solid ${ex.boss?"#E84A5F55":color+"22"}`,borderRadius:10,padding:"10px 12px",marginBottom:8}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
               <div style={{flex:1,minWidth:0}}>
-                <div style={{fontSize:13,fontWeight:700,color:ex.done?"var(--rk-t3)":"var(--rk-text)",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
+                <div style={{fontSize:13,fontWeight:700,color:ex.done?"#555":"#FFF",textDecoration:ex.done?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                 {ex.boss&&<span style={{fontSize:8,padding:"1px 7px",background:"#E84A5F22",border:"1px solid #E84A5F66",borderRadius:20,color:"#E84A5F",letterSpacing:1,marginTop:3,display:"inline-block"}}>💀 BOSS</span>}
               </div>
               <div style={{display:"flex",gap:6,flexShrink:0}}>
-                <button onClick={()=>updateEx(activeSess,ei,"boss",!ex.boss)} title="Marcar como Boss" style={{width:26,height:26,borderRadius:6,border:`1.5px solid ${ex.boss?"#E84A5F":"var(--rk-border)"}`,background:ex.boss?"#E84A5F22":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💀</button>
-                <button onClick={e=>toggleDone(activeSess,ei,ex.xp,e)} style={{width:26,height:26,borderRadius:6,border:`1.5px solid ${ex.done?color:"var(--rk-border)"}`,background:ex.done?color:"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:ex.done?"var(--rk-ink)":"var(--rk-t2)"}}>{ex.done?"✓":"○"}</button>
+                <button onClick={()=>updateEx(activeSess,ei,"boss",!ex.boss)} title="Marcar como Boss" style={{width:26,height:26,borderRadius:6,border:`1.5px solid ${ex.boss?"#E84A5F":"#2A2A44"}`,background:ex.boss?"#E84A5F22":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:13}}>💀</button>
+                <button onClick={e=>toggleDone(activeSess,ei,ex.xp,e)} style={{width:26,height:26,borderRadius:6,border:`1.5px solid ${ex.done?color:"#2A2A44"}`,background:ex.done?color:"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:ex.done?"#07070F":"#444"}}>{ex.done?"✓":"○"}</button>
                 <button onClick={()=>removeEx(activeSess,ei)} style={{width:26,height:26,borderRadius:6,border:"1px solid #E84A5F33",background:"transparent",cursor:"pointer",fontSize:12,color:"#E84A5F"}}>×</button>
               </div>
             </div>
             <div style={{display:"flex",gap:6}}>
-              <input value={ex.sets} onChange={e=>updateEx(activeSess,ei,"sets",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Series"/>
-              <input value={ex.rest} onChange={e=>updateEx(activeSess,ei,"rest",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid var(--rk-border)",borderRadius:6,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Descanso"/>
+              <input value={ex.sets} onChange={e=>updateEx(activeSess,ei,"sets",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid #2A2A44",borderRadius:6,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Series"/>
+              <input value={ex.rest} onChange={e=>updateEx(activeSess,ei,"rest",e.target.value)} style={{flex:1,padding:"5px 8px",background:"#0A0A12",border:"1px solid #2A2A44",borderRadius:6,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}} placeholder="Descanso"/>
               <span style={{fontSize:10,color:ex.boss?"#E84A5F":color,fontWeight:700,padding:"5px 6px",whiteSpace:"nowrap"}}>+{ex.xp}XP</span>
             </div>
           </div>
         ))
       }
       <button onClick={()=>setPicking(true)} style={{width:"100%",padding:12,background:`${color}18`,border:`1px dashed ${color}66`,borderRadius:10,color,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,marginBottom:14}}>+ AÑADIR EJERCICIO</button>
-      <button onClick={()=>name.trim()&&onSave({id:routine?.id,name,color,sessions,createdAt:routine?.createdAt||Date.now()})} disabled={!name.trim()} style={{width:"100%",padding:14,background:name.trim()?`linear-gradient(135deg,${color},${color}bb)`:"var(--rk-bg4)",border:"none",borderRadius:10,color:name.trim()?"var(--rk-ink)":"var(--rk-t2)",fontSize:14,fontWeight:700,cursor:name.trim()?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR RUTINA</button>
+      <button onClick={()=>name.trim()&&onSave({id:routine?.id,name,color,sessions,createdAt:routine?.createdAt||Date.now()})} disabled={!name.trim()} style={{width:"100%",padding:14,background:name.trim()?`linear-gradient(135deg,${color},${color}bb)`:"#1A1A2E",border:"none",borderRadius:10,color:name.trim()?"#07070F":"#444",fontSize:14,fontWeight:700,cursor:name.trim()?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>💾 GUARDAR RUTINA</button>
     </div>
   );
 }
@@ -7254,7 +6576,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
 
       <div style={{width:"100%",maxWidth:380,position:"relative"}}>
         {/* Glow border card */}
-        <div style={{background:"linear-gradient(180deg,#0D0007 0%,var(--rk-bg) 100%)",
+        <div style={{background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
           borderRadius:24,border:`1px solid ${c}88`,
           boxShadow:`0 0 60px ${c}44, inset 0 0 40px ${c}08`,
           overflow:"hidden"}}>
@@ -7273,12 +6595,12 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
               {raid.icon}
             </div>
             {/* Boss name */}
-            <div style={{fontSize:24,fontWeight:900,color:"var(--rk-text)",
+            <div style={{fontSize:24,fontWeight:900,color:"#FFF",
               fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6,
               textShadow:`0 0 20px ${c}88`}}>
               {raid.boss}
             </div>
-            <div style={{fontSize:11,color:"var(--rk-t7)",fontStyle:"italic",lineHeight:1.5,
+            <div style={{fontSize:11,color:"#AAA",fontStyle:"italic",lineHeight:1.5,
               fontFamily:"'Rajdhani',sans-serif"}}>
               "{raid.desc}"
             </div>
@@ -7286,14 +6608,14 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
 
           {/* COUNTDOWN */}
           <div style={{padding:"20px 24px 0",textAlign:"center"}}>
-            <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:4,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>
+            <div style={{fontSize:9,color:"#555",letterSpacing:4,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>
               TIEMPO RESTANTE
             </div>
             {/* SVG circular countdown */}
             <div style={{position:"relative",width:130,height:130,margin:"0 auto 16px"}}>
               <svg width="130" height="130" style={{transform:"rotate(-90deg)"}}>
                 {/* Track */}
-                <circle cx="65" cy="65" r="54" fill="none" stroke="var(--rk-bg4)" strokeWidth="6"/>
+                <circle cx="65" cy="65" r="54" fill="none" stroke="#1A1A2E" strokeWidth="6"/>
                 {/* Progress */}
                 <circle cx="65" cy="65" r="54" fill="none" stroke={isUrgent?"#E84A5F":c}
                   strokeWidth="6" strokeLinecap="round"
@@ -7310,7 +6632,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
                     ?`${secs}s`
                     :`${hours.toString().padStart(2,"0")}:${mins.toString().padStart(2,"0")}:${secs.toString().padStart(2,"0")}`}
                 </div>
-                {remaining>=60&&<div style={{fontSize:8,color:"var(--rk-t3)",letterSpacing:2,marginTop:2}}>HH:MM:SS</div>}
+                {remaining>=60&&<div style={{fontSize:8,color:"#555",letterSpacing:2,marginTop:2}}>HH:MM:SS</div>}
                 {isUrgent&&<div style={{fontSize:8,color:"#E84A5F",letterSpacing:2,marginTop:2,animation:"bossGlow 1s infinite"}}>¡URGENTE!</div>}
               </div>
             </div>
@@ -7320,20 +6642,20 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
               padding:"14px 16px",marginBottom:16,
               boxShadow:`inset 0 0 20px ${c}08`}}>
               <div style={{fontSize:8,color:c,letterSpacing:4,marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>⚔️ TU MISIÓN</div>
-              <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",
+              <div style={{fontSize:20,fontWeight:900,color:"#FFF",
                 fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,lineHeight:1.3,marginBottom:raid.reps?12:0}}>
                 {raid.challenge}
               </div>
               {raid.reps&&(
                 <>
-                  <div style={{height:8,background:"var(--rk-bg4)",borderRadius:6,overflow:"hidden",marginBottom:6}}>
+                  <div style={{height:8,background:"#1A1A2E",borderRadius:6,overflow:"hidden",marginBottom:6}}>
                     <div style={{height:"100%",width:`${Math.min((progress/raid.reps)*100,100)}%`,background:`linear-gradient(90deg,${c},${c}CC)`,transition:"width .3s ease",boxShadow:`0 0 8px ${c}`}}/>
                   </div>
-                  <div style={{fontSize:11,color:"var(--rk-t6)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>{progress}/{raid.reps} completadas</div>
+                  <div style={{fontSize:11,color:"#888",fontWeight:700,fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>{progress}/{raid.reps} completadas</div>
                   <div style={{display:"flex",gap:8}}>
                     <input type="number" min="1" placeholder="ej: 10" value={contribInput} onChange={e=>setContribInput(e.target.value)}
                       onKeyDown={e=>{if(e.key==="Enter"){const n=parseInt(contribInput);if(n>0){onContribute(n);setContribInput("");}}}}
-                      style={{flex:1,padding:"10px 12px",background:"var(--rk-bg)",border:`1px solid ${c}44`,borderRadius:10,color:"var(--rk-text)",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                      style={{flex:1,padding:"10px 12px",background:"#07070F",border:`1px solid ${c}44`,borderRadius:10,color:"#FFF",fontSize:14,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                     <button onClick={()=>{const n=parseInt(contribInput);if(n>0){onContribute(n);setContribInput("");}}}
                       style={{padding:"10px 18px",background:`${c}22`,border:`1px solid ${c}66`,borderRadius:10,color:c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap"}}>
                       ➕ APORTAR
@@ -7349,14 +6671,14 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
                 {l:"XP",v:`+${raid.xp}`,col:"#A78BFA",icon:"⚡"},
                 {l:"MONEDAS",v:`+${raid.coins}`,col:"#F59E0B",icon:"🪙"},
               ].map(r=>(
-                <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:12,
+                <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,
                   padding:"12px 8px",textAlign:"center",
                   border:`1px solid ${r.col}33`,
                   boxShadow:`0 0 12px ${r.col}11`}}>
                   <div style={{fontSize:11,marginBottom:4}}>{r.icon}</div>
                   <div style={{fontSize:18,fontWeight:900,color:r.col,
                     fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{r.v}</div>
-                  <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:1,marginTop:3}}>{r.l}</div>
+                  <div style={{fontSize:8,color:"#444",letterSpacing:1,marginTop:3}}>{r.l}</div>
                 </div>
               ))}
             </div>
@@ -7366,7 +6688,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
               style={{width:"100%",padding:"16px",marginBottom:10,
                 background:`linear-gradient(135deg,${c} 0%,${c}BB 100%)`,
                 border:"none",borderRadius:14,
-                color:"var(--rk-ink)",fontSize:15,fontWeight:900,cursor:"pointer",
+                color:"#07070F",fontSize:15,fontWeight:900,cursor:"pointer",
                 fontFamily:"'Rajdhani',sans-serif",letterSpacing:3,
                 boxShadow:`0 4px 24px ${c}66`,
                 textTransform:"uppercase"}}>
@@ -7375,8 +6697,8 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
             <div style={{display:"flex",gap:8,marginBottom:20}}>
               <button onClick={onDismiss}
                 style={{flex:2,padding:"12px",
-                  background:"transparent",border:"1px solid var(--rk-bg5)",
-                  borderRadius:14,color:"var(--rk-t2)",fontSize:11,cursor:"pointer",
+                  background:"transparent",border:"1px solid #2A2A3E",
+                  borderRadius:14,color:"#444",fontSize:11,cursor:"pointer",
                   fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
                 CERRAR · SIGUE ACTIVA
               </button>
@@ -7410,30 +6732,30 @@ function RaidCompleteCard({raid,onClose}){
     <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
       <div style={{width:"100%",maxWidth:340}}>
         {/* Card */}
-        <div ref={cardRef} style={{background:`linear-gradient(160deg,${c}22 0%,#0A0007 50%,var(--rk-bg) 100%)`,
+        <div ref={cardRef} style={{background:`linear-gradient(160deg,${c}22 0%,#0A0007 50%,#07070F 100%)`,
           borderRadius:20,border:`2px solid ${c}`,padding:"28px 24px",textAlign:"center",
           boxShadow:`0 0 60px ${c}88, inset 0 0 30px ${c}08`}}>
           <div style={{fontSize:8,letterSpacing:5,color:`${c}88`,marginBottom:12,fontFamily:"'Rajdhani',sans-serif"}}>━━ RAID DERROTADA ━━</div>
           <div style={{fontSize:68,marginBottom:8,filter:`drop-shadow(0 0 20px ${c})`,animation:"bossGlow 1.5s ease-in-out infinite"}}>{raid.icon}</div>
           <div style={{display:"inline-block",padding:"3px 12px",background:`${c}22`,border:`1px solid ${c}44`,borderRadius:20,fontSize:9,color:c,letterSpacing:3,marginBottom:10,fontFamily:"'Rajdhani',sans-serif"}}>{raid.rarity.toUpperCase()}</div>
-          <div style={{fontSize:20,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6}}>{raid.boss}</div>
-          <div style={{fontSize:11,color:"var(--rk-t3)",fontStyle:"italic",marginBottom:16,fontFamily:"'Rajdhani',sans-serif"}}>"{raid.challenge}"</div>
+          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6}}>{raid.boss}</div>
+          <div style={{fontSize:11,color:"#555",fontStyle:"italic",marginBottom:16,fontFamily:"'Rajdhani',sans-serif"}}>"{raid.challenge}"</div>
           <div style={{width:"70%",height:1,background:`linear-gradient(90deg,transparent,${c}66,transparent)`,margin:"0 auto 16px"}}/>
           <div style={{display:"flex",gap:8,justifyContent:"center",marginBottom:16}}>
             {[{l:"XP",v:`+${raid.xp}`,col:"#A78BFA"},{l:"MONEDAS",v:`+${raid.coins}`,col:"#F59E0B"}].map(r=>(
-              <div key={r.l} style={{flex:1,background:"var(--rk-inset)",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.col}33`}}>
+              <div key={r.l} style={{flex:1,background:"#0A0A14",borderRadius:12,padding:"12px 8px",textAlign:"center",border:`1px solid ${r.col}33`}}>
                 <div style={{fontSize:18,fontWeight:900,color:r.col,fontFamily:"'Rajdhani',sans-serif"}}>{r.v}</div>
-                <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:2,marginTop:3}}>{r.l}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:2,marginTop:3}}>{r.l}</div>
               </div>
             ))}
           </div>
-          <div style={{fontSize:9,color:"var(--rk-t1)",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
+          <div style={{fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
         </div>
         {/* Buttons */}
         <div style={{display:"flex",gap:8,marginTop:12}}>
           <button onClick={handleShare} disabled={sharing}
             style={{flex:2,padding:"13px",background:sharing?"#0A0007":`linear-gradient(135deg,${c},${c}BB)`,
-              border:"none",borderRadius:12,color:sharing?c:"var(--rk-ink)",fontSize:13,fontWeight:900,
+              border:"none",borderRadius:12,color:sharing?c:"#07070F",fontSize:13,fontWeight:900,
               cursor:sharing?"not-allowed":"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
               boxShadow:sharing?"none":`0 0 20px ${c}55`}}>
             {sharing?"GENERANDO...":"📸 COMPARTIR"}
@@ -7469,7 +6791,7 @@ function PRCard({exName,kg,prevMax,xp,rank,onClose}){
       onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:340,position:"relative"}}>
         {/* Card — captured by html2canvas */}
-        <div ref={cardRef} style={{background:"linear-gradient(160deg,#1A1000 0%,#0D0D07 60%,var(--rk-bg) 100%)",
+        <div ref={cardRef} style={{background:"linear-gradient(160deg,#1A1000 0%,#0D0D07 60%,#07070F 100%)",
           borderRadius:20,border:`2px solid ${c}`,
           boxShadow:`0 0 60px ${c}66, inset 0 0 40px ${c}08`,
           overflow:"hidden",padding:"28px 24px 24px",textAlign:"center"}}>
@@ -7484,7 +6806,7 @@ function PRCard({exName,kg,prevMax,xp,rank,onClose}){
           <div style={{fontSize:13,color:`${c}99`,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,marginBottom:6}}>
             {exName.toUpperCase()}
           </div>
-          <div style={{fontSize:72,fontWeight:900,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,
+          <div style={{fontSize:72,fontWeight:900,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,
             textShadow:`0 0 30px ${c}88`}}>
             {kg}
           </div>
@@ -7493,16 +6815,16 @@ function PRCard({exName,kg,prevMax,xp,rank,onClose}){
           <div style={{display:"flex",gap:12,justifyContent:"center",marginBottom:20}}>
             {prevMax>0&&(
               <div style={{textAlign:"center"}}>
-                <div style={{fontSize:11,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>ANTERIOR</div>
-                <div style={{fontSize:18,fontWeight:700,color:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif"}}>{prevMax}kg</div>
+                <div style={{fontSize:11,color:"#555",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>ANTERIOR</div>
+                <div style={{fontSize:18,fontWeight:700,color:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{prevMax}kg</div>
               </div>
             )}
             <div style={{textAlign:"center"}}>
-              <div style={{fontSize:11,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>MEJORA</div>
+              <div style={{fontSize:11,color:"#555",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>MEJORA</div>
               <div style={{fontSize:18,fontWeight:700,color:c,fontFamily:"'Rajdhani',sans-serif"}}>+{improvement}%</div>
             </div>
             <div style={{textAlign:"center"}}>
-              <div style={{fontSize:11,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>XP</div>
+              <div style={{fontSize:11,color:"#555",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>XP</div>
               <div style={{fontSize:18,fontWeight:700,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif"}}>+{xp}</div>
             </div>
           </div>
@@ -7513,13 +6835,13 @@ function PRCard({exName,kg,prevMax,xp,rank,onClose}){
               <span style={{fontSize:11,color:rank.color,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>{rank.name}</span>
             </div>
           )}
-          <div style={{marginTop:16,fontSize:9,color:"var(--rk-t1)",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
+          <div style={{marginTop:16,fontSize:9,color:"#333",letterSpacing:4,fontFamily:"'Cinzel',serif"}}>RANKUP FITNESS</div>
         </div>
         {/* Action buttons */}
         <div style={{display:"flex",gap:8,marginTop:12}}>
           <button onClick={handleShare} disabled={sharing}
             style={{flex:2,padding:"13px",background:sharing?"#1A1000":`linear-gradient(135deg,${c},#D97706)`,
-              border:"none",borderRadius:12,color:sharing?"#F59E0B":"var(--rk-ink)",
+              border:"none",borderRadius:12,color:sharing?"#F59E0B":"#07070F",
               fontSize:13,fontWeight:900,cursor:sharing?"not-allowed":"pointer",
               fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
               boxShadow:sharing?"none":`0 0 20px ${c}55`}}>
@@ -7554,16 +6876,16 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
 
   return(
     <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"85vh",background:"var(--rk-bg2)",borderRadius:"20px 20px 0 0",border:"1px solid var(--rk-border2)",display:"flex",flexDirection:"column"}}>
+      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxHeight:"85vh",background:"#0D0D1A",borderRadius:"20px 20px 0 0",border:"1px solid #1E1E32",display:"flex",flexDirection:"column"}}>
         {/* Header */}
-        <div style={{padding:"20px 20px 12px",borderBottom:"1px solid var(--rk-bg4)",flexShrink:0}}>
+        <div style={{padding:"20px 20px 12px",borderBottom:"1px solid #1A1A2E",flexShrink:0}}>
           <div style={{fontSize:9,color:color,letterSpacing:3,marginBottom:4}}>📈 HISTÓRICO GLOBAL</div>
-          <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{exName}</div>
+          <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>{exName}</div>
           <div style={{display:"flex",gap:10}}>
             {[{l:"SESIONES",v:sorted.length},{l:"RÉCORD",v:`${pr}kg`},{l:"ÚLTIMA",v:sorted.length>0?`${sorted[sorted.length-1].kg}kg`:"—"}].map(s=>(
-              <div key={s.l} style={{flex:1,background:"var(--rk-bg)",borderRadius:8,padding:"8px 6px",textAlign:"center",border:`1px solid ${color}22`}}>
+              <div key={s.l} style={{flex:1,background:"#07070F",borderRadius:8,padding:"8px 6px",textAlign:"center",border:`1px solid ${color}22`}}>
                 <div style={{fontSize:14,fontWeight:700,color:color,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
-                <div style={{fontSize:8,color:"var(--rk-t2)",letterSpacing:1}}>{s.l}</div>
+                <div style={{fontSize:8,color:"#444",letterSpacing:1}}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -7572,7 +6894,7 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
         {/* Chart */}
         {sorted.length>=2&&(
           <div style={{padding:"16px 20px 8px",flexShrink:0}}>
-            <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:8}}>PROGRESIÓN DE PESO</div>
+            <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:8}}>PROGRESIÓN DE PESO</div>
             <div style={{position:"relative",height:80,display:"flex",alignItems:"flex-end",gap:3}}>
               {sorted.map((r,i)=>{
                 const h=Math.max(8,((r.kg-minKg)/range)*70+10);
@@ -7581,7 +6903,7 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
                   <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:2}}>
                     {isPR&&<div style={{fontSize:7,color:"#F59E0B"}}>PR</div>}
                     <div style={{width:"100%",borderRadius:"3px 3px 0 0",background:isPR?`#F59E0B`:color,opacity:0.7+(i/sorted.length)*0.3,height:h,transition:"height .3s"}}/>
-                    <div style={{fontSize:8,color:"var(--rk-t3)",writingMode:"vertical-lr",transform:"rotate(180deg)",lineHeight:1}}>{r.kg}kg</div>
+                    <div style={{fontSize:8,color:"#555",writingMode:"vertical-lr",transform:"rotate(180deg)",lineHeight:1}}>{r.kg}kg</div>
                   </div>
                 );
               })}
@@ -7593,22 +6915,22 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
 
         {/* List */}
         <div style={{overflowY:"auto",flex:1,padding:"8px 20px 20px"}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:8}}>TODOS LOS REGISTROS</div>
-          {sorted.length===0&&<div style={{textAlign:"center",padding:"30px",color:"var(--rk-t1)",fontSize:12}}>Sin registros aún</div>}
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:8}}>TODOS LOS REGISTROS</div>
+          {sorted.length===0&&<div style={{textAlign:"center",padding:"30px",color:"#333",fontSize:12}}>Sin registros aún</div>}
           {[...sorted].reverse().map((r,i)=>(
-            <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
+            <div key={i} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"10px 0",borderBottom:"1px solid #1A1A2E"}}>
               <div>
                 <div style={{fontSize:13,fontWeight:700,color:r.kg===maxKg?"#F59E0B":"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{r.kg} kg {r.kg===maxKg&&"🏆"}</div>
-                <div style={{fontSize:10,color:"var(--rk-t2)"}}>{formatDate(r.date)}</div>
+                <div style={{fontSize:10,color:"#444"}}>{formatDate(r.date)}</div>
               </div>
-              <div style={{fontSize:10,color:"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif"}}>
+              <div style={{fontSize:10,color:"#555",fontFamily:"'Rajdhani',sans-serif"}}>
                 {i===0?"ÚLTIMA":`hace ${sorted.length-1-([...sorted].reverse().indexOf(r))+1} sesiones`}
               </div>
             </div>
           ))}
         </div>
 
-        <button onClick={onClose} style={{margin:"0 20px 20px",padding:"12px",background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2,flexShrink:0}}>CERRAR</button>
+        <button onClick={onClose} style={{margin:"0 20px 20px",padding:"12px",background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#666",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:12,letterSpacing:2,flexShrink:0}}>CERRAR</button>
       </div>
     </div>
   );
@@ -7626,30 +6948,7 @@ function timeAgo(ts){
   return new Date(ts).toLocaleDateString("es-ES",{day:"2-digit",month:"short"});
 }
 
-// Iconos estilo Instagram (SVG en línea, sin librerías externas)
-function IconHeart({filled,size=22,color="var(--rk-t10)"}){
-  return(
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled?color:"none"} stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-    </svg>
-  );
-}
-function IconComment({size=22,color="var(--rk-t10)"}){
-  return(
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-    </svg>
-  );
-}
-function IconDots({size=18,color="var(--rk-t6)"}){
-  return(
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
-      <circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/>
-    </svg>
-  );
-}
-
-function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDeletePost,onComment,onDeleteComment,onToggleLike,onToggleCommentLike,onProfileClick}){
+function SocialTab({posts={},loading,currentEmail,onPost,onDeletePost,onComment,onDeleteComment,onToggleLike}){
   const [showUpload,setShowUpload]=useState(false);
   const [preview,setPreview]=useState(null);
   const [caption,setCaption]=useState("");
@@ -7659,10 +6958,8 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
   const [openComments,setOpenComments]=useState({});
   const [commentInputs,setCommentInputs]=useState({});
   const fileRef=useRef();
-  const cameraRef=useRef();
   const me=(currentEmail||"").toLowerCase().trim();
   const myKey=me.replace(/\./g,"_").replace(/@/g,"_at_");
-  const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
 
   // Color de avatar determinista a partir del nombre — misma persona, mismo color siempre
   const AVATAR_COLORS=["#A78BFA","#60A5FA","#34D399","#F59E0B","#E84A5F","#38BDF8","#FB923C"];
@@ -7696,44 +6993,42 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
   return(
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-        <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>📸 MURO SOCIAL</div>
+        <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>📸 MURO SOCIAL</div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <div title="Actualizaciones en tiempo real" style={{display:"flex",alignItems:"center",gap:5,fontSize:9,color:"#34D399",fontWeight:700}}>
+            <span style={{width:6,height:6,borderRadius:"50%",background:"#34D399",boxShadow:"0 0 6px #34D399",display:"inline-block"}}/>
+            EN DIRECTO
+          </div>
           <button onClick={()=>setShowUpload(true)} style={{padding:"7px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ 📸 PUBLICAR</button>
         </div>
       </div>
 
       {showUpload&&(
-        <div style={{background:"var(--rk-bg3)",border:"1px solid #A78BFA44",borderRadius:14,padding:16,marginBottom:18}}>
-          <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={handleFile} style={{display:"none"}}/>
+        <div style={{background:"#0F0F1C",border:"1px solid #A78BFA44",borderRadius:14,padding:16,marginBottom:18}}>
           <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{display:"none"}}/>
           {!preview?(
-            <div style={{display:"flex",gap:8}}>
-              <button onClick={()=>cameraRef.current?.click()} disabled={compressing} style={{flex:1,padding:30,background:"var(--rk-bg)",border:"1px dashed var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                {compressing?"⏳ Procesando...":"📷 Hacer foto"}
-              </button>
-              <button onClick={()=>fileRef.current?.click()} disabled={compressing} style={{flex:1,padding:30,background:"var(--rk-bg)",border:"1px dashed var(--rk-border)",borderRadius:10,color:"var(--rk-t4)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                {compressing?"⏳ Procesando...":"🖼️ Galería"}
-              </button>
-            </div>
+            <button onClick={()=>fileRef.current?.click()} disabled={compressing} style={{width:"100%",padding:30,background:"#07070F",border:"1px dashed #2A2A44",borderRadius:10,color:"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+              {compressing?"⏳ Procesando imagen...":"📷 Elegir foto"}
+            </button>
           ):(
             <>
               <img src={preview} style={{width:"100%",maxHeight:280,objectFit:"cover",borderRadius:10,marginBottom:10}}/>
               <textarea placeholder="Añade un comentario (opcional)..." value={caption} onChange={e=>setCaption(e.target.value)} rows={2}
-                style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",marginBottom:10,boxSizing:"border-box"}}/>
+                style={{width:"100%",padding:"10px 12px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:12,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",marginBottom:10,boxSizing:"border-box"}}/>
             </>
           )}
           {error&&<div style={{fontSize:11,color:"#F87171",marginTop:8}}>{error}</div>}
           <div style={{display:"flex",gap:8,marginTop:10}}>
-            <button onClick={()=>{setShowUpload(false);setPreview(null);setCaption("");setError("");}} style={{flex:1,padding:10,background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-t6)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+            <button onClick={()=>{setShowUpload(false);setPreview(null);setCaption("");setError("");}} style={{flex:1,padding:10,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
             {preview&&<button onClick={submitPost} disabled={posting} style={{flex:1,padding:10,background:"linear-gradient(135deg,#A78BFA,#7C3AED)",border:"none",borderRadius:8,color:"#FFF",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{posting?"Publicando...":"📸 PUBLICAR"}</button>}
           </div>
         </div>
       )}
 
       {sortedPosts.length===0&&!loading&&(
-        <div style={{textAlign:"center",padding:"50px 20px",color:"var(--rk-t1)"}}>
+        <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
           <div style={{fontSize:40,marginBottom:12}}>📸</div>
-          <div style={{fontSize:13,color:"var(--rk-t2)"}}>Nadie ha publicado nada todavía. ¡Sé el primero!</div>
+          <div style={{fontSize:13,color:"#444"}}>Nadie ha publicado nada todavía. ¡Sé el primero!</div>
         </div>
       )}
 
@@ -7745,128 +7040,70 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
         const likeCount=Object.keys(likes).length;
         const iLiked=!!likes[myKey];
         const ac=avatarColor(post.name);
-        const authorPhoto=profilePhotos[keyOf(post.email)];
         return(
-          <div key={postId} style={{background:"#000",border:"1px solid #1F1F1F",borderRadius:14,marginBottom:22,overflow:"hidden"}}>
+          <div key={postId} style={{background:"#0F0F1C",border:"1px solid #1E1E32",borderRadius:14,marginBottom:18,overflow:"hidden"}}>
             {/* Cabecera */}
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 12px"}}>
-              <button onClick={()=>{if(!isOwnPost&&onProfileClick) onProfileClick({key:keyOf(post.email),name:post.name,photo:authorPhoto});}} style={{display:"flex",alignItems:"center",gap:10,background:"none",border:"none",padding:0,cursor:isOwnPost?"default":"pointer",textAlign:"left"}}>
-                <div style={{width:34,height:34,borderRadius:"50%",padding:authorPhoto?2:0,background:authorPhoto?"linear-gradient(45deg,#F59E0B,#E84A5F,#A78BFA)":"transparent",flexShrink:0}}>
-                  <div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",background:`${ac}22`,border:authorPhoto?"2px solid #000":`1.5px solid ${ac}`,display:"flex",alignItems:"center",justifyContent:"center"}}>
-                    {authorPhoto?
-                      <img src={authorPhoto} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.currentTarget.style.display="none";}}/>
-                      :<span style={{fontSize:13,fontWeight:900,color:ac,fontFamily:"'Cinzel',serif"}}>{(post.name||"?")[0]?.toUpperCase()}</span>}
-                  </div>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 14px"}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
+                <div style={{width:32,height:32,borderRadius:"50%",background:`${ac}22`,border:`1.5px solid ${ac}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:ac,fontFamily:"'Cinzel',serif",flexShrink:0}}>
+                  {(post.name||"?")[0]?.toUpperCase()}
                 </div>
                 <div>
-                  <span style={{fontSize:12,fontWeight:700,color:"#FAFAFA",fontFamily:"'Rajdhani',sans-serif"}}>{post.name}</span>
-                  <span style={{fontSize:11,color:"var(--rk-t4)"}}> · {timeAgo(post.createdAt)}</span>
+                  <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{post.name}</div>
+                  <div style={{fontSize:10,color:"#555"}}>{timeAgo(post.createdAt)}</div>
                 </div>
-              </button>
-              {isOwnPost&&
-                <button onClick={()=>{if(window.confirm("¿Borrar esta publicación?")) onDeletePost(postId);}} title="Opciones" style={{background:"none",border:"none",cursor:"pointer",padding:6,display:"flex"}}>
-                  <IconDots/>
-                </button>}
+              </div>
+              {isOwnPost&&<button onClick={()=>onDeletePost(postId)} title="Borrar foto" style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:14}}>🗑️</button>}
             </div>
 
-            {/* Imagen o tarjeta de entreno */}
-            {post.type==="workout"?(
-              <div>
-                {post.photo&&(
-                  <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
-                    <img src={post.photo} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-                  </div>
-                )}
-                <div style={{padding:"14px 14px 16px"}}>
-                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
-                    <span style={{fontSize:18}}>⚔️</span>
-                    <span style={{fontSize:15,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif"}}>{post.dayName}</span>
-                    {post.bossDone>0&&<span style={{fontSize:14}}>💀×{post.bossDone}</span>}
-                  </div>
-                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:post.exerciseDetails?.length?12:0}}>
-                    <div style={{textAlign:"center",background:"#A78BFA0D",border:"1px solid #A78BFA33",borderRadius:10,padding:"10px 4px"}}>
-                      <div style={{fontSize:17,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif"}}>{(post.totalKg||0).toLocaleString()}</div>
-                      <div style={{fontSize:8,color:"var(--rk-t4)",letterSpacing:1}}>KG TOTALES</div>
-                    </div>
-                    <div style={{textAlign:"center",background:"#F59E0B0D",border:"1px solid #F59E0B33",borderRadius:10,padding:"10px 4px"}}>
-                      <div style={{fontSize:17,fontWeight:900,color:"#F59E0B",fontFamily:"'Cinzel',serif"}}>{post.exerciseCount||0}</div>
-                      <div style={{fontSize:8,color:"var(--rk-t4)",letterSpacing:1}}>EJERCICIOS</div>
-                    </div>
-                    <div style={{textAlign:"center",background:"#34D3990D",border:"1px solid #34D39933",borderRadius:10,padding:"10px 4px"}}>
-                      <div style={{fontSize:17,fontWeight:900,color:"#34D399",fontFamily:"'Cinzel',serif"}}>+{post.coins||0}</div>
-                      <div style={{fontSize:8,color:"var(--rk-t4)",letterSpacing:1}}>🪙 GANADAS</div>
-                    </div>
-                  </div>
-                  {post.exerciseDetails?.length>0&&(
-                    <div style={{background:"#0A0A0A",border:"1px solid #1A1A1A",borderRadius:10,padding:"10px 12px"}}>
-                      {post.exerciseDetails.map((ex,i)=>(
-                        <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"4px 0",borderTop:i>0?"1px solid #161616":"none"}}>
-                          <span style={{fontSize:11,color:"#BBB"}}>{ex.boss?"💀 ":""}{ex.name}</span>
-                          {ex.kg>0&&<span style={{fontSize:11,color:"var(--rk-t4)",fontWeight:700}}>{ex.kg}kg</span>}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ):(
-              <div style={{width:"100%",aspectRatio:"4/5",background:"#0A0A0A",overflow:"hidden"}}>
-                <img src={post.photo} style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
-              </div>
-            )}
+            {/* Imagen */}
+            <img src={post.photo} style={{width:"100%",maxHeight:460,objectFit:"cover",display:"block",background:"#07070F"}}/>
 
             {/* Barra de interacción */}
-            <div style={{display:"flex",alignItems:"center",gap:18,padding:"10px 12px 6px"}}>
-              <button onClick={()=>onToggleLike(postId)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0,transform:iLiked?"scale(1.08)":"scale(1)",transition:"transform .15s"}}>
-                <span style={{fontSize:20,filter:iLiked?"none":"grayscale(1) opacity(0.55)",transition:"filter .15s"}}>🔥</span>
-                {likeCount>0&&<span style={{fontSize:13,fontWeight:700,color:iLiked?"#F59E0B":"var(--rk-t7)",fontFamily:"'Rajdhani',sans-serif"}}>{likeCount}</span>}
+            <div style={{display:"flex",alignItems:"center",gap:16,padding:"12px 14px 6px"}}>
+              <button onClick={()=>onToggleLike(postId)} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0}}>
+                <span style={{fontSize:19,filter:iLiked?"none":"grayscale(1) opacity(0.6)",transition:"filter .15s"}}>{iLiked?"🔥":"🔥"}</span>
+                <span style={{fontSize:12,fontWeight:700,color:iLiked?"#F59E0B":"#666",fontFamily:"'Rajdhani',sans-serif"}}>{likeCount>0?likeCount:""}</span>
               </button>
               <button onClick={()=>setOpenComments(p=>({...p,[postId]:!p[postId]}))} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",cursor:"pointer",padding:0}}>
-                <IconComment color="var(--rk-t10)"/>
-                {comments.length>0&&<span style={{fontSize:13,fontWeight:700,color:"var(--rk-t7)",fontFamily:"'Rajdhani',sans-serif"}}>{comments.length}</span>}
+                <span style={{fontSize:18,opacity:0.7}}>💬</span>
+                <span style={{fontSize:12,fontWeight:700,color:"#666",fontFamily:"'Rajdhani',sans-serif"}}>{comments.length>0?comments.length:""}</span>
               </button>
             </div>
 
+            {likeCount>0&&<div style={{padding:"0 14px",fontSize:11,fontWeight:700,color:"#DDD"}}>{likeCount} apoyo{likeCount!==1?"s":""}</div>}
+
             {post.caption&&(
-              <div style={{padding:"5px 12px 2px",fontSize:12,color:"var(--rk-t9)",lineHeight:1.5}}>
-                <span style={{fontWeight:700,color:"#FAFAFA"}}>{post.name}</span> {post.caption}
+              <div style={{padding:"6px 14px 4px",fontSize:12,color:"#CCC",lineHeight:1.5}}>
+                <span style={{fontWeight:700,color:"#EEE"}}>{post.name}</span> {post.caption}
               </div>
             )}
 
             {!isOpen&&comments.length>0&&(
-              <button onClick={()=>setOpenComments(p=>({...p,[postId]:true}))} style={{display:"block",padding:"4px 12px 12px",background:"none",border:"none",color:"var(--rk-t4)",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+              <button onClick={()=>setOpenComments(p=>({...p,[postId]:true}))} style={{display:"block",padding:"4px 14px 10px",background:"none",border:"none",color:"#555",fontSize:11,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                 Ver los {comments.length} comentario{comments.length!==1?"s":""}
               </button>
             )}
 
             {isOpen&&(
-              <div style={{padding:"4px 12px 14px"}}>
+              <div style={{padding:"4px 14px 14px"}}>
                 {comments.map(([cId,c])=>{
                   const canDelete=c.email===me||isOwnPost;
-                  const cLikes=c.likes||{};
-                  const cLikeCount=Object.keys(cLikes).length;
-                  const cLiked=!!cLikes[myKey];
                   return(
-                    <div key={cId} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"7px 0",borderTop:"1px solid #161616"}}>
-                      <div style={{flex:1,paddingRight:8}}>
+                    <div key={cId} style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",padding:"6px 0",borderTop:"1px solid #1A1A2E"}}>
+                      <div style={{flex:1}}>
                         <span style={{fontSize:11,fontWeight:700,color:"#A78BFA"}}>{c.name}: </span>
-                        <span style={{fontSize:11,color:"var(--rk-t9)"}}>{c.text}</span>
-                        <div style={{display:"flex",alignItems:"center",gap:10,marginTop:3}}>
-                          <span style={{fontSize:9,color:"var(--rk-t3)"}}>{timeAgo(c.createdAt)}</span>
-                          {canDelete&&<button onClick={()=>onDeleteComment(postId,cId)} style={{background:"none",border:"none",color:"#E84A5F88",cursor:"pointer",fontSize:9,fontWeight:700,padding:0}}>Borrar</button>}
-                        </div>
+                        <span style={{fontSize:11,color:"#CCC"}}>{c.text}</span>
+                        <div style={{fontSize:9,color:"#444",marginTop:2}}>{timeAgo(c.createdAt)}</div>
                       </div>
-                      <button onClick={()=>onToggleCommentLike(postId,cId)} style={{display:"flex",alignItems:"center",gap:4,background:"none",border:"none",cursor:"pointer",padding:2,flexShrink:0,marginTop:1}}>
-                        <span style={{fontSize:13,filter:cLiked?"none":"grayscale(1) opacity(0.55)"}}>🔥</span>
-                        {cLikeCount>0&&<span style={{fontSize:10,fontWeight:700,color:cLiked?"#F59E0B":"var(--rk-t4)"}}>{cLikeCount}</span>}
-                      </button>
+                      {canDelete&&<button onClick={()=>onDeleteComment(postId,cId)} style={{background:"none",border:"none",color:"#E84A5F44",cursor:"pointer",fontSize:11,marginLeft:8}}>✕</button>}
                     </div>
                   );
                 })}
                 <div style={{display:"flex",gap:6,marginTop:8}}>
                   <input placeholder="Escribe un comentario..." value={commentInputs[postId]||""} onChange={e=>setCommentInputs(p=>({...p,[postId]:e.target.value}))}
                     onKeyDown={e=>{if(e.key==="Enter"&&commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}}
-                    style={{flex:1,padding:"8px 10px",background:"#0A0A0A",border:"1px solid #222",borderRadius:8,color:"var(--rk-text)",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                    style={{flex:1,padding:"8px 10px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:11,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                   <button onClick={()=>{if(commentInputs[postId]?.trim()){onComment(postId,commentInputs[postId]);setCommentInputs(p=>({...p,[postId]:""}));}}} style={{padding:"8px 14px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:8,color:"#A78BFA",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
                 </div>
               </div>
@@ -7874,404 +7111,6 @@ function SocialTab({posts={},loading,currentEmail,profilePhotos={},onPost,onDele
           </div>
         );
       })}
-    </div>
-  );
-}
-
-// ─── Mensajes directos entre Aventureros ─────────────────────────────────
-function DMsModal({user,onClose,initialTarget}){
-  const keyOf=email=>(email||"").toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
-  const myKey=keyOf(user.email);
-  const [view,setView]=useState(initialTarget?"thread":"list"); // "list" | "pick" | "thread"
-  const [threads,setThreads]=useState({});
-  const [loadingThreads,setLoadingThreads]=useState(true);
-  const [allUsers,setAllUsers]=useState(null);
-  const [search,setSearch]=useState("");
-  const [activeThread,setActiveThread]=useState(initialTarget?{threadId:[myKey,initialTarget.key].sort().join("__"),otherKey:initialTarget.key,otherName:initialTarget.name}:null);
-  const [messages,setMessages]=useState({});
-  const [input,setInput]=useState("");
-  const bottomRef=useRef();
-
-  useEffect(()=>{
-    fbGet(`dmIndex/${myKey}`).then(d=>{
-      setThreads(d||{});
-      setLoadingThreads(false);
-      if(initialTarget&&d?.[initialTarget.key]?.unread){
-        fbSet(`dmIndex/${myKey}/${initialTarget.key}/unread`,false).catch(()=>{});
-      }
-    }).catch(()=>setLoadingThreads(false));
-  },[]);
-
-  const openPicker=()=>{
-    setView("pick");
-    if(!allUsers) fbGet("users").then(d=>setAllUsers(d||{})).catch(()=>setAllUsers({}));
-  };
-
-  const openThread=(otherKey,otherName)=>{
-    const threadId=[myKey,otherKey].sort().join("__");
-    setActiveThread({threadId,otherKey,otherName});
-    setView("thread");
-    setMessages({});
-    if(threads[otherKey]?.unread){
-      fbSet(`dmIndex/${myKey}/${otherKey}/unread`,false).catch(()=>{});
-      setThreads(t=>({...t,[otherKey]:{...t[otherKey],unread:false}}));
-    }
-  };
-
-  useEffect(()=>{
-    if(view!=="thread"||!activeThread) return;
-    const unsub=fbListen(`dms/${activeThread.threadId}/messages`,(data)=>{
-      setMessages(data||{});
-      setTimeout(()=>bottomRef.current?.scrollIntoView({behavior:"smooth"}),80);
-    });
-    return unsub;
-  },[view,activeThread?.threadId]);
-
-  const send=async()=>{
-    const text=input.trim();
-    if(!text||!activeThread) return;
-    setInput("");
-    const {threadId,otherKey,otherName}=activeThread;
-    const msgId=`m_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
-    const msg={from:myKey,fromName:user.name,text,createdAt:Date.now()};
-    await fbSet(`dms/${threadId}/messages/${msgId}`,msg).catch(()=>{});
-    const now=Date.now();
-    await fbSet(`dmIndex/${myKey}/${otherKey}`,{name:otherName,lastMessage:text,lastAt:now,unread:false}).catch(()=>{});
-    await fbSet(`dmIndex/${otherKey}/${myKey}`,{name:user.name,lastMessage:text,lastAt:now,unread:true}).catch(()=>{});
-    setThreads(t=>({...t,[otherKey]:{name:otherName,lastMessage:text,lastAt:now,unread:false}}));
-  };
-
-  const threadList=Object.entries(threads).sort((a,b)=>(b[1].lastAt||0)-(a[1].lastAt||0));
-  const pickList=allUsers?Object.entries(allUsers)
-    .filter(([k,u])=>k!==myKey&&u&&u.name)
-    .filter(([k,u])=>u.name.toLowerCase().includes(search.toLowerCase()))
-    .sort((a,b)=>a[1].name.localeCompare(b[1].name)):[];
-  const msgList=Object.entries(messages).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
-
-  return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9990,background:"rgba(0,0,0,.75)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,maxHeight:"85vh",display:"flex",flexDirection:"column",background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:16,boxSizing:"border-box",overflow:"hidden"}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"18px 20px 12px"}}>
-          <div style={{display:"flex",alignItems:"center",gap:10}}>
-            {view==="thread"&&
-              <button onClick={()=>setView("list")} style={{background:"none",border:"none",color:"var(--rk-t6)",fontSize:16,cursor:"pointer",padding:0}}>←</button>}
-            <div style={{fontSize:view==="thread"?13:9,letterSpacing:view==="thread"?0:5,color:view==="thread"?"#FAFAFA":"var(--rk-t2)",fontWeight:view==="thread"?700:400,fontFamily:view==="thread"?"'Rajdhani',sans-serif":"inherit"}}>
-              {view==="list"&&"💬 MENSAJES"}
-              {view==="pick"&&"NUEVO MENSAJE"}
-              {view==="thread"&&activeThread?.otherName}
-            </div>
-          </div>
-          <div style={{display:"flex",gap:10,alignItems:"center"}}>
-            {view==="list"&&<button onClick={openPicker} style={{background:"#A78BFA18",border:"1px solid #A78BFA44",borderRadius:20,color:"#A78BFA",fontSize:16,cursor:"pointer",width:28,height:28,lineHeight:"26px",padding:0}}>+</button>}
-            <button onClick={onClose} style={{background:"none",border:"none",color:"var(--rk-t4)",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
-          </div>
-        </div>
-
-        {view==="list"&&(
-          <div style={{overflowY:"auto",padding:"0 12px 16px"}}>
-            {loadingThreads&&<div style={{textAlign:"center",color:"var(--rk-t2)",fontSize:12,padding:"30px 0"}}>Cargando...</div>}
-            {!loadingThreads&&threadList.length===0&&(
-              <div style={{textAlign:"center",padding:"40px 20px",color:"var(--rk-t2)"}}>
-                <div style={{fontSize:36,marginBottom:10}}>💬</div>
-                <div style={{fontSize:12,lineHeight:1.6}}>Aún no tienes conversaciones.<br/>Toca + para escribir a otro Aventurero.</div>
-              </div>
-            )}
-            {threadList.map(([otherKey,t])=>(
-              <button key={otherKey} onClick={()=>openThread(otherKey,t.name)} style={{display:"flex",alignItems:"center",gap:12,width:"100%",padding:"10px 8px",background:"none",border:"none",borderBottom:"1px solid var(--rk-divider)",cursor:"pointer",textAlign:"left"}}>
-                <div style={{width:38,height:38,borderRadius:"50%",background:"#A78BFA18",border:"1.5px solid #A78BFA55",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",flexShrink:0}}>
-                  {(t.name||"?")[0]?.toUpperCase()}
-                </div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-t10)",fontFamily:"'Rajdhani',sans-serif"}}>{t.name}</div>
-                  <div style={{fontSize:11,color:"var(--rk-t4)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{t.lastMessage}</div>
-                </div>
-                <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:4,flexShrink:0}}>
-                  <span style={{fontSize:9,color:"var(--rk-t2)"}}>{timeAgo(t.lastAt)}</span>
-                  {t.unread&&<span style={{width:8,height:8,borderRadius:"50%",background:"#E84A5F",boxShadow:"0 0 6px #E84A5F"}}/>}
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {view==="pick"&&(
-          <div style={{overflowY:"auto",padding:"0 16px 16px",display:"flex",flexDirection:"column"}}>
-            <input autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar Aventurero..."
-              style={{width:"100%",padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
-            {allUsers===null&&<div style={{textAlign:"center",color:"var(--rk-t2)",fontSize:12,padding:"20px 0"}}>Cargando...</div>}
-            {allUsers&&pickList.length===0&&<div style={{textAlign:"center",color:"var(--rk-t2)",fontSize:12,padding:"20px 0"}}>Sin resultados.</div>}
-            {pickList.map(([k,u])=>(
-              <button key={k} onClick={()=>openThread(k,u.name)} style={{display:"flex",alignItems:"center",gap:12,width:"100%",padding:"9px 6px",background:"none",border:"none",borderBottom:"1px solid var(--rk-divider)",cursor:"pointer",textAlign:"left"}}>
-                <div style={{width:32,height:32,borderRadius:"50%",background:"#A78BFA18",border:"1.5px solid #A78BFA55",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif",flexShrink:0}}>
-                  {(u.name||"?")[0]?.toUpperCase()}
-                </div>
-                <span style={{fontSize:13,color:"var(--rk-t10)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{u.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-
-        {view==="thread"&&(
-          <>
-            <div style={{flex:1,overflowY:"auto",padding:"4px 14px",display:"flex",flexDirection:"column",gap:8,minHeight:200}}>
-              {msgList.length===0&&<div style={{textAlign:"center",color:"var(--rk-t1)",fontSize:11,padding:"30px 0"}}>Empieza la conversación ✦</div>}
-              {msgList.map(([mId,m])=>{
-                const mine=m.from===myKey;
-                return(
-                  <div key={mId} style={{alignSelf:mine?"flex-end":"flex-start",maxWidth:"78%"}}>
-                    <div style={{padding:"8px 12px",borderRadius:mine?"14px 14px 3px 14px":"14px 14px 14px 3px",background:mine?"linear-gradient(135deg,#7C3AED,#A78BFA)":"var(--rk-bg4)",color:mine?"#FFF":"var(--rk-t9)",fontSize:13,lineHeight:1.4,wordBreak:"break-word"}}>
-                      {m.text}
-                    </div>
-                    <div style={{fontSize:9,color:"var(--rk-t2)",marginTop:2,textAlign:mine?"right":"left"}}>{timeAgo(m.createdAt)}</div>
-                  </div>
-                );
-              })}
-              <div ref={bottomRef}/>
-            </div>
-            <div style={{display:"flex",gap:8,padding:"10px 14px 16px"}}>
-              <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Escribe un mensaje..."
-                onKeyDown={e=>{if(e.key==="Enter") send();}}
-                style={{flex:1,padding:"10px 12px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
-              <button onClick={send} style={{padding:"10px 16px",background:"#A78BFA22",border:"1px solid #A78BFA44",borderRadius:10,color:"#A78BFA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Enviar</button>
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Mini-perfil al tocar un Aventurero en el Muro ───────────────────────
-function MiniProfileModal({target,onClose,onMessage}){
-  const [info,setInfo]=useState(null); // {level, rank, cls} | "error" | null(loading)
-  useEffect(()=>{
-    let cancelled=false;
-    fbGet(`userData/${target.key}`).then(d=>{
-      if(cancelled) return;
-      const totalXp=d?.totalXp||0;
-      const level=getLevel(totalXp);
-      const rank=RANKS.find(r=>level>=r.minLevel&&level<=r.maxLevel)||RANKS[0];
-      const cls=CLASSES.find(c=>c.id===d?.playerClass)||null;
-      setInfo({level,rank,cls});
-    }).catch(()=>{ if(!cancelled) setInfo({level:1,rank:RANKS[0],cls:null}); });
-    return ()=>{cancelled=true;};
-  },[target.key]);
-
-  return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9996,background:"rgba(0,0,0,.8)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"center",padding:20}}>
-      <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:320,background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:16,padding:28,boxSizing:"border-box",display:"flex",flexDirection:"column",alignItems:"center",gap:10}}>
-        <button onClick={onClose} style={{alignSelf:"flex-end",background:"none",border:"none",color:"var(--rk-t4)",fontSize:18,cursor:"pointer",lineHeight:1,marginTop:-10,marginRight:-10}}>✕</button>
-        <div style={{width:76,height:76,borderRadius:"50%",padding:target.photo?3:0,background:target.photo?"linear-gradient(45deg,#F59E0B,#E84A5F,#A78BFA)":"transparent",marginTop:-10}}>
-          <div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",background:"#A78BFA18",border:target.photo?"3px solid var(--rk-bg2)":"1.5px solid #A78BFA",display:"flex",alignItems:"center",justifyContent:"center"}}>
-            {target.photo?
-              <img src={target.photo} style={{width:"100%",height:"100%",objectFit:"cover"}}/>
-              :<span style={{fontSize:28,fontWeight:900,color:"#A78BFA",fontFamily:"'Cinzel',serif"}}>{(target.name||"?")[0]?.toUpperCase()}</span>}
-          </div>
-        </div>
-        <div style={{fontSize:17,fontWeight:900,color:"#FAFAFA",fontFamily:"'Cinzel',serif",textAlign:"center"}}>{target.name}</div>
-
-        {!info&&<div style={{fontSize:10,color:"var(--rk-t2)"}}>Cargando...</div>}
-        {info&&(
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:6}}>
-            <div style={{display:"flex",alignItems:"center",gap:8}}>
-              <span style={{padding:"3px 10px",borderRadius:20,fontSize:10,fontWeight:900,letterSpacing:1,fontFamily:"'Rajdhani',sans-serif",background:`${info.rank.color}18`,border:`1px solid ${info.rank.color}55`,color:info.rank.color}}>
-                RANGO {info.rank.rank} · {info.rank.title.toUpperCase()}
-              </span>
-            </div>
-            <div style={{fontSize:11,color:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>Nivel {info.level}</div>
-            {info.cls&&
-              <span style={{padding:"3px 10px",borderRadius:20,fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:`${info.cls.color}18`,border:`1px solid ${info.cls.color}55`,color:info.cls.color}}>
-                {info.cls.icon} {info.cls.name}
-              </span>}
-          </div>
-        )}
-
-        <button onClick={onMessage} style={{width:"100%",padding:"12px",marginTop:8,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
-          💬 Enviar mensaje
-        </button>
-      </div>
-    </div>
-  );
-}
-
-// ─── Medidas corporales ────────────────────────────────────────────────
-const MEASURE_FIELDS=[
-  {id:"weight",label:"Peso Corporal",unit:"kg"},
-  {id:"waist",label:"Cintura",unit:"cm"},
-  {id:"bodyFat",label:"Grasa Corporal",unit:"%"},
-  {id:"leanMass",label:"Masa Corporal Magra",unit:"kg"},
-  {id:"neck",label:"Cuello",unit:"cm"},
-  {id:"wrist",label:"Muñeca",unit:"cm"},
-  {id:"shoulder",label:"Hombro",unit:"cm"},
-  {id:"chest",label:"Pecho",unit:"cm"},
-  {id:"bicepsL",label:"Bíceps Izquierdo",unit:"cm"},
-  {id:"bicepsR",label:"Bíceps Derecho",unit:"cm"},
-  {id:"forearmL",label:"Antebrazo Izquierdo",unit:"cm"},
-  {id:"forearmR",label:"Antebrazo Derecho",unit:"cm"},
-  {id:"abdomen",label:"Abdomen",unit:"cm"},
-  {id:"hips",label:"Caderas",unit:"cm"},
-  {id:"thighL",label:"Muslo Izquierdo",unit:"cm"},
-  {id:"thighR",label:"Muslo Derecho",unit:"cm"},
-  {id:"calfL",label:"Gemelo Izquierdo",unit:"cm"},
-  {id:"calfR",label:"Gemelo Derecha",unit:"cm"},
-];
-
-function MedidasSection({measurements={},onAdd,sex="M",userEmail}){
-  const [showForm,setShowForm]=useState(false);
-  const [expanded,setExpanded]=useState(null);
-  const [formValues,setFormValues]=useState({});
-  const [heightCm,setHeightCm]=useState(()=>getUsers()[userEmail]?.height||0);
-  useEffect(()=>{
-    if(!userEmail) return;
-    const key=userEmail.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
-    fbGet(`users/${key}`).then(u=>{ if(u?.height) setHeightCm(u.height); }).catch(()=>{});
-  },[userEmail]);
-
-  const latestOf=id=>{
-    const arr=measurements[id]||[];
-    return arr.length>0?arr[arr.length-1]:null;
-  };
-  const prevOf=id=>{
-    const arr=measurements[id]||[];
-    return arr.length>1?arr[arr.length-2]:null;
-  };
-  const latestValueOf=id=>latestOf(id)?.value??null;
-
-  // Análisis automático a partir de las últimas medidas registradas
-  const navyBF=computeNavyBodyFat({sex,heightCm,neckCm:latestValueOf("neck"),waistCm:latestValueOf("waist"),hipCm:latestValueOf("hips")});
-  const whr=computeWaistHipRatio(latestValueOf("waist"),latestValueOf("hips"));
-  const waistVal=latestValueOf("waist");
-  const waistLimit=WHO_WAIST_LIMIT[sex]||WHO_WAIST_LIMIT.M;
-  const waistOverLimit=waistVal&&waistVal>waistLimit;
-  const asymmetries=BILATERAL_PAIRS.map(p=>{
-    const l=latestValueOf(p.L), r=latestValueOf(p.R);
-    if(l==null||r==null) return null;
-    const diff=Math.round(Math.abs(l-r)*10)/10;
-    return diff>=1.5?{...p,diff,bigger:l>r?"izquierdo":"derecho"}:null;
-  }).filter(Boolean);
-  const hasAnalysis=navyBF||whr||asymmetries.length>0;
-
-  const save=()=>{
-    const now=Date.now();
-    const next={...measurements};
-    let any=false;
-    MEASURE_FIELDS.forEach(f=>{
-      const raw=formValues[f.id];
-      const val=parseFloat((raw||"").toString().replace(",","."));
-      if(raw&&!isNaN(val)){
-        next[f.id]=[...(next[f.id]||[]),{date:now,value:val}];
-        any=true;
-      }
-    });
-    if(!any){ setShowForm(false); return; }
-    onAdd(next);
-    setFormValues({});
-    setShowForm(false);
-  };
-
-  return(
-    <div>
-      {hasAnalysis&&(
-        <div style={{background:"var(--rk-bg2)",border:"1px solid #38BDF844",borderRadius:14,padding:"14px 16px",marginBottom:16}}>
-          <div style={{fontSize:9,color:"#38BDF8",letterSpacing:4,marginBottom:10}}>📊 ANÁLISIS AUTOMÁTICO</div>
-
-          {navyBF&&(
-            <div style={{marginBottom:10}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
-                <span style={{fontSize:12,color:"var(--rk-t8)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>Grasa corporal estimada</span>
-                <span style={{fontSize:16,fontWeight:900,color:"#38BDF8",fontFamily:"'Cinzel',serif"}}>{navyBF}%</span>
-              </div>
-              <div style={{fontSize:9,color:"var(--rk-t3)",marginTop:2}}>Fórmula U.S. Navy (cuello, cintura{sex==="F"?", cadera":""} y altura) — estimación, no sustituye una medición real.</div>
-            </div>
-          )}
-
-          {whr&&(
-            <div style={{marginBottom:10}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline"}}>
-                <span style={{fontSize:12,color:"var(--rk-t8)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>Índice Cintura-Cadera</span>
-                <span style={{fontSize:16,fontWeight:900,color:"#38BDF8",fontFamily:"'Cinzel',serif"}}>{whr}</span>
-              </div>
-              {waistOverLimit&&
-                <div style={{fontSize:9,color:"#F59E0B",marginTop:2}}>⚠️ Tu cintura ({waistVal}cm) supera el umbral de referencia de la OMS ({waistLimit}cm) asociado a mayor riesgo cardiometabólico.</div>}
-            </div>
-          )}
-
-          {asymmetries.length>0&&(
-            <div>
-              <div style={{fontSize:12,color:"var(--rk-t8)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600,marginBottom:4}}>Asimetrías detectadas</div>
-              {asymmetries.map((a,i)=>(
-                <div key={i} style={{fontSize:10,color:"#F59E0B",marginBottom:2}}>⚠️ {a.label}: {a.diff}cm más grande el lado {a.bigger}</div>
-              ))}
-              <div style={{fontSize:9,color:"var(--rk-t3)",marginTop:2}}>Diferencias por encima de 1.5cm pueden indicar compensación técnica o falta de trabajo unilateral.</div>
-            </div>
-          )}
-        </div>
-      )}
-
-      <button onClick={()=>setShowForm(true)} style={{width:"100%",padding:"13px",marginBottom:16,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>
-        📏 Registrar medidas
-      </button>
-
-      {MEASURE_FIELDS.map(f=>{
-        const latest=latestOf(f.id);
-        const prev=prevOf(f.id);
-        const delta=latest&&prev?Math.round((latest.value-prev.value)*10)/10:null;
-        const isOpen=expanded===f.id;
-        const history=[...(measurements[f.id]||[])].reverse();
-        return(
-          <div key={f.id} style={{background:"var(--rk-bg2)",border:"1px solid var(--rk-border2)",borderRadius:12,marginBottom:8,overflow:"hidden"}}>
-            <button onClick={()=>setExpanded(isOpen?null:f.id)} style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center",padding:"13px 14px",background:"none",border:"none",cursor:"pointer",textAlign:"left"}}>
-              <span style={{fontSize:13,color:"var(--rk-t9)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{f.label}</span>
-              <div style={{display:"flex",alignItems:"center",gap:8}}>
-                {latest?(
-                  <>
-                    <span style={{fontSize:13,fontWeight:700,color:"#A78BFA",fontFamily:"'Rajdhani',sans-serif"}}>{latest.value} {f.unit}</span>
-                    {delta!==null&&delta!==0&&
-                      <span style={{fontSize:10,color:delta>0?"#F59E0B":"#34D399"}}>{delta>0?"▲":"▼"}{Math.abs(delta)}</span>}
-                  </>
-                ):<span style={{fontSize:12,color:"var(--rk-t2)"}}>–</span>}
-              </div>
-            </button>
-            {isOpen&&(
-              <div style={{padding:"0 14px 12px",borderTop:"1px solid var(--rk-divider)"}}>
-                {history.length===0&&<div style={{fontSize:11,color:"var(--rk-t2)",padding:"10px 0"}}>Sin registros todavía.</div>}
-                {history.map((h,i)=>(
-                  <div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:i<history.length-1?"1px solid var(--rk-divider)":"none"}}>
-                    <span style={{fontSize:11,color:"var(--rk-t4)"}}>{new Date(h.date).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</span>
-                    <span style={{fontSize:11,color:"var(--rk-t7)",fontWeight:700}}>{h.value} {f.unit}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-      })}
-
-      {showForm&&(
-        <div onClick={()=>setShowForm(false)} style={{position:"fixed",inset:0,zIndex:9997,background:"rgba(0,0,0,.85)",backdropFilter:"blur(6px)",display:"flex",justifyContent:"center",alignItems:"flex-start",padding:"20px 12px",overflowY:"auto"}}>
-          <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:440,background:"var(--rk-bg2)",border:"1px solid #A78BFA33",borderRadius:16,padding:20,boxSizing:"border-box",marginBottom:20}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-              <div style={{fontSize:9,letterSpacing:5,color:"var(--rk-t2)"}}>📏 REGISTRO DE MEDIDAS</div>
-              <button onClick={()=>setShowForm(false)} style={{background:"none",border:"none",color:"var(--rk-t4)",fontSize:18,cursor:"pointer",lineHeight:1}}>✕</button>
-            </div>
-            <div style={{fontSize:11,color:"var(--rk-t4)",marginBottom:14}}>Rellena solo lo que quieras registrar hoy. Lo demás se deja en blanco.</div>
-            {MEASURE_FIELDS.map(f=>(
-              <div key={f.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,marginBottom:10}}>
-                <span style={{fontSize:12,color:"var(--rk-t8)",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{f.label}</span>
-                <div style={{display:"flex",alignItems:"center",gap:6}}>
-                  <input type="number" inputMode="decimal" value={formValues[f.id]||""} onChange={e=>setFormValues(v=>({...v,[f.id]:e.target.value}))}
-                    placeholder="–"
-                    style={{width:70,padding:"7px 8px",background:"var(--rk-bg)",border:"1px solid var(--rk-border)",borderRadius:8,color:"var(--rk-text)",fontSize:12,outline:"none",textAlign:"right",fontFamily:"'Rajdhani',sans-serif"}}/>
-                  <span style={{fontSize:10,color:"var(--rk-t3)",width:20}}>{f.unit}</span>
-                </div>
-              </div>
-            ))}
-            <button onClick={save} style={{width:"100%",padding:14,marginTop:8,background:"linear-gradient(135deg,#7C3AED,#A78BFA)",border:"none",borderRadius:12,color:"#FFF",fontSize:13,fontWeight:900,cursor:"pointer",fontFamily:"'Cinzel',serif",letterSpacing:2}}>
-              GUARDAR
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -8295,14 +7134,14 @@ function BuzonTab({messages,onSend,userName}){
 
   return(
     <div style={{display:"flex",flexDirection:"column",height:"calc(100dvh - 220px)"}}>
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>✉️ BUZÓN · CHAT CON ENTRENADOR</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>✉️ BUZÓN · CHAT CON ENTRENADOR</div>
       {/* Messages */}
       <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:8,paddingBottom:8}}>
         {messages.length===0&&(
-          <div style={{textAlign:"center",padding:"60px 20px",color:"var(--rk-t1)"}}>
+          <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
             <div style={{fontSize:40,marginBottom:10}}>💬</div>
-            <div style={{fontSize:13,fontWeight:700,color:"var(--rk-t2)",fontFamily:"'Cinzel',serif",marginBottom:6}}>Sin mensajes aún</div>
-            <div style={{fontSize:11,color:"var(--rk-t1)"}}>Escríbele a tu entrenador. Te responderá pronto.</div>
+            <div style={{fontSize:13,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:6}}>Sin mensajes aún</div>
+            <div style={{fontSize:11,color:"#333"}}>Escríbele a tu entrenador. Te responderá pronto.</div>
           </div>
         )}
         {messages.map((m,i)=>{
@@ -8310,12 +7149,12 @@ function BuzonTab({messages,onSend,userName}){
           return(
             <div key={m.id||i} style={{display:"flex",justifyContent:isUser?"flex-end":"flex-start"}}>
               <div style={{maxWidth:"80%",padding:"10px 14px",borderRadius:isUser?"16px 16px 4px 16px":"16px 16px 16px 4px",
-                background:isUser?"linear-gradient(135deg,#A78BFA,#7C3AED)":"var(--rk-bg3)",
-                border:isUser?"none":"1px solid var(--rk-border2)",
+                background:isUser?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#0F0F1C",
+                border:isUser?"none":"1px solid #1E1E32",
                 boxShadow:isUser?"0 0 12px #A78BFA44":"none"}}>
                 {!isUser&&<div style={{fontSize:9,color:"#A78BFA",letterSpacing:2,marginBottom:4,fontFamily:"'Rajdhani',sans-serif"}}>🏋️ ENTRENADOR</div>}
-                <div style={{fontSize:13,color:"var(--rk-text)",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}>{m.text}</div>
-                <div style={{fontSize:9,color:isUser?"#C4B5FD":"var(--rk-t2)",marginTop:4,textAlign:"right"}}>{formatDate(m.date)}{isUser&&m.read?" ✓✓":isUser?" ✓":""}</div>
+                <div style={{fontSize:13,color:"#FFF",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}>{m.text}</div>
+                <div style={{fontSize:9,color:isUser?"#C4B5FD":"#444",marginTop:4,textAlign:"right"}}>{formatDate(m.date)}{isUser&&m.read?" ✓✓":isUser?" ✓":""}</div>
               </div>
             </div>
           );
@@ -8323,14 +7162,14 @@ function BuzonTab({messages,onSend,userName}){
         <div ref={bottomRef}/>
       </div>
       {/* Input */}
-      <div style={{display:"flex",gap:8,paddingTop:10,borderTop:"1px solid var(--rk-bg4)",flexShrink:0}}>
+      <div style={{display:"flex",gap:8,paddingTop:10,borderTop:"1px solid #1A1A2E",flexShrink:0}}>
         <textarea value={input} onChange={e=>setInput(e.target.value)}
           onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
           placeholder="Escribe tu mensaje..."
-          style={{flex:1,padding:"10px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:12,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",lineHeight:1.4}}
+          style={{flex:1,padding:"10px 14px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:12,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",lineHeight:1.4}}
           rows={2}/>
         <button onClick={handleSend} disabled={!input.trim()}
-          style={{padding:"0 16px",background:input.trim()?"linear-gradient(135deg,#A78BFA,#7C3AED)":"var(--rk-bg4)",border:"none",borderRadius:12,color:input.trim()?"#FFF":"var(--rk-t2)",fontSize:18,cursor:input.trim()?"pointer":"not-allowed",flexShrink:0}}>
+          style={{padding:"0 16px",background:input.trim()?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#1A1A2E",border:"none",borderRadius:12,color:input.trim()?"#FFF":"#444",fontSize:18,cursor:input.trim()?"pointer":"not-allowed",flexShrink:0}}>
           ➤
         </button>
       </div>
@@ -8340,142 +7179,26 @@ function BuzonTab({messages,onSend,userName}){
 
 
 // ─── CUERPO TAB ───────────────────────────────────────────────────────────────
-// ─── Somatotipo (ecto/meso/endomorfo) ────────────────────────────────────
-// Estimación ORIENTATIVA basada en complexión ósea (ratio altura/muñeca),
-// % de grasa corporal y proporción hombro/cintura — no es un diagnóstico
-// médico ni un análisis Heath-Carter de laboratorio, es una aproximación
-// con los datos que el propio Aventurero introduce en Medidas.
-// ─── Análisis de composición corporal (a partir de Medidas) ──────────────
-// Estimaciones matemáticas estándar de la industria fitness — no sustituyen
-// una medición real (bioimpedancia, DEXA, plicómetro), pero dan una
-// referencia gratuita con datos que el Aventurero ya introduce.
-
-// Fórmula U.S. Navy — estima % de grasa corporal a partir de perímetros.
-const computeNavyBodyFat=({sex="M",heightCm,neckCm,waistCm,hipCm})=>{
-  if(!heightCm||!neckCm||!waistCm) return null;
-  if(sex==="F"){
-    if(!hipCm) return null;
-    const denom=1.29579-0.35004*Math.log10(waistCm+hipCm-neckCm)+0.22100*Math.log10(heightCm);
-    if(denom<=0) return null;
-    const bf=495/denom-450;
-    return bf>0&&bf<70?Math.round(bf*10)/10:null;
-  }
-  const denom=1.0324-0.19077*Math.log10(waistCm-neckCm)+0.15456*Math.log10(heightCm);
-  if(denom<=0) return null;
-  const bf=495/denom-450;
-  return bf>0&&bf<70?Math.round(bf*10)/10:null;
-};
-
-// Índice Cintura-Cadera + umbral OMS de cintura absoluta.
-const computeWaistHipRatio=(waistCm,hipCm)=>{
-  if(!waistCm||!hipCm) return null;
-  return Math.round((waistCm/hipCm)*100)/100;
-};
-const WHO_WAIST_LIMIT={M:102,F:88};
-
-// Pares bilaterales para detectar asimetrías (>1.5cm de diferencia).
-const BILATERAL_PAIRS=[
-  {L:"bicepsL",R:"bicepsR",label:"Bíceps"},
-  {L:"forearmL",R:"forearmR",label:"Antebrazo"},
-  {L:"thighL",R:"thighR",label:"Muslo"},
-  {L:"calfL",R:"calfR",label:"Gemelo"},
-];
-
-const SOMATOTYPES={
-  ecto:{label:"Ectomorfo",color:"#60A5FA",icon:"🏹",desc:"Estructura ósea fina y metabolismo rápido. Cuesta ganar tanto grasa como músculo — la fuerza se construye con paciencia, volumen alto y constancia."},
-  meso:{label:"Mesomorfo",color:"#34D399",icon:"⚔️",desc:"Estructura atlética natural. Responde rápido tanto al entrenamiento de fuerza como al cardio — el equilibrio es su terreno natural."},
-  endo:{label:"Endomorfo",color:"#F59E0B",icon:"🛡️",desc:"Estructura ósea más ancha y facilidad para ganar masa. La fuerza bruta y el volumen son su punto fuerte — el cardio ayuda a definir."},
-};
-const computeSomatotype=({heightCm,wristCm,bodyFatPct,shoulderCm,waistCm})=>{
-  if(!heightCm||!wristCm) return null;
-  let ecto=0,meso=0,endo=0;
-  const ratio=heightCm/wristCm;
-  if(ratio>10.4) ecto+=2;
-  else if(ratio<9.6) endo+=2;
-  else meso+=2;
-  if(bodyFatPct!=null){
-    if(bodyFatPct<12){ ecto+=1; meso+=1; }
-    else if(bodyFatPct<20) meso+=2;
-    else endo+=2;
-  }
-  if(shoulderCm&&waistCm){
-    const vtaper=shoulderCm/waistCm;
-    if(vtaper>1.35) meso+=1;
-    else if(vtaper<1.15) endo+=1;
-  }
-  const scores={ecto,meso,endo};
-  const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);
-  const [topId,topScore]=sorted[0];
-  const [secondId,secondScore]=sorted[1];
-  const mixed=topScore>0&&secondScore>0&&(topScore-secondScore)<=1;
-  return{
-    primary:SOMATOTYPES[topId],
-    secondary:mixed?SOMATOTYPES[secondId]:null,
-  };
-};
-
-function CuerpoTab({mxp,sex="M",userEmail,bodyMeasurements={}}){
+function CuerpoTab({mxp,sex="M"}){
   const allXP=Object.values(mxp).reduce((a,b)=>a+b,0);
   const activated=Object.values(mxp).filter(v=>v>0).length;
   const frontList=["pecho","hombros","biceps","antebrazos","abdomen","piernas","cardio"];
   const backList=["espalda","hombros","triceps","antebrazos","gluteos","piernas","gemelos"];
   const allMuscles=Object.keys(MUSCLE_DEFS);
-
-  const [heightCm,setHeightCm]=useState(()=>getUsers()[userEmail]?.height||0);
-  useEffect(()=>{
-    if(!userEmail) return;
-    const key=userEmail.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
-    fbGet(`users/${key}`).then(u=>{ if(u?.height) setHeightCm(u.height); }).catch(()=>{});
-  },[userEmail]);
-
-  const lastOf=id=>{
-    const arr=bodyMeasurements[id];
-    return arr&&arr.length>0?arr[arr.length-1].value:null;
-  };
-  const somatotype=computeSomatotype({
-    heightCm,
-    wristCm:lastOf("wrist"),
-    bodyFatPct:lastOf("bodyFat"),
-    shoulderCm:lastOf("shoulder"),
-    waistCm:lastOf("waist"),
-  });
-
   return(
     <div>
-      {/* Somatotipo */}
-      {somatotype?(
-        <div style={{padding:"14px 16px",background:`linear-gradient(135deg,var(--rk-bg2),${somatotype.primary.color}0D)`,border:`1px solid ${somatotype.primary.color}44`,borderRadius:14,marginBottom:16}}>
-          <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:somatotype.secondary?6:0}}>
-            <div style={{width:44,height:44,borderRadius:12,border:`2px solid ${somatotype.primary.color}`,display:"flex",alignItems:"center",justifyContent:"center",background:`${somatotype.primary.color}11`,boxShadow:`0 0 20px ${somatotype.primary.color}44`,flexShrink:0,fontSize:22}}>{somatotype.primary.icon}</div>
-            <div>
-              <div style={{fontSize:9,color:somatotype.primary.color,letterSpacing:4,marginBottom:3}}>SOMATOTIPO ESTIMADO</div>
-              <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>
-                {somatotype.primary.label}{somatotype.secondary?` · ${somatotype.secondary.label}`:""}
-              </div>
-            </div>
-          </div>
-          <div style={{fontSize:11,color:"#999",lineHeight:1.6,marginTop:8}}>{somatotype.primary.desc}</div>
-          <div style={{fontSize:9,color:"var(--rk-t2)",marginTop:8}}>Estimación orientativa a partir de tu complexión, no un diagnóstico médico.</div>
-        </div>
-      ):(
-        <div style={{padding:"14px 16px",background:"var(--rk-bg2)",border:"1px dashed var(--rk-border)",borderRadius:14,marginBottom:16,textAlign:"center"}}>
-          <div style={{fontSize:22,marginBottom:6}}>🔒</div>
-          <div style={{fontSize:11,color:"var(--rk-t4)",lineHeight:1.6}}>Registra tu <b style={{color:"var(--rk-t6)"}}>altura</b> y tu <b style={{color:"var(--rk-t6)"}}>muñeca</b> en 📏 Medidas para desbloquear tu somatotipo.</div>
-        </div>
-      )}
-
       {/* Global stat */}
-      <div style={{padding:"14px 16px",background:"linear-gradient(135deg,var(--rk-bg2),#080810)",border:"1px solid #0AF5FF33",borderRadius:14,marginBottom:16,display:"flex",alignItems:"center",gap:14}}>
+      <div style={{padding:"14px 16px",background:"linear-gradient(135deg,#0D0D1A,#080810)",border:"1px solid #0AF5FF33",borderRadius:14,marginBottom:16,display:"flex",alignItems:"center",gap:14}}>
         <div style={{width:44,height:44,borderRadius:12,border:"2px solid #0AF5FF",display:"flex",alignItems:"center",justifyContent:"center",background:"#0AF5FF11",boxShadow:"0 0 20px #0AF5FF44",flexShrink:0,fontSize:22}}>🫀</div>
         <div>
           <div style={{fontSize:9,color:"#0AF5FF",letterSpacing:4,marginBottom:3}}>ESTADO FÍSICO GLOBAL</div>
-          <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{allXP} XP musculares</div>
+          <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{allXP} XP musculares</div>
           <div style={{fontSize:11,color:"#0AF5FF"}}>{activated} / {allMuscles.length} grupos activados</div>
         </div>
       </div>
 
       {/* Muscle rank cards — all groups, full width */}
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:10}}>RANGOS MUSCULARES</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:10}}>RANGOS MUSCULARES</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>
         {allMuscles.map(id=>{
           const xp=mxp[id]||0;
@@ -8484,36 +7207,36 @@ function CuerpoTab({mxp,sex="M",userEmail,bodyMeasurements={}}){
           const pct=next?Math.min(((xp-mr.min)/(next.min-mr.min))*100,100):100;
           const def=MUSCLE_DEFS[id];
           return(
-            <div key={id} style={{background:"var(--rk-bg2)",border:`1px solid ${mr.color}44`,borderRadius:12,padding:12,position:"relative",overflow:"hidden"}}>
+            <div key={id} style={{background:"#0D0D1A",border:`1px solid ${mr.color}44`,borderRadius:12,padding:12,position:"relative",overflow:"hidden"}}>
               {/* rank glow bg */}
               <div style={{position:"absolute",top:-10,right:-10,width:60,height:60,borderRadius:"50%",background:`${mr.color}08`,pointerEvents:"none"}}/>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
                 <div>
-                  <div style={{fontSize:11,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{def.label.toUpperCase()}</div>
+                  <div style={{fontSize:11,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1}}>{def.label.toUpperCase()}</div>
                   <div style={{fontSize:9,color:mr.color,marginTop:1}}>{mr.label}</div>
                 </div>
                 <div style={{width:30,height:30,borderRadius:8,border:`2px solid ${mr.color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,fontWeight:900,color:mr.color,fontFamily:"'Cinzel',serif",background:`${mr.color}22`,boxShadow:`0 0 12px ${mr.glow}`,flexShrink:0}}>
                   {mr.rank}
                 </div>
               </div>
-              <div style={{height:5,background:"var(--rk-bg4)",borderRadius:3,overflow:"hidden",marginBottom:5}}>
+              <div style={{height:5,background:"#1A1A2E",borderRadius:3,overflow:"hidden",marginBottom:5}}>
                 <div style={{height:"100%",width:`${pct}%`,background:`linear-gradient(90deg,${mr.color}88,${mr.color})`,borderRadius:3,boxShadow:`0 0 6px ${mr.color}`,transition:"width .6s ease"}}/>
               </div>
               <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
-                <span style={{color:"var(--rk-t3)"}}>{xp} XP</span>
+                <span style={{color:"#555"}}>{xp} XP</span>
                 <span style={{color:next?mr.color:"#F59E0B"}}>{next?`→ ${next.min} ${next.rank}`:"🏆 MAX"}</span>
               </div>
             </div>
           );
         })}
       </div>
-      <div style={{background:"var(--rk-bg2)",border:"1px solid var(--rk-border2)",borderRadius:12,padding:14}}>
-        <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:12}}>ESCALA DE RANGOS MUSCULARES</div>
+      <div style={{background:"#0D0D1A",border:"1px solid #1E1E32",borderRadius:12,padding:14}}>
+        <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:12}}>ESCALA DE RANGOS MUSCULARES</div>
         {MUSCLE_RANKS.slice(1).map(mr=>(
           <div key={mr.rank} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
             <div style={{width:24,height:24,borderRadius:6,border:`1.5px solid ${mr.color}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:900,color:mr.color,fontFamily:"'Cinzel',serif",background:`${mr.color}22`,flexShrink:0}}>{mr.rank}</div>
-            <div style={{flex:1,fontSize:11,color:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif"}}>{mr.label}</div>
-            <div style={{fontSize:10,color:"var(--rk-t2)"}}>{mr.min} XP</div>
+            <div style={{flex:1,fontSize:11,color:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{mr.label}</div>
+            <div style={{fontSize:10,color:"#444"}}>{mr.min} XP</div>
           </div>
         ))}
       </div>
@@ -8547,9 +7270,9 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
         {[{id:"tienda",l:"🪙 TIENDA"},{id:"historial",l:"📜 HISTORIAL"}].map(t=>(
           <button key={t.id} onClick={()=>setView(t.id)}
             style={{flex:1,padding:"9px 4px",borderRadius:10,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700,letterSpacing:2,
-              background:view===t.id?"linear-gradient(135deg,#1A1200,var(--rk-bg2))":"#0A0A12",
-              border:`1px solid ${view===t.id?"#F59E0B66":"var(--rk-bg4)"}`,
-              color:view===t.id?"#F59E0B":"var(--rk-t2)",
+              background:view===t.id?"linear-gradient(135deg,#1A1200,#0D0D1A)":"#0A0A12",
+              border:`1px solid ${view===t.id?"#F59E0B66":"#1A1A2E"}`,
+              color:view===t.id?"#F59E0B":"#444",
               boxShadow:view===t.id?"0 0 12px #F59E0B22":"none"}}>
             {t.l}
           </button>
@@ -8557,7 +7280,7 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
       </div>
 
       {/* Wallet card — always visible */}
-      <div style={{background:"linear-gradient(135deg,#1A1200,var(--rk-bg2))",border:"1px solid #F59E0B66",borderRadius:16,padding:20,marginBottom:14,position:"relative",overflow:"hidden"}}>
+      <div style={{background:"linear-gradient(135deg,#1A1200,#0D0D1A)",border:"1px solid #F59E0B66",borderRadius:16,padding:20,marginBottom:14,position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-20,right:-20,fontSize:80,opacity:.05}}>🪙</div>
         <div style={{fontSize:9,letterSpacing:4,color:"#F59E0B88",marginBottom:6}}>MONEDERO RANKUP</div>
         <div style={{fontSize:44,fontWeight:900,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",lineHeight:1,textShadow:"0 0 20px #F59E0B88"}}>{coins.toLocaleString()}</div>
@@ -8566,7 +7289,7 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
           {[{l:"DUNGEONS",v:dungeons},{l:"SEMANAS",v:weeks},{l:"FASES",v:phases},{l:"CANJEADAS",v:redeemed.length},{l:"GASTADAS",v:totalSpent.toLocaleString()+"🪙"}].map(s=>(
             <div key={s.l} style={{textAlign:"center",flex:1}}>
               <div style={{fontSize:s.l==="GASTADAS"?12:16,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
-              <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:1}}>{s.l}</div>
+              <div style={{fontSize:9,color:"#555",letterSpacing:1}}>{s.l}</div>
             </div>
           ))}
         </div>
@@ -8574,33 +7297,33 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
 
       {view==="tienda"&&(
         <>
-          <div style={{background:"var(--rk-bg2)",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:16}}>
+          <div style={{background:"#0D0D1A",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:16}}>
             <div style={{fontSize:9,color:"#F59E0B88",letterSpacing:3,marginBottom:10}}>CÓMO GANAR MONEDAS</div>
             {[{icon:"⚔️",l:"Dungeon completado",c:COIN_DUNGEON},{icon:"💀",l:"Bonus BOSS",c:COIN_BOSS_EX},{icon:"🗓️",l:"Semana completa",c:COIN_WEEK},{icon:"🏰",l:"Fase completa",c:COIN_PHASE}].map(e=>(
               <div key={e.l} style={{display:"flex",alignItems:"center",gap:10,marginBottom:7}}>
                 <span style={{fontSize:15}}>{e.icon}</span>
-                <span style={{flex:1,fontSize:12,color:"var(--rk-t6)",fontFamily:"'Rajdhani',sans-serif"}}>{e.l}</span>
+                <span style={{flex:1,fontSize:12,color:"#888",fontFamily:"'Rajdhani',sans-serif"}}>{e.l}</span>
                 <span style={{fontSize:13,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>+{e.c} 🪙</span>
               </div>
             ))}
           </div>
           {cats.map(cat=>(
             <div key={cat}>
-              <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,margin:"16px 0 10px"}}>{cat.toUpperCase()}</div>
+              <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,margin:"16px 0 10px"}}>{cat.toUpperCase()}</div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {REWARDS.filter(r=>r.cat===cat).map(reward=>{
                   const can=coins>=reward.cost;
                   const times=redeemedObjs.filter(e=>e.id===reward.id).length;
                   return(
-                    <div key={reward.id} style={{background:can?"var(--rk-bg3)":"#0A0A12",border:`1px solid ${can?"#F59E0B33":"var(--rk-bg4)"}`,borderRadius:12,padding:14,position:"relative",opacity:can?1:.55,boxShadow:can?"0 0 12px #F59E0B11":"none"}}>
-                      {times>0&&<div style={{position:"absolute",top:8,right:8,background:"#F59E0B",color:"var(--rk-ink)",fontSize:9,fontWeight:900,borderRadius:20,padding:"2px 7px",fontFamily:"'Rajdhani',sans-serif"}}>×{times}</div>}
+                    <div key={reward.id} style={{background:can?"#0F0F1C":"#0A0A12",border:`1px solid ${can?"#F59E0B33":"#1A1A2E"}`,borderRadius:12,padding:14,position:"relative",opacity:can?1:.55,boxShadow:can?"0 0 12px #F59E0B11":"none"}}>
+                      {times>0&&<div style={{position:"absolute",top:8,right:8,background:"#F59E0B",color:"#07070F",fontSize:9,fontWeight:900,borderRadius:20,padding:"2px 7px",fontFamily:"'Rajdhani',sans-serif"}}>×{times}</div>}
                       <div style={{fontSize:30,marginBottom:6}}>{reward.icon}</div>
-                      <div style={{fontSize:12,fontWeight:700,color:can?"#FFF":"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:4}}>{reward.name}</div>
-                      <div style={{fontSize:10,color:"var(--rk-t3)",lineHeight:1.4,marginBottom:10}}>{reward.desc}</div>
+                      <div style={{fontSize:12,fontWeight:700,color:can?"#FFF":"#555",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:4}}>{reward.name}</div>
+                      <div style={{fontSize:10,color:"#555",lineHeight:1.4,marginBottom:10}}>{reward.desc}</div>
                       <button onClick={()=>can&&onRedeem(reward)} disabled={!can}
                         style={{width:"100%",padding:8,borderRadius:8,border:"none",fontFamily:"'Rajdhani',sans-serif",fontSize:12,fontWeight:700,cursor:can?"pointer":"not-allowed",
-                          background:can?"linear-gradient(135deg,#F59E0B,#D97706)":"var(--rk-bg4)",
-                          color:can?"var(--rk-ink)":"var(--rk-t2)",boxShadow:can?"0 0 12px #F59E0B44":"none"}}>
+                          background:can?"linear-gradient(135deg,#F59E0B,#D97706)":"#1A1A2E",
+                          color:can?"#07070F":"#444",boxShadow:can?"0 0 12px #F59E0B44":"none"}}>
                         🪙 {reward.cost.toLocaleString()}
                       </button>
                     </div>
@@ -8615,35 +7338,35 @@ function TiendaTab({coins,redeemed,dc,onRedeem}){
       {view==="historial"&&(
         <div>
           {history.length===0?(
-            <div style={{textAlign:"center",padding:"60px 20px",color:"var(--rk-t1)"}}>
+            <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
               <div style={{fontSize:48,marginBottom:12}}>🛒</div>
-              <div style={{fontSize:14,fontWeight:700,color:"var(--rk-t2)",fontFamily:"'Cinzel',serif",marginBottom:6}}>Sin compras aún</div>
-              <div style={{fontSize:12,color:"var(--rk-t1)"}}>Completa dungeons y gana monedas para canjear recompensas.</div>
+              <div style={{fontSize:14,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:6}}>Sin compras aún</div>
+              <div style={{fontSize:12,color:"#333"}}>Completa dungeons y gana monedas para canjear recompensas.</div>
             </div>
           ):(
             <>
               {/* Summary */}
-              <div style={{background:"var(--rk-bg2)",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div style={{background:"#0D0D1A",border:"1px solid #F59E0B22",borderRadius:12,padding:14,marginBottom:14,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:3,marginBottom:4}}>RESUMEN DE COMPRAS</div>
-                  <div style={{fontSize:13,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif"}}>{redeemed.length} compras realizadas</div>
+                  <div style={{fontSize:9,color:"#555",letterSpacing:3,marginBottom:4}}>RESUMEN DE COMPRAS</div>
+                  <div style={{fontSize:13,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{redeemed.length} compras realizadas</div>
                 </div>
                 <div style={{textAlign:"right"}}>
-                  <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>TOTAL GASTADO</div>
+                  <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>TOTAL GASTADO</div>
                   <div style={{fontSize:20,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>{totalSpent.toLocaleString()} 🪙</div>
                 </div>
               </div>
               {/* History list */}
               {history.map((entry,i)=>(
-                <div key={i} style={{background:"#0A0A12",border:"1px solid var(--rk-bg4)",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:12}}>
+                <div key={i} style={{background:"#0A0A12",border:"1px solid #1A1A2E",borderRadius:12,padding:"12px 14px",marginBottom:8,display:"flex",alignItems:"center",gap:12}}>
                   <div style={{fontSize:28,flexShrink:0}}>{entry.icon}</div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:2}}>{entry.name}</div>
-                    <div style={{fontSize:10,color:"var(--rk-t2)"}}>{formatDate(entry.date)}</div>
+                    <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:2}}>{entry.name}</div>
+                    <div style={{fontSize:10,color:"#444"}}>{formatDate(entry.date)}</div>
                   </div>
                   <div style={{textAlign:"right",flexShrink:0}}>
                     <div style={{fontSize:14,fontWeight:700,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif"}}>-{(entry.cost||0).toLocaleString()}</div>
-                    <div style={{fontSize:9,color:"var(--rk-t3)"}}>🪙 monedas</div>
+                    <div style={{fontSize:9,color:"#555"}}>🪙 monedas</div>
                   </div>
                 </div>
               ))}
@@ -8673,7 +7396,7 @@ function AlimentosDB({onBack}){
   const MacroBadge=({label,val,unit,color})=>(
     <div style={{textAlign:"center",background:`${color}14`,border:`1px solid ${color}33`,borderRadius:8,padding:"6px 10px",flex:1}}>
       <div style={{fontSize:16,fontWeight:700,color,fontFamily:"'Rajdhani',sans-serif"}}>{val}<span style={{fontSize:10}}>{unit}</span></div>
-      <div style={{fontSize:8,color:"var(--rk-t3)",letterSpacing:2}}>{label}</div>
+      <div style={{fontSize:8,color:"#555",letterSpacing:2}}>{label}</div>
     </div>
   );
 
@@ -8682,22 +7405,22 @@ function AlimentosDB({onBack}){
     return(
       <div>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16}}>
-          <button onClick={()=>setSel(null)} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#A78BFA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3}}>FICHA NUTRICIONAL</div>
+          <button onClick={()=>setSel(null)} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#A78BFA",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3}}>FICHA NUTRICIONAL</div>
         </div>
-        <div style={{background:"var(--rk-bg3)",border:`1px solid ${c}33`,borderRadius:14,padding:18,marginBottom:12}}>
+        <div style={{background:"#0F0F1C",border:`1px solid ${c}33`,borderRadius:14,padding:18,marginBottom:12}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
             <div>
-              <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2,marginBottom:4}}>{CAT_LABELS[sel.cat]}</div>
-              <div style={{fontSize:18,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:6}}>{sel.name}</div>
+              <div style={{fontSize:9,color:"#555",letterSpacing:2,marginBottom:4}}>{CAT_LABELS[sel.cat]}</div>
+              <div style={{fontSize:18,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:6}}>{sel.name}</div>
               <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
                 {sel.goal.map(g=><span key={g} style={{fontSize:9,padding:"2px 8px",background:`${GOAL_COLORS[g]}18`,border:`1px solid ${GOAL_COLORS[g]}44`,borderRadius:20,color:GOAL_COLORS[g],letterSpacing:1}}>{GOAL_LABELS[g]}</span>)}
               </div>
             </div>
             <div style={{textAlign:"right"}}>
               <div style={{fontSize:24,fontWeight:900,color:c,fontFamily:"'Rajdhani',sans-serif"}}>{sel.kcal}</div>
-              <div style={{fontSize:9,color:"var(--rk-t3)",letterSpacing:2}}>KCAL</div>
-              <div style={{fontSize:10,color:"var(--rk-t2)",marginTop:4}}>⏱ {sel.prep}</div>
+              <div style={{fontSize:9,color:"#555",letterSpacing:2}}>KCAL</div>
+              <div style={{fontSize:10,color:"#444",marginTop:4}}>⏱ {sel.prep}</div>
             </div>
           </div>
           <div style={{display:"flex",gap:8,marginBottom:12}}>
@@ -8705,7 +7428,7 @@ function AlimentosDB({onBack}){
             <MacroBadge label="CARBOS"   val={sel.carbs}   unit="g" color="#FBBF24"/>
             <MacroBadge label="GRASA"    val={sel.fat}     unit="g" color="#60A5FA"/>
           </div>
-          <div style={{fontSize:12,color:"#777",lineHeight:1.6,borderTop:"1px solid var(--rk-bg4)",paddingTop:10}}>{sel.desc}</div>
+          <div style={{fontSize:12,color:"#777",lineHeight:1.6,borderTop:"1px solid #1A1A2E",paddingTop:10}}>{sel.desc}</div>
         </div>
       </div>
     );
@@ -8714,18 +7437,18 @@ function AlimentosDB({onBack}){
   return(
     <div>
       <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
-        <button onClick={onBack} style={{background:"var(--rk-bg4)",border:"1px solid var(--rk-border)",borderRadius:8,color:"#34D399",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
-        <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Cinzel',serif"}}>BASE DE ALIMENTOS</div>
-        <div style={{marginLeft:"auto",fontSize:10,color:"var(--rk-t2)"}}>{filtered.length} resultados</div>
+        <button onClick={onBack} style={{background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#34D399",padding:"7px 12px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>← VOLVER</button>
+        <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif"}}>BASE DE ALIMENTOS</div>
+        <div style={{marginLeft:"auto",fontSize:10,color:"#444"}}>{filtered.length} resultados</div>
       </div>
 
       {/* Search */}
-      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="🔍 Buscar alimento..." style={{width:"100%",padding:"11px 14px",background:"var(--rk-bg2)",border:"1px solid var(--rk-border)",borderRadius:10,color:"var(--rk-text)",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
+      <input value={q} onChange={e=>setQ(e.target.value)} placeholder="🔍 Buscar alimento..." style={{width:"100%",padding:"11px 14px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:10,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",marginBottom:10,boxSizing:"border-box"}}/>
 
       {/* Category filter */}
       <div style={{display:"flex",gap:6,marginBottom:8,overflowX:"auto",paddingBottom:2}}>
         {FOOD_CATS.map(c=>(
-          <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 12px",borderRadius:20,cursor:"pointer",background:cat===c?"#34D39922":"transparent",border:`1px solid ${cat===c?"#34D399":"var(--rk-border)"}`,color:cat===c?"#34D399":"var(--rk-t3)",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap",flexShrink:0}}>
+          <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 12px",borderRadius:20,cursor:"pointer",background:cat===c?"#34D39922":"transparent",border:`1px solid ${cat===c?"#34D399":"#2A2A44"}`,color:cat===c?"#34D399":"#555",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap",flexShrink:0}}>
             {c==="todos"?"📋 Todos":CAT_LABELS[c]}
           </button>
         ))}
@@ -8736,7 +7459,7 @@ function AlimentosDB({onBack}){
         {FOOD_GOALS.map(g=>{
           const color=GOAL_COLORS[g]||"#A78BFA";
           return(
-            <button key={g} onClick={()=>setGoal(g)} style={{padding:"6px 12px",borderRadius:20,cursor:"pointer",background:goal===g?`${color}22`:"transparent",border:`1px solid ${goal===g?color:"var(--rk-border)"}`,color:goal===g?color:"var(--rk-t3)",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap",flexShrink:0}}>
+            <button key={g} onClick={()=>setGoal(g)} style={{padding:"6px 12px",borderRadius:20,cursor:"pointer",background:goal===g?`${color}22`:"transparent",border:`1px solid ${goal===g?color:"#2A2A44"}`,color:goal===g?color:"#555",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap",flexShrink:0}}>
               {g==="todos"?"🎯 Todos":GOAL_LABELS[g]}
             </button>
           );
@@ -8745,16 +7468,16 @@ function AlimentosDB({onBack}){
 
       {/* List */}
       {filtered.length===0
-        ? <div style={{textAlign:"center",padding:"40px 20px",color:"var(--rk-t1)",fontSize:12}}>Sin resultados para "{q}"</div>
+        ? <div style={{textAlign:"center",padding:"40px 20px",color:"#333",fontSize:12}}>Sin resultados para "{q}"</div>
         : filtered.map(f=>{
             const c=GOAL_COLORS[f.goal?.[0]]||"#A78BFA";
             return(
-              <div key={f.id} onClick={()=>setSel(f)} style={{background:"var(--rk-bg3)",border:`1px solid ${c}22`,borderRadius:11,padding:"12px 14px",marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",gap:12,transition:"border-color .15s"}}
+              <div key={f.id} onClick={()=>setSel(f)} style={{background:"#0F0F1C",border:`1px solid ${c}22`,borderRadius:11,padding:"12px 14px",marginBottom:8,cursor:"pointer",display:"flex",alignItems:"center",gap:12,transition:"border-color .15s"}}
                 onMouseEnter={e=>e.currentTarget.style.borderColor=c+"55"}
                 onMouseLeave={e=>e.currentTarget.style.borderColor=c+"22"}>
                 <div style={{fontSize:22,flexShrink:0}}>{f.cat==="plato"?"🍽️":f.cat==="bebida"?"🥤":f.cat==="snack"?"🥜":"🍮"}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",fontFamily:"'Rajdhani',sans-serif",marginBottom:3}}>{f.name}</div>
+                  <div style={{fontSize:13,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:3}}>{f.name}</div>
                   <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                     <span style={{fontSize:10,color:"#FBBF24",fontWeight:700}}>{f.kcal} kcal</span>
                     <span style={{fontSize:10,color:"#F87171"}}>P: {f.protein}g</span>
@@ -8764,7 +7487,7 @@ function AlimentosDB({onBack}){
                 </div>
                 <div style={{textAlign:"right",flexShrink:0}}>
                   {f.goal.map(g=><div key={g} style={{fontSize:9,padding:"2px 6px",background:`${GOAL_COLORS[g]}18`,border:`1px solid ${GOAL_COLORS[g]}33`,borderRadius:20,color:GOAL_COLORS[g],marginBottom:3,whiteSpace:"nowrap"}}>{GOAL_LABELS[g]}</div>)}
-                  <div style={{fontSize:9,color:"var(--rk-t1)",marginTop:2}}>⏱ {f.prep}</div>
+                  <div style={{fontSize:9,color:"#333",marginTop:2}}>⏱ {f.prep}</div>
                 </div>
               </div>
             );
@@ -8785,7 +7508,7 @@ function NutricionTab({ph, assignedDiets=[]}){
   return(
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-        <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3}}>SISTEMA DE SUMINISTROS</div>
+        <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>SISTEMA DE SUMINISTROS</div>
         <button onClick={()=>setShowDB(true)} style={{padding:"7px 12px",background:"#34D39922",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🥗 BASE DE ALIMENTOS</button>
       </div>
 
@@ -8795,12 +7518,12 @@ function NutricionTab({ph, assignedDiets=[]}){
           <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:8}}>👑 DIETAS PERSONALIZADAS</div>
           <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:10}}>
             <button onClick={()=>setSelDiet(null)}
-              style={{padding:"7px 12px",borderRadius:8,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700,background:!selDiet?"#A78BFA22":"transparent",border:`1px solid ${!selDiet?"#A78BFA":"var(--rk-border)"}`,color:!selDiet?"#A78BFA":"var(--rk-t3)"}}>
+              style={{padding:"7px 12px",borderRadius:8,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700,background:!selDiet?"#A78BFA22":"transparent",border:`1px solid ${!selDiet?"#A78BFA":"#2A2A44"}`,color:!selDiet?"#A78BFA":"#555"}}>
               📋 Fase {ph.id}
             </button>
             {assignedDiets.map(d=>(
               <button key={d.id} onClick={()=>setSelDiet(d.id)}
-                style={{padding:"7px 12px",borderRadius:8,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700,background:selDiet===d.id?`${d.color}22`:"transparent",border:`1px solid ${selDiet===d.id?d.color:"var(--rk-border)"}`,color:selDiet===d.id?d.color:"var(--rk-t3)"}}>
+                style={{padding:"7px 12px",borderRadius:8,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",fontSize:11,fontWeight:700,background:selDiet===d.id?`${d.color}22`:"transparent",border:`1px solid ${selDiet===d.id?d.color:"#2A2A44"}`,color:selDiet===d.id?d.color:"#555"}}>
                 🥗 {d.name}
               </button>
             ))}
@@ -8809,18 +7532,18 @@ function NutricionTab({ph, assignedDiets=[]}){
       )}
 
       {/* Macros card */}
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12,padding:16,background:"var(--rk-bg3)",borderRadius:12,border:`1px solid ${displayColor}33`}}>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12,padding:16,background:"#0F0F1C",borderRadius:12,border:`1px solid ${displayColor}33`}}>
         <div>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>CALORÍAS</div>
-          <div style={{fontSize:12,color:"var(--rk-text)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{activeDiet?activeDiet.calories||"—":ph.nutrition.calories}</div>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:4}}>CALORÍAS</div>
+          <div style={{fontSize:12,color:"#FFF",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{activeDiet?activeDiet.calories||"—":ph.nutrition.calories}</div>
         </div>
         <div>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>PROTEÍNA</div>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:4}}>PROTEÍNA</div>
           <div style={{fontSize:13,color:displayColor,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{activeDiet?activeDiet.protein||"—":ph.nutrition.protein}</div>
         </div>
         {activeDiet?.goal&&(
           <div style={{gridColumn:"1/-1"}}>
-            <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:4}}>OBJETIVO</div>
+            <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:4}}>OBJETIVO</div>
             <div style={{fontSize:12,color:displayColor,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{activeDiet.goal}</div>
           </div>
         )}
@@ -8828,19 +7551,19 @@ function NutricionTab({ph, assignedDiets=[]}){
 
       {/* Meals */}
       {(activeDiet?activeDiet.meals:ph.nutrition.meals).map((m,i)=>(
-        <div key={i} style={{display:"flex",gap:12,padding:14,marginBottom:8,background:"var(--rk-bg3)",borderRadius:10,border:"1px solid var(--rk-border2)",alignItems:"flex-start"}}>
+        <div key={i} style={{display:"flex",gap:12,padding:14,marginBottom:8,background:"#0F0F1C",borderRadius:10,border:"1px solid #1E1E32",alignItems:"flex-start"}}>
           <div style={{minWidth:44,fontSize:12,color:displayColor,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{m.time}</div>
           <div>
-            <div style={{fontSize:13,fontWeight:700,color:"var(--rk-text)",marginBottom:3,fontFamily:"'Rajdhani',sans-serif"}}>{m.name}</div>
-            <div style={{fontSize:11,color:"var(--rk-t4)",lineHeight:1.6}}>{activeDiet?m.desc:m.ex}</div>
+            <div style={{fontSize:13,fontWeight:700,color:"#FFF",marginBottom:3,fontFamily:"'Rajdhani',sans-serif"}}>{m.name}</div>
+            <div style={{fontSize:11,color:"#666",lineHeight:1.6}}>{activeDiet?m.desc:m.ex}</div>
           </div>
         </div>
       ))}
 
       {/* Tips */}
       {((activeDiet?activeDiet.tips:ph.nutrition.tips)||[]).filter(t=>t).length>0&&(
-        <div style={{background:"var(--rk-bg3)",borderRadius:10,padding:16,border:"1px solid var(--rk-border2)",marginTop:4}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:12}}>REGLAS DEL SISTEMA</div>
+        <div style={{background:"#0F0F1C",borderRadius:10,padding:16,border:"1px solid #1E1E32",marginTop:4}}>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:12}}>REGLAS DEL SISTEMA</div>
           {(activeDiet?activeDiet.tips:ph.nutrition.tips).filter(t=>t).map((tip,i)=>(
             <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"flex-start"}}>
               <span style={{color:displayColor,fontSize:14,flexShrink:0}}>▸</span>
@@ -8864,18 +7587,18 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
   const rarityOrder=["legendario","epico","raro","pocoComun","comun"];
   return(
     <div>
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:14}}>🎒 INVENTARIO</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>🎒 INVENTARIO</div>
       <div style={{display:"flex",gap:8,marginBottom:18}}>
-        <button onClick={()=>setView("materiales")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${view==="materiales"?"#A78BFA":"var(--rk-border)"}`,background:view==="materiales"?"#A78BFA18":"var(--rk-bg3)",color:view==="materiales"?"#A78BFA":"var(--rk-t4)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🧵 MATERIALES</button>
-        <button onClick={()=>setView("forja")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${view==="forja"?"#F59E0B":"var(--rk-border)"}`,background:view==="forja"?"#F59E0B18":"var(--rk-bg3)",color:view==="forja"?"#F59E0B":"var(--rk-t4)",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🛠️ FORJA</button>
+        <button onClick={()=>setView("materiales")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${view==="materiales"?"#A78BFA":"#2A2A44"}`,background:view==="materiales"?"#A78BFA18":"#0F0F1C",color:view==="materiales"?"#A78BFA":"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🧵 MATERIALES</button>
+        <button onClick={()=>setView("forja")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${view==="forja"?"#F59E0B":"#2A2A44"}`,background:view==="forja"?"#F59E0B18":"#0F0F1C",color:view==="forja"?"#F59E0B":"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🛠️ FORJA</button>
       </div>
 
       {view==="materiales"&&(<>
-        <div style={{fontSize:11,color:"var(--rk-t3)",marginBottom:18}}>{totalItems} objeto{totalItems!==1?"s":""} · {totalUnique}/{LOOT_ITEMS.length} tipos distintos descubiertos</div>
+        <div style={{fontSize:11,color:"#555",marginBottom:18}}>{totalItems} objeto{totalItems!==1?"s":""} · {totalUnique}/{LOOT_ITEMS.length} tipos distintos descubiertos</div>
         {totalItems===0&&(
-          <div style={{textAlign:"center",padding:"50px 20px",color:"var(--rk-t1)"}}>
+          <div style={{textAlign:"center",padding:"50px 20px",color:"#333"}}>
             <div style={{fontSize:40,marginBottom:12}}>🎒</div>
-            <div style={{fontSize:13,color:"var(--rk-t2)",lineHeight:1.6}}>Tu mochila está vacía.</div>
+            <div style={{fontSize:13,color:"#444",lineHeight:1.6}}>Tu mochila está vacía.</div>
           </div>
         )}
         {rarityOrder.map(rarKey=>{
@@ -8889,7 +7612,7 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
                 {items.map(item=>(
                   <div key={item.id} title={item.name} style={{background:`${info.color}14`,border:`1px solid ${info.color}55`,borderRadius:12,padding:"14px 6px",textAlign:"center",boxShadow:`0 0 12px ${info.color}22`}}>
                     <div style={{fontSize:28,marginBottom:4}}>{item.icon}</div>
-                    <div style={{fontSize:10,color:"var(--rk-t8)",fontWeight:700,lineHeight:1.3,marginBottom:4,minHeight:26}}>{item.name}</div>
+                    <div style={{fontSize:10,color:"#CCC",fontWeight:700,lineHeight:1.3,marginBottom:4,minHeight:26}}>{item.name}</div>
                     <div style={{fontSize:11,fontWeight:700,color:info.color}}>×{inventory[item.id]}</div>
                   </div>
                 ))}
@@ -8900,22 +7623,22 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
       </>)}
 
       {view==="forja"&&(<>
-        <div style={{fontSize:11,color:"var(--rk-t3)",marginBottom:14}}>{totalEquip} pieza{totalEquip!==1?"s":""} forjada{totalEquip!==1?"s":""} · combina materiales para fabricar equipo</div>
+        <div style={{fontSize:11,color:"#555",marginBottom:14}}>{totalEquip} pieza{totalEquip!==1?"s":""} forjada{totalEquip!==1?"s":""} · combina materiales para fabricar equipo</div>
 
         {/* Equipo activo */}
-        <div style={{background:"var(--rk-bg3)",border:"1px solid #A78BFA44",borderRadius:12,padding:14,marginBottom:20}}>
+        <div style={{background:"#0F0F1C",border:"1px solid #A78BFA44",borderRadius:12,padding:14,marginBottom:20}}>
           <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:10}}>⚡ EQUIPO ACTIVO</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:8}}>
             {EQUIPMENT_SLOTS.map(slot=>{
               const ek=equipped[slot.id];
               const tier=ek?ek.split("_")[1]:null;
-              const c=tier?TIER_INFO[tier].color:"var(--rk-t1)";
+              const c=tier?TIER_INFO[tier].color:"#333";
               return(
-                <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center",minWidth:0}}>
-                  <div style={{width:"100%",height:80,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"var(--rk-inset)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
+                <div key={slot.id} title={ek?EQUIPMENT_NAMES[slot.id][tier]:slot.name} style={{textAlign:"center"}}>
+                  <div style={{width:"100%",height:80,borderRadius:10,border:`1px solid ${c}`,background:ek?`${c}18`:"#0A0A14",display:"flex",alignItems:"center",justifyContent:"center",fontSize:30,boxShadow:ek?`0 0 10px ${c}55`:"none",overflow:"hidden"}}>
                     {ek?<img src={equipImg(slot.id,tier)} alt={slot.name} style={{width:"100%",height:"100%",objectFit:"contain",padding:2}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;}}/>:slot.icon}
                   </div>
-                  <div style={{fontSize:8,color:ek?c:"var(--rk-t2)",fontWeight:700,marginTop:4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",padding:"0 2px"}}>{ek?EQUIPMENT_NAMES[slot.id][tier]:"Vacío"}</div>
+                  <div style={{fontSize:8,color:ek?c:"#444",fontWeight:700,marginTop:4,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis",padding:"0 2px"}}>{ek?EQUIPMENT_NAMES[slot.id][tier]:"Vacío"}</div>
                 </div>
               );
             })}
@@ -8926,7 +7649,7 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
           <div key={slot.id} style={{marginBottom:20}}>
             <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:10}}>
               <span style={{fontSize:16}}>{slot.icon}</span>
-              <span style={{fontSize:12,fontWeight:700,color:"var(--rk-t9)",fontFamily:"'Rajdhani',sans-serif"}}>{slot.name}</span>
+              <span style={{fontSize:12,fontWeight:700,color:"#DDD",fontFamily:"'Rajdhani',sans-serif"}}>{slot.name}</span>
             </div>
             <div style={{display:"flex",flexDirection:"column",gap:8}}>
               {["basico","avanzado","maestro"].map(tier=>{
@@ -8937,14 +7660,14 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
                 const isEquipped=equipped[slot.id]===ek;
                 const c=TIER_INFO[tier].color;
                 return(
-                  <div key={tier} style={{background:"var(--rk-bg3)",border:`1px solid ${isEquipped?c:ready?c:"var(--rk-border)"}${isEquipped?"":ready?"88":""}`,borderRadius:12,padding:12,boxShadow:isEquipped?`0 0 14px ${c}44`:"none",display:"flex",gap:12}}>
+                  <div key={tier} style={{background:"#0F0F1C",border:`1px solid ${isEquipped?c:ready?c:"#2A2A44"}${isEquipped?"":ready?"88":""}`,borderRadius:12,padding:12,boxShadow:isEquipped?`0 0 14px ${c}44`:"none",display:"flex",gap:12}}>
                     <div style={{width:52,height:52,flexShrink:0,borderRadius:8,background:`${c}12`,border:`1px solid ${c}44`,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
                       <img src={equipImg(slot.id,tier)} alt={EQUIPMENT_NAMES[slot.id][tier]} style={{width:"100%",height:"100%",objectFit:"contain",padding:3}} onError={e=>{e.target.style.display="none";e.target.parentElement.textContent=slot.icon;e.target.parentElement.style.fontSize="20px";}}/>
                     </div>
                     <div style={{flex:1,minWidth:0}}>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:8}}>
                       <div>
-                        <div style={{fontSize:12,fontWeight:700,color:"var(--rk-t10)",fontFamily:"'Rajdhani',sans-serif"}}>{EQUIPMENT_NAMES[slot.id][tier]}</div>
+                        <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{EQUIPMENT_NAMES[slot.id][tier]}</div>
                         <div style={{fontSize:10,fontWeight:700,color:c,marginTop:2}}>{TIER_INFO[tier].label}</div>
                       </div>
                       {owned>0&&<div style={{fontSize:10,color:"#34D399",fontWeight:700,whiteSpace:"nowrap"}}>✅ ×{owned}</div>}
@@ -8955,17 +7678,17 @@ function InventarioTab({inventory={},equipment={},onCraft,equipped={},onToggleEq
                         const have=inventory[r.id]||0;
                         const enough=have>=r.qty;
                         return(
-                          <div key={r.id} style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:enough?"var(--rk-t7)":"#E84A5F",fontWeight:700}}>
+                          <div key={r.id} style={{display:"flex",alignItems:"center",gap:4,fontSize:11,color:enough?"#AAA":"#E84A5F",fontWeight:700}}>
                             <span>{item.icon}</span><span>{have}/{r.qty}</span>
                           </div>
                         );
                       })}
                     </div>
                     {owned>0
-                      ? <button onClick={()=>onToggleEquip(slot.id,ek)} style={{width:"100%",padding:9,borderRadius:8,border:isEquipped?`1px solid ${c}`:"none",background:isEquipped?"transparent":`linear-gradient(135deg,${c},${c}CC)`,color:isEquipped?c:"var(--rk-ink)",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                      ? <button onClick={()=>onToggleEquip(slot.id,ek)} style={{width:"100%",padding:9,borderRadius:8,border:isEquipped?`1px solid ${c}`:"none",background:isEquipped?"transparent":`linear-gradient(135deg,${c},${c}CC)`,color:isEquipped?c:"#07070F",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
                           {isEquipped?"✓ EQUIPADO — quitar":"EQUIPAR"}
                         </button>
-                      : <button onClick={()=>onCraft(slot.id,tier)} disabled={!ready} style={{width:"100%",padding:9,borderRadius:8,border:"none",background:ready?`linear-gradient(135deg,${c},${c}CC)`:"var(--rk-bg4)",color:ready?"var(--rk-ink)":"var(--rk-t2)",fontSize:11,fontWeight:700,cursor:ready?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>
+                      : <button onClick={()=>onCraft(slot.id,tier)} disabled={!ready} style={{width:"100%",padding:9,borderRadius:8,border:"none",background:ready?`linear-gradient(135deg,${c},${c}CC)`:"#1A1A2E",color:ready?"#07070F":"#444",fontSize:11,fontWeight:700,cursor:ready?"pointer":"not-allowed",fontFamily:"'Rajdhani',sans-serif"}}>
                           {ready?"🛠️ FORJAR":"Materiales insuficientes"}
                         </button>
                     }
@@ -8989,45 +7712,45 @@ function LogrosTab({totalXp,level,ri,checked,weights,pr,earnedAchs,routines,rout
   const sortedHistory=[...routineHistory].sort((a,b)=>b.completedAt-a.completedAt);
   return(
     <div>
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:14}}>SALA DE TROFEOS</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:14}}>SALA DE TROFEOS</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:18}}>
         {[{icon:"⚡",l:"XP TOTAL",v:totalXp.toLocaleString()},{icon:"🔮",l:"NIVEL",v:level},{icon:"⚔️",l:"EJERCICIOS",v:totalDone},{icon:"🏰",l:"DÍAS COMPLETADOS",v:daysComplete},{icon:"🏆",l:"RÉCORDS",v:prCount},{icon:"📊",l:"PESOS REGISTRADOS",v:totalWL}].map(s=>(
-          <div key={s.l} style={{background:"var(--rk-bg3)",borderRadius:10,padding:14,border:"1px solid var(--rk-border2)",textAlign:"center"}}>
+          <div key={s.l} style={{background:"#0F0F1C",borderRadius:10,padding:14,border:"1px solid #1E1E32",textAlign:"center"}}>
             <div style={{fontSize:22,marginBottom:4}}>{s.icon}</div>
             <div style={{fontSize:22,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif"}}>{s.v}</div>
-            <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:2}}>{s.l}</div>
+            <div style={{fontSize:9,color:"#444",letterSpacing:2}}>{s.l}</div>
           </div>
         ))}
       </div>
-      <div style={{background:"var(--rk-bg3)",borderRadius:12,padding:16,border:`1px solid ${ri.color}44`,marginBottom:18}}>
-        <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:12}}>RANGOS DEL SISTEMA</div>
+      <div style={{background:"#0F0F1C",borderRadius:12,padding:16,border:`1px solid ${ri.color}44`,marginBottom:18}}>
+        <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:12}}>RANGOS DEL SISTEMA</div>
         {RANKS.map(r=>{const isA=level>=r.minLevel&&level<=r.maxLevel;const isP=level>r.maxLevel;return(
           <div key={r.rank} style={{display:"flex",alignItems:"center",gap:10,marginBottom:8,opacity:isP?.5:isA?1:.3}}>
             <div style={{width:30,height:30,borderRadius:8,border:`2px solid ${r.color}`,display:"flex",alignItems:"center",justifyContent:"center",background:isA?`${r.color}22`:"transparent",fontSize:13,fontWeight:900,color:r.color,fontFamily:"'Cinzel',serif",boxShadow:isA?`0 0 12px ${r.glow}`:"none",flexShrink:0}}>{r.rank}</div>
-            <div style={{flex:1}}><div style={{fontSize:12,color:isA?"#FFF":"var(--rk-t4)",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{r.title}</div><div style={{fontSize:10,color:"var(--rk-t2)"}}>Lv {r.minLevel}–{r.maxLevel}</div></div>
+            <div style={{flex:1}}><div style={{fontSize:12,color:isA?"#FFF":"#666",fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{r.title}</div><div style={{fontSize:10,color:"#444"}}>Lv {r.minLevel}–{r.maxLevel}</div></div>
             {isP?<span>✅</span>:isA?<span style={{fontSize:10,color:r.color,fontWeight:700,letterSpacing:1}}>ACTUAL</span>:null}
           </div>
         );})}
       </div>
       {sortedHistory.length>0&&(
-        <div style={{background:"var(--rk-bg3)",borderRadius:12,padding:16,border:"1px solid #34D39944",marginBottom:18}}>
-          <div style={{fontSize:9,color:"var(--rk-t2)",letterSpacing:3,marginBottom:12}}>📜 RUTINAS COMPLETADAS</div>
+        <div style={{background:"#0F0F1C",borderRadius:12,padding:16,border:"1px solid #34D39944",marginBottom:18}}>
+          <div style={{fontSize:9,color:"#444",letterSpacing:3,marginBottom:12}}>📜 RUTINAS COMPLETADAS</div>
           {sortedHistory.map(h=>(
-            <div key={h.routineId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid var(--rk-bg4)"}}>
+            <div key={h.routineId} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #1A1A2E"}}>
               <div style={{fontSize:12,fontWeight:700,color:"#E8E6FF",fontFamily:"'Rajdhani',sans-serif"}}>🏅 {h.routineName}</div>
               <div style={{fontSize:10,color:"#34D399"}} title={h.approx?"Fecha aproximada (rescatada, no exacta)":""}>{h.approx?"~":""}{new Date(h.completedAt).toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</div>
             </div>
           ))}
         </div>
       )}
-      <div style={{fontSize:9,color:"var(--rk-label)",letterSpacing:3,marginBottom:12}}>LOGROS</div>
+      <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:12}}>LOGROS</div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,paddingBottom:20}}>
         {ACHIEVEMENTS.map(ach=>{const done=earnedAchs.includes(ach.id);return(
-          <div key={ach.id} style={{background:done?"#A78BFA14":"var(--rk-inset)",border:`1px solid ${done?"#A78BFA66":"var(--rk-border2)"}`,borderRadius:12,padding:14,opacity:done?1:.5,boxShadow:done?"0 0 16px #A78BFA22":"none"}}>
+          <div key={ach.id} style={{background:done?"#0F0F20":"#0A0A14",border:`1px solid ${done?"#A78BFA66":"#1E1E2E"}`,borderRadius:12,padding:14,opacity:done?1:.5,boxShadow:done?"0 0 16px #A78BFA22":"none"}}>
             <div style={{fontSize:28,marginBottom:6}}>{ach.icon}</div>
-            <div style={{fontSize:12,fontWeight:700,color:done?"var(--rk-text)":"var(--rk-t3)",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:3}}>{ach.name}</div>
-            <div style={{fontSize:10,color:"var(--rk-t2)",lineHeight:1.4,marginBottom:6}}>{ach.desc}</div>
-            <div style={{fontSize:11,color:done?"#A78BFA":"var(--rk-t1)",fontWeight:700}}>+{ach.xp} XP</div>
+            <div style={{fontSize:12,fontWeight:700,color:done?"#FFF":"#555",fontFamily:"'Rajdhani',sans-serif",lineHeight:1.2,marginBottom:3}}>{ach.name}</div>
+            <div style={{fontSize:10,color:"#444",lineHeight:1.4,marginBottom:6}}>{ach.desc}</div>
+            <div style={{fontSize:11,color:done?"#A78BFA":"#333",fontWeight:700}}>+{ach.xp} XP</div>
           </div>
         );})}
       </div>
