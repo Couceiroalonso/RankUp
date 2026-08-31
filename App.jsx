@@ -722,7 +722,30 @@ const EXERCISE_DB = [
 
 const MUSCLE_MAP = Object.fromEntries(EXERCISE_DB.map(e=>[e.name, e.muscle]));
 const GIF_LOOKUP = Object.fromEntries(EXERCISE_DB.filter(e=>e.gif).map(e=>[e.name.toLowerCase().trim(), e.gif]));
-const exerciseGif = name => name ? GIF_LOOKUP[name.toLowerCase().trim()] : null;
+// Normaliza quitando acentos, mayúsculas y palabras de relleno ("con","de") —
+// así "Press Militar Barra" encuentra "Press Militar con Barra" aunque no
+// coincidan letra por letra.
+const normalizeExName = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase()
+  .replace(/\b(con|de|del|la|el|los|las)\b/g," ").replace(/[^a-z0-9\s]/g," ").replace(/\s+/g," ").trim();
+const GIF_ENTRIES_NORM = EXERCISE_DB.filter(e=>e.gif).map(e=>({norm:normalizeExName(e.name),tokens:new Set(normalizeExName(e.name).split(" ")),gif:e.gif}));
+const GIF_LOOKUP_NORM = Object.fromEntries(GIF_ENTRIES_NORM.map(e=>[e.norm,e.gif]));
+const exerciseGif = name => {
+  if(!name) return null;
+  const key=name.toLowerCase().trim();
+  if(GIF_LOOKUP[key]) return GIF_LOOKUP[key];
+  const norm=normalizeExName(name);
+  if(GIF_LOOKUP_NORM[norm]) return GIF_LOOKUP_NORM[norm];
+  // Sin coincidencia exacta ni normalizada: buscar la entrada con más palabras en común
+  const qTokens=new Set(norm.split(" ").filter(Boolean));
+  if(qTokens.size===0) return null;
+  let best=null, bestScore=0;
+  for(const e of GIF_ENTRIES_NORM){
+    let overlap=0; for(const t of qTokens) if(e.tokens.has(t)) overlap++;
+    const score=overlap/Math.max(qTokens.size,e.tokens.size);
+    if(score>bestScore){ bestScore=score; best=e.gif; }
+  }
+  return bestScore>=0.6?best:null;
+};
 
 // ─── GENERADOR DE RUTINAS IA ──────────────────────────────────────────────────
 // Genera una rutina completa a partir de 4 parámetros usando solo EXERCISE_DB.
@@ -1875,16 +1898,9 @@ function LoginScreen({onLogin}){
 
 // ─── PROGRAM TEMPLATES ────────────────────────────────────────────────────────
 // Built-in templates available in the admin panel
-const PROGRAM_TEMPLATES = [
-  {
-    id:"tpl_90dias",
-    name:"Programa 90 Días",
-    icon:"⚔️",
-    color:"#E8C547",
-    desc:"Programa completo de 3 fases (12 semanas) de transformación física.",
-    phases: PHASES,
-  }
-];
+// Programa fijo de 12 semanas retirado — a partir de ahora solo se usan
+// Rutinas personalizadas construidas con la base de ejercicios actual.
+const PROGRAM_TEMPLATES = [];
 
 
 // ─── FOOD DATABASE ───────────────────────────────────────────────────────────
