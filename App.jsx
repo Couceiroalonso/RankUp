@@ -2791,7 +2791,57 @@ function AdminPanel({onLogout}){
   const TABS_ADMIN=[{id:"usuarios",l:"👥 Usuarios"},{id:"rutinas",l:"🛠️ Rutinas"},{id:"dietas",l:"🥗 Dietas"},{id:"programas",l:"📋 Programas"},{id:"stats",l:"📊 Stats"},{id:"ranking",l:"🏅 Ranking"}];
 
   // ── Admin routines state ──
-  const getAdminRoutines=()=>{try{return JSON.parse(localStorage.getItem("rku_admin_routines")||"[]");}catch{return[];}};
+// Rutina "BEL Weiderup" — importada a petición del usuario, adaptada a los
+// nombres exactos de la base de ejercicios actual. Se fusiona automáticamente
+// con las rutinas del admin al cargar, sin necesidad de crearla a mano.
+const STARTER_ROUTINE_BEL = {
+  id:"starter_bel_weiderup",
+  name:"BEL Weiderup",
+  color:"#E8C547",
+  createdAt:0,
+  sessions:[
+    {day:"Día 1: Piernas/Glúteos A (fuerza)", week:1, exercises:[
+      {name:"Sentadilla con Barra", sets:"4x6-8", rest:"150s", xp:38, done:false, boss:true},
+      {name:"Peso Muerto Rumano con Barra", sets:"4x8-10", rest:"120s", xp:38, done:false},
+      {name:"Hip Thrust con Barra", sets:"4x8-10", rest:"120s", xp:38, done:false},
+      {name:"Sentadilla Bulgara con Mancuerna", sets:"3x10 c/pierna", rest:"90s", xp:32, done:false},
+      {name:"Curl Femoral Sentado en Máquina", sets:"3x12", rest:"60s", xp:28, done:false},
+      {name:"Extensión de Gemelos de pie con Mancuernas", sets:"4x15", rest:"45s", xp:32, done:false},
+    ]},
+    {day:"Día 2: Tren superior (empuje) + Core", week:1, exercises:[
+      {name:"Press con mancuernas plano", sets:"4x8-10", rest:"90s", xp:32, done:false, boss:true},
+      {name:"Press Militar con Mancuernas", sets:"3x10", rest:"90s", xp:32, done:false},
+      {name:"Elevaciones laterales con mancuernas", sets:"3x12-15", rest:"60s", xp:32, done:false},
+      {name:"Fondos en banco", sets:"3x10-12", rest:"60s", xp:14, done:false},
+      {name:"Press Francés con Barra", sets:"3x12", rest:"60s", xp:38, done:false},
+      {name:"Plancha", sets:"3x30-40s", rest:"45s", xp:14, done:false},
+    ]},
+    {day:"Día 3: Piernas/Glúteos B (énfasis glúteo)", week:1, exercises:[
+      {name:"Sentadilla Bulgara con Mancuerna", sets:"4x10 c/pierna", rest:"90s", xp:32, done:false, boss:true},
+      {name:"Hip Thrust unilateral", sets:"3x12 c/pierna", rest:"90s", xp:28, done:false},
+      {name:"Peso Muerto Sumo con Barra", sets:"4x8", rest:"120s", xp:38, done:false},
+      {name:"Patada de glúteo en polea", sets:"3x15 c/lado", rest:"60s", xp:30, done:false},
+      {name:"Abducción de cadera sentado con banda", sets:"3x15", rest:"60s", xp:16, done:false},
+      {name:"Sentadilla Goblet", sets:"3x12", rest:"60s", xp:14, done:false},
+    ]},
+    {day:"Día 4: Tren superior ligero + Core", week:1, exercises:[
+      {name:"Press inclinado con mancuernas", sets:"3x10", rest:"90s", xp:32, done:false, boss:true},
+      {name:"Elevaciones frontales con mancuernas", sets:"3x12", rest:"60s", xp:32, done:false},
+      {name:"Elevaciones laterales con mancuernas", sets:"3x12", rest:"60s", xp:32, done:false},
+      {name:"Press Francés con Polea", sets:"3x12", rest:"60s", xp:30, done:false},
+      {name:"Rotaciones Externas Hombro", sets:"3x15", rest:"45s", xp:20, done:false},
+      {name:"Dead Bugs", sets:"3x10 c/lado", rest:"45s", xp:14, done:false},
+      {name:"Elevación de piernas estiradas Colgado", sets:"3x12-15", rest:"45s", xp:14, done:false},
+    ]},
+  ],
+};
+
+const getAdminRoutines=()=>{
+  let list;
+  try{ list=JSON.parse(localStorage.getItem("rku_admin_routines")||"[]"); }catch{ list=[]; }
+  if(!list.some(r=>r.id===STARTER_ROUTINE_BEL.id)) list=[...list,STARTER_ROUTINE_BEL];
+  return list;
+};
   const saveAdminRoutines=r=>{localStorage.setItem("rku_admin_routines",JSON.stringify(r));fbSet("adminRoutines",r).catch(()=>{});};
   const [adminRoutines,setAdminRoutinesState]=useState(getAdminRoutines());
   const saveAR=r=>{setAdminRoutinesState(r);saveAdminRoutines(r);};
