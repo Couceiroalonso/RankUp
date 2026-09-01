@@ -2886,7 +2886,13 @@ const getAdminRoutines=()=>{
 
   // Sync admin routines, diets and ALL user data from Firebase on mount
   useEffect(()=>{
-    fbGet("adminRoutines").then(r=>{if(r&&r.length>0){localStorage.setItem("rku_admin_routines",JSON.stringify(r));setAdminRoutinesState(r);}}).catch(()=>{});
+    fbGet("adminRoutines").then(r=>{
+      if(r&&r.length>0){
+        const merged=r.some(x=>x.id===STARTER_ROUTINE_BEL.id)?r:[...r,STARTER_ROUTINE_BEL];
+        localStorage.setItem("rku_admin_routines",JSON.stringify(merged));
+        setAdminRoutinesState(merged);
+      }
+    }).catch(()=>{});
     fbGet("adminDiets").then(d=>{if(d&&d.length>0){localStorage.setItem("rku_admin_diets",JSON.stringify(d));setAdminDietsState(d);}}).catch(()=>{});
     syncUsersFromFirebase().then(u=>{
       if(u) setAllUsers(u);
