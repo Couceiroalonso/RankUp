@@ -760,9 +760,35 @@ const AI_OBJETIVO_CONF = {
 };
 // GAP: prioriza glúteo/abdomen/pierna sin dejar el tronco superior a cero —
 // solo con mucho menos peso relativo en el reparto de ejercicios del día.
-const AI_GAP_MUSCLES=["gluteos","abdomen","piernas","pecho","espalda","hombros","biceps","triceps"];
-const AI_GAP_PRIORITY=new Set(["gluteos","abdomen","piernas"]);
-function aiGapWeight(muscle){ return AI_GAP_PRIORITY.has(muscle)?2.5:0.7; }
+// GAP: en vez de mezclar los mismos músculos cada día, reparte la semana en
+// enfoques específicos de pierna (como una rutina de pierna en condiciones)
+// más un día dedicado a tronco superior, según el número de días elegido.
+const AI_GAP_FOCUS = {
+  gluteo:   {label:"Glúteo y empuje de cadera", muscles:["gluteos","piernas"], re:/hip thrust|patada de gl[uú]teo|patada de burro|puente|sumo|abduc/i},
+  cuadriceps:{label:"Cuádriceps y aductores",   muscles:["piernas"],           re:/cuadr[ií]ceps|aductor|zancada|sentadilla(?!.*sumo)|estocada|prensa unilateral/i},
+  isquio:   {label:"Isquios, gemelos y prensa", muscles:["piernas"],           re:/femoral|isquio|gemelo|pantorrilla|prensa(?! unilateral)|peso muerto(?!.*sumo)/i},
+  torso:    {label:"Tronco superior",           muscles:["pecho","espalda","hombros","biceps","triceps"], re:null},
+  core:     {label:"Abdomen y core",            muscles:["abdomen"],          re:null},
+  mixto:    {label:"GAP completo",              muscles:["gluteos","piernas","abdomen"], re:null},
+};
+// Qué enfoque toca cada día según cuántos días/semana se hayan elegido
+const AI_GAP_TEMPLATES = {
+  1:["mixto"],
+  2:["gluteo","torso"],
+  3:["gluteo","isquio","torso"],
+  4:["gluteo","cuadriceps","isquio","torso"],
+  5:["gluteo","cuadriceps","isquio","torso","torso"],
+  6:["gluteo","cuadriceps","isquio","torso","torso","core"],
+};
+function aiGapPool(focusKey,allowedLevels){
+  const focus=AI_GAP_FOCUS[focusKey];
+  let pool=EXERCISE_DB.filter(e=>allowedLevels.includes(e.level)&&e.muscle.some(m=>focus.muscles.includes(m)));
+  if(focus.re){
+    const filtered=pool.filter(e=>focus.re.test(e.name));
+    if(filtered.length>=4) pool=filtered; // si hay suficientes específicos, usar solo esos
+  }
+  return pool;
+}
 const AI_NIVEL_ALLOWED = {
   Principiante:["Principiante"],
   Intermedio:["Principiante","Intermedio"],
@@ -814,11 +840,25 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
   const used=new Set(); // ids ya usados esta semana, evita repetir ejercicio
   const color=AI_COLORS[Math.floor(Math.random()*AI_COLORS.length)];
 
-  const sessions=template.map((day,di)=>{
-    const dayMuscles=objetivo==="gap"?AI_GAP_MUSCLES:day.muscles;
-    const weights=dayMuscles.map(m=>objetivo==="gap"?aiGapWeight(m):aiMuscleWeight(m,sexo));
+  const sessions = objetivo==="gap"
+    ? (AI_GAP_TEMPLATES[dias]||AI_GAP_TEMPLATES[3]).map((focusKey,di)=>{
+        const focus=AI_GAP_FOCUS[focusKey];
+        const pool=aiGapPool(focusKey,allowedLevels);
+        let fresh=pool.filter(e=>!used.has(e.id));
+        if(fresh.length<conf.exPerDay) fresh=pool;
+        const sorted=[...fresh].sort((a,b)=>(b.muscle.length-a.muscle.length)||(b.xpBase-a.xpBase));
+        const picked=sorted.slice(0,conf.exPerDay);
+        picked.forEach(ex=>used.add(ex.id));
+        const exercises=picked.map((ex,pi)=>({
+          name:ex.name, sets:conf.setsReps, rest:conf.rest,
+          xp:Math.round(ex.xpBase*conf.xpMult), done:false, boss:pi===0,
+        }));
+        return {day:`Día ${di+1}: ${focus.label}`, exercises};
+      })
+    : template.map((day,di)=>{
+    const weights=day.muscles.map(m=>aiMuscleWeight(m,sexo));
     const totalWeight=weights.reduce((a,b)=>a+b,0);
-    let slots=dayMuscles.map((m,i)=>Math.max(1,Math.round(conf.exPerDay*weights[i]/totalWeight)));
+    let slots=day.muscles.map((m,i)=>Math.max(1,Math.round(conf.exPerDay*weights[i]/totalWeight)));
     let diff=conf.exPerDay-slots.reduce((a,b)=>a+b,0);
     let guard=0;
     while(diff!==0&&guard<20){
@@ -844,7 +884,7 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
         exercises.push({name:ex.name,sets:conf.setsReps,rest:conf.rest,xp:Math.round(ex.xpBase*conf.xpMult),done:false,boss:pi===0});
       });
     } else {
-    dayMuscles.forEach((m,i)=>{
+    day.muscles.forEach((m,i)=>{
       let pool=EXERCISE_DB.filter(e=>e.muscle[0]===m&&allowedLevels.includes(e.level));
       if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level));
       let fresh=pool.filter(e=>!used.has(e.id));
@@ -864,7 +904,7 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
       });
     });
     }
-    const dayLabel=objetivo==="gap"?"GAP":(objetivo==="movilidad"?"Movilidad":day.label);
+    const dayLabel=objetivo==="movilidad"?"Movilidad":day.label;
     return {day:`Día ${di+1}: ${dayLabel}`, exercises};
   });
 
