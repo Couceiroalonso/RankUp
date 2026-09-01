@@ -751,10 +751,18 @@ const exerciseGif = name => {
 // Genera una rutina completa a partir de 4 parámetros usando solo EXERCISE_DB.
 // 100% algorítmico y determinista — sin llamadas externas ni coste.
 const AI_OBJETIVO_CONF = {
-  fuerza:      {label:"Fuerza",      setsReps:"4x5",  rest:"150s", xpMult:1.15, exPerDay:5},
-  hipertrofia: {label:"Hipertrofia", setsReps:"4x10", rest:"75s",  xpMult:1.0,  exPerDay:6},
-  resistencia: {label:"Resistencia", setsReps:"3x18", rest:"40s",  xpMult:0.85, exPerDay:6},
+  fuerza:      {label:"Fuerza",           setsReps:"4x5",   rest:"150s", xpMult:1.15, exPerDay:5},
+  hipertrofia: {label:"Hipertrofia",      setsReps:"4x10",  rest:"75s",  xpMult:1.0,  exPerDay:6},
+  resistencia: {label:"Resistencia",      setsReps:"3x18",  rest:"40s",  xpMult:0.85, exPerDay:6},
+  adelgazar:   {label:"Pérdida de grasa", setsReps:"3x15",  rest:"30s",  xpMult:0.9,  exPerDay:7},
+  movilidad:   {label:"Movilidad",        setsReps:"3x30s", rest:"20s",  xpMult:0.8,  exPerDay:5},
+  gap:         {label:"GAP",              setsReps:"3x15",  rest:"35s",  xpMult:0.9,  exPerDay:8},
 };
+// GAP: prioriza glúteo/abdomen/pierna sin dejar el tronco superior a cero —
+// solo con mucho menos peso relativo en el reparto de ejercicios del día.
+const AI_GAP_MUSCLES=["gluteos","abdomen","piernas","pecho","espalda","hombros","biceps","triceps"];
+const AI_GAP_PRIORITY=new Set(["gluteos","abdomen","piernas"]);
+function aiGapWeight(muscle){ return AI_GAP_PRIORITY.has(muscle)?2.5:0.7; }
 const AI_NIVEL_ALLOWED = {
   Principiante:["Principiante"],
   Intermedio:["Principiante","Intermedio"],
@@ -807,9 +815,10 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
   const color=AI_COLORS[Math.floor(Math.random()*AI_COLORS.length)];
 
   const sessions=template.map((day,di)=>{
-    const weights=day.muscles.map(m=>aiMuscleWeight(m,sexo));
+    const dayMuscles=objetivo==="gap"?AI_GAP_MUSCLES:day.muscles;
+    const weights=dayMuscles.map(m=>objetivo==="gap"?aiGapWeight(m):aiMuscleWeight(m,sexo));
     const totalWeight=weights.reduce((a,b)=>a+b,0);
-    let slots=day.muscles.map((m,i)=>Math.max(1,Math.round(conf.exPerDay*weights[i]/totalWeight)));
+    let slots=dayMuscles.map((m,i)=>Math.max(1,Math.round(conf.exPerDay*weights[i]/totalWeight)));
     let diff=conf.exPerDay-slots.reduce((a,b)=>a+b,0);
     let guard=0;
     while(diff!==0&&guard<20){
@@ -821,7 +830,21 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
     }
 
     const exercises=[];
-    day.muscles.forEach((m,i)=>{
+    if(objetivo==="movilidad"){
+      // Los 14 ejercicios de movilidad/estiramiento conservados (id con prefijo "e")
+      // no se reparten por músculo del día — se toman como sesión completa de cuerpo,
+      // repitiendo si hacen falta más de los que hay disponibles (es normal en estiramientos).
+      const pool=EXERCISE_DB.filter(e=>/^e\d+$/.test(e.id));
+      let fresh=pool.filter(e=>!used.has(e.id));
+      if(fresh.length<conf.exPerDay) fresh=pool;
+      const sorted=[...fresh].sort(()=>Math.random()-0.5);
+      const picked=sorted.slice(0,conf.exPerDay);
+      picked.forEach(ex=>used.add(ex.id));
+      picked.forEach((ex,pi)=>{
+        exercises.push({name:ex.name,sets:conf.setsReps,rest:conf.rest,xp:Math.round(ex.xpBase*conf.xpMult),done:false,boss:pi===0});
+      });
+    } else {
+    dayMuscles.forEach((m,i)=>{
       let pool=EXERCISE_DB.filter(e=>e.muscle[0]===m&&allowedLevels.includes(e.level));
       if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level));
       let fresh=pool.filter(e=>!used.has(e.id));
@@ -840,7 +863,9 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
         });
       });
     });
-    return {day:`Día ${di+1}: ${day.label}`, exercises};
+    }
+    const dayLabel=objetivo==="gap"?"GAP":(objetivo==="movilidad"?"Movilidad":day.label);
+    return {day:`Día ${di+1}: ${dayLabel}`, exercises};
   });
 
   return {
@@ -3920,9 +3945,9 @@ function AdminPanel({onLogout}){
             <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
 
             <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
-            <div style={{display:"flex",gap:6,marginBottom:14}}>
-              {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"]].map(([v,l])=>(
-                <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:6,marginBottom:14}}>
+              {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"],["adelgazar","Pérdida de grasa"],["movilidad","Movilidad"],["gap","GAP"]].map(([v,l])=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
               ))}
             </div>
 
@@ -4724,8 +4749,11 @@ function RankUpApp({user,onLogout}){
           if(p.mantra?.includes("90 días")){p.mantra=p.mantra.replace(/90 días/g,"el futuro");changed=true;}
         });
         if(changed) saveUserData(user.email,fresh);
-        setAssignedProgram(fresh.assignedProgram);
       }
+      // Siempre sincronizar con lo que diga Firebase, incluido "ya no hay
+      // ninguno asignado" (null) — antes solo se actualizaba cuando SÍ había
+      // programa, así que desasignarlo no se reflejaba hasta borrar caché.
+      setAssignedProgram(fresh.assignedProgram||null);
       // Store the raw snapshot so save effect can safely merge during first renders
       loadedRef.current = fresh;
       // Always mark as loaded — safe to auto-save now
