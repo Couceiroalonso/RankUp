@@ -46,6 +46,14 @@ const mergeUserData = (local, remote) => {
         seen.add(h.routineId); return true;
       });
     })(),
+    measurements: (()=>{
+      const combined=[...(remote.measurements||[]),...(local.measurements||[])];
+      const seen=new Set();
+      return combined.filter(m=>{
+        if(seen.has(m.date)) return false;
+        seen.add(m.date); return true;
+      }).sort((a,b)=>a.date-b.date);
+    })(),
     inventory: (()=>{
       const keys=new Set([...Object.keys(remote.inventory||{}),...Object.keys(local.inventory||{})]);
       const out={};
@@ -1269,7 +1277,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1833,7 +1841,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -4392,7 +4400,7 @@ function ProfileFisico({userEmail}){
   );
 }
 
-function RankingTab({currentEmail, currentName}){
+function RankingTab({currentEmail, currentName, onOpenChat}){
   const [players,setPlayers]=useState([]);
   const [cat,setCat]=useState("xp");
   const [loading,setLoading]=useState(true);
@@ -4519,8 +4527,10 @@ function RankingTab({currentEmail, currentName}){
                   {i<3?medals[i]:i+1}
                 </div>
                 {/* Avatar */}
-                <div style={{width:40,height:40,borderRadius:11,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif"}}>
+                <div onClick={()=>!isMe&&onOpenChat&&onOpenChat({email:p.email,name:p.name})} title={isMe?"":`Escribir a ${p.name}`}
+                  style={{position:"relative",width:40,height:40,borderRadius:11,border:`2px solid ${ri.color}`,background:`${ri.color}22`,overflow:"hidden",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,fontWeight:900,color:ri.color,fontFamily:"'Cinzel',serif",cursor:isMe?"default":"pointer"}}>
                   {p.photo?<img src={p.photo} style={{width:"100%",height:"100%",objectFit:"cover"}}/>:cls?cls.icon:ri.rank}
+                  {!isMe&&<div style={{position:"absolute",bottom:-3,right:-3,width:16,height:16,borderRadius:"50%",background:"#A78BFA",border:"2px solid #07070F",display:"flex",alignItems:"center",justifyContent:"center",fontSize:8}}>💬</div>}
                 </div>
                 {/* Info */}
                 <div style={{flex:1,minWidth:0}}>
@@ -4561,6 +4571,13 @@ function RankUpApp({user,onLogout}){
   const [dc,setDC]=useState(saved.dungeonCoins||{});
   const [sessionKg,setSessionKg]=useState(saved.sessionKg||{});
   const [routineHistory,setRoutineHistory]=useState(saved.routineHistory||[]);
+  const [measurements,setMeasurements]=useState(saved.measurements||[]);
+  const logMeasurement=useCallback((entry)=>{
+    setMeasurements(p=>[...p,{...entry,date:Date.now()}]);
+  },[]);
+  const deleteMeasurement=useCallback((date)=>{
+    setMeasurements(p=>p.filter(m=>m.date!==date));
+  },[]);
   const [inventory,setInventory]=useState(saved.inventory||{});
   const [equipment,setEquipment]=useState(saved.equipment||{});
   const [equipped,setEquipped]=useState(saved.equipped||{}); // {slotId: "slot_tier"|null}
@@ -4688,6 +4705,8 @@ function RankUpApp({user,onLogout}){
       if(Object.keys(freshSessionKg).length>0) setSessionKg(freshSessionKg);
       const freshRoutineHistory=fresh.routineHistory||[];
       if(freshRoutineHistory.length>0) setRoutineHistory(freshRoutineHistory);
+      const freshMeasurements=fresh.measurements||[];
+      if(freshMeasurements.length>0) setMeasurements(freshMeasurements);
       const freshInventory=fresh.inventory||{};
       if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
       const freshEquipment=fresh.equipment||{};
@@ -4895,6 +4914,14 @@ function RankUpApp({user,onLogout}){
         seen.add(h.routineId); return true;
       });
     })();
+    const safeMeasurements=(()=>{
+      const combined=[...(base.measurements||[]),...measurements];
+      const seen=new Set();
+      return combined.filter(m=>{
+        if(seen.has(m.date)) return false;
+        seen.add(m.date); return true;
+      }).sort((a,b)=>a.date-b.date);
+    })();
     const safeInventory=(()=>{
       const keys=new Set([...Object.keys(base.inventory||{}),...Object.keys(inventory)]);
       const out={};
@@ -4919,6 +4946,7 @@ function RankUpApp({user,onLogout}){
       dungeonCoins: safeDC,
       sessionKg: safeSessionKg,
       routineHistory: safeRoutineHistory,
+      measurements: safeMeasurements,
       inventory: safeInventory,
       equipment: safeEquipment,
       equipped,
@@ -4927,7 +4955,11 @@ function RankUpApp({user,onLogout}){
       customRoutines:routines,
       playerClass,
       assignedDiets,
-      assignedProgram,
+      // Usamos siempre lo último que sabemos que hay en Firebase (base), nunca
+      // el estado local del propio dispositivo — así el guardado automático del
+      // usuario no puede "revivir" un programa que el admin acaba de quitar si
+      // el móvil todavía no se había refrescado con el cambio.
+      assignedProgram: base.assignedProgram!==undefined?base.assignedProgram:assignedProgram,
       exNotes,
       activeRaid,
       exHistory,
@@ -4935,7 +4967,7 @@ function RankUpApp({user,onLogout}){
       season1Seen:"T1",
       lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5163,6 +5195,32 @@ function RankUpApp({user,onLogout}){
   const [socialPosts,setSocialPosts]=useState({});
   const [socialLoading,setSocialLoading]=useState(true);
   const genSocialId=(prefix)=>`${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+
+  // ── Mensajes privados entre cualquier par de usuarios ──────────────────────
+  const sanitizeEmail=e=>e.toLowerCase().trim().replace(/\./g,"_").replace(/@/g,"_at_");
+  const myKeyPriv=sanitizeEmail(user.email);
+  const getConvoId=otherEmail=>{
+    const a=myKeyPriv, b=sanitizeEmail(otherEmail);
+    return [a,b].sort().join("__");
+  };
+  const [privateChat,setPrivateChat]=useState(null); // {email,name}|null
+  const [privateMessages,setPrivateMessages]=useState([]);
+  useEffect(()=>{
+    if(!privateChat) return;
+    const convoId=getConvoId(privateChat.email);
+    const unsubscribe=fbListen(`privateMessages/${convoId}`,(data)=>{
+      const list=data?Object.entries(data).map(([id,m])=>({id,...m})).sort((a,b)=>(a.date||0)-(b.date||0)):[];
+      setPrivateMessages(list);
+    });
+    return()=>unsubscribe&&unsubscribe();
+  },[privateChat?.email]);
+  const sendPrivateMessage=useCallback(async(text)=>{
+    if(!privateChat||!text.trim()) return;
+    const convoId=getConvoId(privateChat.email);
+    const id=genSocialId("msg");
+    const msg={from:user.email.toLowerCase().trim(),fromName:user.name,text:text.trim(),date:Date.now()};
+    await fbSet(`privateMessages/${convoId}/${id}`,msg).catch(()=>{});
+  },[privateChat,user]);
 
   // Muro social en tiempo real: se suscribe una vez al montar y se desuscribe
   // al desmontar/cerrar sesión. Cualquier publicación o comentario nuevo de
@@ -5586,6 +5644,7 @@ function RankUpApp({user,onLogout}){
       {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
       {craftToast&&<CraftToast name={craftToast.name} slot={craftToast.slot} icon={craftToast.icon} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
       {gifModal&&<GifModal name={gifModal.name} path={gifModal.path} onClose={()=>setGifModal(null)}/>}
+      {privateChat&&<PrivateChatModal withUser={privateChat} messages={privateMessages} myEmail={user.email} onSend={sendPrivateMessage} onClose={()=>setPrivateChat(null)}/>}
 
       {/* Profile drawer */}
       {showProfile&&(
@@ -5738,7 +5797,7 @@ function RankUpApp({user,onLogout}){
               )
             )
           )}
-          {tab==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex}/>}
+          {tab==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex} measurements={measurements} onLogMeasurement={logMeasurement} onDeleteMeasurement={deleteMeasurement}/>}
           {tab==="tienda"&&<TiendaTab coins={coins} redeemed={redeemed} dc={dc} onRedeem={redeemReward}/>}
           {tab==="nutricion"&&(
             <>
@@ -5767,7 +5826,7 @@ function RankUpApp({user,onLogout}){
           )}
           {tab==="inventario"&&<InventarioTab inventory={inventory} equipment={equipment} onCraft={craftEquipment} equipped={equipped} onToggleEquip={toggleEquip}/>}
           {tab==="logros"&&<LogrosTab totalXp={totalXp} level={level} ri={ri} checked={checked} weights={weights} pr={pr} earnedAchs={earnedAchs} routines={routines} routineHistory={routineHistory}/>}
-          {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name}/>}
+          {tab==="ranking"&&<RankingTab currentEmail={user.email} currentName={user.name} onOpenChat={u=>setPrivateChat(u)}/>}
           {tab==="social"&&<SocialTab posts={socialPosts} loading={socialLoading} currentEmail={user.email} onPost={addSocialPost} onDeletePost={deleteSocialPost} onComment={addSocialComment} onDeleteComment={deleteSocialComment} onToggleLike={toggleSocialLike}/>}
           {tab==="buzon"&&<BuzonTab messages={messages} onSend={sendMessage} userName={user.name}/>}
         </div>
@@ -7080,6 +7139,61 @@ function ExHistoryModal({exName,history,onClose,color="#A78BFA"}){
 
 
 // ─── BUZÓN TAB ────────────────────────────────────────────────────────────────
+function PrivateChatModal({withUser,messages,myEmail,onSend,onClose}){
+  const [input,setInput]=useState("");
+  const bottomRef=useRef(null);
+  useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages]);
+  const handleSend=()=>{if(!input.trim())return;onSend(input);setInput("");};
+  const formatDate=ts=>{
+    if(!ts)return"";
+    const d=new Date(ts);
+    const isToday=d.toDateString()===new Date().toDateString();
+    if(isToday) return `${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+    return `${d.getDate()}/${d.getMonth()+1} ${d.getHours().toString().padStart(2,"0")}:${d.getMinutes().toString().padStart(2,"0")}`;
+  };
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:10002,background:"#07070F",display:"flex",flexDirection:"column"}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,padding:"14px 16px",borderBottom:"1px solid #1E1E32"}}>
+        <button onClick={onClose} style={{background:"none",border:"none",color:"#888",fontSize:18,cursor:"pointer"}}>←</button>
+        <div style={{fontSize:13,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{withUser.name}</div>
+      </div>
+      <div style={{flex:1,overflowY:"auto",display:"flex",flexDirection:"column",gap:8,padding:16}}>
+        {messages.length===0&&(
+          <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
+            <div style={{fontSize:40,marginBottom:10}}>💬</div>
+            <div style={{fontSize:13,color:"#444"}}>Sin mensajes todavía. ¡Escribe el primero!</div>
+          </div>
+        )}
+        {messages.map(m=>{
+          const isMe=m.from===myEmail.toLowerCase().trim();
+          return(
+            <div key={m.id} style={{display:"flex",justifyContent:isMe?"flex-end":"flex-start"}}>
+              <div style={{maxWidth:"80%",padding:"10px 14px",borderRadius:isMe?"16px 16px 4px 16px":"16px 16px 16px 4px",
+                background:isMe?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#0F0F1C",
+                border:isMe?"none":"1px solid #1E1E32"}}>
+                <div style={{fontSize:13,color:"#FFF",lineHeight:1.5,fontFamily:"'Rajdhani',sans-serif"}}>{m.text}</div>
+                <div style={{fontSize:9,color:isMe?"#C4B5FD":"#444",marginTop:4,textAlign:"right"}}>{formatDate(m.date)}</div>
+              </div>
+            </div>
+          );
+        })}
+        <div ref={bottomRef}/>
+      </div>
+      <div style={{display:"flex",gap:8,padding:16,borderTop:"1px solid #1A1A2E"}}>
+        <textarea value={input} onChange={e=>setInput(e.target.value)}
+          onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();handleSend();}}}
+          placeholder={`Escribe a ${withUser.name}...`}
+          style={{flex:1,padding:"10px 14px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:12,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",resize:"none",lineHeight:1.4}}
+          rows={2}/>
+        <button onClick={handleSend} disabled={!input.trim()}
+          style={{padding:"0 16px",background:input.trim()?"linear-gradient(135deg,#A78BFA,#7C3AED)":"#1A1A2E",border:"none",borderRadius:12,color:input.trim()?"#FFF":"#444",fontSize:18,cursor:input.trim()?"pointer":"not-allowed",flexShrink:0}}>
+          ➤
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function timeAgo(ts){
   const diff=Date.now()-ts;
   const min=Math.floor(diff/60000), hr=Math.floor(diff/3600000), day=Math.floor(diff/86400000);
@@ -7321,14 +7435,47 @@ function BuzonTab({messages,onSend,userName}){
 
 
 // ─── CUERPO TAB ───────────────────────────────────────────────────────────────
-function CuerpoTab({mxp,sex="M"}){
+const MEASUREMENT_FIELDS=[
+  {id:"peso",     label:"Peso corporal",     unit:"kg", icon:"⚖️"},
+  {id:"cuello",   label:"Cuello",            unit:"cm", icon:"📏"},
+  {id:"pecho",    label:"Pecho/Tórax",       unit:"cm", icon:"📏"},
+  {id:"cintura",  label:"Cintura",           unit:"cm", icon:"📏"},
+  {id:"cadera",   label:"Cadera",            unit:"cm", icon:"📏"},
+  {id:"brazoRelajado",  label:"Brazo relajado",   unit:"cm", icon:"💪"},
+  {id:"brazoContraido", label:"Brazo contraído",  unit:"cm", icon:"💪"},
+  {id:"antebrazo",label:"Antebrazo",         unit:"cm", icon:"📏"},
+  {id:"muslo",    label:"Muslo",             unit:"cm", icon:"📏"},
+  {id:"pantorrilla",label:"Pantorrilla",     unit:"cm", icon:"📏"},
+];
+
+function CuerpoTab({mxp,sex="M",measurements=[],onLogMeasurement,onDeleteMeasurement}){
+  const [subTab,setSubTab]=useState("rangos"); // "rangos" | "medidas"
   const allXP=Object.values(mxp).reduce((a,b)=>a+b,0);
   const activated=Object.values(mxp).filter(v=>v>0).length;
   const frontList=["pecho","hombros","biceps","antebrazos","abdomen","piernas","cardio"];
   const backList=["espalda","hombros","triceps","antebrazos","gluteos","piernas","gemelos"];
   const allMuscles=Object.keys(MUSCLE_DEFS);
+
+  // ── formulario de nueva medida ──
+  const [form,setForm]=useState({});
+  const submitMeasurement=()=>{
+    const entry={};
+    MEASUREMENT_FIELDS.forEach(f=>{ if(form[f.id]&&!isNaN(parseFloat(form[f.id]))) entry[f.id]=parseFloat(form[f.id]); });
+    if(Object.keys(entry).length===0) return;
+    onLogMeasurement(entry);
+    setForm({});
+  };
+  const sortedMeasurements=[...measurements].sort((a,b)=>b.date-a.date);
+
   return(
     <div>
+      {/* Sub-tab switcher */}
+      <div style={{display:"flex",gap:8,marginBottom:16}}>
+        <button onClick={()=>setSubTab("rangos")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${subTab==="rangos"?"#0AF5FF":"#2A2A44"}`,background:subTab==="rangos"?"#0AF5FF18":"#0F0F1C",color:subTab==="rangos"?"#0AF5FF":"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>💪 RANGOS MUSCULARES</button>
+        <button onClick={()=>setSubTab("medidas")} style={{flex:1,padding:"10px 0",borderRadius:10,border:`1px solid ${subTab==="medidas"?"#34D399":"#2A2A44"}`,background:subTab==="medidas"?"#34D39918":"#0F0F1C",color:subTab==="medidas"?"#34D399":"#666",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>📏 MEDIDAS</button>
+      </div>
+
+      {subTab==="rangos"&&(<>
       {/* Global stat */}
       <div style={{padding:"14px 16px",background:"linear-gradient(135deg,#0D0D1A,#080810)",border:"1px solid #0AF5FF33",borderRadius:14,marginBottom:16,display:"flex",alignItems:"center",gap:14}}>
         <div style={{width:44,height:44,borderRadius:12,border:"2px solid #0AF5FF",display:"flex",alignItems:"center",justifyContent:"center",background:"#0AF5FF11",boxShadow:"0 0 20px #0AF5FF44",flexShrink:0,fontSize:22}}>🫀</div>
@@ -7382,6 +7529,55 @@ function CuerpoTab({mxp,sex="M"}){
           </div>
         ))}
       </div>
+      </>)}
+
+      {subTab==="medidas"&&(<>
+        <div style={{background:"#0D0D1A",border:"1px solid #34D39944",borderRadius:12,padding:14,marginBottom:16}}>
+          <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:12}}>📏 NUEVA MEDIDA</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+            {MEASUREMENT_FIELDS.map(f=>(
+              <div key={f.id}>
+                <div style={{fontSize:10,color:"#666",marginBottom:4}}>{f.icon} {f.label} ({f.unit})</div>
+                <input type="number" inputMode="decimal" placeholder="—" value={form[f.id]||""} onChange={e=>setForm(p=>({...p,[f.id]:e.target.value}))}
+                  style={{width:"100%",padding:"8px 10px",background:"#07070F",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif",boxSizing:"border-box"}}/>
+              </div>
+            ))}
+          </div>
+          <button onClick={submitMeasurement} style={{width:"100%",padding:11,background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:10,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+            💾 GUARDAR MEDIDA
+          </button>
+        </div>
+
+        <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3,marginBottom:10}}>HISTORIAL ({sortedMeasurements.length})</div>
+        {sortedMeasurements.length===0?(
+          <div style={{textAlign:"center",padding:"40px 20px",color:"#333"}}>
+            <div style={{fontSize:32,marginBottom:8}}>📏</div>
+            <div style={{fontSize:12,color:"#444"}}>Todavía no has registrado ninguna medida.</div>
+          </div>
+        ):sortedMeasurements.map((m,i)=>{
+          const prev=sortedMeasurements[i+1];
+          const d=new Date(m.date);
+          return(
+            <div key={m.date} style={{background:"#0D0D1A",border:"1px solid #1E1E32",borderRadius:12,padding:12,marginBottom:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                <div style={{fontSize:11,color:"#888",fontWeight:700}}>{d.toLocaleDateString("es-ES",{day:"2-digit",month:"short",year:"numeric"})}</div>
+                <button onClick={()=>onDeleteMeasurement(m.date)} style={{background:"none",border:"none",color:"#E84A5F66",cursor:"pointer",fontSize:12}}>🗑️</button>
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:10}}>
+                {MEASUREMENT_FIELDS.filter(f=>m[f.id]!=null).map(f=>{
+                  const diff=prev&&prev[f.id]!=null?+(m[f.id]-prev[f.id]).toFixed(1):null;
+                  return(
+                    <div key={f.id} style={{fontSize:11,color:"#CCC"}}>
+                      <span style={{color:"#555"}}>{f.icon} {f.label}:</span> <b>{m[f.id]}{f.unit}</b>
+                      {diff!=null&&diff!==0&&<span style={{color:diff>0?"#F87171":"#34D399",marginLeft:4}}>{diff>0?"▲":"▼"}{Math.abs(diff)}</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })}
+      </>)}
     </div>
   );
 }
