@@ -7247,7 +7247,7 @@ function SocialTab({posts={},loading,currentEmail,onPost,onDeletePost,onComment,
   const sortedPosts=Object.entries(posts).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
 
   return(
-    <div>
+    <div style={{maxWidth:480,margin:"0 auto"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
         <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:3}}>📸 MURO SOCIAL</div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
