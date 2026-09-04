@@ -841,17 +841,20 @@ function aiMuscleWeight(muscle,sexo){
   return 1;
 }
 
-function generateAIRoutine({objetivo,dias,sexo,nivel}){
+function generateAIRoutine({objetivo,dias,sexo,nivel,equipo=[]}){
   const conf=AI_OBJETIVO_CONF[objetivo]||AI_OBJETIVO_CONF.hipertrofia;
   const allowedLevels=AI_NIVEL_ALLOWED[nivel]||AI_NIVEL_ALLOWED.Intermedio;
   const template=AI_SPLITS[dias]||AI_SPLITS[3];
   const used=new Set(); // ids ya usados esta semana, evita repetir ejercicio
   const color=AI_COLORS[Math.floor(Math.random()*AI_COLORS.length)];
+  // Sin equipo seleccionado = acceso a todo (gimnasio completo). Si se marca
+  // algo, se filtra por esos tipos — el peso corporal siempre está permitido.
+  const equipOk=ex=>equipo.length===0||ex.equip==="Sin equipo"||equipo.includes(ex.equip);
 
   const sessions = objetivo==="gap"
     ? (AI_GAP_TEMPLATES[dias]||AI_GAP_TEMPLATES[3]).map((focusKey,di)=>{
         const focus=AI_GAP_FOCUS[focusKey];
-        const pool=aiGapPool(focusKey,allowedLevels);
+        const pool=aiGapPool(focusKey,allowedLevels).filter(equipOk);
         let fresh=pool.filter(e=>!used.has(e.id));
         if(fresh.length<conf.exPerDay) fresh=pool;
         const sorted=[...fresh].sort((a,b)=>(b.muscle.length-a.muscle.length)||(b.xpBase-a.xpBase));
@@ -893,8 +896,9 @@ function generateAIRoutine({objetivo,dias,sexo,nivel}){
       });
     } else {
     day.muscles.forEach((m,i)=>{
-      let pool=EXERCISE_DB.filter(e=>e.muscle[0]===m&&allowedLevels.includes(e.level));
-      if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level));
+      let pool=EXERCISE_DB.filter(e=>e.muscle[0]===m&&allowedLevels.includes(e.level)&&equipOk(e));
+      if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level)&&equipOk(e));
+      if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level)); // último recurso: sin filtro de equipo si no hay nada
       let fresh=pool.filter(e=>!used.has(e.id));
       if(fresh.length<slots[i]) fresh=pool;
       const sorted=[...fresh].sort((a,b)=>(b.muscle.length-a.muscle.length)||(b.xpBase-a.xpBase));
@@ -2942,7 +2946,7 @@ const getAdminRoutines=()=>{
   const [rtDbSearch,setRtDbSearch]=useState({}); // {si: "texto buscado"}
   const [assignModal,setAssignModal]=useState(null); // {routineId}
   const [showAIGen,setShowAIGen]=useState(false);
-  const [aiParams,setAiParams]=useState({objetivo:"hipertrofia",dias:3,sexo:"otro",nivel:"Intermedio"});
+  const [aiParams,setAiParams]=useState({objetivo:"hipertrofia",dias:3,sexo:"otro",nivel:"Intermedio",equipo:[]}); // equipo:[] = todo disponible
 
   const applyAIRoutine=()=>{
     const gen=generateAIRoutine(aiParams);
@@ -5849,6 +5853,17 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   const [pendingAdd,setPendingAdd]=useState(null); // {rtId, si, ex} — exercise picked, awaiting config
   const [pendingSets,setPendingSets]=useState("3x10");
   const [pendingRest,setPendingRest]=useState("60s");
+  const [showAIGen,setShowAIGen]=useState(false);
+  const [aiParams,setAiParams]=useState({objetivo:"hipertrofia",dias:3,sexo:"otro",nivel:"Intermedio",equipo:[]}); // equipo:[] = todo disponible
+
+  const applyAIRoutine=()=>{
+    const gen=generateAIRoutine(aiParams);
+    onUpdateRoutines([...routines, {...gen, id:Date.now(), createdAt:Date.now(), selfGenerated:true}]);
+    setShowAIGen(false);
+    flash2("🔮 Rutina generada y añadida a tus mazmorras");
+  };
+  const [aiFlash,setAiFlash]=useState("");
+  const flash2=(msg)=>{ setAiFlash(msg); setTimeout(()=>setAiFlash(""),2500); };
 
   const handleAddEx=(rtId,si,ex)=>{
     // Show config step before adding
@@ -5902,7 +5917,61 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
 
   return(
     <div>
-      <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3,marginBottom:14}}>👑 MAZMORRAS ASIGNADAS · {routines.length} RUTINAS</div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+        <div style={{fontSize:9,color:"#A78BFA",letterSpacing:3}}>👑 MAZMORRAS ASIGNADAS · {routines.length} RUTINAS</div>
+        <button onClick={()=>setShowAIGen(true)} style={{padding:"7px 12px",background:"#F59E0B18",border:"1px solid #F59E0B44",borderRadius:8,color:"#F59E0B",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",whiteSpace:"nowrap"}}>🔮 GENERAR</button>
+      </div>
+      {aiFlash&&<div style={{padding:"8px 12px",background:"#34D39918",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",fontSize:11,fontWeight:700,marginBottom:12,textAlign:"center"}}>{aiFlash}</div>}
+      {showAIGen&&(
+        <div onClick={()=>setShowAIGen(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
+            <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:4}}>🔮 GENERA TU PROPIA RUTINA</div>
+            <div style={{fontSize:10,color:"#555",marginBottom:14}}>Se añadirá directamente a tus mazmorras, lista para entrenar</div>
+
+            <div style={{fontSize:9,color:"#666",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:6,marginBottom:14}}>
+              {[["fuerza","Fuerza"],["hipertrofia","Hipertrofia"],["resistencia","Resistencia"],["adelgazar","Pérdida de grasa"],["movilidad","Movilidad"],["gap","GAP"]].map(([v,l])=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,objetivo:v}))} style={{padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.objetivo===v?"#F59E0B":"#1A1A2E",color:aiParams.objetivo===v?"#07070F":"#555"}}>{l}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#666",letterSpacing:2,marginBottom:6}}>DÍAS POR SEMANA</div>
+            <div style={{display:"flex",gap:6,marginBottom:14}}>
+              {[1,2,3,4,5,6].map(d=>(
+                <button key={d} onClick={()=>setAiParams(p=>({...p,dias:d}))} style={{flex:1,padding:"9px 0",borderRadius:8,border:"none",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.dias===d?"#F59E0B":"#1A1A2E",color:aiParams.dias===d?"#07070F":"#555"}}>{d}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#666",letterSpacing:2,marginBottom:6}}>SEXO</div>
+            <div style={{display:"flex",gap:6,marginBottom:14}}>
+              {[["hombre","Hombre"],["mujer","Mujer"],["otro","Prefiero no decir"]].map(([v,l])=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,sexo:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.sexo===v?"#F59E0B":"#1A1A2E",color:aiParams.sexo===v?"#07070F":"#555"}}>{l}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#666",letterSpacing:2,marginBottom:6}}>NIVEL</div>
+            <div style={{display:"flex",gap:6,marginBottom:14}}>
+              {["Principiante","Intermedio","Avanzado"].map(v=>(
+                <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"#1A1A2E",color:aiParams.nivel===v?"#07070F":"#555"}}>{v}</button>
+              ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#666",letterSpacing:2,marginBottom:6}}>MATERIAL DISPONIBLE (deja vacío = gimnasio completo)</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:18}}>
+              {["Mancuernas","Barra","Barra Z","Polea","Máquina","Banda elástica","Fitball","TRX","Kettlebell"].map(eq=>{
+                const active=aiParams.equipo.includes(eq);
+                return(
+                  <button key={eq} onClick={()=>setAiParams(p=>({...p,equipo:active?p.equipo.filter(x=>x!==eq):[...p.equipo,eq]}))}
+                    style={{padding:"7px 12px",borderRadius:20,border:`1px solid ${active?"#F59E0B":"#2A2A44"}`,cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:active?"#F59E0B22":"#1A1A2E",color:active?"#F59E0B":"#555"}}>{eq}</button>
+                );
+              })}
+            </div>
+
+            <button onClick={applyAIRoutine} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 GENERAR Y AÑADIR</button>
+            <button onClick={()=>setShowAIGen(false)} style={{width:"100%",padding:11,marginTop:8,background:"none",border:"none",color:"#555",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Cancelar</button>
+          </div>
+        </div>
+      )}
       {(()=>{
         const isRoutineFullyDone=rt=>{
           const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
