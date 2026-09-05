@@ -54,6 +54,7 @@ const mergeUserData = (local, remote) => {
         seen.add(m.date); return true;
       }).sort((a,b)=>a.date-b.date);
     })(),
+    gymClosedCompletions: Array.from(new Set((remote.gymClosedCompletions||[]).concat(local.gymClosedCompletions||[]))),
     inventory: (()=>{
       const keys=new Set([...Object.keys(remote.inventory||{}),...Object.keys(local.inventory||{})]);
       const out={};
@@ -936,6 +937,102 @@ function generateAIRoutine({objetivo,dias,sexo,nivel,equipo=[]}){
 }
 
 // ─── GUILD RAID DATABASE — TEMPORADA I ──────────────────────────────────────
+// ─── PLAN CASA (gimnasio cerrado temporalmente) ───────────────────────────────
+const GYM_CLOSED_DAYS = [
+  {title:"Full Body Básico", rounds:2, exercises:[
+    {name:"Air squat", reps:"15 reps", xp:14},
+    {name:"Flexiones", reps:"12 reps", xp:14},
+    {name:"Plancha", reps:"30s", xp:14},
+    {name:"Jumping Jack", reps:"20 reps", xp:14},
+  ]},
+  {title:"Glúteo y Pierna", rounds:2, exercises:[
+    {name:"Frogpumps", reps:"15 reps", xp:14},
+    {name:"Patada de burro", reps:"12 reps c/lado", xp:14},
+    {name:"Air squat", reps:"15 reps", xp:14},
+    {name:"Boca de incendios", reps:"12 reps c/lado", xp:14},
+  ]},
+  {title:"Cardio HIIT", rounds:3, exercises:[
+    {name:"Burpee", reps:"10 reps", xp:28},
+    {name:"Jumping Jack", reps:"20 reps", xp:14},
+    {name:"Saltos de Patinador", reps:"20 reps", xp:28},
+    {name:"Paso del oso", reps:"30s", xp:14},
+  ]},
+  {title:"Pecho y Tríceps", rounds:2, exercises:[
+    {name:"Flexiones", reps:"12 reps", xp:14},
+    {name:"Flexiones diamante", reps:"10 reps", xp:14},
+    {name:"Fondos en banco", reps:"12 reps", xp:14},
+    {name:"Plancha", reps:"30s", xp:14},
+  ]},
+  {title:"Core Completo", rounds:2, exercises:[
+    {name:"Crunch Frog", reps:"15 reps", xp:14},
+    {name:"Crunch Lateral Horizontal Alterno", reps:"15 reps c/lado", xp:28},
+    {name:"bird-dog", reps:"10 reps c/lado", xp:14},
+    {name:"Plancha oso", reps:"30s", xp:14},
+  ]},
+  {title:"Espalda y Core", rounds:2, exercises:[
+    {name:"Dominadas", reps:"8 reps", xp:14},
+    {name:"Buenos días", reps:"12 reps", xp:14},
+    {name:"bird-dog", reps:"10 reps c/lado", xp:14},
+    {name:"Crunch Superior Concentrado Elevado", reps:"15 reps", xp:14},
+  ]},
+  {title:"Full Body con Salto", rounds:3, exercises:[
+    {name:"Burpee Jack", reps:"10 reps", xp:28},
+    {name:"Air squat", reps:"15 reps", xp:14},
+    {name:"Flexiones", reps:"12 reps", xp:14},
+    {name:"Jumping Jack", reps:"20 reps", xp:14},
+  ]},
+  {title:"Pierna Avanzada", rounds:2, exercises:[
+    {name:"Pistol squat", reps:"6 reps c/pierna", xp:28},
+    {name:"Sentadilla en Punta", reps:"15 reps", xp:14},
+    {name:"Frogpumps", reps:"15 reps", xp:14},
+    {name:"Air squat", reps:"15 reps", xp:14},
+  ]},
+  {title:"Pecho Variado", rounds:2, exercises:[
+    {name:"Flexiones inclinadas", reps:"12 reps", xp:14},
+    {name:"Flexiones declinadas", reps:"10 reps", xp:14},
+    {name:"Fondos entre bancos", reps:"12 reps", xp:14},
+    {name:"Plancha", reps:"30s", xp:14},
+  ]},
+  {title:"Glúteo con Banda", rounds:2, exercises:[
+    {name:"Abducción de cadera sentado con banda", reps:"15 reps c/lado", xp:16},
+    {name:"Caminata con banda", reps:"20 pasos", xp:16},
+    {name:"Extensión de cadera arrodillado con banda", reps:"12 reps c/lado", xp:16},
+    {name:"Patada de burro", reps:"12 reps c/lado", xp:14},
+  ]},
+  {title:"Cardio + Core", rounds:3, exercises:[
+    {name:"Burpee", reps:"10 reps", xp:28},
+    {name:"Bicicleta", reps:"20 reps c/lado", xp:14},
+    {name:"Crunch Inferior con Rodillas Flexionadas", reps:"15 reps", xp:14},
+    {name:"Paso del oso", reps:"30s", xp:14},
+  ]},
+  {title:"Full Body Intermedio", rounds:2, exercises:[
+    {name:"Sentadilla Goblet", reps:"15 reps", xp:14},
+    {name:"Flexiones diamante", reps:"10 reps", xp:14},
+    {name:"Dominadas", reps:"8 reps", xp:14},
+    {name:"Plancha", reps:"30s", xp:14},
+  ]},
+  {title:"Pierna y Glúteo Total", rounds:2, exercises:[
+    {name:"Air squat", reps:"15 reps", xp:14},
+    {name:"Hip Thrust unilateral", reps:"12 reps c/pierna", xp:28},
+    {name:"Patada de burro", reps:"12 reps c/lado", xp:14},
+    {name:"Sentadilla Sissy", reps:"10 reps", xp:14},
+  ]},
+  {title:"Espalda y Movilidad", rounds:2, exercises:[
+    {name:"Dominadas", reps:"8 reps", xp:14},
+    {name:"Hiperextensiones Inclinadas", reps:"12 reps", xp:14},
+    {name:"bird-dog", reps:"10 reps c/lado", xp:14},
+    {name:"Buenos días", reps:"12 reps", xp:14},
+  ]},
+  {title:"🏆 Gran Final", rounds:3, exercises:[
+    {name:"Burpee", reps:"10 reps", xp:28},
+    {name:"Air squat", reps:"15 reps", xp:14},
+    {name:"Flexiones", reps:"12 reps", xp:14},
+    {name:"Plancha", reps:"30s", xp:14},
+    {name:"Jumping Jack", reps:"20 reps", xp:14},
+  ]},
+];
+const GYM_CLOSED_BONUS_COINS = 25;
+
 const GUILD_RAID_DURATION = 48 * 3600000; // 48h in ms
 const GUILD_RAID_CHANCE = 0.15; // 15% trigger chance
 const SEASON1_START_DATE = new Date("2026-07-01T00:00:00").getTime(); // Temporada I launch gate
@@ -1289,7 +1386,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],gymClosedCompletions:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1420,6 +1517,44 @@ function Season1Popup({onClose}){
   );
 }
 
+
+function GymClosedPopup({dayNumber,onClose,onDone,alreadyDone}){
+  const plan=GYM_CLOSED_DAYS[dayNumber-1];
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at center,#331a00 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#1A0D07 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #F59E0B",boxShadow:"0 0 80px #F59E0B44",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+        <div style={{background:"linear-gradient(135deg,#F59E0B33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#F59E0B88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ RANKUP FITNESS ━━</div>
+          <div style={{fontSize:11,letterSpacing:4,color:"#F59E0B",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🏠 GIMNASIO CERRADO · DÍA {dayNumber}/15</div>
+          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:10,textShadow:"0 0 20px #F59E0B88"}}>
+            {plan.title}
+          </div>
+          <div style={{fontSize:12,color:"#888",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 8px"}}>
+            "El gym para RankUp no. Sigue ganando experiencia."
+          </div>
+        </div>
+        <div style={{padding:"16px 24px 8px",overflowY:"auto"}}>
+          <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:10,fontFamily:"'Rajdhani',sans-serif"}}>🔁 {plan.rounds} RONDAS — SIN MATERIAL</div>
+          <div style={{fontSize:12,color:"#CCC",lineHeight:2,fontFamily:"'Rajdhani',sans-serif",marginBottom:10,textAlign:"left"}}>
+            {plan.exercises.map(function(ex,idx){
+              return <div key={idx}>{idx+1}. {ex.name} — {ex.reps} <span style={{color:"#555"}}>(+{ex.xp} XP)</span></div>;
+            })}
+          </div>
+          {alreadyDone?(
+            <div style={{padding:12,background:"#F59E0B18",border:"1px solid #F59E0B44",borderRadius:10,textAlign:"center",color:"#F59E0B",fontSize:12,fontWeight:700,marginBottom:10}}>✅ Ya la completaste hoy</div>
+          ):(
+            <button onClick={onDone} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>
+              ✅ YA LA HE HECHO (+{GYM_CLOSED_BONUS_COINS}🪙)
+            </button>
+          )}
+          <button onClick={onClose} style={{width:"100%",padding:11,background:"none",border:"none",color:"#555",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:8}}>Cerrar</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function LootUpdatePopup({onClose}){
   return(
@@ -1854,7 +1989,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],gymClosedCompletions:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -2621,6 +2756,26 @@ function AdminPanel({onLogout}){
   const toggleSeason=()=>{
     if(seasonActive) pauseSeason();
     else setConfirmSeasonStart(true);
+  };
+
+  const [gymClosedActive,setGymClosedActive]=useState(false);
+  const [gymClosedLoaded,setGymClosedLoaded]=useState(false);
+  useEffect(function(){
+    fbGet("gymClosedStatus").then(function(s){
+      setGymClosedActive(Boolean(s && s.active));
+      setGymClosedLoaded(true);
+    }).catch(function(){ setGymClosedLoaded(true); });
+  },[]);
+  const toggleGymClosed=async function(){
+    if(gymClosedActive){
+      await fbSet("gymClosedStatus",{active:false}).catch(function(){});
+      setGymClosedActive(false);
+      flash("⏸️ Plan Casa desactivado");
+    } else {
+      await fbSet("gymClosedStatus",{active:true,startDate:Date.now()}).catch(function(){});
+      setGymClosedActive(true);
+      flash("🏠 Plan Casa activado — arranca el Día 1 para todos hoy mismo");
+    }
   };
 
   const [allUsers,setAllUsers]=useState(getUsers());
@@ -3496,6 +3651,7 @@ const getAdminRoutines=()=>{
         </div>
         <div style={{display:"flex",gap:8}}>
           {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
+          {gymClosedLoaded&&<button onClick={toggleGymClosed} style={{background:gymClosedActive?"#F59E0B22":"#1A1A2E",border:`1px solid ${gymClosedActive?"#F59E0B44":"#2A2A44"}`,borderRadius:8,color:gymClosedActive?"#F59E0B":"#666",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{gymClosedActive?"🏠 PLAN CASA: ON":"🏠 PLAN CASA: OFF"}</button>}
           <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
           <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
           <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
@@ -4628,6 +4784,33 @@ function RankUpApp({user,onLogout}){
     if(path) setGifModal({name:exName,path});
   },[]);
 
+  // ── Plan Casa (gimnasio cerrado temporalmente) ──────────────────────────
+  const [gymClosedCompletions,setGymClosedCompletions]=useState(saved.gymClosedCompletions||[]);
+  const [gymClosedDayNumber,setGymClosedDayNumber]=useState(0); // 0 = no activo hoy
+  const [showGymClosedPopup,setShowGymClosedPopup]=useState(false);
+  function todayDateString(){
+    var d=new Date();
+    return d.toISOString().slice(0,10);
+  }
+  useEffect(function(){
+    fbGet("gymClosedStatus").then(function(s){
+      if(!s || !s.active || !s.startDate) return;
+      var elapsedMs=Date.now()-s.startDate;
+      var dayNum=Math.floor(elapsedMs/86400000)+1;
+      if(dayNum>=1 && dayNum<=GYM_CLOSED_DAYS.length){
+        setGymClosedDayNumber(dayNum);
+        setShowGymClosedPopup(true);
+      }
+    }).catch(function(){});
+  },[]);
+  var gymClosedDoneToday=gymClosedCompletions.indexOf(todayDateString())!==-1;
+  var markGymClosedDone=useCallback(function(){
+    if(gymClosedDoneToday) return;
+    setGymClosedCompletions(function(prev){ return prev.concat([todayDateString()]); });
+    addXp(60,null,"🏠 Rutina de casa completada");
+    addCoins(GYM_CLOSED_BONUS_COINS,"🏠 Constancia en casa");
+  },[gymClosedDoneToday,addXp,addCoins]);
+
   const [lootToast,setLootToast]=useState(null);
   const [lootStats,setLootStats]=useState(saved.lootStats||{total:0,rarities:[],types:[]});
   const [craftStats,setCraftStats]=useState(saved.craftStats||{total:0,slots:[],tiers:[],maestroSlots:[]});
@@ -4721,6 +4904,8 @@ function RankUpApp({user,onLogout}){
       if(freshRoutineHistory.length>0) setRoutineHistory(freshRoutineHistory);
       const freshMeasurements=fresh.measurements||[];
       if(freshMeasurements.length>0) setMeasurements(freshMeasurements);
+      const freshGymClosedCompletions=fresh.gymClosedCompletions||[];
+      if(freshGymClosedCompletions.length>0) setGymClosedCompletions(freshGymClosedCompletions);
       const freshInventory=fresh.inventory||{};
       if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
       const freshEquipment=fresh.equipment||{};
@@ -4936,6 +5121,7 @@ function RankUpApp({user,onLogout}){
         seen.add(m.date); return true;
       }).sort((a,b)=>a.date-b.date);
     })();
+    const safeGymClosedCompletions=Array.from(new Set((base.gymClosedCompletions||[]).concat(gymClosedCompletions)));
     const safeInventory=(()=>{
       const keys=new Set([...Object.keys(base.inventory||{}),...Object.keys(inventory)]);
       const out={};
@@ -4961,6 +5147,7 @@ function RankUpApp({user,onLogout}){
       sessionKg: safeSessionKg,
       routineHistory: safeRoutineHistory,
       measurements: safeMeasurements,
+      gymClosedCompletions: safeGymClosedCompletions,
       inventory: safeInventory,
       equipment: safeEquipment,
       equipped,
@@ -4981,7 +5168,7 @@ function RankUpApp({user,onLogout}){
       season1Seen:"T1",
       lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,gymClosedCompletions,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5658,6 +5845,7 @@ function RankUpApp({user,onLogout}){
       {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
       {craftToast&&<CraftToast name={craftToast.name} slot={craftToast.slot} icon={craftToast.icon} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
       {gifModal&&<GifModal name={gifModal.name} path={gifModal.path} onClose={()=>setGifModal(null)}/>}
+      {showGymClosedPopup&&gymClosedDayNumber>0&&<GymClosedPopup dayNumber={gymClosedDayNumber} alreadyDone={gymClosedDoneToday} onClose={function(){setShowGymClosedPopup(false);}} onDone={function(){markGymClosedDone();setShowGymClosedPopup(false);}}/>}
       {privateChat&&<PrivateChatModal withUser={privateChat} messages={privateMessages} myEmail={user.email} onSend={sendPrivateMessage} onClose={()=>setPrivateChat(null)}/>}
 
       {/* Profile drawer */}
