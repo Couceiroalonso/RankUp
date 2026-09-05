@@ -841,6 +841,14 @@ function aiMuscleWeight(muscle,sexo){
   return 1;
 }
 
+// Ordena por relevancia (cuántos músculos trabaja, XP) pero mezclando un
+// margen de aleatoriedad real — así dos rutinas con los mismos parámetros
+// no salen siempre con los mismos ejercicios exactos, sin perder criterio
+// (los mejores candidatos siguen teniendo más probabilidad de salir elegidos).
+const smartSort=(pool)=>[...pool]
+  .map(e=>({...e,__score:e.muscle.length*12+e.xpBase*0.4+Math.random()*30}))
+  .sort((a,b)=>b.__score-a.__score);
+
 function generateAIRoutine({objetivo,dias,sexo,nivel,equipo=[]}){
   const conf=AI_OBJETIVO_CONF[objetivo]||AI_OBJETIVO_CONF.hipertrofia;
   const allowedLevels=AI_NIVEL_ALLOWED[nivel]||AI_NIVEL_ALLOWED.Intermedio;
@@ -857,7 +865,7 @@ function generateAIRoutine({objetivo,dias,sexo,nivel,equipo=[]}){
         const pool=aiGapPool(focusKey,allowedLevels).filter(equipOk);
         let fresh=pool.filter(e=>!used.has(e.id));
         if(fresh.length<conf.exPerDay) fresh=pool;
-        const sorted=[...fresh].sort((a,b)=>(b.muscle.length-a.muscle.length)||(b.xpBase-a.xpBase));
+        const sorted=smartSort(fresh);
         const picked=sorted.slice(0,conf.exPerDay);
         picked.forEach(ex=>used.add(ex.id));
         const exercises=picked.map((ex,pi)=>({
@@ -901,7 +909,7 @@ function generateAIRoutine({objetivo,dias,sexo,nivel,equipo=[]}){
       if(pool.length===0) pool=EXERCISE_DB.filter(e=>e.muscle.includes(m)&&allowedLevels.includes(e.level)); // último recurso: sin filtro de equipo si no hay nada
       let fresh=pool.filter(e=>!used.has(e.id));
       if(fresh.length<slots[i]) fresh=pool;
-      const sorted=[...fresh].sort((a,b)=>(b.muscle.length-a.muscle.length)||(b.xpBase-a.xpBase));
+      const sorted=smartSort(fresh);
       const picked=sorted.slice(0,slots[i]);
       picked.forEach(ex=>used.add(ex.id));
       picked.forEach((ex,pi)=>{
@@ -1287,7 +1295,7 @@ const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:
 const CSS=`
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Cinzel:wght@700;900&display=swap');
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  body{margin:0;background:#07070F;overscroll-behavior:none}
+  body{margin:0;background:#07070F;overscroll-behavior-y:contain}
   ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:#2A2A44;border-radius:4px}
   input::-webkit-inner-spin-button{-webkit-appearance:none}
   @keyframes xpFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-65px) scale(1.4)}}
@@ -5772,7 +5780,6 @@ function RankUpApp({user,onLogout}){
                 })()}
               </>
             ):(
-              routines.length>0?(
                 <RoutinesOnlyTab
                   routines={routines}
                   checked={checked}
@@ -5792,13 +5799,6 @@ function RankUpApp({user,onLogout}){
                   sessionKg={sessionKg}
                   onShowGif={showGif}
                 />
-              ):(
-              <div style={{textAlign:"center",padding:"80px 20px",color:"#333"}}>
-                <div style={{fontSize:52,marginBottom:16}}>⚔️</div>
-                <div style={{fontSize:18,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Sin programa asignado</div>
-                <div style={{fontSize:13,color:"#333",lineHeight:1.7}}>Tu entrenador aún no te ha asignado un programa.<br/>Pronto tendrás tus misiones esperándote.</div>
-              </div>
-              )
             )
           )}
           {tab==="cuerpo"&&<CuerpoTab mxp={mxp} sex={userSex} measurements={measurements} onLogMeasurement={logMeasurement} onDeleteMeasurement={deleteMeasurement}/>}
@@ -5970,6 +5970,13 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
             <button onClick={applyAIRoutine} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 GENERAR Y AÑADIR</button>
             <button onClick={()=>setShowAIGen(false)} style={{width:"100%",padding:11,marginTop:8,background:"none",border:"none",color:"#555",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Cancelar</button>
           </div>
+        </div>
+      )}
+      {routines.length===0&&(
+        <div style={{textAlign:"center",padding:"60px 20px",color:"#333"}}>
+          <div style={{fontSize:44,marginBottom:14}}>⚔️</div>
+          <div style={{fontSize:16,fontWeight:700,color:"#444",fontFamily:"'Cinzel',serif",marginBottom:8}}>Todavía no tienes ninguna rutina</div>
+          <div style={{fontSize:12,color:"#333",lineHeight:1.7}}>Tu entrenador puede asignarte una, o puedes generar la tuya propia con el botón 🔮 GENERAR de arriba.</div>
         </div>
       )}
       {(()=>{
