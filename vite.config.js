@@ -1,18 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-
 export default defineConfig({
   plugins: [react()],
   root: '.',
-  build: {
-    outDir: 'dist',
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          'firebase-vendor': ['firebase/app', 'firebase/database', 'firebase/auth'],
-        },
-      },
-    },
+  build: { outDir: 'dist', minify: 'terser' },
+  esbuild: {
+    loader: 'jsx',
+    include: /.*\.jsx?$/,
   },
-  optimizeDeps: { include: ['firebase/app', 'firebase/database'] },
+  optimizeDeps: {
+    include: ['firebase/app', 'firebase/database']
+  }
 })
