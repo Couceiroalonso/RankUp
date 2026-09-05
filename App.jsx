@@ -1505,10 +1505,9 @@ function HomeEventKickoffPopup({onClose}){
   );
 }
 
-function HomeEventPopup({dayIndex,onClose,onCheckExercise,onCompleteSession,alreadyDone,checkedEx,onShowGif}){
+function HomeEventPopup({dayIndex,onClose,onComplete,alreadyDone,onShowGif}){
   const day=HOME_EVENT_ROUTINES[dayIndex];
   const isLast=dayIndex===HOME_EVENT_ROUTINES.length-1;
-  const allChecked=alreadyDone||day.exercises.every((_,i)=>checkedEx.has(i));
   return(
     <div style={{position:"fixed",inset:0,zIndex:9997,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
       background:"radial-gradient(ellipse at center,#0a2313 0%,#000000 80%)"}}>
@@ -1525,16 +1524,12 @@ function HomeEventPopup({dayIndex,onClose,onCheckExercise,onCompleteSession,alre
         <div style={{padding:"14px 24px",overflowY:"auto"}}>
           <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:10}}>RUTINA DE HOY — SIN MATERIAL</div>
           {day.exercises.map((ex,i)=>{
-            const done=alreadyDone||checkedEx.has(i);
             const gifPath=exerciseGif(ex.name);
             return(
               <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 0",borderTop:i>0?"1px solid #1A1A2E":"none"}}>
-                <button onClick={()=>!alreadyDone&&!done&&onCheckExercise(i,ex.xp)} disabled={alreadyDone||done}
-                  style={{width:24,height:24,borderRadius:7,border:`2px solid ${done?"#34D399":"#2A2A44"}`,background:done?"#34D399":"transparent",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,color:"#07070F",fontWeight:900,flexShrink:0,cursor:alreadyDone?"default":"pointer"}}>
-                  {done?"✓":""}
-                </button>
+                <div style={{width:22,height:22,borderRadius:6,border:"1px solid #34D39966",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#34D399",fontWeight:700,flexShrink:0}}>{i+1}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12,color:done?"#666":"#DDD",fontFamily:"'Rajdhani',sans-serif",textDecoration:done?"line-through":"none"}}>{ex.name}</div>
+                  <div style={{fontSize:12,color:"#DDD",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
                   <div style={{fontSize:10,color:"#555"}}>{ex.reps}</div>
                 </div>
                 {gifPath&&<button onClick={()=>onShowGif(ex.name)} title="Ver ejemplo" style={{background:"none",border:"1px solid #2A2A44",borderRadius:20,color:"#A78BFA",cursor:"pointer",fontSize:9,padding:"3px 8px",fontWeight:700,flexShrink:0}}>▶️</button>}
@@ -1544,12 +1539,10 @@ function HomeEventPopup({dayIndex,onClose,onCheckExercise,onCompleteSession,alre
           })}
           {alreadyDone?(
             <div style={{marginTop:16,padding:12,background:"#34D39918",border:"1px solid #34D39944",borderRadius:10,textAlign:"center",color:"#34D399",fontSize:12,fontWeight:700}}>✅ Sesión completada — monedas ya cobradas</div>
-          ):allChecked?(
-            <button onClick={onCompleteSession} style={{width:"100%",marginTop:16,padding:13,background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-              🏁 CERRAR SESIÓN (+{HOME_EVENT_COIN_BONUS}🪙)
-            </button>
           ):(
-            <div style={{marginTop:16,padding:11,textAlign:"center",color:"#444",fontSize:11}}>Marca cada ejercicio al completarlo</div>
+            <button onClick={onComplete} style={{width:"100%",marginTop:16,padding:13,background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+              🏁 YA LA HE HECHO (+{HOME_EVENT_COIN_BONUS}🪙)
+            </button>
           )}
           <button onClick={onClose} style={{width:"100%",padding:11,marginTop:8,background:"none",border:"none",color:"#555",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isLast?"Cerrar":"La haré más tarde"}</button>
         </div>
@@ -4792,7 +4785,6 @@ function RankUpApp({user,onLogout}){
   const [showHomeEventPopup,setShowHomeEventPopup]=useState(false);
   const [showHomeEventKickoff,setShowHomeEventKickoff]=useState(false);
   const [homeEventKickoffSeen,setHomeEventKickoffSeen]=useState(saved.homeEventKickoffSeen||false);
-  const [checkedHomeEventEx,setCheckedHomeEventEx]=useState(new Set()); // marcas de HOY, no se guardan entre sesiones
   const todayStr=()=>new Date().toISOString().slice(0,10);
   useEffect(()=>{
     fbGet("homeEventStatus").then(s=>{
@@ -4806,15 +4798,12 @@ function RankUpApp({user,onLogout}){
     }).catch(()=>{});
   },[]);
   const homeEventDoneToday=homeEventCompletions.includes(todayStr());
-  const checkHomeEventExercise=useCallback((i,xp)=>{
-    setCheckedHomeEventEx(p=>new Set(p).add(i));
-    addXp(xp,null,`🏠 +${xp} XP`);
-  },[addXp]);
   const completeHomeEvent=useCallback(()=>{
     if(homeEventDoneToday) return;
     setHomeEventCompletions(p=>[...p,todayStr()]);
-    addCoins(HOME_EVENT_COIN_BONUS,"🏠 Sesión de casa completada");
-  },[homeEventDoneToday,addCoins]);
+    addXp(60,null,"🏠 Rutina de casa completada");
+    addCoins(HOME_EVENT_COIN_BONUS,"🏠 Constancia en casa");
+  },[homeEventDoneToday,addXp,addCoins]);
 
   const [lootToast,setLootToast]=useState(null);
   const [lootStats,setLootStats]=useState(saved.lootStats||{total:0,rarities:[],types:[]});
@@ -5852,7 +5841,7 @@ function RankUpApp({user,onLogout}){
       {craftToast&&<CraftToast name={craftToast.name} slot={craftToast.slot} icon={craftToast.icon} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
       {gifModal&&<GifModal name={gifModal.name} path={gifModal.path} onClose={()=>setGifModal(null)}/>}
       {showHomeEventKickoff&&<HomeEventKickoffPopup onClose={()=>{setShowHomeEventKickoff(false);setHomeEventKickoffSeen(true);}}/>}
-      {!showHomeEventKickoff&&showHomeEventPopup&&homeEventDayIndex!==null&&<HomeEventPopup dayIndex={homeEventDayIndex} alreadyDone={homeEventDoneToday} checkedEx={checkedHomeEventEx} onCheckExercise={checkHomeEventExercise} onShowGif={showGif} onClose={()=>setShowHomeEventPopup(false)} onCompleteSession={()=>{completeHomeEvent();setShowHomeEventPopup(false);}}/>}
+      {!showHomeEventKickoff&&showHomeEventPopup&&homeEventDayIndex!==null&&<HomeEventPopup dayIndex={homeEventDayIndex} alreadyDone={homeEventDoneToday} onShowGif={showGif} onClose={()=>setShowHomeEventPopup(false)} onComplete={()=>{completeHomeEvent();setShowHomeEventPopup(false);}}/>}
       {privateChat&&<PrivateChatModal withUser={privateChat} messages={privateMessages} myEmail={user.email} onSend={sendPrivateMessage} onClose={()=>setPrivateChat(null)}/>}
 
       {/* Profile drawer */}
