@@ -1371,7 +1371,7 @@ function GifModal({name,path,onClose}){
   // el plan gratuito) — se sirven directamente desde GitHub en su lugar.
   const url=`https://raw.githubusercontent.com/Couceiroalonso/RankUp/main/public/Exercices/${path.split("/").map(encodeURIComponent).join("/")}`;
   return(
-    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:10001,background:"rgba(0,0,0,.92)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+    <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:10001,background:"rgba(0,0,0,.92)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
       <div onClick={e=>e.stopPropagation()} style={{maxWidth:420,width:"100%",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:16,overflow:"hidden"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"12px 16px",borderBottom:"1px solid #1E1E32"}}>
           <div style={{fontSize:12,fontWeight:700,color:"#EEE",fontFamily:"'Rajdhani',sans-serif"}}>{name}</div>
@@ -1403,7 +1403,7 @@ function CraftToast({name,slot,icon,tier,onDone}){
 // ─── SEASON 1 POPUP ──────────────────────────────────────────────────────────
 function Season1Popup({onClose}){
   return(
-    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20,
       background:"radial-gradient(ellipse at center,#1a0010 0%,#000000 80%)"}}>
       <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #E84A5F",boxShadow:"0 0 80px #E84A5F44",overflow:"hidden"}}>
@@ -1447,7 +1447,7 @@ function Season1Popup({onClose}){
 
 function LootUpdatePopup({onClose}){
   return(
-    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20,
       background:"radial-gradient(ellipse at center,#1a0033 0%,#000000 80%)"}}>
       <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0718 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
@@ -1490,7 +1490,7 @@ function LootUpdatePopup({onClose}){
 // Igual de autocontenido que HomeEventPopup — solo depende de sus props.
 function HomeEventAnnouncePopup({onClose}){
   return(
-    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20,
       background:"radial-gradient(ellipse at center,#001a10 0%,#000000 80%)"}}>
       <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#05180F 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #34D399",boxShadow:"0 0 80px #34D39944",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
@@ -1539,7 +1539,7 @@ function HomeEventPopup({dayData,totalDays,checkedExercises,onToggleExercise,onS
   const checked=checkedExercises||{};
   const allDone=dayData.exercises.every((_,i)=>checked[i]);
   return(
-    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20,
       background:"radial-gradient(ellipse at center,#001a10 0%,#000000 80%)"}}>
       <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#05180F 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #34D399",boxShadow:"0 0 80px #34D39944",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
@@ -1570,7 +1570,7 @@ function HomeEventPopup({dayData,totalDays,checkedExercises,onToggleExercise,onS
             return(
               <div key={i} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 4px",borderBottom:i<dayData.exercises.length-1?"1px solid #1A2A22":"none"}}>
                 <button onClick={()=>onToggleExercise(i)}
-                  style={{flexShrink:0,width:26,height:26,borderRadius:8,border:done?"none":"2px solid #2A4A3A",background:done?"#34D399":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0}}>
+                  style={{flexShrink:0,width:26,height:26,borderRadius:8,border:done?"none":"2px solid #2A4A3A",background:done?"#34D399":"transparent",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:0}}>
                   {done&&<span style={{color:"#07070F",fontSize:14,fontWeight:900}}>✓</span>}
                 </button>
                 <div style={{flex:1,minWidth:0}}>
@@ -1579,7 +1579,7 @@ function HomeEventPopup({dayData,totalDays,checkedExercises,onToggleExercise,onS
                 </div>
                 {gifPath&&(
                   <button onClick={()=>onShowGif(ex.name)}
-                    style={{flexShrink:0,width:26,height:26,borderRadius:8,background:"#60A5FA1E",border:"1px solid #60A5FA44",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,fontSize:12}}>
+                    style={{flexShrink:0,width:26,height:26,borderRadius:8,background:"#60A5FA1E",border:"1px solid #60A5FA44",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:0,fontSize:12}}>
                     🎬
                   </button>
                 )}
@@ -1628,7 +1628,7 @@ function GuildRaidModal({raid,userEmail,onContribute,onClose}){
   const activePhase=raid.phases.findIndex((ph,i)=>(raid.progress[i]||0)<ph.total);
 
   return(
-    <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"12px",
+    <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:"12px",
       background:"radial-gradient(ellipse at center,#1a0010 0%,#000000 85%)"}}>
       <div style={{width:"100%",maxWidth:400,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
         borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F44",maxHeight:"90vh",overflowY:"auto"}}>
@@ -1744,7 +1744,7 @@ function GuildRaidCompleteCard({raid,onClose}){
     setSharing(false);
   };
   return(
-    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
       <div style={{width:"100%",maxWidth:360}}>
         <div ref={cardRef} style={{background:"linear-gradient(160deg,#1a0010 0%,#07070F 100%)",
           borderRadius:20,border:"2px solid #E84A5F",boxShadow:"0 0 60px #E84A5F88",padding:"28px 24px",textAlign:"center"}}>
@@ -1793,7 +1793,7 @@ function Season1End({activeGuildRaid,onClose}){
   const defeated=appeared.filter(id=>id===activeGuildRaid?.id&&activeGuildRaid?.defeated).length;
   const escaped=appeared.length-defeated;
   return(
-    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20,
       background:"radial-gradient(ellipse at center,#0a0010 0%,#000000 80%)"}}>
       <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
         borderRadius:24,border:"2px solid #A78BFA",boxShadow:"0 0 80px #A78BFA44",padding:"32px 24px",textAlign:"center"}}>
@@ -1870,8 +1870,8 @@ function LevelUpModal({level,onClose}){
     setSharing(false);
   };
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}>
-      <div style={{width:"100%",maxWidth:320,padding:"0 20px"}}>
+    <div style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}>
+      <div style={{width:"100%",maxWidth:320,padding:"20px"}}>
         {/* Card */}
         <div ref={cardRef} style={{background:`linear-gradient(160deg,${ri.color}22 0%,#0A0A12 50%,#07070F 100%)`,border:`2px solid ${ri.color}`,borderRadius:20,padding:"36px 32px",textAlign:"center",boxShadow:`0 0 80px ${ri.color}88`,animation:"lvlPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}>
           <div style={{fontSize:9,letterSpacing:5,color:`${ri.color}88`,marginBottom:14,fontFamily:"'Rajdhani',sans-serif"}}>━━ SISTEMA RANKUP ━━</div>
@@ -1903,7 +1903,7 @@ function LevelUpModal({level,onClose}){
   );
 }
 function RedeemModal({reward,coins,onClose}){
-  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)"}}><div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"#888",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
+  return <div onClick={onClose} style={{position:"fixed",inset:0,zIndex:9998,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",background:"rgba(0,0,0,.92)",backdropFilter:"blur(10px)",padding:20}}><div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #F59E0B",borderRadius:20,padding:"40px 36px",textAlign:"center",maxWidth:300,width:"90%",boxShadow:"0 0 80px #F59E0B88",animation:"coinPop .5s cubic-bezier(.34,1.56,.64,1) forwards",margin:"auto"}}><div style={{fontSize:56,marginBottom:10}}>{reward.icon}</div><div style={{fontSize:10,letterSpacing:5,color:"#F59E0B",marginBottom:8}}>RECOMPENSA CANJEADA</div><div style={{fontSize:20,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>{reward.name}</div><div style={{fontSize:12,color:"#888",lineHeight:1.5,marginBottom:16}}>{reward.desc}</div><div style={{fontSize:14,color:"#F59E0B",fontWeight:700,marginBottom:24}}>−{reward.cost} 🪙 · Saldo: {coins} 🪙</div><button onClick={onClose} style={{width:"100%",padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>¡A DISFRUTARLO!</button></div></div>;
 }
 
 // ─── LOGIN SCREEN ─────────────────────────────────────────────────────────────
@@ -3590,7 +3590,7 @@ const getAdminRoutines=()=>{
 
         {/* Confirm delete modal */}
         {confirmDel&&(
-          <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
             <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
               <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Eliminar usuario?</div>
@@ -3605,7 +3605,7 @@ const getAdminRoutines=()=>{
 
         {/* Confirm reset progress modal */}
         {confirmReset&&(
-          <div onClick={()=>setConfirmReset(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+          <div onClick={()=>setConfirmReset(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
             <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
               <div style={{fontSize:36,marginBottom:12}}>⚠️</div>
               <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Reiniciar progreso?</div>
@@ -4295,7 +4295,7 @@ const getAdminRoutines=()=>{
 
       {/* Season restart choice modal */}
       {confirmSeasonStart&&(
-        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:24}}>
           <div style={{background:"#0D0D1A",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
             <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:14}}>⚔️ REACTIVAR TEMPORADA 1</div>
             <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde cero (ningún Señor Oscuro habrá aparecido todavía) o que continúe justo donde se quedó cuando la pausaste?</div>
@@ -4308,7 +4308,7 @@ const getAdminRoutines=()=>{
 
       {/* Confirmar reactivación de Plan Casa: desde cero vs continuar */}
       {confirmHomeEventStart&&(
-        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:24}}>
           <div style={{background:"#0D0D1A",border:"1px solid #34D39944",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
             <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:14}}>🏕️ ACTIVAR PLAN CASA</div>
             <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde el Día 1 (reiniciando también el progreso ya marcado de todos los usuarios — útil para reutilizarlo el año que viene) o que continúe justo en el día donde se quedó al pausarlo?</div>
@@ -4321,7 +4321,7 @@ const getAdminRoutines=()=>{
 
       {/* Restore backup confirmation modal */}
       {pendingRestore&&(
-        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:24}}>
           <div style={{background:"#0D0D1A",border:"1px solid #E84A5F44",borderRadius:16,padding:24,width:"100%",maxWidth:420}}>
             <div style={{fontSize:9,color:"#E84A5F",letterSpacing:3,marginBottom:10}}>⚠️ RESTAURAR COPIA DE SEGURIDAD</div>
             <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:8}}>Archivo: <b style={{color:"#FFF"}}>{pendingRestore.filename}</b></div>
@@ -4384,7 +4384,7 @@ function ClassSelectModal({current,onSelect}){
   };
 
   return(
-    <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.92)",backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:20}}>
+    <div style={{position:"fixed",inset:0,zIndex:9995,background:"rgba(0,0,0,.92)",backdropFilter:"blur(8px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
       <div style={{fontSize:9,letterSpacing:6,color:"#444",marginBottom:6}}>ELIGE TU CLASE</div>
       <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:4,textAlign:"center"}}>¿Cuál es tu objetivo?</div>
       <div style={{fontSize:11,color:"#555",marginBottom:16,textAlign:"center"}}>
@@ -5813,7 +5813,7 @@ function RankUpApp({user,onLogout}){
 
       {/* ── RAID DEFEATED MODAL ── */}
       {raidDefeated&&(
-        <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+        <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20,
           background:"radial-gradient(ellipse at center,#1a0000 0%,#000000 80%)"}}
           onClick={()=>setRaidDefeated(null)}>
           <div style={{width:"100%",maxWidth:340,textAlign:"center"}}>
@@ -5849,7 +5849,7 @@ function RankUpApp({user,onLogout}){
         const comp=getWeightComparison(kg);
 
         return(
-          <div style={{position:"fixed",inset:0,zIndex:9999,background:"#03020A",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24,overflow:"hidden"}}>
+          <div style={{position:"fixed",inset:0,zIndex:9999,background:"#03020A",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:24,overflow:"hidden"}}>
             {/* Animated background */}
             <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 0%,#A78BFA22 0%,transparent 70%)",pointerEvents:"none"}}/>
             <div style={{position:"absolute",inset:0,background:"radial-gradient(ellipse at 50% 100%,#F59E0B11 0%,transparent 70%)",pointerEvents:"none"}}/>
@@ -7115,7 +7115,7 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
   const dashOffset=circumference*(1-pct);
 
   return(
-    <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:"16px",
+    <div style={{position:"fixed",inset:0,zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:"16px",
       background:"radial-gradient(ellipse at center, #1a000a 0%, #000000 70%)"}}>
       {/* Animated background particles */}
       <div style={{position:"absolute",inset:0,overflow:"hidden",pointerEvents:"none"}}>
@@ -7131,12 +7131,12 @@ function RaidModal({raid,startTime,progress=0,onContribute,onComplete,onDismiss,
         ))}
       </div>
 
-      <div style={{width:"100%",maxWidth:380,position:"relative"}}>
+      <div style={{width:"100%",maxWidth:380,position:"relative",margin:"auto 0"}}>
         {/* Glow border card */}
         <div style={{background:"linear-gradient(180deg,#0D0007 0%,#07070F 100%)",
           borderRadius:24,border:`1px solid ${c}88`,
           boxShadow:`0 0 60px ${c}44, inset 0 0 40px ${c}08`,
-          overflow:"hidden"}}>
+          maxHeight:"90vh",overflowY:"auto"}}>
 
           {/* TOP BANNER */}
           <div style={{background:`linear-gradient(135deg,${c}44 0%,${c}11 60%,transparent 100%)`,
@@ -7286,7 +7286,7 @@ function RaidCompleteCard({raid,onClose}){
     setSharing(false);
   };
   return(
-    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}>
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:300,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
       <div style={{width:"100%",maxWidth:340}}>
         {/* Card */}
         <div ref={cardRef} style={{background:`linear-gradient(160deg,${c}22 0%,#0A0007 50%,#07070F 100%)`,
@@ -7344,7 +7344,7 @@ function PRCard({exName,kg,prevMax,xp,rank,onClose}){
   };
 
   return(
-    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",padding:20}}
+    <div style={{position:"fixed",inset:0,background:"#000000EE",zIndex:400,display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}
       onClick={onClose}>
       <div onClick={e=>e.stopPropagation()} style={{width:"100%",maxWidth:340,position:"relative"}}>
         {/* Card — captured by html2canvas */}
