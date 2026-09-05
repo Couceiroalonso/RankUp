@@ -6,16 +6,13 @@ export default defineConfig({
   root: '.',
   build: {
     outDir: 'dist',
-    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
           'firebase-vendor': ['firebase/app', 'firebase/database', 'firebase/auth'],
         },
       },
     },
   },
-  esbuild: { loader: 'jsx', include: /.*\.jsx?$/ },
   optimizeDeps: { include: ['firebase/app', 'firebase/database'] },
 })
