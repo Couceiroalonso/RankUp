@@ -54,7 +54,6 @@ const mergeUserData = (local, remote) => {
         seen.add(m.date); return true;
       }).sort((a,b)=>a.date-b.date);
     })(),
-    homeEventCompletions: [...new Set([...(remote.homeEventCompletions||[]),...(local.homeEventCompletions||[])])],
     inventory: (()=>{
       const keys=new Set([...Object.keys(remote.inventory||{}),...Object.keys(local.inventory||{})]);
       const out={};
@@ -937,59 +936,6 @@ function generateAIRoutine({objetivo,dias,sexo,nivel,equipo=[]}){
 }
 
 // ─── GUILD RAID DATABASE — TEMPORADA I ──────────────────────────────────────
-// ─── EVENTO "GIMNASIO CERRADO" ────────────────────────────────────────────────
-// 15 días con una rutina de casa distinta cada uno (sin material o con banda
-// elástica como mucho, 4-5 ejercicios), para cuando el gimnasio cierra por
-// vacaciones/reformas y no queremos que se pare el ritmo de entrenamiento.
-const HOME_EVENT_ROUTINES = [
-  {title:"Full Body Básico", rounds:2, exercises:[
-    {name:"Air squat", reps:"15 reps", xp:14},{name:"Flexiones", reps:"12 reps", xp:14},{name:"Plancha", reps:"30s", xp:14},{name:"Jumping Jack", reps:"20 reps", xp:14},
-  ]},
-  {title:"Glúteo y Pierna", rounds:2, exercises:[
-    {name:"Frogpumps", reps:"15 reps", xp:14},{name:"Patada de burro", reps:"12 reps c/lado", xp:14},{name:"Air squat", reps:"15 reps", xp:14},{name:"Boca de incendios", reps:"12 reps c/lado", xp:14},
-  ]},
-  {title:"Cardio HIIT", rounds:3, exercises:[
-    {name:"Burpee", reps:"10 reps", xp:28},{name:"Jumping Jack", reps:"20 reps", xp:14},{name:"Saltos de Patinador", reps:"20 reps", xp:28},{name:"Paso del oso", reps:"30s", xp:14},
-  ]},
-  {title:"Pecho y Tríceps", rounds:2, exercises:[
-    {name:"Flexiones", reps:"12 reps", xp:14},{name:"Flexiones diamante", reps:"10 reps", xp:14},{name:"Fondos en banco", reps:"12 reps", xp:14},{name:"Plancha", reps:"30s", xp:14},
-  ]},
-  {title:"Core Completo", rounds:2, exercises:[
-    {name:"Crunch Frog", reps:"15 reps", xp:14},{name:"Crunch Lateral Horizontal Alterno", reps:"15 reps c/lado", xp:28},{name:"bird-dog", reps:"10 reps c/lado", xp:14},{name:"Plancha oso", reps:"30s", xp:14},
-  ]},
-  {title:"Espalda y Core", rounds:2, exercises:[
-    {name:"Dominadas", reps:"8 reps", xp:14},{name:"Buenos días", reps:"12 reps", xp:14},{name:"bird-dog", reps:"10 reps c/lado", xp:14},{name:"Crunch Superior Concentrado Elevado", reps:"15 reps", xp:14},
-  ]},
-  {title:"Full Body con Salto", rounds:3, exercises:[
-    {name:"Burpee Jack", reps:"10 reps", xp:28},{name:"Air squat", reps:"15 reps", xp:14},{name:"Flexiones", reps:"12 reps", xp:14},{name:"Jumping Jack", reps:"20 reps", xp:14},
-  ]},
-  {title:"Pierna Avanzada", rounds:2, exercises:[
-    {name:"Pistol squat", reps:"6 reps c/pierna", xp:28},{name:"Sentadilla en Punta", reps:"15 reps", xp:14},{name:"Frogpumps", reps:"15 reps", xp:14},{name:"Air squat", reps:"15 reps", xp:14},
-  ]},
-  {title:"Pecho Variado", rounds:2, exercises:[
-    {name:"Flexiones inclinadas", reps:"12 reps", xp:14},{name:"Flexiones declinadas", reps:"10 reps", xp:14},{name:"Fondos entre bancos", reps:"12 reps", xp:14},{name:"Plancha", reps:"30s", xp:14},
-  ]},
-  {title:"Glúteo con Banda", rounds:2, exercises:[
-    {name:"Abducción de cadera sentado con banda", reps:"15 reps c/lado", xp:16},{name:"Caminata con banda", reps:"20 pasos", xp:16},{name:"Extensión de cadera arrodillado con banda", reps:"12 reps c/lado", xp:16},{name:"Patada de burro", reps:"12 reps c/lado", xp:14},
-  ]},
-  {title:"Cardio + Core", rounds:3, exercises:[
-    {name:"Burpee", reps:"10 reps", xp:28},{name:"Bicicleta", reps:"20 reps c/lado", xp:14},{name:"Crunch Inferior con Rodillas Flexionadas", reps:"15 reps", xp:14},{name:"Paso del oso", reps:"30s", xp:14},
-  ]},
-  {title:"Full Body Intermedio", rounds:2, exercises:[
-    {name:"Sentadilla Goblet", reps:"15 reps", xp:14},{name:"Flexiones diamante", reps:"10 reps", xp:14},{name:"Dominadas", reps:"8 reps", xp:14},{name:"Plancha", reps:"30s", xp:14},
-  ]},
-  {title:"Pierna y Glúteo Total", rounds:2, exercises:[
-    {name:"Air squat", reps:"15 reps", xp:14},{name:"Hip Thrust unilateral", reps:"12 reps c/pierna", xp:28},{name:"Patada de burro", reps:"12 reps c/lado", xp:14},{name:"Sentadilla Sissy", reps:"10 reps", xp:14},
-  ]},
-  {title:"Espalda y Movilidad", rounds:2, exercises:[
-    {name:"Dominadas", reps:"8 reps", xp:14},{name:"Hiperextensiones Inclinadas", reps:"12 reps", xp:14},{name:"bird-dog", reps:"10 reps c/lado", xp:14},{name:"Buenos días", reps:"12 reps", xp:14},
-  ]},
-  {title:"🏆 Gran Final", rounds:3, exercises:[
-    {name:"Burpee", reps:"10 reps", xp:28},{name:"Air squat", reps:"15 reps", xp:14},{name:"Flexiones", reps:"12 reps", xp:14},{name:"Plancha", reps:"30s", xp:14},{name:"Jumping Jack", reps:"20 reps", xp:14},
-  ]},
-];
-const HOME_EVENT_COIN_BONUS = 25;
-
 const GUILD_RAID_DURATION = 48 * 3600000; // 48h in ms
 const GUILD_RAID_CHANCE = 0.15; // 15% trigger chance
 const SEASON1_START_DATE = new Date("2026-07-01T00:00:00").getTime(); // Temporada I launch gate
@@ -1343,7 +1289,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],homeEventCompletions:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1474,82 +1420,6 @@ function Season1Popup({onClose}){
   );
 }
 
-function HomeEventKickoffPopup({onClose}){
-  return(
-    <div style={{position:"fixed",inset:0,zIndex:9997,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
-      background:"radial-gradient(ellipse at center,#0a2313 0%,#000000 85%)"}}>
-      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D1A0F 0%,#07070F 100%)",
-        borderRadius:24,border:"2px solid #34D399",boxShadow:"0 0 90px #34D39955",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
-        <div style={{background:"linear-gradient(135deg,#34D39933,transparent)",padding:"30px 26px 20px",textAlign:"center"}}>
-          <div style={{fontSize:9,letterSpacing:5,color:"#34D39988",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ AVISO DEL GREMIO ━━</div>
-          <div style={{fontSize:34,marginBottom:10}}>🏕️</div>
-          <div style={{fontSize:24,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.25,marginBottom:14,textShadow:"0 0 24px #34D39988"}}>
-            LA MAZMORRA<br/>SELLA SUS PUERTAS
-          </div>
-          <div style={{fontSize:12,color:"#999",fontStyle:"italic",lineHeight:1.8,fontFamily:"'Rajdhani',sans-serif",padding:"0 6px"}}>
-            "Durante 15 días, el Santuario de Hierro permanecerá cerrado. Pero ningún cazador digno de tu rango se rinde por ello — la caza continúa fuera de sus muros. El bosque, tu propio cuerpo y tu voluntad son ahora tu arsenal."
-          </div>
-        </div>
-        <div style={{padding:"16px 26px 10px",overflowY:"auto"}}>
-          <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:10,textAlign:"center"}}>DURANTE LOS PRÓXIMOS 15 DÍAS</div>
-          <div style={{fontSize:12,color:"#888",lineHeight:1.8,fontFamily:"'Rajdhani',sans-serif",marginBottom:6}}>
-            ⚔️ Cada día, un nuevo desafío te espera — una rutina de campo distinta, sin material o con lo mínimo.<br/><br/>
-            🏆 Aguanta los 15 días y llegarás al Gran Final — ni las puertas cerradas detienen a un verdadero cazador.
-          </div>
-          <button onClick={onClose} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:12,color:"#07070F",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,boxShadow:"0 0 20px #34D39955",marginTop:8,marginBottom:20}}>
-            ⚔️ ACEPTO EL DESAFÍO
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HomeEventPopup({dayIndex,onClose,onComplete,alreadyDone,onShowGif}){
-  const day=HOME_EVENT_ROUTINES[dayIndex];
-  const isLast=dayIndex===HOME_EVENT_ROUTINES.length-1;
-  return(
-    <div style={{position:"fixed",inset:0,zIndex:9997,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
-      background:"radial-gradient(ellipse at center,#0a2313 0%,#000000 80%)"}}>
-      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#0D1A0F 0%,#07070F 100%)",
-        borderRadius:24,border:"2px solid #34D399",boxShadow:"0 0 80px #34D39944",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
-        <div style={{background:"linear-gradient(135deg,#34D39933,transparent)",padding:"24px 24px 16px",textAlign:"center"}}>
-          <div style={{fontSize:9,letterSpacing:4,color:"#34D39988",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🏠 GIMNASIO CERRADO · DÍA {dayIndex+1}/{HOME_EVENT_ROUTINES.length}</div>
-          <div style={{fontSize:13,color:"#888",fontStyle:"italic",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>
-            "El gym para RankUp no. Sigue ganando experiencia."
-          </div>
-          <div style={{fontSize:20,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif"}}>{day.title}</div>
-          <div style={{fontSize:11,color:"#34D399",fontWeight:700,marginTop:6,fontFamily:"'Rajdhani',sans-serif"}}>🔁 {day.rounds} RONDAS</div>
-        </div>
-        <div style={{padding:"14px 24px",overflowY:"auto"}}>
-          <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:10}}>RUTINA DE HOY — SIN MATERIAL</div>
-          {day.exercises.map((ex,i)=>{
-            const gifPath=exerciseGif(ex.name);
-            return(
-              <div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 0",borderTop:i>0?"1px solid #1A1A2E":"none"}}>
-                <div style={{width:22,height:22,borderRadius:6,border:"1px solid #34D39966",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#34D399",fontWeight:700,flexShrink:0}}>{i+1}</div>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:12,color:"#DDD",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</div>
-                  <div style={{fontSize:10,color:"#555"}}>{ex.reps}</div>
-                </div>
-                {gifPath&&<button onClick={()=>onShowGif(ex.name)} title="Ver ejemplo" style={{background:"none",border:"1px solid #2A2A44",borderRadius:20,color:"#A78BFA",cursor:"pointer",fontSize:9,padding:"3px 8px",fontWeight:700,flexShrink:0}}>▶️</button>}
-                <div style={{fontSize:10,color:"#555",flexShrink:0}}>+{ex.xp}</div>
-              </div>
-            );
-          })}
-          {alreadyDone?(
-            <div style={{marginTop:16,padding:12,background:"#34D39918",border:"1px solid #34D39944",borderRadius:10,textAlign:"center",color:"#34D399",fontSize:12,fontWeight:700}}>✅ Sesión completada — monedas ya cobradas</div>
-          ):(
-            <button onClick={onComplete} style={{width:"100%",marginTop:16,padding:13,background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-              🏁 YA LA HE HECHO (+{HOME_EVENT_COIN_BONUS}🪙)
-            </button>
-          )}
-          <button onClick={onClose} style={{width:"100%",padding:11,marginTop:8,background:"none",border:"none",color:"#555",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>{isLast?"Cerrar":"La haré más tarde"}</button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function LootUpdatePopup({onClose}){
   return(
@@ -1984,7 +1854,7 @@ function LoginScreen({onLogin}){
       return err("No se pudo verificar tu cuenta (problema de conexión). Vuelve a intentarlo — no se ha tocado ningún dato.");
     }
     const hasExisting=existingData&&Object.keys(existingData).length>0;
-    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],homeEventCompletions:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
+    const initData=hasExisting?existingData:{totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null};
     // Save locally first (instant), then Firebase in background
     localStorage.setItem("rku_users", JSON.stringify(users));
     localStorage.setItem(`rku_data_${key}`, JSON.stringify(initData));
@@ -2751,26 +2621,6 @@ function AdminPanel({onLogout}){
   const toggleSeason=()=>{
     if(seasonActive) pauseSeason();
     else setConfirmSeasonStart(true);
-  };
-
-  const [homeEventActive,setHomeEventActive]=useState(false);
-  const [homeEventLoaded,setHomeEventLoaded]=useState(false);
-  useEffect(()=>{
-    fbGet("homeEventStatus").then(s=>{
-      setHomeEventActive(!!s?.active);
-      setHomeEventLoaded(true);
-    }).catch(()=>setHomeEventLoaded(true));
-  },[]);
-  const toggleHomeEvent=async()=>{
-    if(homeEventActive){
-      await fbSet("homeEventStatus",{active:false}).catch(()=>{});
-      setHomeEventActive(false);
-      flash("⏸️ Evento Gimnasio Cerrado desactivado");
-    } else {
-      await fbSet("homeEventStatus",{active:true,startDate:Date.now()}).catch(()=>{});
-      setHomeEventActive(true);
-      flash("🏠 Evento Gimnasio Cerrado activado — arranca el Día 1 para todos hoy mismo");
-    }
   };
 
   const [allUsers,setAllUsers]=useState(getUsers());
@@ -3646,7 +3496,6 @@ const getAdminRoutines=()=>{
         </div>
         <div style={{display:"flex",gap:8}}>
           {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
-          {homeEventLoaded&&<button onClick={toggleHomeEvent} style={{background:homeEventActive?"#34D39922":"#1A1A2E",border:`1px solid ${homeEventActive?"#34D39944":"#2A2A44"}`,borderRadius:8,color:homeEventActive?"#34D399":"#666",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{homeEventActive?"🏠 GIMNASIO CERRADO: ON":"🏠 GIMNASIO CERRADO: OFF"}</button>}
           <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
           <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
           <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
@@ -4779,32 +4628,6 @@ function RankUpApp({user,onLogout}){
     if(path) setGifModal({name:exName,path});
   },[]);
 
-  // ── Evento Gimnasio Cerrado ──────────────────────────────────────────────
-  const [homeEventCompletions,setHomeEventCompletions]=useState(saved.homeEventCompletions||[]);
-  const [homeEventDayIndex,setHomeEventDayIndex]=useState(null); // null = evento no activo hoy
-  const [showHomeEventPopup,setShowHomeEventPopup]=useState(false);
-  const [showHomeEventKickoff,setShowHomeEventKickoff]=useState(false);
-  const [homeEventKickoffSeen,setHomeEventKickoffSeen]=useState(saved.homeEventKickoffSeen||false);
-  const todayStr=()=>new Date().toISOString().slice(0,10);
-  useEffect(()=>{
-    fbGet("homeEventStatus").then(s=>{
-      if(!s?.active||!s.startDate) return;
-      const idx=Math.floor((Date.now()-s.startDate)/86400000);
-      if(idx>=0&&idx<HOME_EVENT_ROUTINES.length){
-        setHomeEventDayIndex(idx);
-        setShowHomeEventPopup(true);
-        if(!saved.homeEventKickoffSeen) setShowHomeEventKickoff(true);
-      }
-    }).catch(()=>{});
-  },[]);
-  const homeEventDoneToday=homeEventCompletions.includes(todayStr());
-  const completeHomeEvent=useCallback(()=>{
-    if(homeEventDoneToday) return;
-    setHomeEventCompletions(p=>[...p,todayStr()]);
-    addXp(60,null,"🏠 Rutina de casa completada");
-    addCoins(HOME_EVENT_COIN_BONUS,"🏠 Constancia en casa");
-  },[homeEventDoneToday,addXp,addCoins]);
-
   const [lootToast,setLootToast]=useState(null);
   const [lootStats,setLootStats]=useState(saved.lootStats||{total:0,rarities:[],types:[]});
   const [craftStats,setCraftStats]=useState(saved.craftStats||{total:0,slots:[],tiers:[],maestroSlots:[]});
@@ -4898,8 +4721,6 @@ function RankUpApp({user,onLogout}){
       if(freshRoutineHistory.length>0) setRoutineHistory(freshRoutineHistory);
       const freshMeasurements=fresh.measurements||[];
       if(freshMeasurements.length>0) setMeasurements(freshMeasurements);
-      const freshHomeEventCompletions=fresh.homeEventCompletions||[];
-      if(freshHomeEventCompletions.length>0) setHomeEventCompletions(freshHomeEventCompletions);
       const freshInventory=fresh.inventory||{};
       if(Object.keys(freshInventory).length>0) setInventory(freshInventory);
       const freshEquipment=fresh.equipment||{};
@@ -5115,7 +4936,6 @@ function RankUpApp({user,onLogout}){
         seen.add(m.date); return true;
       }).sort((a,b)=>a.date-b.date);
     })();
-    const safeHomeEventCompletions=[...new Set([...(base.homeEventCompletions||[]),...homeEventCompletions])];
     const safeInventory=(()=>{
       const keys=new Set([...Object.keys(base.inventory||{}),...Object.keys(inventory)]);
       const out={};
@@ -5141,7 +4961,6 @@ function RankUpApp({user,onLogout}){
       sessionKg: safeSessionKg,
       routineHistory: safeRoutineHistory,
       measurements: safeMeasurements,
-      homeEventCompletions: safeHomeEventCompletions,
       inventory: safeInventory,
       equipment: safeEquipment,
       equipped,
@@ -5160,10 +4979,9 @@ function RankUpApp({user,onLogout}){
       exHistory,
       exOverrides,
       season1Seen:"T1",
-      lootUpdateSeen:true,
-      homeEventKickoffSeen
+      lootUpdateSeen:true
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,homeEventCompletions,homeEventKickoffSeen,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5840,8 +5658,6 @@ function RankUpApp({user,onLogout}){
       {lootToast&&<LootToast item={lootToast} onDone={()=>setLootToast(null)}/>}
       {craftToast&&<CraftToast name={craftToast.name} slot={craftToast.slot} icon={craftToast.icon} tier={craftToast.tier} onDone={()=>setCraftToast(null)}/>}
       {gifModal&&<GifModal name={gifModal.name} path={gifModal.path} onClose={()=>setGifModal(null)}/>}
-      {showHomeEventKickoff&&<HomeEventKickoffPopup onClose={()=>{setShowHomeEventKickoff(false);setHomeEventKickoffSeen(true);}}/>}
-      {!showHomeEventKickoff&&showHomeEventPopup&&homeEventDayIndex!==null&&<HomeEventPopup dayIndex={homeEventDayIndex} alreadyDone={homeEventDoneToday} onShowGif={showGif} onClose={()=>setShowHomeEventPopup(false)} onComplete={()=>{completeHomeEvent();setShowHomeEventPopup(false);}}/>}
       {privateChat&&<PrivateChatModal withUser={privateChat} messages={privateMessages} myEmail={user.email} onSend={sendPrivateMessage} onClose={()=>setPrivateChat(null)}/>}
 
       {/* Profile drawer */}
