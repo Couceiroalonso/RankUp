@@ -1274,6 +1274,29 @@ const PHASES = [
  ]}
 ];
 
+// ─── EVENTO "PLAN CASA" (gimnasio cerrado) ─────────────────────────────────────
+// Datos puros, sin llamadas a otras funciones — evita cualquier referencia
+// cruzada a nivel de módulo. 15 rutinas HIIT de casa, formato: ejercicio + reps + rondas.
+const HOME_EVENT_XP=70;
+const HOME_EVENT_COINS=25;
+const HOME_EVENT_ROUTINES=[
+ {day:1,title:"Día 1 — Full Body I",rounds:3,rest:"45s entre rondas",exercises:[{name:"Sentadillas",reps:"15"},{name:"Flexiones",reps:"10"},{name:"Plancha",reps:"30s"},{name:"Zancadas alternas",reps:"12/pierna"}]},
+ {day:2,title:"Día 2 — Cardio HIIT",rounds:4,rest:"30s entre rondas",exercises:[{name:"Jumping Jacks",reps:"30s"},{name:"Mountain Climbers",reps:"20"},{name:"Burpees",reps:"8"},{name:"Skipping en el sitio",reps:"30s"}]},
+ {day:3,title:"Día 3 — Piernas y Glúteo",rounds:3,rest:"45s entre rondas",exercises:[{name:"Sentadilla sumo",reps:"15"},{name:"Puente de glúteo",reps:"20"},{name:"Zancada estática",reps:"12/pierna"},{name:"Elevación de talones",reps:"20"}]},
+ {day:4,title:"Día 4 — Core",rounds:3,rest:"30s entre rondas",exercises:[{name:"Plancha",reps:"40s"},{name:"Abdominales bicicleta",reps:"20"},{name:"Elevación de piernas",reps:"15"},{name:"Plancha lateral",reps:"20s/lado"}]},
+ {day:5,title:"Día 5 — Full Body II",rounds:3,rest:"45s entre rondas",exercises:[{name:"Flexiones",reps:"12"},{name:"Sentadilla salto",reps:"12"},{name:"Remo con mochila/peso",reps:"15"},{name:"Plancha",reps:"35s"}]},
+ {day:6,title:"Día 6 — Cardio ligero",rounds:3,rest:"30s entre rondas",exercises:[{name:"Jumping Jacks",reps:"40s"},{name:"Escaladores",reps:"25"},{name:"Sentadillas",reps:"20"}]},
+ {day:7,title:"Día 7 — Descanso activo",rounds:2,rest:"—",exercises:[{name:"Estiramientos guiados",reps:"10min"},{name:"Plancha suave",reps:"20s"},{name:"Paseo o cardio suave",reps:"15min"}]},
+ {day:8,title:"Día 8 — Empuje casero",rounds:4,rest:"45s entre rondas",exercises:[{name:"Flexiones",reps:"10"},{name:"Fondos en silla",reps:"10"},{name:"Press pike (flexión pike)",reps:"8"}]},
+ {day:9,title:"Día 9 — Tirón casero",rounds:4,rest:"45s entre rondas",exercises:[{name:"Remo con mochila/peso",reps:"15"},{name:"Superman",reps:"15"},{name:"Curl de bíceps con peso casero",reps:"15"}]},
+ {day:10,title:"Día 10 — HIIT intenso",rounds:4,rest:"30s entre rondas",exercises:[{name:"Burpees",reps:"10"},{name:"Sentadilla salto",reps:"15"},{name:"Mountain Climbers",reps:"25"},{name:"Plancha",reps:"40s"}]},
+ {day:11,title:"Día 11 — Piernas II",rounds:4,rest:"45s entre rondas",exercises:[{name:"Sentadillas",reps:"20"},{name:"Zancada caminando",reps:"12/pierna"},{name:"Puente de glúteo a una pierna",reps:"12/lado"}]},
+ {day:12,title:"Día 12 — Core avanzado",rounds:3,rest:"30s entre rondas",exercises:[{name:"Plancha",reps:"45s"},{name:"Abdominales bicicleta",reps:"25"},{name:"V-ups",reps:"12"},{name:"Plancha lateral",reps:"25s/lado"}]},
+ {day:13,title:"Día 13 — Full Body III",rounds:4,rest:"40s entre rondas",exercises:[{name:"Flexiones",reps:"12"},{name:"Sentadilla sumo",reps:"18"},{name:"Remo con mochila/peso",reps:"15"},{name:"Burpees",reps:"8"}]},
+ {day:14,title:"Día 14 — Cardio final",rounds:4,rest:"30s entre rondas",exercises:[{name:"Jumping Jacks",reps:"45s"},{name:"Escaladores",reps:"30"},{name:"Sentadilla salto",reps:"15"}]},
+ {day:15,title:"Día 15 — Cierre del reto",rounds:3,rest:"30s entre rondas",exercises:[{name:"Plancha",reps:"50s"},{name:"Flexiones",reps:"15"},{name:"Sentadillas",reps:"25"},{name:"Burpees",reps:"12"}]}
+];
+
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 const exKey=(phId,di,ei)=>`p${phId}_d${di}_e${ei}`;
 const getRank=lvl=>RANKS.find(r=>lvl>=r.minLevel&&lvl<=r.maxLevel)||RANKS[RANKS.length-1];
@@ -1289,7 +1312,7 @@ const ADMIN_EMAIL="admin@rankup.fit";
 const getSession=()=>{try{return JSON.parse(localStorage.getItem("rku_session")||"null");}catch{return null;}};
 const setSession=email=>localStorage.setItem("rku_session",JSON.stringify({email,ts:Date.now()}));
 const clearSession=()=>localStorage.removeItem("rku_session");
-const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null});
+const defaultData=()=>({totalXp:0,coins:0,checked:{},weights:{},personalRecords:{},earnedAchs:[],redeemedRewards:[],dungeonCoins:{},sessionKg:{},routineHistory:[],measurements:[],inventory:{},equipment:{},equipped:{},lootStats:{total:0,rarities:[],types:[]},craftStats:{total:0,slots:[],tiers:[],maestroSlots:[]},customRoutines:[],playerClass:null,assignedDiets:[],assignedProgram:null,homeEventCompletions:{}});
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 const CSS=`
@@ -1455,6 +1478,56 @@ function LootUpdatePopup({onClose}){
               color:"#FFF",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:3,
               boxShadow:"0 0 20px #A78BFA55",marginTop:10,marginBottom:20}}>
             🎒 EMPEZAR A CAZAR
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── EVENTO PLAN CASA (POPUP DIARIO) ───────────────────────────────────────────
+// Componente autocontenido: solo depende de sus props, nunca lee variables de
+// módulo directamente en el render, para minimizar cualquier riesgo de orden
+// de inicialización en el bundle de producción.
+function HomeEventPopup({dayData,alreadyDone,onComplete,onClose}){
+  if(!dayData) return null;
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at center,#1a1400 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#180F05 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #F59E0B",boxShadow:"0 0 80px #F59E0B44",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+        <div style={{background:"linear-gradient(135deg,#F59E0B33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#F59E0B88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ GIMNASIO CERRADO ━━</div>
+          <div style={{fontSize:11,letterSpacing:4,color:"#F59E0B",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🏠 PLAN CASA</div>
+          <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6,textShadow:"0 0 20px #F59E0B88"}}>
+            {dayData.title}
+          </div>
+          <div style={{fontSize:12,color:"#888",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif"}}>
+            {dayData.rounds} rondas · {dayData.rest}
+          </div>
+        </div>
+        <div style={{padding:"16px 24px 8px",overflowY:"auto"}}>
+          {dayData.exercises.map((ex,i)=>(
+            <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#0F0A03",border:"1px solid #F59E0B22",borderRadius:10,marginBottom:8}}>
+              <span style={{fontSize:13,color:"#E8E6FF",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{ex.name}</span>
+              <span style={{fontSize:12,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.reps}</span>
+            </div>
+          ))}
+          {alreadyDone?(
+            <div style={{textAlign:"center",color:"#34D399",fontSize:13,fontWeight:700,padding:"10px 0",fontFamily:"'Rajdhani',sans-serif"}}>✅ Ya completado hoy</div>
+          ):(
+            <button onClick={onComplete}
+              style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:12,
+                color:"#07070F",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
+                boxShadow:"0 0 20px #F59E0B55",marginTop:6}}>
+              ✅ MARCAR COMO HECHO (+{HOME_EVENT_XP} XP · +{HOME_EVENT_COINS} 🪙)
+            </button>
+          )}
+          <button onClick={onClose}
+            style={{width:"100%",padding:"12px",background:"transparent",border:"1px solid #F59E0B33",borderRadius:12,
+              color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
+              marginTop:8,marginBottom:20}}>
+            CERRAR
           </button>
         </div>
       </div>
@@ -2585,6 +2658,8 @@ function AdminPanel({onLogout}){
   const [showNewPw,setShowNewPw]=useState(false);
   const [seasonActive,setSeasonActiveState]=useState(true);
   const [seasonLoaded,setSeasonLoaded]=useState(false);
+  const [homeEventActive,setHomeEventActiveState]=useState(false);
+  const [homeEventLoaded,setHomeEventLoaded]=useState(false);
 
   useEffect(()=>{
     fbGet("guildRaidStatus").then(s=>{
@@ -2592,6 +2667,21 @@ function AdminPanel({onLogout}){
       setSeasonLoaded(true);
     }).catch(()=>setSeasonLoaded(true));
   },[]);
+
+  useEffect(()=>{
+    fbGet("homeEventStatus").then(s=>{
+      setHomeEventActiveState(!!(s&&s.active));
+      setHomeEventLoaded(true);
+    }).catch(()=>setHomeEventLoaded(true));
+  },[]);
+
+  const toggleHomeEvent=async()=>{
+    const next=!homeEventActive;
+    const status=next?{active:true,startDate:Date.now()}:{active:false};
+    await fbSet("homeEventStatus",status).catch(()=>{});
+    setHomeEventActiveState(next);
+    flash(next?"🏠 Plan Casa activado — el popup diario empezará a aparecer":"⏸️ Plan Casa desactivado");
+  };
 
   const [confirmSeasonStart,setConfirmSeasonStart]=useState(false);
 
@@ -3496,6 +3586,7 @@ const getAdminRoutines=()=>{
         </div>
         <div style={{display:"flex",gap:8}}>
           {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
+          {homeEventLoaded&&<button onClick={toggleHomeEvent} style={{background:homeEventActive?"#F59E0B22":"#666622",border:`1px solid ${homeEventActive?"#F59E0B44":"#66666644"}`,borderRadius:8,color:homeEventActive?"#F59E0B":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{homeEventActive?"🏠 PLAN CASA ACTIVO":"🏠 PLAN CASA OFF"}</button>}
           <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
           <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
           <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
@@ -4675,6 +4766,10 @@ function RankUpApp({user,onLogout}){
   const [guildRaidComplete,setGuildRaidComplete]=useState(null);
   const [season1Popup,setSeason1Popup]=useState(false);
   const [lootUpdatePopup,setLootUpdatePopup]=useState(false);
+  const [homeEventActive,setHomeEventActive]=useState(false);
+  const [homeEventDayIndex,setHomeEventDayIndex]=useState(0);
+  const [homeEventCompletions,setHomeEventCompletions]=useState(saved.homeEventCompletions||{});
+  const [homeEventPopup,setHomeEventPopup]=useState(false);
   const [season1End,setSeason1End]=useState(false); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
   const [raidComplete,setRaidComplete]=useState(null);
@@ -4840,6 +4935,17 @@ function RankUpApp({user,onLogout}){
         // Check guild raid trigger — only while the season is active
         if(isSeasonActive) setTimeout(()=>checkGuildRaidTrigger(gr),3000);
       }).catch(()=>{});
+      // Evento "Plan Casa" (gimnasio cerrado) — carga independiente, no bloquea nada más
+      const freshHomeEventCompletions=fresh.homeEventCompletions||{};
+      if(Object.keys(freshHomeEventCompletions).length>0) setHomeEventCompletions(freshHomeEventCompletions);
+      fbGet("homeEventStatus").then(hs=>{
+        if(!hs||!hs.active) return;
+        const start=hs.startDate||Date.now();
+        const dayIdx=Math.min(14,Math.max(0,Math.floor((Date.now()-start)/86400000)));
+        setHomeEventActive(true);
+        setHomeEventDayIndex(dayIdx);
+        if(!freshHomeEventCompletions[dayIdx]) setTimeout(()=>setHomeEventPopup(true),1200);
+      }).catch(()=>{});
       // Check raid on app open
       setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
       // Load messages from Firebase
@@ -4979,9 +5085,10 @@ function RankUpApp({user,onLogout}){
       exHistory,
       exOverrides,
       season1Seen:"T1",
-      lootUpdateSeen:true
+      lootUpdateSeen:true,
+      homeEventCompletions
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides,homeEventCompletions]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5030,6 +5137,13 @@ function RankUpApp({user,onLogout}){
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
+
+  const completeHomeEventDay=useCallback(()=>{
+    setHomeEventCompletions(p=>({...p,[homeEventDayIndex]:true}));
+    addXp(HOME_EVENT_XP);
+    addCoins(HOME_EVENT_COINS,"🏠 Entrenamiento en casa completado");
+    setHomeEventPopup(false);
+  },[homeEventDayIndex,addXp,addCoins]);
 
   const triggerRaidCheck=useCallback((currentRaid)=>{
     // If there's an active Guild Raid, skip individual raids entirely
@@ -5526,6 +5640,10 @@ function RankUpApp({user,onLogout}){
       {season1Popup&&<Season1Popup onClose={()=>setSeason1Popup(false)}/>}
       {lootUpdatePopup&&<LootUpdatePopup onClose={()=>setLootUpdatePopup(false)}/>}
 
+      {/* ── PLAN CASA (GIMNASIO CERRADO) ── */}
+      {homeEventPopup&&homeEventActive&&
+        <HomeEventPopup dayData={HOME_EVENT_ROUTINES[homeEventDayIndex%HOME_EVENT_ROUTINES.length]} alreadyDone={!!homeEventCompletions[homeEventDayIndex]} onComplete={completeHomeEventDay} onClose={()=>setHomeEventPopup(false)}/>}
+
       {/* ── SEASON 1 END ── */}
       {season1End&&<Season1End activeGuildRaid={activeGuildRaid} onClose={()=>setSeason1End(false)}/>}
 
@@ -5714,6 +5832,12 @@ function RankUpApp({user,onLogout}){
             <div style={{fontSize:20,fontWeight:700,color:ri.color,fontFamily:"'Rajdhani',sans-serif",lineHeight:1}}>{totalXp.toLocaleString()} XP</div>
             <div style={{fontSize:10,color:"#555"}}>{level>=MAX_LEVEL?"¡NIVEL MÁXIMO!":`${xpInLvl}/${xpNext} → lv.${level+1}`}</div>
             <div style={{display:"flex",gap:6}}>
+              {homeEventActive&&(
+                <button onClick={()=>setHomeEventPopup(true)}
+                  style={{fontSize:11,fontWeight:700,color:"#F59E0B",background:"#F59E0B18",border:"2px solid #F59E0B",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",display:"flex",alignItems:"center",gap:4}}>
+                  <span>🏠</span><span>{homeEventCompletions[homeEventDayIndex]?"HECHO HOY":"PLAN CASA"}</span>
+                </button>
+              )}
               {seasonActive&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
                 <button onClick={()=>setGuildRaidModal(true)}
                   style={{fontSize:11,fontWeight:700,color:"#E84A5F",background:"#E84A5F18",border:"2px solid #E84A5F",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",animation:"bossGlow 1s ease-in-out infinite",display:"flex",alignItems:"center",gap:4}}>
