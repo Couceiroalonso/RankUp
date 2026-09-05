@@ -4,12 +4,17 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   root: '.',
-  build: { outDir: 'dist' },
-  esbuild: {
-    loader: 'jsx',
-    include: /.*\.jsx?$/,
+  build: {
+    outDir: 'dist',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom'],
+          'firebase-vendor': ['firebase/app', 'firebase/database', 'firebase/auth'],
+        },
+      },
+    },
   },
-  optimizeDeps: {
-    include: ['firebase/app', 'firebase/database']
-  }
+  esbuild: { loader: 'jsx', include: /.*\.jsx?$/ },
+  optimizeDeps: { include: ['firebase/app', 'firebase/database'] },
 })
