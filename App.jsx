@@ -2660,34 +2660,59 @@ function AdminPanel({onLogout}){
   const [seasonLoaded,setSeasonLoaded]=useState(false);
   const [homeEventActive,setHomeEventActiveState]=useState(false);
   const [homeEventLoaded,setHomeEventLoaded]=useState(false);
+  const [confirmHomeEventStart,setConfirmHomeEventStart]=useState(false);
 
   useEffect(()=>{
     fbGet("guildRaidStatus").then(s=>{
       setSeasonActiveState(s?.seasonActive!==false);
       setSeasonLoaded(true);
-    }).catch(()=>setSeasonLoaded(true));
-  },[]);
-
-  useEffect(()=>{
-    fbGet("homeEventStatus").then(s=>{
-      setHomeEventActiveState(!!(s&&s.active));
+      setHomeEventActiveState(!!(s&&s.homeEvent&&s.homeEvent.active));
       setHomeEventLoaded(true);
-    }).catch(()=>setHomeEventLoaded(true));
+    }).catch(()=>{setSeasonLoaded(true);setHomeEventLoaded(true);});
   },[]);
 
-  const toggleHomeEvent=async()=>{
-    const next=!homeEventActive;
-    // Pausar/reanudar NUNCA reinicia el contador de días — solo cambia el
-    // flag "active". El startDate solo se fija la primera vez que se activa,
-    // así apagar y volver a encender no hace perder progreso ni reinicia
-    // el día del reto para los usuarios.
-    const current=await fbGet("homeEventStatus").catch(()=>null)||{};
-    const status=next
-      ? {...current,active:true,startDate:current.startDate||Date.now()}
-      : {...current,active:false};
-    await fbSet("homeEventStatus",status).catch(()=>{});
-    setHomeEventActiveState(next);
-    flash(next?"🏠 Plan Casa activado — continúa donde se quedó, sin perder días":"⏸️ Plan Casa pausado — el progreso y el día actual se conservan");
+  const toggleHomeEvent=()=>{
+    if(homeEventActive) pauseHomeEvent();
+    else setConfirmHomeEventStart(true);
+  };
+
+  const pauseHomeEvent=async()=>{
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
+    const prevHomeEvent=grStatus.homeEvent||{};
+    await fbSet("guildRaidStatus",{...grStatus,homeEvent:{...prevHomeEvent,active:false}}).catch(()=>{});
+    setHomeEventActiveState(false);
+    flash("⏸️ Plan Casa pausado — el progreso y el día actual se conservan");
+  };
+
+  const resumeHomeEvent=async()=>{
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
+    const prevHomeEvent=grStatus.homeEvent||{};
+    await fbSet("guildRaidStatus",{...grStatus,homeEvent:{...prevHomeEvent,active:true,startDate:prevHomeEvent.startDate||Date.now()}}).catch(()=>{});
+    setHomeEventActiveState(true);
+    setConfirmHomeEventStart(false);
+    flash("🏠 Plan Casa reactivado, continuando donde se quedó");
+  };
+
+  const startHomeEventFresh=async()=>{
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
+    await fbSet("guildRaidStatus",{...grStatus,homeEvent:{active:true,startDate:Date.now()}}).catch(()=>{});
+    setHomeEventActiveState(true);
+    setConfirmHomeEventStart(false);
+    flash("🏠 Plan Casa reactivado desde cero — reiniciando el progreso de todos los usuarios...");
+    // Reinicia el progreso diario de TODOS los usuarios para que el reto
+    // vuelva a empezar en el Día 1 para todo el mundo (p.ej. para reutilizar
+    // el evento el año que viene sin arrastrar los días ya marcados).
+    const emails=Object.keys(getUsers());
+    let cleared=0;
+    for(const email of emails){
+      const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
+      const data=await fbGet(`userData/${key}`).catch(()=>null);
+      if(data&&data.homeEventCompletions&&Object.keys(data.homeEventCompletions).length>0){
+        await saveUserData(email,{...data,homeEventCompletions:{}});
+        cleared++;
+      }
+    }
+    flash(`🏠 Plan Casa reiniciado desde cero — progreso limpiado en ${cleared} usuario${cleared===1?"":"s"}`);
   };
 
   const [confirmSeasonStart,setConfirmSeasonStart]=useState(false);
@@ -2701,7 +2726,10 @@ function AdminPanel({onLogout}){
 
   const startSeasonFresh=async()=>{
     await fbSet("guildRaid",null).catch(()=>{});
-    await fbSet("guildRaidStatus",{seasonActive:true,appeared:[]}).catch(()=>{});
+    const grStatus=await fbGet("guildRaidStatus").catch(()=>({}))||{};
+    // Conservamos cualquier otro campo ajeno a la temporada de raids (p.ej.
+    // homeEvent) para que reiniciar la Temporada 1 no borre el evento Plan Casa.
+    await fbSet("guildRaidStatus",{...grStatus,seasonActive:true,appeared:[]}).catch(()=>{});
     setSeasonActiveState(true);
     setConfirmSeasonStart(false);
     flash("⚔️ Temporada 1 reactivada desde cero — ningún Señor Oscuro ha aparecido aún");
@@ -4207,6 +4235,19 @@ const getAdminRoutines=()=>{
         </div>
       )}
 
+      {/* Confirmar reactivación de Plan Casa: desde cero vs continuar */}
+      {confirmHomeEventStart&&(
+        <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+          <div style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
+            <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:14}}>🏠 ACTIVAR PLAN CASA</div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde el Día 1 (reiniciando también el progreso ya marcado de todos los usuarios — útil para reutilizarlo el año que viene) o que continúe justo en el día donde se quedó al pausarlo?</div>
+            <button onClick={startHomeEventFresh} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>🔄 EMPEZAR DE CERO (DÍA 1)</button>
+            <button onClick={resumeHomeEvent} style={{width:"100%",padding:13,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>▶️ CONTINUAR DONDE ESTABA</button>
+            <button onClick={()=>setConfirmHomeEventStart(false)} style={{width:"100%",padding:11,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+          </div>
+        </div>
+      )}
+
       {/* Restore backup confirmation modal */}
       {pendingRestore&&(
         <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
@@ -4932,6 +4973,8 @@ function RankUpApp({user,onLogout}){
       }
       if(fresh.activeRaid) setActiveRaid(fresh.activeRaid);
       // Load global guild raid from Firebase
+      const freshHomeEventCompletions=fresh.homeEventCompletions||{};
+      if(Object.keys(freshHomeEventCompletions).length>0) setHomeEventCompletions(freshHomeEventCompletions);
       Promise.all([fbGet("guildRaid"),fbGet("guildRaidStatus")]).then(([gr,grStatus])=>{
         if(gr) setActiveGuildRaid(gr);
         const isSeasonActive=grStatus?.seasonActive!==false; // default true if never set
@@ -4941,17 +4984,16 @@ function RankUpApp({user,onLogout}){
         if(!fresh.lootUpdateSeen) setLootUpdatePopup(true);
         // Check guild raid trigger — only while the season is active
         if(isSeasonActive) setTimeout(()=>checkGuildRaidTrigger(gr),3000);
-      }).catch(()=>{});
-      // Evento "Plan Casa" (gimnasio cerrado) — carga independiente, no bloquea nada más
-      const freshHomeEventCompletions=fresh.homeEventCompletions||{};
-      if(Object.keys(freshHomeEventCompletions).length>0) setHomeEventCompletions(freshHomeEventCompletions);
-      fbGet("homeEventStatus").then(hs=>{
-        if(!hs||!hs.active) return;
-        const start=hs.startDate||Date.now();
-        const dayIdx=Math.min(14,Math.max(0,Math.floor((Date.now()-start)/86400000)));
-        setHomeEventActive(true);
-        setHomeEventDayIndex(dayIdx);
-        if(!freshHomeEventCompletions[dayIdx]) setTimeout(()=>setHomeEventPopup(true),1200);
+        // Evento "Plan Casa" (gimnasio cerrado) — vive dentro de guildRaidStatus
+        // porque esa ruta ya tiene permisos de escritura en Firebase.
+        const he=grStatus?.homeEvent;
+        if(he&&he.active){
+          const start=he.startDate||Date.now();
+          const dayIdx=Math.min(14,Math.max(0,Math.floor((Date.now()-start)/86400000)));
+          setHomeEventActive(true);
+          setHomeEventDayIndex(dayIdx);
+          if(!freshHomeEventCompletions[dayIdx]) setTimeout(()=>setHomeEventPopup(true),1200);
+        }
       }).catch(()=>{});
       // Check raid on app open
       setTimeout(()=>triggerRaidCheck(fresh.activeRaid||null),2000);
@@ -5262,7 +5304,9 @@ function RankUpApp({user,onLogout}){
         progress:[0,0,0], // current reps per phase
       };
       await fbSet("guildRaid",newGR).catch(()=>{});
-      await fbSet("guildRaidStatus",{appeared:[...appeared,dl.id]}).catch(()=>{});
+      // Conservamos el resto de campos de guildRaidStatus (seasonActive,
+      // homeEvent...) — antes esta escritura los borraba sin querer.
+      await fbSet("guildRaidStatus",{...grStatus,appeared:[...appeared,dl.id]}).catch(()=>{});
       setActiveGuildRaid(newGR);
       setTimeout(()=>setGuildRaidModal(true),800);
     }
