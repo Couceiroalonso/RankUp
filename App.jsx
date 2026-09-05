@@ -1485,6 +1485,50 @@ function LootUpdatePopup({onClose}){
   );
 }
 
+// ─── EVENTO PLAN CASA (AVISO DE BIENVENIDA, UNA SOLA VEZ) ──────────────────────
+// Igual de autocontenido que HomeEventPopup — solo depende de sus props.
+function HomeEventAnnouncePopup({onClose}){
+  return(
+    <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
+      background:"radial-gradient(ellipse at center,#001a10 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#05180F 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #34D399",boxShadow:"0 0 80px #34D39944",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+        <div style={{background:"linear-gradient(135deg,#34D39933,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#34D39988",marginBottom:14,fontFamily:"'Rajdhani',sans-serif"}}>━━ AVISO DEL GREMIO ━━</div>
+          <div style={{fontSize:36,marginBottom:10,filter:"drop-shadow(0 0 8px #34D39966)"}}>🏕️</div>
+          <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.25,marginBottom:14,textShadow:"0 0 20px #34D39988"}}>
+            LA MAZMORRA<br/>SELLA SUS PUERTAS
+          </div>
+          <div style={{fontSize:12,color:"#888",fontStyle:"italic",lineHeight:1.7,fontFamily:"'Rajdhani',sans-serif",padding:"0 4px"}}>
+            "Durante 15 días, el Santuario de Hierro permanecerá cerrado. Pero ningún cazador digno de tu rango se rinde por ello — la caza continúa fuera de sus muros. El bosque, tu propio cuerpo y tu voluntad son ahora tu arsenal."
+          </div>
+        </div>
+        <div style={{padding:"16px 24px 8px",overflowY:"auto"}}>
+          <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:12,textAlign:"center",fontFamily:"'Rajdhani',sans-serif"}}>DURANTE LOS PRÓXIMOS 15 DÍAS</div>
+          <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:14,display:"flex",gap:10}}>
+            <span style={{fontSize:16,flexShrink:0}}>⚔️</span>
+            <span>Cada día, un nuevo desafío te espera — una rutina de campo distinta, sin material o con lo mínimo.</span>
+          </div>
+          <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:14,display:"flex",gap:10}}>
+            <span style={{fontSize:16,flexShrink:0}}>💎</span>
+            <span>Cada ejercicio completado da su propia XP. Al terminar la sesión entera, te llevas además monedas extra.</span>
+          </div>
+          <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif",marginBottom:18,display:"flex",gap:10}}>
+            <span style={{fontSize:16,flexShrink:0}}>🏆</span>
+            <span>Aguanta los 15 días y llegarás al Gran Final — ni las puertas cerradas detienen a un verdadero cazador.</span>
+          </div>
+          <button onClick={onClose}
+            style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:12,
+              color:"#07070F",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
+              boxShadow:"0 0 20px #34D39955",marginBottom:20}}>
+            ⚔️ ACEPTO EL DESAFÍO
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── EVENTO PLAN CASA (POPUP DIARIO) ───────────────────────────────────────────
 // Componente autocontenido: solo depende de sus props, nunca lee variables de
 // módulo directamente en el render, para minimizar cualquier riesgo de orden
@@ -1493,13 +1537,13 @@ function HomeEventPopup({dayData,alreadyDone,onComplete,onClose}){
   if(!dayData) return null;
   return(
     <div style={{position:"fixed",inset:0,zIndex:500,display:"flex",alignItems:"center",justifyContent:"center",padding:20,
-      background:"radial-gradient(ellipse at center,#1a1400 0%,#000000 80%)"}}>
-      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#180F05 0%,#07070F 100%)",
-        borderRadius:24,border:"2px solid #F59E0B",boxShadow:"0 0 80px #F59E0B44",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
-        <div style={{background:"linear-gradient(135deg,#F59E0B33,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
-          <div style={{fontSize:9,letterSpacing:5,color:"#F59E0B88",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ GIMNASIO CERRADO ━━</div>
-          <div style={{fontSize:11,letterSpacing:4,color:"#F59E0B",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🏠 PLAN CASA</div>
-          <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6,textShadow:"0 0 20px #F59E0B88"}}>
+      background:"radial-gradient(ellipse at center,#001a10 0%,#000000 80%)"}}>
+      <div style={{width:"100%",maxWidth:380,background:"linear-gradient(180deg,#05180F 0%,#07070F 100%)",
+        borderRadius:24,border:"2px solid #34D399",boxShadow:"0 0 80px #34D39944",overflow:"hidden",maxHeight:"90vh",display:"flex",flexDirection:"column"}}>
+        <div style={{background:"linear-gradient(135deg,#34D39933,transparent)",padding:"28px 24px 20px",textAlign:"center"}}>
+          <div style={{fontSize:9,letterSpacing:5,color:"#34D39988",marginBottom:8,fontFamily:"'Rajdhani',sans-serif"}}>━━ GIMNASIO CERRADO ━━</div>
+          <div style={{fontSize:11,letterSpacing:4,color:"#34D399",marginBottom:6,fontFamily:"'Rajdhani',sans-serif"}}>🏕️ PLAN CASA</div>
+          <div style={{fontSize:22,fontWeight:900,color:"#FFF",fontFamily:"'Cinzel',serif",lineHeight:1.2,marginBottom:6,textShadow:"0 0 20px #34D39988"}}>
             {dayData.title}
           </div>
           <div style={{fontSize:12,color:"#888",lineHeight:1.6,fontFamily:"'Rajdhani',sans-serif"}}>
@@ -1508,24 +1552,24 @@ function HomeEventPopup({dayData,alreadyDone,onComplete,onClose}){
         </div>
         <div style={{padding:"16px 24px 8px",overflowY:"auto"}}>
           {dayData.exercises.map((ex,i)=>(
-            <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#0F0A03",border:"1px solid #F59E0B22",borderRadius:10,marginBottom:8}}>
+            <div key={i} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 12px",background:"#050F0A",border:"1px solid #34D39922",borderRadius:10,marginBottom:8}}>
               <span style={{fontSize:13,color:"#E8E6FF",fontFamily:"'Rajdhani',sans-serif",fontWeight:600}}>{ex.name}</span>
-              <span style={{fontSize:12,color:"#F59E0B",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.reps}</span>
+              <span style={{fontSize:12,color:"#34D399",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.reps}</span>
             </div>
           ))}
           {alreadyDone?(
             <div style={{textAlign:"center",color:"#34D399",fontSize:13,fontWeight:700,padding:"10px 0",fontFamily:"'Rajdhani',sans-serif"}}>✅ Ya completado hoy</div>
           ):(
             <button onClick={onComplete}
-              style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:12,
+              style={{width:"100%",padding:"14px",background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:12,
                 color:"#07070F",fontSize:14,fontWeight:900,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,
-                boxShadow:"0 0 20px #F59E0B55",marginTop:6}}>
+                boxShadow:"0 0 20px #34D39955",marginTop:6}}>
               ✅ MARCAR COMO HECHO (+{HOME_EVENT_XP} XP · +{HOME_EVENT_COINS} 🪙)
             </button>
           )}
           <button onClick={onClose}
-            style={{width:"100%",padding:"12px",background:"transparent",border:"1px solid #F59E0B33",borderRadius:12,
-              color:"#F59E0B",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
+            style={{width:"100%",padding:"12px",background:"transparent",border:"1px solid #34D39933",borderRadius:12,
+              color:"#34D399",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:1,
               marginTop:8,marginBottom:20}}>
             CERRAR
           </button>
@@ -2707,8 +2751,8 @@ function AdminPanel({onLogout}){
     for(const email of emails){
       const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
       const data=await fbGet(`userData/${key}`).catch(()=>null);
-      if(data&&data.homeEventCompletions&&Object.keys(data.homeEventCompletions).length>0){
-        await saveUserData(email,{...data,homeEventCompletions:{}});
+      if(data&&((data.homeEventCompletions&&Object.keys(data.homeEventCompletions).length>0)||data.homeEventAnnounceSeen)){
+        await saveUserData(email,{...data,homeEventCompletions:{},homeEventAnnounceSeen:false});
         cleared++;
       }
     }
@@ -3621,7 +3665,7 @@ const getAdminRoutines=()=>{
         </div>
         <div style={{display:"flex",gap:8}}>
           {seasonLoaded&&<button onClick={toggleSeason} style={{background:seasonActive?"#E84A5F22":"#666622",border:`1px solid ${seasonActive?"#E84A5F44":"#66666644"}`,borderRadius:8,color:seasonActive?"#E84A5F":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{seasonActive?"⚔️ TEMP.1 ACTIVA":"⏸️ TEMP.1 PAUSADA"}</button>}
-          {homeEventLoaded&&<button onClick={toggleHomeEvent} style={{background:homeEventActive?"#F59E0B22":"#666622",border:`1px solid ${homeEventActive?"#F59E0B44":"#66666644"}`,borderRadius:8,color:homeEventActive?"#F59E0B":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{homeEventActive?"🏠 PLAN CASA ACTIVO":"🏠 PLAN CASA OFF"}</button>}
+          {homeEventLoaded&&<button onClick={toggleHomeEvent} style={{background:homeEventActive?"#34D39922":"#666622",border:`1px solid ${homeEventActive?"#34D39944":"#66666644"}`,borderRadius:8,color:homeEventActive?"#34D399":"#999",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>{homeEventActive?"🏕️ PLAN CASA ACTIVO":"🏕️ PLAN CASA OFF"}</button>}
           <button onClick={exportBackup} disabled={exporting} style={{background:"#1A1A2E",border:"1px solid #34D39944",borderRadius:8,color:"#34D399",padding:"8px 14px",cursor:exporting?"wait":"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",opacity:exporting?0.6:1}}>{exporting?"⏳ EXPORTANDO...":"💾 BACKUP"}</button>
           <input ref={restoreInputRef} type="file" accept="application/json" onChange={handleRestoreFile} style={{display:"none"}}/>
           <button onClick={()=>restoreInputRef.current?.click()} style={{background:"#1A1A2E",border:"1px solid #60A5FA44",borderRadius:8,color:"#60A5FA",padding:"8px 14px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif"}}>📂 RESTAURAR</button>
@@ -4238,10 +4282,10 @@ const getAdminRoutines=()=>{
       {/* Confirmar reactivación de Plan Casa: desde cero vs continuar */}
       {confirmHomeEventStart&&(
         <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
-          <div style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
-            <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:14}}>🏠 ACTIVAR PLAN CASA</div>
+          <div style={{background:"#0D0D1A",border:"1px solid #34D39944",borderRadius:16,padding:24,width:"100%",maxWidth:400}}>
+            <div style={{fontSize:9,color:"#34D399",letterSpacing:3,marginBottom:14}}>🏕️ ACTIVAR PLAN CASA</div>
             <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>¿Quieres que empiece desde el Día 1 (reiniciando también el progreso ya marcado de todos los usuarios — útil para reutilizarlo el año que viene) o que continúe justo en el día donde se quedó al pausarlo?</div>
-            <button onClick={startHomeEventFresh} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>🔄 EMPEZAR DE CERO (DÍA 1)</button>
+            <button onClick={startHomeEventFresh} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#34D399,#059669)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>🔄 EMPEZAR DE CERO (DÍA 1)</button>
             <button onClick={resumeHomeEvent} style={{width:"100%",padding:13,background:"#60A5FA22",border:"1px solid #60A5FA44",borderRadius:10,color:"#60A5FA",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>▶️ CONTINUAR DONDE ESTABA</button>
             <button onClick={()=>setConfirmHomeEventStart(false)} style={{width:"100%",padding:11,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
           </div>
@@ -4817,6 +4861,8 @@ function RankUpApp({user,onLogout}){
   const [homeEventActive,setHomeEventActive]=useState(false);
   const [homeEventDayIndex,setHomeEventDayIndex]=useState(0);
   const [homeEventCompletions,setHomeEventCompletions]=useState(saved.homeEventCompletions||{});
+  const [homeEventAnnounceSeen,setHomeEventAnnounceSeen]=useState(!!saved.homeEventAnnounceSeen);
+  const [homeEventAnnouncePopup,setHomeEventAnnouncePopup]=useState(false);
   const [homeEventPopup,setHomeEventPopup]=useState(false);
   const [season1End,setSeason1End]=useState(false); // {raid, startTime, done}
   const [raidModal,setRaidModal]=useState(false);
@@ -4992,7 +5038,13 @@ function RankUpApp({user,onLogout}){
           const dayIdx=Math.min(14,Math.max(0,Math.floor((Date.now()-start)/86400000)));
           setHomeEventActive(true);
           setHomeEventDayIndex(dayIdx);
-          if(!freshHomeEventCompletions[dayIdx]) setTimeout(()=>setHomeEventPopup(true),1200);
+          if(!fresh.homeEventAnnounceSeen){
+            // Primera vez que este usuario ve el evento activo: aviso especial
+            // antes que el popup diario de la rutina.
+            setTimeout(()=>setHomeEventAnnouncePopup(true),1200);
+          } else if(!freshHomeEventCompletions[dayIdx]){
+            setTimeout(()=>setHomeEventPopup(true),1200);
+          }
         }
       }).catch(()=>{});
       // Check raid on app open
@@ -5135,9 +5187,10 @@ function RankUpApp({user,onLogout}){
       exOverrides,
       season1Seen:"T1",
       lootUpdateSeen:true,
-      homeEventCompletions
+      homeEventCompletions,
+      homeEventAnnounceSeen
     });
-  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides,homeEventCompletions]);
+  },[totalXp,coins,checked,weights,pr,earnedAchs,redeemed,dc,sessionKg,routineHistory,measurements,inventory,equipment,equipped,lootStats,craftStats,routines,playerClass,assignedProgram,exNotes,activeRaid,exHistory,exOverrides,homeEventCompletions,homeEventAnnounceSeen]);
   useEffect(()=>{if(level>prevLvl.current){setLvlModal(level);prevLvl.current=level;}},[level]);
   useEffect(()=>{
     if(!dataLoaded.current) return; // wait until Firebase data is loaded
@@ -5186,6 +5239,12 @@ function RankUpApp({user,onLogout}){
   const spawn=useCallback((x,y,t,c)=>{const id=Date.now()+Math.random();setParticles(p=>[...p,{id,x,y,text:t,color:c}]);},[]);
   const addXp=useCallback((amt,evt,label)=>{if(evt){const r=evt.currentTarget?.getBoundingClientRect?.();if(r)spawn(r.left+r.width/2,r.top,label||`+${amt} XP`,ri.color);}setTotalXp(p=>p+amt);},[ri.color,spawn]);
   const addCoins=useCallback((amt,msg)=>{setCoins(p=>p+amt);if(msg)setCoinToast({msg,coins:amt});},[]);
+
+  const closeHomeEventAnnounce=useCallback(()=>{
+    setHomeEventAnnounceSeen(true);
+    setHomeEventAnnouncePopup(false);
+    if(!homeEventCompletions[homeEventDayIndex]) setHomeEventPopup(true);
+  },[homeEventCompletions,homeEventDayIndex]);
 
   const completeHomeEventDay=useCallback(()=>{
     setHomeEventCompletions(p=>({...p,[homeEventDayIndex]:true}));
@@ -5692,6 +5751,7 @@ function RankUpApp({user,onLogout}){
       {lootUpdatePopup&&<LootUpdatePopup onClose={()=>setLootUpdatePopup(false)}/>}
 
       {/* ── PLAN CASA (GIMNASIO CERRADO) ── */}
+      {homeEventAnnouncePopup&&homeEventActive&&<HomeEventAnnouncePopup onClose={closeHomeEventAnnounce}/>}
       {homeEventPopup&&homeEventActive&&
         <HomeEventPopup dayData={HOME_EVENT_ROUTINES[homeEventDayIndex%HOME_EVENT_ROUTINES.length]} alreadyDone={!!homeEventCompletions[homeEventDayIndex]} onComplete={completeHomeEventDay} onClose={()=>setHomeEventPopup(false)}/>}
 
@@ -5885,8 +5945,8 @@ function RankUpApp({user,onLogout}){
             <div style={{display:"flex",gap:6}}>
               {homeEventActive&&(
                 <button onClick={()=>setHomeEventPopup(true)}
-                  style={{fontSize:11,fontWeight:700,color:"#F59E0B",background:"#F59E0B18",border:"2px solid #F59E0B",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",display:"flex",alignItems:"center",gap:4}}>
-                  <span>🏠</span><span>{homeEventCompletions[homeEventDayIndex]?"HECHO HOY":"PLAN CASA"}</span>
+                  style={{fontSize:11,fontWeight:700,color:"#34D399",background:"#34D39918",border:"2px solid #34D399",borderRadius:20,padding:"3px 10px",cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",display:"flex",alignItems:"center",gap:4}}>
+                  <span>🏕️</span><span>{homeEventCompletions[homeEventDayIndex]?"HECHO HOY":"PLAN CASA"}</span>
                 </button>
               )}
               {seasonActive&&activeGuildRaid&&!activeGuildRaid.defeated&&!activeGuildRaid.escaped&&(
