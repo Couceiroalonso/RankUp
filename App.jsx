@@ -2677,10 +2677,17 @@ function AdminPanel({onLogout}){
 
   const toggleHomeEvent=async()=>{
     const next=!homeEventActive;
-    const status=next?{active:true,startDate:Date.now()}:{active:false};
+    // Pausar/reanudar NUNCA reinicia el contador de días — solo cambia el
+    // flag "active". El startDate solo se fija la primera vez que se activa,
+    // así apagar y volver a encender no hace perder progreso ni reinicia
+    // el día del reto para los usuarios.
+    const current=await fbGet("homeEventStatus").catch(()=>null)||{};
+    const status=next
+      ? {...current,active:true,startDate:current.startDate||Date.now()}
+      : {...current,active:false};
     await fbSet("homeEventStatus",status).catch(()=>{});
     setHomeEventActiveState(next);
-    flash(next?"🏠 Plan Casa activado — el popup diario empezará a aparecer":"⏸️ Plan Casa desactivado");
+    flash(next?"🏠 Plan Casa activado — continúa donde se quedó, sin perder días":"⏸️ Plan Casa pausado — el progreso y el día actual se conservan");
   };
 
   const [confirmSeasonStart,setConfirmSeasonStart]=useState(false);
