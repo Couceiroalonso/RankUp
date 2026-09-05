@@ -20,13 +20,20 @@
     <title>RankUp · Fitness</title>
     <style>
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-      html, body, #root {
+      html, body {
         height: 100%;
         background: #07070F;
         color: #FFF;
         font-family: 'Rajdhani', sans-serif;
         -webkit-tap-highlight-color: transparent;
-        overscroll-behavior: none;
+        /* "contain" evita el rebote/pull-to-refresh sin bloquear el scroll
+           normal — "none" lo bloqueaba del todo en algunos móviles Android */
+        overscroll-behavior-y: contain;
+      }
+      #root {
+        min-height: 100%;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       /* Hide scrollbar but keep scroll */
       ::-webkit-scrollbar { width: 0; background: transparent; }
