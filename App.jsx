@@ -2783,7 +2783,7 @@ function AdminPanel({onLogout}){
       const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
       const data=await fbGet(`userData/${key}`).catch(()=>null);
       if(data&&((data.homeEventCompletions&&Object.keys(data.homeEventCompletions).length>0)||data.homeEventAnnounceSeen)){
-        await saveUserData(email,{...data,homeEventCompletions:{},homeEventAnnounceSeen:false});
+        await saveUD(email,{...data,homeEventCompletions:{},homeEventAnnounceSeen:false});
         cleared++;
       }
     }
@@ -2929,7 +2929,7 @@ function AdminPanel({onLogout}){
     }
     saveUsers(users);
     if(!existingData||Object.keys(existingData).length===0){
-      saveUserData(email,defaultData());
+      saveUD(email,defaultData());
     }
     setAllUsers({...users});
     setNuName("");setNuEmail("");setNuPass("");setNuIsTest(false);
@@ -2950,8 +2950,14 @@ function AdminPanel({onLogout}){
   };
 
   const saveEdit=async()=>{
-    saveUserData(selUser,editData);
-    setAllUserData(p=>({...p,[selUser]:editData}));
+    // Antes de guardar, leemos el dato más fresco de Firebase y lo
+    // combinamos con lo editado en el panel — así si el jugador entrenó
+    // mientras el admin tenía la ficha abierta, ese progreso no se pierde
+    // al sobrescribir con la foto vieja que se cargó al abrir la ficha.
+    const key=selUser.replace(/\./g,"_").replace(/@/g,"_at_");
+    const freshRemote=await fbGet(`userData/${key}`).catch(()=>null);
+    const finalData=freshRemote?mergeUserData(editData,freshRemote):editData;
+    saveUD(selUser,finalData);
     // Save raids count
     const raidKey=selUser.replace(/\./g,"_").replace(/@/g,"_at_");
     await fbSet(`raidCounts/${raidKey}`,{email:selUser,raids:editRaids}).catch(()=>{});
@@ -2988,7 +2994,7 @@ function AdminPanel({onLogout}){
   };
 
   const resetProgress=(email)=>{
-    saveUserData(email,defaultData());
+    saveUD(email,defaultData());
     if(selUser===email) setEditData(defaultData());
     flash("🔄 Progreso reiniciado");
   };
@@ -2996,7 +3002,7 @@ function AdminPanel({onLogout}){
   const addCoinsAdmin=(email,amt)=>{
     const base=(selUser===email&&editData)?{...editData}:(getUD(email)||defaultData());
     base.coins=(base.coins||0)+amt;
-    saveUserData(email,base);
+    saveUD(email,base);
     if(selUser===email) setEditData({...base});
     flash(`🪙 +${amt} monedas añadidas`);
   };
@@ -3004,7 +3010,7 @@ function AdminPanel({onLogout}){
   const addXpAdmin=(email,amt)=>{
     const base=(selUser===email&&editData)?{...editData}:(getUD(email)||defaultData());
     base.totalXp=(base.totalXp||0)+amt;
-    saveUserData(email,base);
+    saveUD(email,base);
     if(selUser===email) setEditData({...base});
     flash(`⚡ +${amt} XP añadidos`);
   };
@@ -3117,6 +3123,15 @@ const getAdminRoutines=()=>{
   const [allUserData,setAllUserData]=useState({});
   const [dataLoading,setDataLoading]=useState(true);
   const getUD=(email)=>allUserData[email]||getUserData(email)||defaultData();
+  // Guarda en Firebase Y actualiza la caché local a la vez — sin esto, una
+  // acción posterior que parta de getUD() podía leer una copia vieja de la
+  // caché y, al guardar, resucitar por accidente un campo que ya se había
+  // quitado (p.ej. un assignedProgram retirado, si después se hacía
+  // cualquier otra acción sobre el mismo usuario).
+  const saveUD=(email,data)=>{
+    saveUserData(email,data);
+    setAllUserData(p=>({...p,[email]:data}));
+  };
   const [userMessages,setUserMessages]=useState({});  // {email: [msgs]}
   const [adminMsgInput,setAdminMsgInput]=useState("");
 
@@ -3323,7 +3338,7 @@ const getAdminRoutines=()=>{
       return;
     }
     data.customRoutines=[...(data.customRoutines||[]),{...routine,assignedByAdmin:true}];
-    saveUserData(email,data);
+    saveUD(email,data);
     if(selUser===email) setEditData({...editData,customRoutines:data.customRoutines});
     flash(`✅ Rutina asignada a ${allUsers[email]?.name}`);
     setAssignModal(null);
@@ -3335,7 +3350,7 @@ const getAdminRoutines=()=>{
     const data=getUD(email)||defaultData();
     const kept=(data.customRoutines||[]).filter(rt=>isRtDoneForUser(data,rt));
     data.customRoutines=[...kept,{...routine,assignedByAdmin:true}];
-    saveUserData(email,data);
+    saveUD(email,data);
     if(selUser===email) setEditData({...editData,customRoutines:data.customRoutines});
     flash(`✅ Rutina asignada a ${allUsers[email]?.name} — la anterior sin terminar se eliminó`);
     setPendingAssignRoutine(null);
@@ -3344,7 +3359,7 @@ const getAdminRoutines=()=>{
   const removeRoutineFromUser=(email,routineId)=>{
     const data=getUD(email)||defaultData();
     data.customRoutines=(data.customRoutines||[]).filter(r=>r.id!==routineId);
-    saveUserData(email,data);
+    saveUD(email,data);
     setEditData({...editData,customRoutines:data.customRoutines});
     flash("🗑️ Rutina eliminada del jugador");
   };
@@ -3385,7 +3400,7 @@ const getAdminRoutines=()=>{
     const exists=(data.assignedDiets||[]).find(d=>d.id===diet.id);
     if(exists){flash("⚠️ El jugador ya tiene esta dieta",false);return;}
     data.assignedDiets=[...(data.assignedDiets||[]),{...diet,assignedByAdmin:true}];
-    saveUserData(email,data);
+    saveUD(email,data);
     if(selUser===email) setEditData({...editData,assignedDiets:data.assignedDiets});
     flash(`✅ Dieta asignada a ${allUsers[email]?.name}`);
     setAssignDietModal(null);
@@ -3394,7 +3409,7 @@ const getAdminRoutines=()=>{
   const removeDietFromUser=(email,dietId)=>{
     const data=getUD(email)||defaultData();
     data.assignedDiets=(data.assignedDiets||[]).filter(d=>d.id!==dietId);
-    saveUserData(email,data);
+    saveUD(email,data);
     setEditData({...editData,assignedDiets:data.assignedDiets});
     flash("🗑️ Dieta eliminada del jugador");
   };
@@ -3551,11 +3566,17 @@ const getAdminRoutines=()=>{
                   <div style={{fontSize:14,fontWeight:700,color:"#FFF",fontFamily:"'Rajdhani',sans-serif"}}>{editData.assignedProgram.name}</div>
                   <div style={{fontSize:10,color:"#555"}}>{editData.assignedProgram.phases?.length||0} fases · 👑 Admin</div>
                 </div>
-                <button onClick={()=>{
-                  const data=getUD(selUser)||defaultData();
+                <button onClick={async()=>{
+                  // Leemos SIEMPRE el dato más fresco de Firebase justo antes de
+                  // tocar nada — si partiéramos de la caché del panel (que se
+                  // carga una sola vez al abrir el admin), cualquier progreso que
+                  // el usuario hubiera hecho mientras tanto se perdería al
+                  // sobrescribir todo su perfil con la foto vieja.
+                  const key=selUser.replace(/\./g,"_").replace(/@/g,"_at_");
+                  const data=(await fbGet(`userData/${key}`).catch(()=>null))||getUD(selUser)||defaultData();
                   data.assignedProgram=null;
-                  saveUserData(selUser,data);
-                  setEditData({...editData,assignedProgram:null});
+                  saveUD(selUser,data);
+                  setEditData({...data});
                   flash("🗑️ Programa retirado");
                 }} style={{background:"none",border:"none",color:"#E84A5F",fontSize:14,cursor:"pointer",padding:4}}>✕</button>
               </div>
@@ -3569,12 +3590,13 @@ const getAdminRoutines=()=>{
               return allProgs.map(tpl=>{
               const isAssigned=editData.assignedProgram?.id===tpl.id;
               return(
-                <button key={tpl.id} onClick={()=>{
+                <button key={tpl.id} onClick={async()=>{
                   if(isAssigned) return;
-                  const data=getUD(selUser)||defaultData();
+                  const key=selUser.replace(/\./g,"_").replace(/@/g,"_at_");
+                  const data=(await fbGet(`userData/${key}`).catch(()=>null))||getUD(selUser)||defaultData();
                   data.assignedProgram=tpl;
-                  saveUserData(selUser,data);
-                  setEditData({...editData,assignedProgram:tpl});
+                  saveUD(selUser,data);
+                  setEditData({...data});
                   flash(`✅ Programa "${tpl.name}" asignado`);
                 }} style={{width:"100%",padding:"10px 12px",background:isAssigned?"#E8C54722":"#07070F",border:`1px solid ${isAssigned?"#E8C547":"#2A2A44"}`,borderRadius:9,cursor:isAssigned?"default":"pointer",display:"flex",alignItems:"center",gap:10,marginBottom:6}}>
                   <span style={{fontSize:20}}>{tpl.icon}</span>
@@ -4208,13 +4230,19 @@ const getAdminRoutines=()=>{
                 const email=k.replace('rku_data_','');
                 if(!users[email]) localStorage.removeItem(k);
               });
-              // Also wipe customRoutines for all existing users
-              Object.keys(users).forEach(email=>{
-                const d=getUD(email)||defaultData();
-                d.customRoutines=(d.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
-                saveUserData(email,d);
-              });
-              flash('🧹 Datos huérfanos eliminados');
+              // Also wipe customRoutines for all existing users — leemos
+              // fresco de Firebase por usuario en vez de la caché del panel,
+              // para no arrastrar una foto vieja y borrar sin querer
+              // progreso reciente de nadie.
+              (async()=>{
+                for(const email of Object.keys(users)){
+                  const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
+                  const d=(await fbGet(`userData/${key}`).catch(()=>null))||getUD(email)||defaultData();
+                  d.customRoutines=(d.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
+                  saveUD(email,d);
+                }
+                flash('🧹 Datos huérfanos eliminados');
+              })();
             }} style={{width:'100%',padding:10,background:'#1A1A2E',border:'1px solid #444',borderRadius:9,color:'#888',fontSize:11,fontWeight:700,cursor:'pointer',fontFamily:"'Rajdhani',sans-serif",marginBottom:14}}>
               🧹 LIMPIAR DATOS HUÉRFANOS
             </button>
