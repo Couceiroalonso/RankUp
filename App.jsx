@@ -3255,15 +3255,43 @@ const getAdminRoutines=()=>{
     flash(`🔧 ${routinesFixed} rutina(s) reparadas · ${weeksAwarded} semana(s) retroactivas premiadas a ${usersAwarded} usuario(s)${usersSkipped>0?` (${usersSkipped} copias no coincidían y se dejaron sin tocar)`:""}`);
   };
 
+  const [pendingAssignRoutine,setPendingAssignRoutine]=useState(null); // {email,routine} esperando confirmación de sustitución
+
+  const isRtDoneForUser=(data,rt)=>{
+    const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
+    const checked=data.checked||{};
+    return sessions.every((sess,si)=>sess.exercises.every((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]));
+  };
+
   const assignRoutineToUser=(email,routine)=>{
     const data=getUD(email)||defaultData();
     const exists=(data.customRoutines||[]).find(r=>r.id===routine.id);
     if(exists){flash("⚠️ El jugador ya tiene esta rutina",false);return;}
+    const unfinishedExisting=(data.customRoutines||[]).filter(rt=>!isRtDoneForUser(data,rt));
+    if(unfinishedExisting.length>0){
+      // Solo puede haber una rutina activa a la vez — pedimos confirmación
+      // antes de sustituir la que todavía no ha terminado.
+      setAssignModal(null);
+      setPendingAssignRoutine({email,routine});
+      return;
+    }
     data.customRoutines=[...(data.customRoutines||[]),{...routine,assignedByAdmin:true}];
     saveUserData(email,data);
     if(selUser===email) setEditData({...editData,customRoutines:data.customRoutines});
     flash(`✅ Rutina asignada a ${allUsers[email]?.name}`);
     setAssignModal(null);
+  };
+
+  const confirmAssignReplace=()=>{
+    if(!pendingAssignRoutine) return;
+    const {email,routine}=pendingAssignRoutine;
+    const data=getUD(email)||defaultData();
+    const kept=(data.customRoutines||[]).filter(rt=>isRtDoneForUser(data,rt));
+    data.customRoutines=[...kept,{...routine,assignedByAdmin:true}];
+    saveUserData(email,data);
+    if(selUser===email) setEditData({...editData,customRoutines:data.customRoutines});
+    flash(`✅ Rutina asignada a ${allUsers[email]?.name} — la anterior sin terminar se eliminó`);
+    setPendingAssignRoutine(null);
   };
 
   const removeRoutineFromUser=(email,routineId)=>{
@@ -3593,6 +3621,20 @@ const getAdminRoutines=()=>{
         </div>
 
         {/* Confirm delete modal */}
+        {pendingAssignRoutine&&(
+          <div onClick={()=>setPendingAssignRoutine(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
+            <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #F59E0B",borderRadius:16,padding:28,maxWidth:340,width:"100%",textAlign:"center"}}>
+              <div style={{fontSize:36,marginBottom:12}}>🔮</div>
+              <div style={{fontSize:16,fontWeight:700,color:"#FFF",fontFamily:"'Cinzel',serif",marginBottom:8}}>¿Sustituir rutina activa?</div>
+              <div style={{fontSize:12,color:"#888",marginBottom:20}}><strong style={{color:"#FFF"}}>{allUsers[pendingAssignRoutine.email]?.name}</strong> ya tiene una rutina sin terminar. Solo puede haber una rutina activa a la vez — al asignar esta nueva, la anterior sin terminar se eliminará.</div>
+              <div style={{display:"flex",gap:10}}>
+                <button onClick={()=>setPendingAssignRoutine(null)} style={{flex:1,padding:12,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:8,color:"#888",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
+                <button onClick={confirmAssignReplace} style={{flex:1,padding:12,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:8,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>SUSTITUIR</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {confirmDel&&(
           <div onClick={()=>setConfirmDel(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.85)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:20}}>
             <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"2px solid #E84A5F",borderRadius:16,padding:28,maxWidth:300,width:"100%",textAlign:"center"}}>
@@ -6139,13 +6181,40 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   const [pendingRest,setPendingRest]=useState("60s");
   const [showAIGen,setShowAIGen]=useState(false);
   const [aiParams,setAiParams]=useState({objetivo:"hipertrofia",dias:3,sexo:"otro",nivel:"Intermedio",equipo:[]}); // equipo:[] = todo disponible
+  const [pendingAIRoutine,setPendingAIRoutine]=useState(null); // rutina generada, esperando confirmación si hay activas sin terminar
+
+  const isRtFullyDone=(rt)=>{
+    const sessions=rt.sessions||[{day:rt.name,exercises:rt.exercises||[]}];
+    return sessions.every((sess,si)=>sess.exercises.every((_,ei)=>checked[`rt_${rt.id}_${si}_${ei}`]));
+  };
 
   const applyAIRoutine=()=>{
     const gen=generateAIRoutine(aiParams);
-    onUpdateRoutines([...routines, {...gen, id:Date.now(), createdAt:Date.now(), selfGenerated:true}]);
+    const newRoutine={...gen, id:Date.now(), createdAt:Date.now(), selfGenerated:true};
+    const unfinishedExisting=routines.filter(rt=>!isRtFullyDone(rt));
     setShowAIGen(false);
-    flash2("🔮 Rutina generada y añadida a tus mazmorras");
+    if(unfinishedExisting.length>0){
+      // Ya hay al menos una rutina activa sin terminar — preguntamos antes de
+      // solaparla con la nueva, en vez de amontonar rutinas sin que el
+      // jugador se dé cuenta.
+      setPendingAIRoutine(newRoutine);
+    } else {
+      onUpdateRoutines([...routines,newRoutine]);
+      flash2("🔮 Rutina generada y añadida a tus mazmorras");
+    }
   };
+
+  const confirmReplaceRoutines=()=>{
+    if(!pendingAIRoutine) return;
+    // Las que ya estaban completadas se conservan (quedan archivadas como
+    // siempre); solo se eliminan las que aún no se habían terminado — solo
+    // puede haber UNA rutina activa a la vez.
+    const kept=routines.filter(rt=>isRtFullyDone(rt));
+    onUpdateRoutines([...kept,pendingAIRoutine]);
+    setPendingAIRoutine(null);
+    flash2("🔮 Rutina generada — la anterior sin terminar se ha eliminado");
+  };
+
   const [aiFlash,setAiFlash]=useState("");
   const flash2=(msg)=>{ setAiFlash(msg); setTimeout(()=>setAiFlash(""),2500); };
 
@@ -6253,6 +6322,16 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
 
             <button onClick={applyAIRoutine} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>🔮 GENERAR Y AÑADIR</button>
             <button onClick={()=>setShowAIGen(false)} style={{width:"100%",padding:11,marginTop:8,background:"none",border:"none",color:"#555",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>Cancelar</button>
+          </div>
+        </div>
+      )}
+      {pendingAIRoutine&&(
+        <div onClick={()=>setPendingAIRoutine(null)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.9)",display:"flex",alignItems:"center",justifyContent:"center",overflowY:"auto",padding:24}}>
+          <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:16,padding:24,width:"100%",maxWidth:400,margin:"auto"}}>
+            <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:14}}>🔮 YA TIENES UNA RUTINA ACTIVA</div>
+            <div style={{fontSize:12,color:"#AAA",lineHeight:1.6,marginBottom:20}}>Todavía tienes al menos una rutina sin terminar. Solo puedes tener una rutina activa a la vez — si generas esta nueva, la anterior sin terminar se eliminará. ¿Quieres sustituirla?</div>
+            <button onClick={confirmReplaceRoutines} style={{width:"100%",padding:13,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:13,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",marginBottom:10}}>🔄 SÍ, SUSTITUIR</button>
+            <button onClick={()=>setPendingAIRoutine(null)} style={{width:"100%",padding:11,background:"#1A1A2E",border:"1px solid #2A2A44",borderRadius:10,color:"#888",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>CANCELAR</button>
           </div>
         </div>
       )}
