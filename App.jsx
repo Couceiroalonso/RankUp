@@ -3057,10 +3057,56 @@ const STARTER_ROUTINE_BEL = {
   ],
 };
 
+// Rutina GAP + Tren Superior (4 días), adaptada exacto a los nombres de la
+// EXERCISE_DB para que cada ejercicio traiga su GIF automáticamente.
+const ROUTINE_POLEMASTER_V2 = {
+  id:"polemaster_v2",
+  name:"Polemaster V.II",
+  color:"#A78BFA",
+  createdAt:0,
+  sessions:[
+    {day:"Día 1: Piernas/Glúteos A (fuerza)", week:1, exercises:[
+      {name:"Sentadilla con Barra", sets:"4x6-8", rest:"150s", xp:38, done:false, boss:true},
+      {name:"Peso Muerto Rumano con Barra", sets:"4x8-10", rest:"120s", xp:38, done:false},
+      {name:"Hip Thrust con Barra", sets:"4x8-10", rest:"120s", xp:38, done:false},
+      {name:"Sentadilla Bulgara con Mancuerna", sets:"3x10 c/pierna", rest:"90s", xp:32, done:false},
+      {name:"Curl Femoral Sentado en Máquina", sets:"3x12", rest:"60s", xp:28, done:false},
+      {name:"Extensión de Gemelos de pie con Mancuernas", sets:"4x15", rest:"45s", xp:32, done:false},
+    ]},
+    {day:"Día 2: Tren superior — Empuje", week:1, exercises:[
+      {name:"Press con mancuernas plano", sets:"4x8-10", rest:"90s", xp:32, done:false, boss:true},
+      {name:"Press Militar con Mancuernas", sets:"3x10", rest:"90s", xp:32, done:false},
+      {name:"Press inclinado con mancuernas", sets:"3x10-12", rest:"90s", xp:32, done:false},
+      {name:"Elevaciones laterales con mancuernas", sets:"3x12-15", rest:"60s", xp:32, done:false},
+      {name:"Fondos en banco", sets:"3x10-12", rest:"60s", xp:14, done:false},
+      {name:"Press Francés con Mancuernas", sets:"3x12", rest:"60s", xp:32, done:false},
+    ]},
+    {day:"Día 3: Piernas/Glúteos B (énfasis glúteo)", week:1, exercises:[
+      {name:"Sentadilla Bulgara con Mancuerna", sets:"4x10 c/pierna", rest:"90s", xp:32, done:false, boss:true},
+      {name:"Hip Thrust unilateral", sets:"3x12 c/pierna", rest:"90s", xp:28, done:false},
+      {name:"Peso Muerto Sumo con Barra", sets:"4x8", rest:"120s", xp:38, done:false},
+      {name:"Patada de glúteo en polea", sets:"3x15 c/lado", rest:"60s", xp:30, done:false},
+      {name:"Abducción de cadera sentado con banda", sets:"3x15", rest:"60s", xp:16, done:false},
+      {name:"Sentadilla Goblet", sets:"3x12", rest:"60s", xp:14, done:false},
+    ]},
+    {day:"Día 4: Tren superior — Tirón + Core", week:1, exercises:[
+      {name:"Jalón al pecho", sets:"4x8-10", rest:"90s", xp:14, done:false, boss:true},
+      {name:"Dominadas", sets:"3x al fallo", rest:"90s", xp:14, done:false},
+      {name:"Remo con mancuerna", sets:"3x10 c/lado", rest:"90s", xp:32, done:false},
+      {name:"Remo inferior polea baja", sets:"3x12", rest:"90s", xp:30, done:false},
+      {name:"Curl con Mancuernas", sets:"3x12", rest:"60s", xp:32, done:false},
+      {name:"Remo Superior con Cuerda en Polea", sets:"3x15", rest:"45s", xp:30, done:false},
+      {name:"Plancha", sets:"3x30-40s", rest:"45s", xp:14, done:false},
+      {name:"Giros de cintura de pie en Polea", sets:"3x12 c/lado", rest:"45s", xp:30, done:false},
+    ]},
+  ],
+};
+
 const getAdminRoutines=()=>{
   let list;
   try{ list=JSON.parse(localStorage.getItem("rku_admin_routines")||"[]"); }catch{ list=[]; }
   if(!list.some(r=>r.id===STARTER_ROUTINE_BEL.id)) list=[...list,STARTER_ROUTINE_BEL];
+  if(!list.some(r=>r.id===ROUTINE_POLEMASTER_V2.id)) list=[...list,ROUTINE_POLEMASTER_V2];
   return list;
 };
   const saveAdminRoutines=r=>{localStorage.setItem("rku_admin_routines",JSON.stringify(r));fbSet("adminRoutines",r).catch(()=>{});};
@@ -3109,7 +3155,8 @@ const getAdminRoutines=()=>{
   useEffect(()=>{
     fbGet("adminRoutines").then(r=>{
       if(r&&r.length>0){
-        const merged=r.some(x=>x.id===STARTER_ROUTINE_BEL.id)?r:[...r,STARTER_ROUTINE_BEL];
+        let merged=r.some(x=>x.id===STARTER_ROUTINE_BEL.id)?r:[...r,STARTER_ROUTINE_BEL];
+        merged=merged.some(x=>x.id===ROUTINE_POLEMASTER_V2.id)?merged:[...merged,ROUTINE_POLEMASTER_V2];
         localStorage.setItem("rku_admin_routines",JSON.stringify(merged));
         setAdminRoutinesState(merged);
       }
