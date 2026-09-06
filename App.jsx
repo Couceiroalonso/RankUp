@@ -87,11 +87,15 @@ const mergeUserData = (local, remote) => {
     customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
-    playerClass:    remote.playerClass || local.playerClass || null,
-    assignedDiets:  (remote.assignedDiets||[]).length >= (local.assignedDiets||[]).length
-                      ? (remote.assignedDiets||[])
-                      : (local.assignedDiets||[]),
-    assignedProgram: remote.assignedProgram || local.assignedProgram || null,
+    // playerClass / assignedDiets / assignedProgram son campos que el ADMIN
+    // asigna (o quita) desde el panel. Firebase es la fuente de verdad para
+    // ellos: si el admin los borra, remote pasa a null/[] y eso debe ganar
+    // siempre, en vez de resucitar la copia vieja guardada en el móvil.
+    // Solo caemos a "local" si remote ni siquiera tiene la clave (undefined),
+    // es decir, cuentas antiguas que nunca llegaron a guardar este campo.
+    playerClass:    remote.playerClass!==undefined ? remote.playerClass : (local.playerClass||null),
+    assignedDiets:  remote.assignedDiets!==undefined ? remote.assignedDiets : (local.assignedDiets||[]),
+    assignedProgram: remote.assignedProgram!==undefined ? remote.assignedProgram : (local.assignedProgram||null),
   };
 };
 
