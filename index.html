@@ -47,8 +47,40 @@
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
-            .then(r => console.log('SW registered:', r.scope))
+            .then(r => {
+              console.log('SW registered:', r.scope);
+
+              // Si ya hay un Service Worker nuevo esperando (por ejemplo,
+              // porque esta pestaña llevaba abierta desde antes del último
+              // despliegue), lo activamos ya mismo en vez de esperar a que
+              // el usuario cierre y reabra la app.
+              if (r.waiting) r.waiting.postMessage({ type: 'SKIP_WAITING' });
+
+              // Si aparece un Service Worker nuevo mientras la pestaña está
+              // abierta, en cuanto termine de instalarse lo dejamos tomar
+              // el control (skipWaiting ya lo hace internamente).
+              r.addEventListener('updatefound', () => {
+                const newSW = r.installing;
+                if (!newSW) return;
+                newSW.addEventListener('statechange', () => {
+                  if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                    newSW.postMessage({ type: 'SKIP_WAITING' });
+                  }
+                });
+              });
+            })
             .catch(e => console.log('SW error:', e));
+
+          // En cuanto el Service Worker nuevo toma el control de la
+          // página, recargamos UNA sola vez para que la app cargue ya con
+          // el JS/CSS más reciente, en vez de quedarse pillada en el
+          // bundle viejo hasta el próximo cierre manual.
+          let reloaded = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (reloaded) return;
+            reloaded = true;
+            window.location.reload();
+          });
         });
       }
     </script>
