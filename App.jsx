@@ -1393,6 +1393,26 @@ function GifModal({name,path,onClose}){
   );
 }
 
+// ─── MINIATURA DE GIF DE EJERCICIO ─────────────────────────────────────────────
+// Componente pequeño y autocontenido: dado un nombre de ejercicio, busca su
+// GIF (si existe) y lo muestra en miniatura con carga diferida (loading=
+// "lazy") para no descargar de golpe todos los GIFs de una rutina larga.
+// Si no hay GIF para ese ejercicio, no renderiza nada — igual que el resto
+// de la app, degradar sin romper nada es mejor que mostrar un hueco roto.
+function ExGifThumb({name,size=36,onClick}){
+  const [loadError,setLoadError]=useState(false);
+  const path=exerciseGif(name);
+  if(!path||loadError) return null;
+  const url=`https://raw.githubusercontent.com/Couceiroalonso/RankUp/main/public/Exercices/${path.split("/").map(encodeURIComponent).join("/")}`;
+  return(
+    <button onClick={onClick} title={`Ver ${name}`}
+      style={{flexShrink:0,width:size,height:size,borderRadius:8,border:"1px solid #2A2A44",background:"#07070F",overflow:"hidden",cursor:onClick?"pointer":"default",padding:0}}>
+      <img src={url} alt={name} loading="lazy" onError={()=>setLoadError(true)}
+        style={{width:"100%",height:"100%",objectFit:"cover",display:"block"}}/>
+    </button>
+  );
+}
+
 function CraftToast({name,slot,icon,tier,onDone}){
   useEffect(()=>{const t=setTimeout(onDone,5500);return()=>clearTimeout(t);},[]);
   const c=TIER_INFO[tier]?.color||"#F59E0B";
@@ -3862,6 +3882,7 @@ const getAdminRoutines=()=>{
                     {/* Exercises in session */}
                     {sess.exercises.map((ex,ei)=>(
                       <div key={ei} style={{display:"flex",alignItems:"center",gap:6,marginBottom:6,background:"#07070F",borderRadius:8,padding:"6px 10px",border:ex.boss?"1px solid #E84A5F66":"1px solid transparent"}}>
+                        <ExGifThumb name={ex.name} size={30}/>
                         <div style={{flex:1}}>
                           <div style={{fontSize:12,color:"#FFF",fontFamily:"'Rajdhani',sans-serif",fontWeight:700}}>{ex.name}</div>
                           <div style={{fontSize:10,color:"#555"}}>{ex.sets} · {ex.rest} descanso</div>
@@ -3894,8 +3915,9 @@ const getAdminRoutines=()=>{
                                     <button key={ex.id} onClick={()=>{
                                       setRtExInput(p=>({...p,[si]:{...p[si],name:ex.name,sets:p[si]?.sets||"3x10",rest:p[si]?.rest||"60s",xp:ex.xpBase}}));
                                       setRtDbSearch(p=>({...p,[si]:""}));
-                                    }} style={{display:"block",width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid #1A1A2E",color:"#DDD",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
-                                      {ex.name} <span style={{color:"#666",fontSize:10}}>({ex.xpBase}XP)</span>
+                                    }} style={{display:"flex",alignItems:"center",gap:8,width:"100%",textAlign:"left",padding:"9px 12px",background:"none",border:"none",borderBottom:"1px solid #1A1A2E",color:"#DDD",fontSize:12,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>
+                                      <ExGifThumb name={ex.name} size={28}/>
+                                      <span>{ex.name} <span style={{color:"#666",fontSize:10}}>({ex.xpBase}XP)</span></span>
                                     </button>
                                   ))}
                                 </div>
@@ -6492,6 +6514,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                   boxShadow:isDone?`0 0 12px ${c}`:"none",transition:"all .2s"}}>
                                 {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                               </button>
+                              {onShowGif&&<ExGifThumb name={ex.name} onClick={()=>onShowGif(ex.name)}/>}
                               <div style={{flex:1,minWidth:0}}>
                                 <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                                   <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{ex.name}</span>
@@ -6713,6 +6736,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                           <button onClick={e=>onToggleEx(key,ex.xp,ph.id,di,e,exDisplayName,ex.boss)} style={{width:32,height:32,borderRadius:8,flexShrink:0,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",border:`2px solid ${isDone?ph.color:ex.boss?"#E84A5F":"#2A2A44"}`,background:isDone?ph.color:"transparent",boxShadow:isDone?`0 0 12px ${ph.color}`:"none",transition:"all .2s"}}>
                             {isDone?<span style={{color:"#07070F",fontSize:15,fontWeight:900}}>✓</span>:ex.boss?<span style={{fontSize:13}}>💀</span>:<span style={{fontSize:12,color:"#2A2A44"}}>⚔</span>}
                           </button>
+                          {onShowGif&&<ExGifThumb name={exDisplayName} onClick={()=>onShowGif(exDisplayName)}/>}
                           <div style={{flex:1,minWidth:0}}>
                             <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}>
                               <span style={{fontSize:14,fontWeight:700,color:isDone?"#444":"#FFF",textDecoration:isDone?"line-through":"none",fontFamily:"'Rajdhani',sans-serif"}}>{exDisplayName}</span>
