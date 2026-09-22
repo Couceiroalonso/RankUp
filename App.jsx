@@ -4399,7 +4399,7 @@ const getAdminRoutines=()=>{
         <div onClick={()=>setShowAIGen(false)} style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,.88)",display:"flex",alignItems:"flex-end",justifyContent:"center"}}>
           <div onClick={e=>e.stopPropagation()} style={{background:"#0D0D1A",border:"1px solid #F59E0B44",borderRadius:"16px 16px 0 0",padding:20,width:"100%",maxWidth:430,maxHeight:"85vh",overflowY:"auto"}}>
             <div style={{fontSize:9,color:"#F59E0B",letterSpacing:3,marginBottom:4}}>🔮 GENERADOR DE RUTINAS IA</div>
-            <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 4 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
+            <div style={{fontSize:11,color:"#555",marginBottom:16}}>Elige 5 parámetros y genera una rutina completa desde nuestra base de {EXERCISE_DB.length} ejercicios. Podrás editarla antes de guardar.</div>
 
             <div style={{fontSize:9,color:"#3A3A5E",letterSpacing:2,marginBottom:6}}>OBJETIVO</div>
             <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:6,marginBottom:14}}>
@@ -4427,6 +4427,17 @@ const getAdminRoutines=()=>{
               {["Principiante","Intermedio","Avanzado"].map(v=>(
                 <button key={v} onClick={()=>setAiParams(p=>({...p,nivel:v}))} style={{flex:1,padding:"9px 4px",borderRadius:8,border:"none",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:aiParams.nivel===v?"#F59E0B":"#1A1A2E",color:aiParams.nivel===v?"#07070F":"#555"}}>{v}</button>
               ))}
+            </div>
+
+            <div style={{fontSize:9,color:"#666",letterSpacing:2,marginBottom:6}}>MATERIAL DISPONIBLE (deja vacío = gimnasio completo)</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:18}}>
+              {["Mancuernas","Barra","Barra Z","Polea","Máquina","Banda elástica","Fitball","TRX","Kettlebell"].map(eq=>{
+                const active=aiParams.equipo.includes(eq);
+                return(
+                  <button key={eq} onClick={()=>setAiParams(p=>({...p,equipo:active?p.equipo.filter(x=>x!==eq):[...p.equipo,eq]}))}
+                    style={{padding:"7px 12px",borderRadius:20,border:`1px solid ${active?"#F59E0B":"#2A2A44"}`,cursor:"pointer",fontSize:10,fontWeight:700,fontFamily:"'Rajdhani',sans-serif",background:active?"#F59E0B22":"#1A1A2E",color:active?"#F59E0B":"#555"}}>{eq}</button>
+                );
+              })}
             </div>
 
             <button onClick={applyAIRoutine} style={{width:"100%",padding:14,background:"linear-gradient(135deg,#F59E0B,#D97706)",border:"none",borderRadius:10,color:"#07070F",fontSize:14,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2}}>
