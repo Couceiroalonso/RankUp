@@ -759,6 +759,28 @@ const exerciseGif = name => {
   return bestScore>=0.6?best:null;
 };
 
+// Igual que exerciseGif, pero para encontrar a qué músculos entrena un
+// ejercicio — así una rutina creada a mano (con mayúsculas/acentos algo
+// distintos al nombre "oficial" de la base de datos) sigue sumando XP al
+// grupo muscular correcto, en vez de perder el tag en silencio.
+const MUSCLE_ENTRIES_NORM = EXERCISE_DB.map(e=>({norm:normalizeExName(e.name),tokens:new Set(normalizeExName(e.name).split(" ")),muscle:e.muscle}));
+const MUSCLE_LOOKUP_NORM = Object.fromEntries(MUSCLE_ENTRIES_NORM.map(e=>[e.norm,e.muscle]));
+const exerciseMuscles = name => {
+  if(!name) return [];
+  if(MUSCLE_MAP[name]) return MUSCLE_MAP[name];
+  const norm=normalizeExName(name);
+  if(MUSCLE_LOOKUP_NORM[norm]) return MUSCLE_LOOKUP_NORM[norm];
+  const qTokens=new Set(norm.split(" ").filter(Boolean));
+  if(qTokens.size===0) return [];
+  let best=[], bestScore=0;
+  for(const e of MUSCLE_ENTRIES_NORM){
+    let overlap=0; for(const t of qTokens) if(e.tokens.has(t)) overlap++;
+    const score=overlap/Math.max(qTokens.size,e.tokens.size);
+    if(score>bestScore){ bestScore=score; best=e.muscle; }
+  }
+  return bestScore>=0.6?best:[];
+};
+
 // ─── GENERADOR DE RUTINAS IA ──────────────────────────────────────────────────
 // Genera una rutina completa a partir de 4 parámetros usando solo EXERCISE_DB.
 // 100% algorítmico y determinista — sin llamadas externas ni coste.
@@ -3068,7 +3090,7 @@ const STARTER_ROUTINE_BEL = {
       {name:"Hip Thrust unilateral", sets:"3x12 c/pierna", rest:"90s", xp:28, done:false},
       {name:"Peso Muerto Sumo con Barra", sets:"4x8", rest:"120s", xp:38, done:false},
       {name:"Patada de glúteo en polea", sets:"3x15 c/lado", rest:"60s", xp:30, done:false},
-      {name:"Abducción de cadera sentado con banda", sets:"3x15", rest:"60s", xp:16, done:false},
+      {name:"Aductor Externo en Máquina", sets:"3x15", rest:"60s", xp:28, done:false},
       {name:"Sentadilla Goblet", sets:"3x12", rest:"60s", xp:14, done:false},
     ]},
     {day:"Día 4: Tren superior ligero + Core", week:1, exercises:[
@@ -3112,7 +3134,7 @@ const ROUTINE_POLEMASTER_V2 = {
       {name:"Hip Thrust unilateral", sets:"3x12 c/pierna", rest:"90s", xp:28, done:false},
       {name:"Peso Muerto Sumo con Barra", sets:"4x8", rest:"120s", xp:38, done:false},
       {name:"Patada de glúteo en polea", sets:"3x15 c/lado", rest:"60s", xp:30, done:false},
-      {name:"Abducción de cadera sentado con banda", sets:"3x15", rest:"60s", xp:16, done:false},
+      {name:"Aductor Externo en Máquina", sets:"3x15", rest:"60s", xp:28, done:false},
       {name:"Sentadilla Goblet", sets:"3x12", rest:"60s", xp:14, done:false},
     ]},
     {day:"Día 4: Tren superior — Tirón + Core", week:1, exercises:[
@@ -3128,11 +3150,101 @@ const ROUTINE_POLEMASTER_V2 = {
   ],
 };
 
+// Rutina de 6 días (glúteo/pierna con enfoque estético + tren superior),
+// adaptada de una plantilla visual de Instagram/TikTok a los nombres
+// exactos de la EXERCISE_DB. Cada día de gimnasio termina con 3
+// estiramientos relacionados con los músculos trabajados ese día (el
+// Domingo completo de estiramientos también se deja como sesión aparte).
+const ROUTINE_GLUTEO_TOTAL = {
+  id:"gluteo_total_6d",
+  name:"Glúteo Total (6 días)",
+  color:"#F472B6",
+  createdAt:0,
+  sessions:[
+    {day:"Lunes: Glúteos y Cuádriceps", week:1, exercises:[
+      {name:"Hip Thrust con Barra", sets:"4x10", rest:"90s", xp:38, done:false, boss:true},
+      {name:"Sentadilla Bulgara con Mancuerna", sets:"3x10 c/pierna", rest:"90s", xp:32, done:false},
+      {name:"Prensa Inclinada", sets:"3x12", rest:"90s", xp:14, done:false},
+      {name:"Extensión de Cuádriceps en Máquina", sets:"3x12", rest:"60s", xp:28, done:false},
+      {name:"Sentadilla Goblet", sets:"3x10", rest:"60s", xp:14, done:false},
+      {name:"Aductor Externo en Máquina", sets:"3x15", rest:"45s", xp:28, done:false},
+      {name:"Zancadas Caminando", sets:"3x12 c/pierna", rest:"60s", xp:14, done:false},
+      {name:"Extensión de Gemelos de pie con Mancuernas", sets:"3x20", rest:"45s", xp:32, done:false},
+      {name:"Estiramiento de Cuadriceps", sets:"30s c/pierna", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Isquiotibiales", sets:"30s c/pierna", rest:"15s", xp:12, done:false},
+      {name:"Estiramiento de Gemelo", sets:"30s", rest:"15s", xp:10, done:false},
+    ]},
+    {day:"Martes: Espalda, Bíceps y Core", week:1, exercises:[
+      {name:"Jalón al pecho", sets:"3x10", rest:"90s", xp:14, done:false, boss:true},
+      {name:"Remo inferior polea baja", sets:"3x10", rest:"90s", xp:30, done:false},
+      {name:"Remo con mancuerna", sets:"3x12 c/lado", rest:"90s", xp:32, done:false},
+      {name:"Curl con Mancuernas", sets:"3x12", rest:"60s", xp:32, done:false},
+      {name:"Curl en Martillo Alterno con Mancuernas", sets:"3x12", rest:"60s", xp:42, done:false},
+      {name:"Remo Superior con Cuerda en Polea", sets:"3x15", rest:"45s", xp:30, done:false},
+      {name:"Plancha", sets:"3x40s", rest:"45s", xp:14, done:false},
+      {name:"Elevación de piernas estiradas Colgado", sets:"3x15", rest:"60s", xp:14, done:false},
+      {name:"Estiramiento de Dorsal", sets:"30s", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Hombro Cruzado", sets:"30s c/lado", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Triceps", sets:"30s c/lado", rest:"15s", xp:10, done:false},
+    ]},
+    {day:"Miércoles: Pecho, Hombros y Tríceps + Abdomen", week:1, exercises:[
+      {name:"Press en máquina", sets:"3x10", rest:"90s", xp:28, done:false, boss:true},
+      {name:"Press Militar con Mancuernas", sets:"3x10", rest:"90s", xp:32, done:false},
+      {name:"Elevaciones laterales con mancuernas", sets:"3x12", rest:"60s", xp:32, done:false},
+      {name:"Extensión Vertical en Pronación en Polea Alta", sets:"3x12", rest:"60s", xp:30, done:false},
+      {name:"Contractor pectoral", sets:"3x12", rest:"60s", xp:14, done:false},
+      {name:"Fondos en banco", sets:"3x12", rest:"60s", xp:14, done:false},
+      {name:"Crunch Superior de rodillas con Polea", sets:"3x15", rest:"45s", xp:30, done:false},
+      {name:"Plancha", sets:"3x20s", rest:"45s", xp:14, done:false},
+      {name:"Estiramiento de Pectoral", sets:"30s", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Hombro Cruzado", sets:"30s c/lado", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Triceps", sets:"30s c/lado", rest:"15s", xp:10, done:false},
+    ]},
+    {day:"Jueves: Glúteos e Isquios", week:1, exercises:[
+      {name:"Peso Muerto Rumano con Barra", sets:"4x10", rest:"120s", xp:38, done:false, boss:true},
+      {name:"Curl Femoral Sentado en Máquina", sets:"3x12", rest:"60s", xp:28, done:false},
+      {name:"Hip Thrust unilateral", sets:"3x12 c/pierna", rest:"90s", xp:28, done:false},
+      {name:"Patada de glúteo en polea", sets:"3x15", rest:"60s", xp:30, done:false},
+      {name:"Sentadilla Sumo con Mancuerna", sets:"3x12", rest:"90s", xp:32, done:false},
+      {name:"Aductor Externo en Máquina", sets:"3x15", rest:"45s", xp:28, done:false},
+      {name:"Subida al banco con mancuernas", sets:"3x12 c/pierna", rest:"60s", xp:32, done:false},
+      {name:"Hiperextensiones Inclinadas", sets:"3x15", rest:"60s", xp:14, done:false},
+      {name:"Estiramiento de Isquiotibiales", sets:"30s c/pierna", rest:"15s", xp:12, done:false},
+      {name:"Estiramiento de Gemelo", sets:"30s", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Cuadriceps", sets:"30s c/pierna", rest:"15s", xp:10, done:false},
+    ]},
+    {day:"Viernes: Piernas, Glúteos + Abdomen", week:1, exercises:[
+      {name:"Sentadilla con Barra", sets:"3x10", rest:"120s", xp:38, done:false, boss:true},
+      {name:"Zancada Trasera con Barra", sets:"3x12 c/pierna", rest:"90s", xp:38, done:false},
+      {name:"Prensa Inclinada", sets:"3x12", rest:"90s", xp:14, done:false},
+      {name:"Extensión de Gemelos de pie con Mancuernas", sets:"3x20", rest:"45s", xp:32, done:false},
+      {name:"Aductor Externo en Máquina", sets:"3x15", rest:"45s", xp:28, done:false},
+      {name:"Crunch Superior Declinado", sets:"3x15", rest:"45s", xp:14, done:false},
+      {name:"Bicicleta", sets:"3x20", rest:"45s", xp:14, done:false},
+      {name:"Plancha Lateral", sets:"3x30s c/lado", rest:"45s", xp:14, done:false},
+      {name:"Estiramiento de Cuadriceps", sets:"30s c/pierna", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Isquiotibiales", sets:"30s c/pierna", rest:"15s", xp:12, done:false},
+      {name:"Estiramiento de Gemelo", sets:"30s", rest:"15s", xp:10, done:false},
+    ]},
+    {day:"Domingo: Estiramiento y Recuperación", week:1, exercises:[
+      {name:"Estiramiento de Cuadriceps", sets:"30s c/pierna", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Isquiotibiales", sets:"30s c/pierna", rest:"15s", xp:12, done:false},
+      {name:"Estiramiento de Gemelo", sets:"30s", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Pectoral", sets:"30s", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Dorsal", sets:"30s", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Hombro Cruzado", sets:"30s c/lado", rest:"15s", xp:10, done:false},
+      {name:"Estiramiento de Triceps", sets:"30s c/lado", rest:"15s", xp:10, done:false},
+      {name:"Plancha", sets:"3x20s", rest:"30s", xp:14, done:false},
+    ]},
+  ],
+};
+
 const getAdminRoutines=()=>{
   let list;
   try{ list=JSON.parse(localStorage.getItem("rku_admin_routines")||"[]"); }catch{ list=[]; }
   if(!list.some(r=>r.id===STARTER_ROUTINE_BEL.id)) list=[...list,STARTER_ROUTINE_BEL];
   if(!list.some(r=>r.id===ROUTINE_POLEMASTER_V2.id)) list=[...list,ROUTINE_POLEMASTER_V2];
+  if(!list.some(r=>r.id===ROUTINE_GLUTEO_TOTAL.id)) list=[...list,ROUTINE_GLUTEO_TOTAL];
   return list;
 };
   const saveAdminRoutines=r=>{localStorage.setItem("rku_admin_routines",JSON.stringify(r));fbSet("adminRoutines",r).catch(()=>{});};
@@ -3192,6 +3304,7 @@ const getAdminRoutines=()=>{
       if(r&&r.length>0){
         let merged=r.some(x=>x.id===STARTER_ROUTINE_BEL.id)?r:[...r,STARTER_ROUTINE_BEL];
         merged=merged.some(x=>x.id===ROUTINE_POLEMASTER_V2.id)?merged:[...merged,ROUTINE_POLEMASTER_V2];
+        merged=merged.some(x=>x.id===ROUTINE_GLUTEO_TOTAL.id)?merged:[...merged,ROUTINE_GLUTEO_TOTAL];
         localStorage.setItem("rku_admin_routines",JSON.stringify(merged));
         setAdminRoutinesState(merged);
       }
@@ -5917,11 +6030,17 @@ function RankUpApp({user,onLogout}){
   // Muscle XP
   const mxp={};Object.keys(MUSCLE_DEFS).forEach(m=>mxp[m]=0);
   PHASES.forEach(p=>p.training.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
-    if(checked[exKey(p.id,di,ei)]){const ms=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=ex.xp;});}
+    if(checked[exKey(p.id,di,ei)]){const ms=exerciseMuscles(ex.name);ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=ex.xp;});}
   })));
   routines.forEach(rt=>rt.sessions?.forEach((s,si)=>s.exercises?.forEach((ex,ei)=>{
     const key=`rt_${rt.id}_${si}_${ei}`;
-    if(checked[key]){const ms=MUSCLE_MAP[ex.name]||EXERCISE_DB.find(e=>e.name===ex.name)?.muscle||[];ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=(ex.xp||30);});}
+    if(checked[key]){const ms=exerciseMuscles(ex.name);ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=(ex.xp||30);});}
+  })));
+  // Antes esto no existía: si el jugador tenía un PROGRAMA asignado por el
+  // admin (distinto de las Fases por defecto), sus ejercicios nunca sumaban
+  // a los rangos musculares aunque sí dieran XP normal.
+  if(assignedProgram) assignedProgram.phases?.forEach(p=>p.training?.forEach((day,di)=>day.exercises.forEach((ex,ei)=>{
+    if(checked[exKey(p.id,di,ei)]){const ms=exerciseMuscles(ex.name);ms.forEach(m=>{if(mxp[m]!==undefined)mxp[m]+=ex.xp;});}
   })));
 
   const phTotal=ph.training.reduce((a,d)=>a+d.exercises.length,0);
