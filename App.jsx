@@ -84,7 +84,10 @@ const mergeUserData = (local, remote) => {
         maestroSlots: [...new Set([...(r.maestroSlots||[]),...(l.maestroSlots||[])])],
       };
     })(),
-    customRoutines: (remote.customRoutines||[]).length >= (local.customRoutines||[]).length
+    // Firebase manda: si el admin quita una rutina (o el jugador sustituye la
+    // anterior), la lista remota es más corta, y antes ganaba la local "más
+    // larga", resucitando lo borrado. Solo caemos a local si remote no tiene la clave.
+    customRoutines: remote.customRoutines!==undefined
                       ? (remote.customRoutines||[])
                       : (local.customRoutines||[]),
     // playerClass / assignedDiets / assignedProgram son campos que el ADMIN
@@ -4373,7 +4376,7 @@ const getAdminRoutines=()=>{
                 for(const email of Object.keys(users)){
                   const key=email.replace(/\./g,"_").replace(/@/g,"_at_");
                   const d=(await fbGet(`userData/${key}`).catch(()=>null))||getUD(email)||defaultData();
-                  d.customRoutines=(d.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
+                  d.customRoutines=(d.customRoutines||[]).filter(r=>r.assignedByAdmin===true||r.selfGenerated===true);
                   saveUD(email,d);
                 }
                 flash('🧹 Datos huérfanos eliminados');
@@ -4914,7 +4917,10 @@ function RankingTab({currentEmail, currentName, onOpenChat}){
           const allWeights=d.weights||{};
           const totalKg=Object.values(allWeights).reduce((sum,arr)=>{
             if(!Array.isArray(arr)) return sum;
-            return sum+arr.reduce((s,w)=>s+(w.kg||0),0);
+            // Volumen real = peso × repeticiones de cada serie registrada
+            // (antes solo sumaba el kg suelto por serie, ignorando las
+            // reps, lo que infravaloraba mucho el total frente a otras apps).
+            return sum+arr.reduce((s,w)=>s+(w.kg||0)*(w.reps||1),0);
           },0);
           const totalEx=Object.values(d.checked||{}).filter(Boolean).length;
           // Max personal record (highest single kg logged)
@@ -5173,6 +5179,7 @@ function RankUpApp({user,onLogout}){
   const [openChart,setOpenChart]=useState(null);
   const [bodyView,setBodyView]=useState("front");
   const [wInputs,setWInputs]=useState({});
+  const [repsInputs,setRepsInputs]=useState({});
   const [particles,setParticles]=useState([]);
   const [lvlModal,setLvlModal]=useState(null);
   const [redeemModal,setRedeemModal]=useState(null);
@@ -5228,7 +5235,7 @@ function RankUpApp({user,onLogout}){
           if(freshDC[ck]&&bfSessionKg[ck]==null){
             const kg=day.exercises.reduce((sum,ex,ei)=>{
               const wArr=(fresh.weights||{})[exKey(p.id,di,ei)]||[];
-              return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+              return sum+wArr.reduce((s,w)=>s+(w.kg||0)*(w.reps||1),0);
             },0);
             if(kg>0){ bfSessionKg[ck]=Math.round(kg); sessionKgChanged=true; }
           }
@@ -5242,7 +5249,7 @@ function RankUpApp({user,onLogout}){
             if(freshDC[ck]&&bfSessionKg[ck]==null){
               const kg=sess.exercises.reduce((sum,ex,ei)=>{
                 const wArr=(fresh.weights||{})[`rt_${rt.id}_${si}_${ei}`]||[];
-                return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+                return sum+wArr.reduce((s,w)=>s+(w.kg||0)*(w.reps||1),0);
               },0);
               if(kg>0){ bfSessionKg[ck]=Math.round(kg); sessionKgChanged=true; }
             }
@@ -5307,7 +5314,7 @@ function RankUpApp({user,onLogout}){
             const name=keyToName[key];
             if(!name||!Array.isArray(logs)) return;
             if(!migrated[name]) migrated[name]=[];
-            logs.forEach(w=>{ if(w.kg>0) migrated[name].push({kg:w.kg,date:null,session:w.session}); });
+            logs.forEach(w=>{ if(w.kg>0) migrated[name].push({kg:w.kg,reps:w.reps,date:null,session:w.session}); });
           });
           if(Object.keys(migrated).length>0) setExHistory(p=>({...migrated,...p}));
         }
@@ -5353,7 +5360,10 @@ function RankUpApp({user,onLogout}){
       }).catch(()=>{});
       if(fresh.assignedDiets?.length>0) setAssignedDiets(fresh.assignedDiets);
       // Migrate old ex.done system → checked keys
-      const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true);
+      // Conservamos las rutinas asignadas por admin Y las generadas por el propio
+      // jugador con IA (selfGenerated). Antes solo se dejaban pasar las de admin,
+      // así que cualquier rutina autogenerada desaparecía al reabrir la app.
+      const cleanRoutines=(fresh.customRoutines||[]).filter(r=>r.assignedByAdmin===true||r.selfGenerated===true);
       if(cleanRoutines.length>0){
         const migratedChecked={...(fresh.checked||{})};
         let needsMigration=false;
@@ -5872,7 +5882,7 @@ function RankUpApp({user,onLogout}){
             addCoins(dungeonCoins,"¡Dungeon completado!");
             const sessKg=day.exercises.reduce((sum,ex,ei)=>{
               const wArr=weights[exKey(phaseId,dayIdx,ei)]||[];
-              return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+              return sum+wArr.reduce((s,w)=>s+(w.kg||0)*(w.reps||1),0);
             },0);
             setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
             addLoot(rollLoot("dungeon"));
@@ -5920,7 +5930,7 @@ function RankUpApp({user,onLogout}){
                 addCoins(dungeonCoins,"¡Dungeon completado!");
                 const sessKg=sess.exercises.reduce((sum,ex,ei)=>{
                   const wArr=weights[`rt_${rt.id}_${si}_${ei}`]||[];
-                  return sum+wArr.reduce((s,w)=>s+(w.kg||0),0);
+                  return sum+wArr.reduce((s,w)=>s+(w.kg||0)*(w.reps||1),0);
                 },0);
                 setSessionKg(p=>({...p,[ck]:Math.round(sessKg)}));
                 addLoot(rollLoot("dungeon"));
@@ -5965,6 +5975,13 @@ function RankUpApp({user,onLogout}){
 
   const logWeight=useCallback((key,evt,exName)=>{
     const kg=parseFloat(wInputs[key]);if(isNaN(kg)||kg<0||wInputs[key]==="")return;
+    // Reps es opcional en el input, pero si no se indica asumimos 1 (así el
+    // "kg totales" nunca sube sin que el usuario haya dicho cuántas reps
+    // hizo — antes se sumaba el kg suelto por serie, ignorando las reps,
+    // lo que hacía que el total pareciera mucho más bajo que en otras apps
+    // de fitness, que calculan volumen = peso × reps × series).
+    const repsRaw=parseInt(repsInputs[key]);
+    const reps=(!isNaN(repsRaw)&&repsRaw>0)?repsRaw:1;
     const arr=weights[key]||[];
     // Compare against the GLOBAL history for this exercise (every routine/day
     // it appears in), not just this slot's own log — otherwise the same
@@ -5973,15 +5990,16 @@ function RankUpApp({user,onLogout}){
     const prevMax=globalHist.length>0?Math.max(...globalHist.map(w=>w.kg)):0;
     const isRec=kg>0&&kg>prevMax&&globalHist.length>0;
     const dateStr=new Date().toISOString();
-    setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg}]}));
+    setWeights(p=>({...p,[key]:[...arr,{session:`S${arr.length+1}`,kg,reps}]}));
     // Also write to global exercise history
     if(exName){
       setExHistory(p=>{
         const hist=p[exName]||[];
-        return {...p,[exName]:[...hist,{kg,date:dateStr,session:`S${hist.length+1}`}]};
+        return {...p,[exName]:[...hist,{kg,reps,date:dateStr,session:`S${hist.length+1}`}]};
       });
     }
     setWInputs(p=>({...p,[key]:""}));
+    setRepsInputs(p=>({...p,[key]:""}));
     if(isRec){
       setPR(p=>({...p,[exName||key]:kg}));
       const recMult=getClassMultiplier(playerClass,"",80,true);
@@ -5989,7 +6007,7 @@ function RankUpApp({user,onLogout}){
       addXp(recXp,evt,recMult>1?`+${recXp} XP ×${recMult} 🏆`:null);
       setTimeout(()=>setPrCard({exName:exName||"Ejercicio",kg,prevMax,xp:recXp}),600);
     } else addXp(15,evt);
-  },[weights,wInputs,addXp,exHistory,playerClass]);
+  },[weights,wInputs,repsInputs,addXp,exHistory,playerClass]);
 
   const deleteWeight=useCallback((key,idx,exName)=>{
     setWeights(p=>{
@@ -6327,7 +6345,7 @@ function RankUpApp({user,onLogout}){
                         <div style={{display:"flex",justifyContent:"space-between",fontSize:11,color:"#555",marginBottom:6}}><span>Misiones: {phDone}/{phTotal}</span><span style={{color:ph.color}}>+{phXpE}/{phXpT} XP</span></div>
                         <div style={{height:8,background:"#1A1A2E",borderRadius:4,overflow:"hidden"}}><div style={{height:"100%",width:`${phTotal>0?(phDone/phTotal)*100:0}%`,background:`linear-gradient(90deg,${ph.color}88,${ph.color})`,borderRadius:4,transition:"width .6s ease",boxShadow:`0 0 8px ${ph.color}`}}/></div>
                       </div>
-                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))} sessionKg={sessionKg} onShowGif={showGif}/>
+                      <MissionTab ph={ph} checked={checked} weights={weights} pr={pr} wInputs={wInputs} repsInputs={repsInputs} openDay={openDay} openChart={openChart} onToggleDay={k=>setOpenDay(openDay===k?null:k)} onToggleEx={toggleEx} onLogWeight={logWeight} onDeleteWeight={deleteWeight} onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))} onRepsInput={(k,v)=>setRepsInputs(p=>({...p,[k]:v}))} onToggleChart={k=>setOpenChart(openChart===k?null:k)} extraRoutines={routines} exNotes={exNotes} onNote={(k,v)=>setExNotes(p=>({...p,[k]:v}))} exHistory={exHistory} exOverrides={exOverrides} onSwapEx={(key,newName)=>setExOverrides(p=>({...p,[key]:newName}))} sessionKg={sessionKg} onShowGif={showGif}/>
                     </>
                   );
                 })()}
@@ -6339,10 +6357,12 @@ function RankUpApp({user,onLogout}){
                   weights={weights}
                   pr={pr}
                   wInputs={wInputs}
+                  repsInputs={repsInputs}
                   onToggleEx={toggleEx}
                   onLogWeight={logWeight}
                   onDeleteWeight={deleteWeight}
                   onWInput={(k,v)=>setWInputs(p=>({...p,[k]:v}))}
+                  onRepsInput={(k,v)=>setRepsInputs(p=>({...p,[k]:v}))}
                   openChart={openChart}
                   onToggleChart={k=>setOpenChart(openChart===k?null:k)}
                   onUpdateRoutines={newRoutines=>{setRoutines(newRoutines);}}
@@ -6396,7 +6416,7 @@ function RankUpApp({user,onLogout}){
 }
 
 // ─── MISSION TAB ──────────────────────────────────────────────────────────────
-function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWeight,onDeleteWeight,onWInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={},sessionKg={},onShowGif}){
+function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,repsInputs={},onToggleEx,onLogWeight,onDeleteWeight,onWInput,onRepsInput,openChart,onToggleChart,onUpdateRoutines,exNotes={},onNote,exHistory={},sessionKg={},onShowGif}){
   const [rtHistoryModal,setRtHistoryModal]=useState(null);
   const [showArchivedRt,setShowArchivedRt]=useState(false);
   const [openSess,setOpenSess]=useState(null);
@@ -6674,9 +6694,12 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                                 <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)}
                                   onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e,ex.name);}}
                                   style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                                <input type="number" min="0" step="1" placeholder="reps" value={repsInputs[key]||""} onChange={e=>onRepsInput&&onRepsInput(key,e.target.value)}
+                                  onKeyDown={e=>{if(e.key==="Enter")onLogWeight(key,e,ex.name);}}
+                                  style={{width:56,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                                 <button onClick={e=>onLogWeight(key,e,ex.name)}
                                   style={{padding:"7px 16px",background:c,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
-                                {exHistory[ex.name]?.length>0&&(
+                                  {exHistory[ex.name]?.length>0&&(
                                   <button onClick={()=>setRtHistoryModal({exName:ex.name,history:exHistory[ex.name],color:c})}
                                     style={{marginTop:6,width:"100%",padding:"8px",background:`${c}11`,border:`1px solid ${c}44`,borderRadius:8,color:c,fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif",letterSpacing:2,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
                                     📊 VER HISTORIAL
@@ -6686,7 +6709,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
                               {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
                               {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=>(
                                 <span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${c}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}>
-                                  <span style={{color:c,fontWeight:700}}>{w.kg}kg</span> {w.session}
+                                  <span style={{color:c,fontWeight:700}}>{w.kg}kg{w.reps>1?` ×${w.reps}`:""}</span> {w.session}
                                   <button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,ex.name)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button>
                                 </span>
                               ))}</div>}
@@ -6806,7 +6829,7 @@ function RoutinesOnlyTab({routines,checked,weights,pr,wInputs,onToggleEx,onLogWe
   );
 }
 
-function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx,sessionKg={},onShowGif}){
+function MissionTab({ph,checked,weights,pr,wInputs,repsInputs={},openDay,openChart,onToggleDay,onToggleEx,onLogWeight,onDeleteWeight,onWInput,onRepsInput,onToggleChart,extraRoutines=[],exNotes={},onNote,exHistory={},exOverrides={},onSwapEx,sessionKg={},onShowGif}){
   const [historyModal,setHistoryModal]=useState(null);
   const [swapModal,setSwapModal]=useState(null); // {key, exName, muscles}
   const [searchQ,setSearchQ]=useState("");
@@ -6889,6 +6912,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                         <div style={{padding:"0 14px 12px 56px"}}>
                           <div style={{display:"flex",gap:6,alignItems:"center",flexWrap:"wrap"}}>
                             <input type="number" min="0" step="0.5" placeholder="kg" value={wInputs[key]||""} onChange={e=>onWInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:66,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
+                            <input type="number" min="0" step="1" placeholder="reps" value={repsInputs[key]||""} onChange={e=>onRepsInput&&onRepsInput(key,e.target.value)} onKeyDown={e=>e.key==="Enter"&&onLogWeight(key,e,exDisplayName)} style={{width:56,padding:"7px 10px",background:"#0D0D1A",border:"1px solid #2A2A44",borderRadius:8,color:"#FFF",fontSize:13,outline:"none",fontFamily:"'Rajdhani',sans-serif"}}/>
                             <button onClick={e=>onLogWeight(key,e,exDisplayName)} style={{padding:"7px 16px",background:ph.color,border:"none",borderRadius:8,color:"#07070F",fontSize:12,fontWeight:700,cursor:"pointer",fontFamily:"'Rajdhani',sans-serif"}}>+ LOG</button>
                           </div>
                           {exHistory[exDisplayName]?.length>0&&(
@@ -6898,7 +6922,7 @@ function MissionTab({ph,checked,weights,pr,wInputs,openDay,openChart,onToggleDay
                             </button>
                           )}
                           {isPR&&<div style={{marginTop:6,display:"inline-flex",alignItems:"center",gap:4,padding:"3px 10px",background:"#FBBF2422",border:"1px solid #FBBF2466",borderRadius:20,fontSize:10,color:"#FBBF24",letterSpacing:1}}>🏆 RÉCORD: {maxKg}kg</div>}
-                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,exDisplayName)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
+                          {exW.length>0&&<div style={{display:"flex",gap:4,marginTop:6,flexWrap:"wrap"}}>{exW.map((w,wi)=><span key={wi} style={{fontSize:10,padding:"2px 6px 2px 8px",background:"#1A1A2E",border:`1px solid ${ph.color}22`,borderRadius:20,color:"#666",display:"flex",alignItems:"center",gap:4}}><span style={{color:ph.color,fontWeight:700}}>{w.kg}kg{w.reps>1?` ×${w.reps}`:""}</span> {w.session}<button onClick={()=>onDeleteWeight&&onDeleteWeight(key,wi,exDisplayName)} style={{background:"none",border:"none",color:"#E84A5F",cursor:"pointer",fontSize:10,padding:0,lineHeight:1}}>✕</button></span>)}</div>}
                           {/* User notes */}
                           <textarea
                             placeholder="📝 Anotaciones personales..."
